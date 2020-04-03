@@ -1,0 +1,121 @@
+/*===========================================================================*/
+/* Fonts */
+/*===========================================================================*/
+
+@font-face {
+  font-family: 'WorkSans';
+  src: local('WorkSans'), url(./fonts/WorkSans-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'WorkSans';
+  src: local('WorkSans'), url(./fonts/WorkSans-Medium.ttf) format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'WorkSans';
+  src: local('WorkSans'), url(./fonts/WorkSans-SemiBold.ttf) format('truetype');
+  font-weight: 600;
+}
+
+/*===========================================================================*/
+/* Global Styles */
+/*===========================================================================*/
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  background: #F3F3F3;
+  color: #565656;
+  font-family: WorkSans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+::selection {
+  background-color: #D91C5C;
+  color: #FFF;
+}
+
+/*===========================================================================*/
+/* Normalize.css */
+/*===========================================================================*/
+
+main {
+  display: block;
+}
+
+pre {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+a {
+  background-color: transparent;
+}
+
+code,
+kbd,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+img {
+  border-style: none;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+textarea {
+  overflow: auto;
+}
