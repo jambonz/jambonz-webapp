@@ -48,7 +48,7 @@ code {
 }
 
 ::selection {
-  background-color: #D91C5C;
+  background-color: rgba(217, 28, 92, 0.75);
   color: #FFF;
 }
 
