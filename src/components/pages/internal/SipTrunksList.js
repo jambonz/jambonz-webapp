@@ -3,6 +3,7 @@ import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
+import Sbcs from '../../blocks/Sbcs';
 
 const SipTrunksList = () => {
   const dispatch = useContext(NotificationDispatchContext);
@@ -119,6 +120,7 @@ const SipTrunksList = () => {
       title="SIP Trunks"
       addButtonText="Add a SIP Trunk"
       addButtonLink="/internal/sip-trunks/add"
+      subtitle={<Sbcs />}
     >
       <TableContent
         name="SIP trunk"

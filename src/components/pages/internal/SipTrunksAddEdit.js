@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import SipTrunkForm from '../../forms/SipTrunkForm';
+import Sbcs from '../../blocks/Sbcs';
 
 const SipTrunksAddEdit = () => {
   let { voip_carrier_sid } = useParams();
@@ -10,6 +11,7 @@ const SipTrunksAddEdit = () => {
     <InternalTemplate
       type="form"
       title={pageTitle}
+      subtitle={<Sbcs />}
       breadcrumbs={[
         { name: 'SIP Trunks', url: '/internal/sip-trunks' },
         { name: pageTitle },
