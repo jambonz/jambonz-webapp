@@ -97,10 +97,8 @@ const TableContent = props => {
     setShowModalLoader(true);
     const success = await props.deleteContent(contentToDelete);
     if (success) {
-      setShowTableLoader(true);
       const newContent = await props.getContent();
       sortTableContent({ newContent });
-      setShowTableLoader(false);
       setContentToDelete({});
       dispatch({
         type: 'ADD',
