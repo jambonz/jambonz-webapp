@@ -21,16 +21,17 @@ const ApplicationForm = props => {
 
   // Refs
   const refName = useRef(null);
+  const refAccount = useRef(null);
   const refCallWebhook = useRef(null);
   const refCallWebhookUser = useRef(null);
   const refCallWebhookPass = useRef(null);
   const refStatusWebhook = useRef(null);
   const refStatusWebhookUser = useRef(null);
   const refStatusWebhookPass = useRef(null);
-  const refAccount = useRef(null);
 
   // Form inputs
   const [ name,                     setName                     ] = useState('');
+  const [ accountSid,               setAccountSid               ] = useState('');
   const [ callWebhook,              setCallWebhook              ] = useState('');
   const [ callWebhookMethod,        setCallWebhookMethod        ] = useState('POST');
   const [ callWebhookUser,          setCallWebhookUser          ] = useState('');
@@ -44,17 +45,16 @@ const ApplicationForm = props => {
   const [ speechSynthesisVoice,     setSpeechSynthesisVoice     ] = useState('en-US-Standard-C');
   const [ speechRecognizerVendor,   setSpeechRecognizerVendor   ] = useState('google');
   const [ speechRecognizerLanguage, setSpeechRecognizerLanguage ] = useState('en-US');
-  const [ accountSid,               setAccountSid               ] = useState('');
 
   // Invalid form inputs
   const [ invalidName,              setInvalidName              ] = useState(false);
+  const [ invalidAccount,           setInvalidAccount           ] = useState(false);
   const [ invalidCallWebhook,       setInvalidCallWebhook       ] = useState(false);
   const [ invalidCallWebhookUser,   setInvalidCallWebhookUser   ] = useState(false);
   const [ invalidCallWebhookPass,   setInvalidCallWebhookPass   ] = useState(false);
   const [ invalidStatusWebhook,     setInvalidStatusWebhook     ] = useState(false);
   const [ invalidStatusWebhookUser, setInvalidStatusWebhookUser ] = useState(false);
   const [ invalidStatusWebhookPass, setInvalidStatusWebhookPass ] = useState(false);
-  const [ invalidAccount,           setInvalidAccount           ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -204,13 +204,13 @@ const ApplicationForm = props => {
       e.preventDefault();
       setErrorMessage('');
       setInvalidName(false);
+      setInvalidAccount(false);
       setInvalidCallWebhook(false);
       setInvalidCallWebhookUser(false);
       setInvalidCallWebhookPass(false);
       setInvalidStatusWebhook(false);
       setInvalidStatusWebhookUser(false);
       setInvalidStatusWebhookPass(false);
-      setInvalidAccount(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -224,6 +224,15 @@ const ApplicationForm = props => {
       }
 
       // check if name is already in use
+
+      if ((props.type === 'add' || props.type === 'edit') && !accountSid) {
+        errorMessages.push('Please choose an account for this application to be associated with.');
+        setInvalidAccount(true);
+        if (!focusHasBeenSet) {
+          refAccount.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
 
       if (!callWebhook) {
         errorMessages.push('Please enter a Calling Webhook.');
@@ -267,15 +276,6 @@ const ApplicationForm = props => {
           } else {
             refStatusWebhookPass.current.focus();
           }
-          focusHasBeenSet = true;
-        }
-      }
-
-      if ((props.type === 'add' || props.type === 'edit') && !accountSid) {
-        errorMessages.push('Please choose an account for this application to be associated with.');
-        setInvalidAccount(true);
-        if (!focusHasBeenSet) {
-          refAccount.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -385,6 +385,36 @@ const ApplicationForm = props => {
                 autoFocus
                 ref={refName}
               />
+
+              <hr />
+
+              <Label htmlFor="account">Account</Label>
+              <Select
+                large={props.type === 'setup'}
+                name="account"
+                id="account"
+                value={accountSid}
+                onChange={e => setAccountSid(e.target.value)}
+                invalid={invalidAccount}
+                ref={refAccount}
+              >
+                {(
+                  (accounts.length > 1) ||
+                  (props.type === 'edit' && accounts[0] && accountSid !== accounts[0].account_sid)
+                ) && (
+                  <option value="">
+                    -- Choose the account this application will be associated with --
+                  </option>
+                )}
+                {accounts.map(a => (
+                  <option
+                    key={a.account_sid}
+                    value={a.account_sid}
+                  >
+                    {a.name}
+                  </option>
+                ))}
+              </Select>
               <hr />
             </React.Fragment>
           )}
@@ -668,39 +698,6 @@ const ApplicationForm = props => {
               ))}
             </Select>
           </InputGroup>
-
-          {(props.type === 'add' || props.type === 'edit') && (
-            <React.Fragment>
-              <hr />
-              <Label htmlFor="account">Account</Label>
-              <Select
-                large={props.type === 'setup'}
-                name="account"
-                id="account"
-                value={accountSid}
-                onChange={e => setAccountSid(e.target.value)}
-                invalid={invalidAccount}
-                ref={refAccount}
-              >
-                {(
-                  (accounts.length > 1) ||
-                  (props.type === 'edit' && accounts[0] && accountSid !== accounts[0].account_sid)
-                ) && (
-                  <option value="">
-                    -- Choose the account this application will be associated with --
-                  </option>
-                )}
-                {accounts.map(a => (
-                  <option
-                    key={a.account_sid}
-                    value={a.account_sid}
-                  >
-                    {a.name}
-                  </option>
-                ))}
-              </Select>
-            </React.Fragment>
-          )}
 
           {errorMessage && (
             <FormError grid message={errorMessage} />
