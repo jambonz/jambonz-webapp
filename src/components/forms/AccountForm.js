@@ -187,7 +187,7 @@ const AccountForm = props => {
           }
         }
 
-        if (a.sip_realm === sipRealm) {
+        if (sipRealm && a.sip_realm === sipRealm) {
           errorMessages.push(
             'The SIP Realm you have entered is already in use on another one of your accounts.'
           );
@@ -224,7 +224,7 @@ const AccountForm = props => {
 
       const axiosData = {
         name,
-        sip_realm: sipRealm,
+        sip_realm: sipRealm || null,
         registration_hook: {
           url: regWebhook,
           method: method,
