@@ -1,17 +1,7 @@
 import styled from 'styled-components/macro';
 
 const Form = styled.form`
-  width: ${props => props.large
-    ? '61rem'
-    : '32rem'
-  };
   text-align: right;
-  @media (max-width: ${props => props.large
-    ? '61rem'
-    : '32rem'
-  }) {
-    width: 100%;
-  }
   padding: 2rem;
   ${props => !props.large && `
     & input {

@@ -4,7 +4,7 @@ const NotificationReducer = (state, action) => {
     case 'ADD':
       return [
         {
-          id: Date.now(),
+          id: action.id,
           level: action.level,
           message: action.message,
         },

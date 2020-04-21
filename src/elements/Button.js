@@ -1,4 +1,5 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useContext, useRef, forwardRef, useImperativeHandle } from 'react';
+import { ModalStateContext } from '../contexts/ModalContext';
 import styled from 'styled-components/macro';
 
 const StyledButton = styled.button`
@@ -55,7 +56,10 @@ const StyledButton = styled.button`
   }
 
   &:focus > span {
-    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.12),
+    box-shadow: ${props => props.text
+                  ? ''
+                  : '0 0.125rem 0.25rem rgba(0,0,0,0.12),'
+                }
                 inset 0 0 0
                 ${props => props.text
                   ? '0.125rem'
@@ -67,18 +71,22 @@ const StyledButton = styled.button`
                 };
   }
 
-  &:hover > span {
-    ${props => props.text
-      ? `background: #E3E3E3;`
-      : 'background: #BD164E;'
-    }
+  &:hover:not([disabled]) > span {
+    background: ${props => props.text
+      ? '#E3E3E3'
+      : props.gray
+        ? '#C6C6C6'
+        : '#BD164E'
+    };
   }
 
-  &:active > span  {
-    ${props => props.text
-      ? `background: #D5D5D5;`
-      : 'background: #A40D40;'
-    }
+  &:active:not([disabled]) > span  {
+    background: ${props => props.text
+      ? '#D5D5D5'
+      : props.gray
+        ? '#B6B6B6'
+        : '#A40D40'
+    };
   }
 
   ${props => props.formLink && `
@@ -107,12 +115,35 @@ const StyledButton = styled.button`
     }
   `}
 
+  ${props => props.tableHeaderLink && `
+    & > span {
+      padding: 0;
+    }
+
+    &:focus > span,
+    &:hover > span {
+      padding: 0.625rem;
+      margin: -0.625rem;
+    }
+
+    & > span > *:last-child {
+      color: #8F8F8F;
+      margin-left: 1rem;
+    }
+  `}
+
   ${props => props.right && `
     justify-self: end;
   `}
+
+  &:disabled {
+    cursor: not-allowed;
+
+  }
 `;
 
 const Button = (props, ref) => {
+  const modalOpen = useContext(ModalStateContext);
   const buttonRef = useRef();
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -123,6 +154,7 @@ const Button = (props, ref) => {
     <StyledButton
       {...props}
       ref={buttonRef}
+      disabled={modalOpen && !props.inModal}
     >
       <span tabIndex="-1">
         {props.children}

@@ -132,6 +132,7 @@ const Login = props => {
       if (
         (serviceProviders.length > 1) ||
         (accounts.length         > 1) ||
+        (accounts.length         < 1) ||
         (applications.length     > 1) ||
         (voipCarriers.length     > 0)
       ) {
@@ -164,10 +165,19 @@ const Login = props => {
     } catch (err) {
       // 400 --> one or both fields are empty (prevented by above error checking)
       // 403 --> username or password are incorrect
-      if (err.response.status > 399 && err.response.status < 500) {
+      if (
+        err.response
+        && err.response.status
+        && err.response.status > 399
+        && err.response.status < 500
+      ) {
         setErrorMessage('Login credentials are incorrect');
       } else {
-        setErrorMessage('Something went wrong, please try again');
+        setErrorMessage(
+          (err.response && err.response.data && err.response.data.msg) ||
+          'Something went wrong, please try again'
+        );
+        console.log(err.response || err);
       }
     }
   };

@@ -17,9 +17,22 @@ export function NotificationProvider(props) {
 
   const [state, dispatch] = useReducer(NotificationReducer, []);
 
+  const interceptDispatch = action => {
+    if (action.type === 'ADD') {
+      const id = Date.now();
+      const actionWithId = { ...action, id };
+      dispatch(actionWithId);
+      setTimeout(() => {
+        dispatch({ type: 'REMOVE', id });
+      }, 3000);
+      return;
+    }
+    dispatch(action);
+  };
+
   return (
     <NotificationStateContext.Provider value={state}>
-      <NotificationDispatchContext.Provider value={dispatch}>
+      <NotificationDispatchContext.Provider value={interceptDispatch}>
         {props.children}
       </NotificationDispatchContext.Provider>
     </NotificationStateContext.Provider>

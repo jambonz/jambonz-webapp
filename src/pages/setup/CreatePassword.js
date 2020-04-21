@@ -39,8 +39,8 @@ const CreatePassword = () => {
         history.push('/internal/accounts');
         dispatch({
           type: 'ADD',
-          level: 'info',
-          message: 'That page is only valid when first creating an account.',
+          level: 'error',
+          message: 'That page is only accessible during setup',
         });
         return;
       }

@@ -10,7 +10,10 @@ const CheckboxContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  height: 3rem;
+  height: ${props => props.large
+    ? '3rem'
+    : '2.25rem'
+  };
   ${props => props.invalid && `
     margin-right: -0.5rem;
     padding: 0 0.5rem;
@@ -40,7 +43,10 @@ const StyledLabel = styled(Label)`
   &::before {
     content: '';
     position: absolute;
-    top: 0.75rem;
+    top: ${props => props.large
+      ? '0.75rem'
+      : '0.375rem'
+    };
     left: ${props => props.invalid
       ? '0.5rem'
       : '0'
@@ -69,7 +75,10 @@ const StyledLabel = styled(Label)`
   input:checked + &::after {
     content: '';
     position: absolute;
-    top: 1.1rem;
+    top: ${props => props.large
+      ? '1.1rem'
+      : '0.725rem'
+    };
     left: ${props => props.invalid
       ? '0.75rem'
       : '0.25rem'
@@ -96,7 +105,7 @@ const Tooltip = styled.span`
     background: #FFF;
     box-shadow: 0 0.375rem 0.25rem rgba(0, 0, 0, 0.12),
                 0 0        0.25rem rgba(0, 0, 0, 0.18);
-    z-index: 101;
+    z-index: 80;
   }
 `;
 

@@ -1,9 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { ModalStateContext } from '../contexts/ModalContext';
 
-const FilteredLink = ({ formLink, right, ...props }) => (
-  <Link {...props}>{props.children}</Link>
+const FilteredLink = ({ formLink, right, inModal, ...props }) => (
+  <ReactRouterLink {...props}>{props.children}</ReactRouterLink>
 );
 
 const StyledReactRouterLink = styled(FilteredLink)`
@@ -49,12 +50,18 @@ const StyledReactRouterLink = styled(FilteredLink)`
   `}
 `;
 
-const StyledLink = props => (
-  <StyledReactRouterLink {...props}>
-    <span tabIndex="-1">
-      {props.children}
-    </span>
-  </StyledReactRouterLink>
-);
+const Link = props => {
+  const modalOpen = useContext(ModalStateContext);
+  return (
+    <StyledReactRouterLink
+      {...props}
+      tabIndex={modalOpen && !props.inModal ? '-1' : ''}
+    >
+      <span tabIndex="-1">
+        {props.children}
+      </span>
+    </StyledReactRouterLink>
+  );
+};
 
-export default StyledLink;
+export default Link;

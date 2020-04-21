@@ -5,6 +5,8 @@ import { NotificationDispatchContext } from '../contexts/NotificationContext';
 import Button from '../elements/Button';
 
 const StyledNav = styled.nav`
+  position: relative;
+  z-index: 50;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,7 +39,7 @@ const Nav = () => {
     history.push('/');
     dispatch({
       type: 'ADD',
-      level: 'info',
+      level: 'success',
       message: "You've successfully logged out",
     });
   };

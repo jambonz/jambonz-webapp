@@ -1,0 +1,7 @@
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<rect width="9" height="9" rx="1"/>
+<rect y="11" width="9" height="9" rx="1"/>
+<rect x="11" width="9" height="9" rx="1"/>
+<rect x="11" y="15" width="9" height="1"/>
+<rect width="1" height="9" transform="matrix(-1 0 0 1 16 11)"/>
+</svg>

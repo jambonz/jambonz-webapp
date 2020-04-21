@@ -20,6 +20,16 @@ const P = styled.p`
 `;
 
 const ContentContainer = styled.div`
+  width: ${props => props.wide
+    ? '61rem'
+    : '32rem'
+  };
+  @media (max-width: ${props => props.wide
+    ? '61rem'
+    : '32rem'
+  }) {
+    width: 100%;
+  }
   background: #FFF;
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.1),
@@ -38,7 +48,9 @@ const SetupTemplate = props => (
         ? props.subtitle
         : <P>{props.subtitle}</P>
     }
-    <ContentContainer>{props.children}</ContentContainer>
+    <ContentContainer wide={props.wide}>
+      {props.children}
+    </ContentContainer>
   </PageContainer>
 );
 

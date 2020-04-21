@@ -116,6 +116,14 @@ button::-moz-focus-inner,
   padding: 0;
 }
 
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+select {
+    background: transparent;
+}
+
 textarea {
   overflow: auto;
 }

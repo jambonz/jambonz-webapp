@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components/macro';
 import { NotificationDispatchContext } from '../contexts/NotificationContext';
 import { ReactComponent as CheckGreen } from '../images/CheckGreen.svg';
+import { ReactComponent as ErrorIcon } from '../images/ErrorIcon.svg';
 
 const NotificationContainer = styled.div`
   position: fixed;
@@ -24,7 +25,13 @@ const NotificationDiv = styled.div`
   width: 28rem;
   padding: 0.75rem;
   background: #fff;
-  border: 1px solid #61c43e;
+  border: 1px solid ${props => (
+    props.level === 'success'
+      ? '#61c43e'
+      : props.level === 'error'
+        ? '#D91C5C'
+        : '#949494'
+  )};
   border-radius: 0.25rem;
   box-shadow: 0 0.375rem 0.25rem rgba(0, 0, 0, 0.12),
               0 0        0.25rem rgba(0, 0, 0, 0.18);
@@ -71,13 +78,36 @@ const CloseButton = styled.button`
   }
 `;
 
+const InfoIcon = styled.span`
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+  height: 1.5rem;
+  width: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #949494;
+  color: #FFF;
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
+
 const Notification = props => {
   const dispatch = useContext(NotificationDispatchContext);
   return (
     <NotificationContainer>
       {props.notifications.map(n => (
-        <NotificationDiv key={n.id}>
-          <CheckGreen />
+        <NotificationDiv
+          key={n.id}
+          level={n.level}
+        >
+          {n.level === 'success'
+            ? <CheckGreen />
+            : n.level === 'error'
+              ? <ErrorIcon />
+              : <InfoIcon>i</InfoIcon>
+          }
           <span>{n.message}</span>
           <CloseButton
             onClick={() => {

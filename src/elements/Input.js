@@ -35,13 +35,17 @@ const StyledInput = styled.input`
     outline: none;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.12);
   }
+  &:disabled {
+    background: #DDD;
+    cursor: not-allowed;
+  }
 `;
 
 const PasswordButton = styled.button`
   position: absolute;
-  top: 0.375rem;
+  top: ${props => props.large ? '0.375rem' : '0.25rem'};
   right: 1rem;
-  height: 2.25rem;
+  height: ${props => props.large ? '2.25rem' : '1.75rem'};
   width: 2.5rem;
   cursor: pointer;
   background: none;
@@ -50,7 +54,7 @@ const PasswordButton = styled.button`
   padding: 0;
 
   & > span {
-    height: 2.25rem;
+    height: ${props => props.large ? '2.25rem' : '1.75rem'};
     width: 2.5rem;
     display: flex;
     justify-content: center;
@@ -65,7 +69,7 @@ const PasswordButton = styled.button`
   }
 
   &:focus > span {
-    box-shadow: inset 0 0 0 0.125rem #890934;
+    box-shadow: inset 0 0 0 0.125rem #D91C5C;
   }
 `;
 
@@ -88,6 +92,7 @@ const Input = (props, ref) => {
         props.allowShowPassword &&
         <PasswordButton
           type="button"
+          large={props.large}
           onClick={props.toggleShowPassword}
         >
           <span tabIndex="-1">
