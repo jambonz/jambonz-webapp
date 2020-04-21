@@ -424,7 +424,9 @@ const SipTrunkForm = props => {
             },
             data,
           });
-          completedSipGateways.push(result.data.sid);
+          if (creatingNewGateway) {
+            completedSipGateways.push(result.data.sid);
+          }
         };
       } catch (err) {
         if (completedSipGateways.length) {
@@ -439,16 +441,17 @@ const SipTrunkForm = props => {
             });
           }
         }
-        await axios({
-          method: 'delete',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: `/VoipCarriers/${voip_carrier_sid}`,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
-        console.log(err.response || err);
+        if (voip_carrier_sid) {
+          await axios({
+            method: 'delete',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/VoipCarriers/${voip_carrier_sid}`,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+        }
+        throw err;
       }
 
       // delete removed gateways (after add/update in case add/update caused errors)
