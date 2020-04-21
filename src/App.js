@@ -2,23 +2,23 @@ import React, { useContext } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { NotificationStateContext } from './contexts/NotificationContext';
 
-import Login from './pages/Login';
-import CreatePassword from './pages/setup/CreatePassword';
-import ConfigureAccount from './pages/setup/ConfigureAccount';
-import CreateApplication from './pages/setup/CreateApplication';
-import ConfigureSipTrunk from './pages/setup/ConfigureSipTrunk';
-import SetupComplete from './pages/setup/SetupComplete';
-import AccountsList from './pages/internal/AccountsList';
-import ApplicationsList from './pages/internal/ApplicationsList';
-import SipTrunksList from './pages/internal/SipTrunksList';
-import PhoneNumbersList from './pages/internal/PhoneNumbersList';
-import AccountsAddEdit from './pages/internal/AccountsAddEdit';
-import ApplicationsAddEdit from './pages/internal/ApplicationsAddEdit';
-import SipTrunksAddEdit from './pages/internal/SipTrunksAddEdit';
-import PhoneNumbersAddEdit from './pages/internal/PhoneNumbersAddEdit';
+import Login from './components/pages/Login';
+import CreatePassword from './components/pages/setup/CreatePassword';
+import ConfigureAccount from './components/pages/setup/ConfigureAccount';
+import CreateApplication from './components/pages/setup/CreateApplication';
+import ConfigureSipTrunk from './components/pages/setup/ConfigureSipTrunk';
+import SetupComplete from './components/pages/setup/SetupComplete';
+import AccountsList from './components/pages/internal/AccountsList';
+import ApplicationsList from './components/pages/internal/ApplicationsList';
+import SipTrunksList from './components/pages/internal/SipTrunksList';
+import PhoneNumbersList from './components/pages/internal/PhoneNumbersList';
+import AccountsAddEdit from './components/pages/internal/AccountsAddEdit';
+import ApplicationsAddEdit from './components/pages/internal/ApplicationsAddEdit';
+import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
+import PhoneNumbersAddEdit from './components/pages/internal/PhoneNumbersAddEdit';
 
-import Notification from './blocks/Notification';
-import Nav from './blocks/Nav';
+import Notification from './components/blocks/Notification';
+import Nav from './components/blocks/Nav';
 
 function App() {
   const notifications = useContext(NotificationStateContext);
