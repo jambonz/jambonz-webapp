@@ -312,7 +312,7 @@ const SipTrunkForm = props => {
           if (!gateway.ip) return;
           if (type === 'invalid') return;
           if (gateway.ip === otherGateway.ip && gateway.port === otherGateway.port) {
-            errorMessages.push('Each row must have a unique IP/Port combination. Please delete the duplicate row.');
+            errorMessages.push('Each SIP gateway must have a unique IP address.');
             updateSipGateways(null, i, 'invalidIp');
             updateSipGateways(null, i, 'invalidPort');
             updateSipGateways(null, j, 'invalidIp');
