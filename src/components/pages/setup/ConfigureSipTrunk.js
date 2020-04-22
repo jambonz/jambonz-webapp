@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SetupTemplate from '../../templates/SetupTemplate';
 import SipTrunkForm from '../../forms/SipTrunkForm';
 import Sbcs from '../../blocks/Sbcs';
 
 const ConfigureSipTrunk = () => {
+  useEffect(() => {
+    document.title = `Configure SIP Trunk | Jambonz | Open Source CPAAS`;
+  });
   return (
     <SetupTemplate
       wide

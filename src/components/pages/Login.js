@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import SetupTemplate from '../templates/SetupTemplate';
@@ -10,6 +10,9 @@ import FormError from '../blocks/FormError';
 
 const Login = props => {
   let history = useHistory();
+  useEffect(() => {
+    document.title = `Login | Jambonz | Open Source CPAAS`;
+  });
 
   // Refs
   const refUsername = useRef(null);

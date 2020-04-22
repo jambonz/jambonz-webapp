@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import PhoneNumberForm from '../../forms/PhoneNumberForm';
@@ -6,6 +6,9 @@ import PhoneNumberForm from '../../forms/PhoneNumberForm';
 const PhoneNumbersAddEdit = () => {
   let { phone_number_sid } = useParams();
   const pageTitle = phone_number_sid ? 'Edit Phone Number' : 'Add Phone Number';
+  useEffect(() => {
+    document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
+  });
   return (
     <InternalTemplate
       type="form"

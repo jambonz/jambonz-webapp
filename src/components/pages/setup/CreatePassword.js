@@ -11,6 +11,9 @@ import FormError from '../../blocks/FormError';
 const CreatePassword = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  useEffect(() => {
+    document.title = `Create Password | Jambonz | Open Source CPAAS`;
+  });
 
   // Refs
   const refPassword = useRef(null);

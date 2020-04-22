@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import ApplicationForm from '../../forms/ApplicationForm';
@@ -6,6 +6,9 @@ import ApplicationForm from '../../forms/ApplicationForm';
 const ApplicationsAddEdit = () => {
   let { application_sid } = useParams();
   const pageTitle = application_sid ? 'Edit Application' : 'Add Application';
+  useEffect(() => {
+    document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
+  });
   return (
     <InternalTemplate
       type="form"

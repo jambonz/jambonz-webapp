@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
@@ -6,6 +6,9 @@ import TableContent from '../../blocks/TableContent.js';
 
 const ApplicationsList = () => {
   const dispatch = useContext(NotificationDispatchContext);
+  useEffect(() => {
+    document.title = `Applications | Jambonz | Open Source CPAAS`;
+  });
 
   //=============================================================================
   // Get applications

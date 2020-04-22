@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
@@ -7,6 +7,9 @@ import Sbcs from '../../blocks/Sbcs';
 
 const SipTrunksList = () => {
   const dispatch = useContext(NotificationDispatchContext);
+  useEffect(() => {
+    document.title = `SIP Trunks | Jambonz | Open Source CPAAS`;
+  });
 
   //=============================================================================
   // Get sip trunks

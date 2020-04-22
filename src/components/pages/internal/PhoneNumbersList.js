@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
@@ -6,6 +6,9 @@ import TableContent from '../../blocks/TableContent.js';
 
 const PhoneNumbersList = () => {
   const dispatch = useContext(NotificationDispatchContext);
+  useEffect(() => {
+    document.title = `Phone Number Routing | Jambonz | Open Source CPAAS`;
+  });
 
   //=============================================================================
   // Get phone numbers

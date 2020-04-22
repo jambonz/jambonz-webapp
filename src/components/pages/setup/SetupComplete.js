@@ -7,6 +7,9 @@ import Button from '../../elements/Button';
 const SetupComplete = () => {
   const history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  useEffect(() => {
+    document.title = `Setup Complete | Jambonz | Open Source CPAAS`;
+  });
 
   useEffect(() => {
     if (!localStorage.getItem('token')) {

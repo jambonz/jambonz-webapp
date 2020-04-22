@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import AccountForm from '../../forms/AccountForm';
@@ -6,6 +6,9 @@ import AccountForm from '../../forms/AccountForm';
 const AccountsAddEdit = () => {
   let { account_sid } = useParams();
   const pageTitle = account_sid ? 'Edit Account' : 'Add Account';
+  useEffect(() => {
+    document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
+  });
   return (
     <InternalTemplate
       type="form"

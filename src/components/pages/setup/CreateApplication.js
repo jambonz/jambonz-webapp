@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SetupTemplate from '../../templates/SetupTemplate';
 import ApplicationForm from '../../forms/ApplicationForm';
 
 const CreateApplication = () => {
+  useEffect(() => {
+    document.title = `Create Application | Jambonz | Open Source CPAAS`;
+  });
   return (
     <SetupTemplate
       wide
