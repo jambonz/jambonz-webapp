@@ -3,9 +3,11 @@ import styled from 'styled-components/macro';
 import Label from './Label';
 
 const CheckboxContainer = styled.div`
-  margin-left: ${props => props.invalid
-    ? '0.5rem'
-    : '1rem'
+  margin-left: ${props => props.forTable
+    ? '0'
+    : props.invalid
+      ? '0.5rem'
+      : '1rem'
   };
   position: relative;
   display: flex;
@@ -119,6 +121,7 @@ const Checkbox = (props, ref) => {
   return (
     <CheckboxContainer
       invalid={props.invalid}
+      forTable={props.forTable}
     >
       <StyledCheckbox
         id={props.id}
@@ -126,6 +129,7 @@ const Checkbox = (props, ref) => {
         type="checkbox"
         checked={props.checked}
         onChange={props.onChange}
+        value={props.value}
         ref={inputRef}
       />
       <StyledLabel

@@ -140,6 +140,110 @@ const StyledButton = styled.button`
     cursor: not-allowed;
 
   }
+
+  //=============================================================================
+  // Table Menu (3 dots on right of each row)
+  //=============================================================================
+  ${props => props.tableMenu && `
+    border-radius: 50%;
+    overflow: hidden;
+
+    & > span {
+      background: ${props.selected
+        ? '#E3E3E3'
+        : 'none'
+      };
+      height: 3rem;
+      width: 3rem;
+      border-radius: 50%;
+      outline: 0;
+      fill: #767676;
+    }
+
+    &:focus > span {
+      border: 2px solid #D91C5C;
+      background: ${props.selected
+        ? 'RGBA(217, 28, 92, 0.15)'
+        : 'none'
+      };
+      fill: #D91C5C;
+      box-shadow: none;
+    }
+
+    &:hover:not([disabled]) > span,
+    &:active:not([disabled]) > span {
+      background: ${props.selected
+        ? 'RGBA(217, 28, 92, 0.15)'
+        : 'none'
+      };
+      fill: #D91C5C;
+    }
+  `}
+
+  //=============================================================================
+  // "Check All" button for bulk editing in table
+  //=============================================================================
+  ${props => props.checkbox && `
+    position: relative;
+    display: block;
+
+    & > span {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 1px solid #A5A5A5;
+      border-radius: 0.125rem;
+      background: #FFF;
+      padding: 0;
+    }
+
+    &:focus > span {
+      border-color: #565656;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.12);
+    }
+
+    &:hover:not([disabled]) > span,
+    &:active:not([disabled]) > span  {
+      background: none;
+    }
+  `}
+
+  ${props => (props.checkbox === 'all' || props.checkbox === 'partial') && `
+    & > span,
+    &:hover:not([disabled]) > span {
+      background: #D91C5C;
+      border-color: #D91C5C;
+    }
+
+    &:focus > span {
+      border: 3px solid #890934;
+    }
+  `}
+
+  ${props => props.checkbox === 'all' && `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.35rem;
+      left: 0.25rem;
+      height: 8px;
+      width: 15px;
+      border-left: 2px solid #FFF;
+      border-bottom: 2px solid #FFF;
+      transform: rotate(-45deg);
+    }
+  `}
+
+  ${props => props.checkbox === 'partial' && `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.6875rem;
+      left: 0.1875rem;
+      height: 0.125rem;
+      width: 1.125rem;
+      background: #FFF;
+    }
+  `}
 `;
 
 const Button = (props, ref) => {

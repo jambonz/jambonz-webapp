@@ -5,6 +5,7 @@ import { ModalStateContext } from '../../contexts/ModalContext';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Table from '../elements/Table.js';
 import Button from '../elements/Button.js';
+import Checkbox from '../elements/Checkbox.js';
 import TableMenu from '../blocks/TableMenu.js';
 import Loader from '../blocks/Loader.js';
 import Modal from '../blocks/Modal.js';
@@ -74,7 +75,45 @@ const TableContent = props => {
   }, []);
 
   //=============================================================================
-  // Handle Table Menu (i.e. clicking the 3 dots on right)
+  // Handle checkboxes
+  //=============================================================================
+  const [ selected, setSelected ] = useState([]);
+  const checkboxesToggleAll = e => {
+    if (content.length === selected.length) {
+      setSelected([]);
+    } else {
+      setSelected(content.map(c => c.sid));
+    }
+  };
+  const checkboxesToggleOne = e => {
+    const sid = e.target.value;
+    setSelected(prev => {
+      if (prev.includes(sid)) {
+        return prev.filter(p => p !== sid);
+      } else {
+        return [...prev, sid];
+      }
+    });
+  };
+
+  const handleBulkAction = async (selected, i) => {
+    setShowTableLoader(true);
+    const success = await props.bulkAction(selected, i);
+    if (success) {
+      const newContent = await props.getContent();
+      sortTableContent({ newContent });
+      setSelected([]);
+      dispatch({
+        type: 'ADD',
+        level: 'success',
+        message: 'Number routing updated',
+      });
+    }
+    setShowTableLoader(false);
+  };
+
+  //=============================================================================
+  // Handle Open Menus (i.e. bulk action menu or 3 dots on right of each row)
   //=============================================================================
   const [ menuOpen, setMenuOpen ] = useState(null);
   useEffect(() => {
@@ -145,34 +184,90 @@ const TableContent = props => {
           actionText="Delete"
         />
       )}
-      <Table>
+      <Table withCheckboxes={props.withCheckboxes}>
+        {/* colgroup is used to set the width of the last column because the
+        last two <th> are combined in a colSpan="2", preventing the columns from
+        being given an expicit width (`table-layout: fixed;` requires setting
+        column width in the first row) */}
+        <colgroup>
+          <col
+            span={
+              props.withCheckboxes
+                ? props.columns.length + 1
+                : props.columns.length
+            }
+          />
+          <col style={{ width: '4rem' }}></col>
+        </colgroup>
         <thead>
           <tr>
-            {props.columns.map(c => (
-              <th key={c.key}>
+            {props.withCheckboxes && (
+              <th>
                 <Button
-                  text
-                  gray
-                  tableHeaderLink
-                  onClick={() => sortTableContent({ column: c.key })}
-                >
-                  {c.header}
-                  {sort.column === c.key
-                    ? sort.order === 'asc'
-                      ? <span>&#9652;</span>
-                      : <span>&#9662;</span>
-                    : null
+                  checkbox={
+                    !selected.length
+                      ? 'none'
+                      : content.length === selected.length
+                        ? 'all'
+                        : 'partial'
                   }
-                </Button>
+                  onClick={checkboxesToggleAll}
+                />
+              </th>
+            )}
+            {props.columns.map((c, i) => (
+              <th
+                key={c.key}
+                colSpan={i === props.columns.length - 1 ? '2' : null}
+              >
+                {selected.length && i === props.columns.length - 1 ? (
+                  <div
+                    style={{
+                      position: 'relative',
+                      display: 'inline-block',
+                      marginLeft: '-1rem',
+                    }}
+                  >
+                    <TableMenu
+                      bulkEditMenu
+                      buttonText="Choose Application"
+                      sid="bulk-menu"
+                      open={menuOpen === 'bulk-menu'}
+                      handleMenuOpen={handleMenuOpen}
+                      disabled={modalOpen}
+                      menuItems={
+                        props.bulkMenuItems.map(i => ({
+                          name: i.name,
+                          type: 'button',
+                          action: () => handleBulkAction(selected, i),
+                        }))
+                      }
+                    />
+                  </div>
+                ) : (
+                  <Button
+                    text
+                    gray
+                    tableHeaderLink
+                    onClick={() => sortTableContent({ column: c.key })}
+                  >
+                    {c.header}
+                    {sort.column === c.key
+                      ? sort.order === 'asc'
+                        ? <span>&#9652;</span>
+                        : <span>&#9662;</span>
+                      : null
+                    }
+                  </Button>
+                )}
               </th>
             ))}
-            <th></th>
           </tr>
         </thead>
         <tbody>
           {showTableLoader ? (
             <tr>
-              <td colSpan="3">
+              <td colSpan={props.withCheckboxes ? props.columns.length + 1 : props.columns.length}>
                 <Loader height={'71px'} />
               </td>
             </tr>
@@ -186,6 +281,17 @@ const TableContent = props => {
             ) : (
               content.map(a => (
                 <tr key={a.sid}>
+                  {props.withCheckboxes && (
+                    <td>
+                      <Checkbox
+                        forTable
+                        id={a.sid}
+                        value={a.sid}
+                        onChange={checkboxesToggleOne}
+                        checked={selected.includes(a.sid)}
+                      />
+                    </td>
+                  )}
                   {props.columns.map((c, i) => (
                     <td key={c.key}>
                       {i === 0

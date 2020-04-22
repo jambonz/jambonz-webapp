@@ -2,52 +2,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
 import { ReactComponent as MenuDots } from '../../images/MenuDots.svg';
-
-const Button = styled.button`
-  background: none;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  border-radius: 50%;
-
-  & > span {
-    background: ${props => props.selected
-      ? '#E3E3E3'
-      : 'none'
-    };
-    height: 3rem;
-    width: 3rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    outline: 0;
-    fill: #767676;
-    cursor: pointer;
-  }
-
-  &:focus > span {
-    border: 2px solid #D91C5C;
-    background: ${props => props.selected
-      ? 'RGBA(217, 28, 92, 0.15)'
-      : 'none'
-    };
-    fill: #D91C5C;
-  }
-
-  &:hover > span {
-    background: ${props => props.selected
-      ? 'RGBA(217, 28, 92, 0.15)'
-      : 'none'
-    };
-    fill: #D91C5C;
-  }
-`;
+import Button from '../elements/Button';
 
 const Container = styled.div`
   position: absolute;
-  right: 1.75rem;
-  top: 3rem;
+  right: ${props => props.bulkEditMenu
+    ? '0'
+    : '1.75rem'
+  };
+  top: ${props => props.bulkEditMenu
+    ? 'calc(100% + 0.25rem)'
+    : '3rem'
+  };
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -99,6 +65,8 @@ const MenuButton = styled.button`
 const TableMenu = props => (
   <React.Fragment>
     <Button
+      bulkEditMenu={props.bulkEditMenu}
+      tableMenu={!props.bulkEditMenu}
       selected={props.open}
       disabled={props.disabled}
       onClick={e => {
@@ -106,12 +74,12 @@ const TableMenu = props => (
         props.handleMenuOpen(props.sid);
       }}
     >
-      <span tabIndex="-1">
-        <MenuDots />
-      </span>
+      {props.buttonText || <MenuDots />}
     </Button>
     {props.open && (
-      <Container>
+      <Container
+        bulkEditMenu={props.bulkEditMenu}
+      >
         {props.menuItems.map((m, i) => (
           m.type === 'link'
             ? <MenuLink key={i} to={m.url}>

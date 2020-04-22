@@ -68,15 +68,22 @@ const Table = styled.table`
     font-weight: bold;
   }
 
-  & th:last-child {
-    width: 4rem;
-  }
-
   & td:last-child {
     overflow: inherit;
     position: relative;
     padding: 0.5rem;
   }
+
+  ${props => props.withCheckboxes && `
+    & th:first-child,
+    & td:first-child {
+      width: 3rem;
+      padding: 1.25rem 0 1.25rem 1.25rem;
+    }
+    & td:nth-child(2) {
+      font-weight: bold;
+    }
+  `}
 `;
 
 export default Table;
