@@ -5,6 +5,7 @@ const Table = styled.table`
   border-collapse: collapse;
   white-space: nowrap;
   width: 100%;
+  min-width: 38rem;
 
   & > thead {
     background: #F7F7F7;

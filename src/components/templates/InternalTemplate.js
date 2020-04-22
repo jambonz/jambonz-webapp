@@ -89,6 +89,10 @@ const ContentContainer = styled.div`
   ${props => props.type === 'form' &&
     'max-width: 61rem;'
   }
+  min-width: ${props => props.type === 'form'
+    ? '58rem'
+    : '38rem'
+  };
   @media (max-width: 34rem) {
     width: 100%;
   }

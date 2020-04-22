@@ -34,6 +34,12 @@ const ContentContainer = styled.div`
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.1),
   0px 0px 0.25rem rgba(0, 0, 0, 0.1);
+  ${props => props.wide && `
+    min-width: 58rem;
+  `}
+  @media (max-width: 58rem) {
+    align-self: flex-start;
+  }
   @media (max-width: 34rem) {
     width: 100%;
   }
