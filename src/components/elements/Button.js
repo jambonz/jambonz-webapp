@@ -104,7 +104,8 @@ const StyledButton = styled.button`
       box-shadow: 0 0 0 0.125rem #D91C5C;
     }
 
-    &:hover:not([disabled]) > span {
+    &:hover:not([disabled]) > span,
+    &:active:not([disabled]) > span {
       background: none;
       box-shadow: 0 0.125rem 0 #D91C5C;
       border-radius: 0;
@@ -121,7 +122,8 @@ const StyledButton = styled.button`
     }
 
     &:focus > span,
-    &:hover:not([disabled]) > span {
+    &:hover:not([disabled]) > span,
+    &:active:not([disabled]) > span {
       padding: 0.625rem;
       margin: -0.625rem;
     }

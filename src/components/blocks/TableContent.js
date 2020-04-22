@@ -274,7 +274,10 @@ const TableContent = props => {
           ) : (
             !content || !content.length ? (
               <tr>
-                <td colSpan={props.columns.length} style={{ textAlign: 'center' }}>
+                <td
+                  colSpan={props.withCheckboxes ? props.columns.length + 1 : props.columns.length}
+                  style={{ textAlign: 'center' }}
+                >
                   No {props.name}s
                 </td>
               </tr>
