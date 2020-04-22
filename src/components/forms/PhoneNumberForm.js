@@ -108,6 +108,30 @@ const PhoneNumberForm = props => {
         setApplicationValues(applications);
         setPhoneNumbers(phoneNumbers);
 
+        if (!accounts.length) {
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must create an account before you can create a phone number.',
+          });
+        }
+
+        if (!sipTrunks.length) {
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must create a SIP trunk before you can create a phone number.',
+          });
+        }
+
+        if (!accounts.length) {
+          history.push('/internal/accounts');
+          return;
+        } else if (!sipTrunks.length) {
+          history.push('/internal/sip-trunks');
+          return;
+        }
+
         if (props.type === 'edit') {
           const phoneNumberData = promiseAllValues[3] && promiseAllValues[3].data.filter(p => {
             return p.phone_number_sid === props.phone_number_sid;

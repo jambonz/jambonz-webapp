@@ -115,6 +115,16 @@ const ApplicationForm = props => {
         setAccounts(accounts);
         setApplications(applications);
 
+        if (accounts.length === 0) {
+          history.push('/internal/accounts');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must create an account before you can create an application.',
+          });
+          return;
+        }
+
         if (
           (props.type === 'setup' && accounts.length > 1) ||
           (props.type === 'setup' && applications.length > 1)
