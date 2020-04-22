@@ -37,6 +37,7 @@ const PhoneNumberForm = props => {
   const [ invalidSipTrunk,    setInvalidSipTrunk    ] = useState(false);
   const [ invalidAccount,     setInvalidAccount     ] = useState(false);
 
+  const [ phoneNumbers, setPhoneNumbers ] = useState('');
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
 
@@ -79,41 +80,53 @@ const PhoneNumberForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        const phoneNumbersPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/PhoneNumbers',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
         const promises = [
           sipTrunksPromise,
           accountsPromise,
           applicationsPromise,
+          phoneNumbersPromise,
         ];
-
-        if (props.type === 'edit') {
-          const phoneNumberPromise = axios({
-            method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
-            url: `/PhoneNumbers/${props.phone_number_sid}`,
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          promises.push(phoneNumberPromise);
-        }
 
         const promiseAllValues = await Promise.all(promises);
 
         const sipTrunks       = promiseAllValues[0].data;
         const accounts        = promiseAllValues[1].data;
         const applications    = promiseAllValues[2].data;
+        const phoneNumbers    = promiseAllValues[3].data;
 
         setSipTrunkValues(sipTrunks);
         setAccountValues(accounts);
         setApplicationValues(applications);
+        setPhoneNumbers(phoneNumbers);
 
         if (props.type === 'edit') {
-          const phoneNumberData = promiseAllValues[3] && promiseAllValues[3].data;
-          setPhoneNumber (( phoneNumberData && phoneNumberData.number           ) || '');
-          setSipTrunk    (( phoneNumberData && phoneNumberData.voip_carrier_sid ) || '');
-          setAccount     (( phoneNumberData && phoneNumberData.account_sid      ) || '');
-          setApplication (( phoneNumberData && phoneNumberData.application_sid  ) || '');
+          const phoneNumberData = promiseAllValues[3] && promiseAllValues[3].data.filter(p => {
+            return p.phone_number_sid === props.phone_number_sid;
+          });
+
+          if (!phoneNumberData.length) {
+            history.push('/internal/phone-numbers');
+            dispatch({
+              type: 'ADD',
+              level: 'error',
+              message: 'That phone number does not exist.',
+            });
+            return;
+          }
+
+          setPhoneNumber (( phoneNumberData[0] && phoneNumberData[0].number           ) || '');
+          setSipTrunk    (( phoneNumberData[0] && phoneNumberData[0].voip_carrier_sid ) || '');
+          setAccount     (( phoneNumberData[0] && phoneNumberData[0].account_sid      ) || '');
+          setApplication (( phoneNumberData[0] && phoneNumberData[0].application_sid  ) || '');
         }
 
         if (props.type === 'add') {
