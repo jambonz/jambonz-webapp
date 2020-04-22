@@ -92,7 +92,7 @@ const SipTrunkForm = props => {
         dispatch({
           type: 'ADD',
           level: 'error',
-          message: 'That page is only accessible during setup',
+          message: 'That page is only accessible during setup.',
         });
       }
 
@@ -106,7 +106,7 @@ const SipTrunkForm = props => {
           dispatch({
             type: 'ADD',
             level: 'error',
-            message: 'That SIP trunk does not exist',
+            message: 'That SIP trunk does not exist.',
           });
           return;
         }
@@ -493,7 +493,7 @@ const SipTrunkForm = props => {
         dispatch({
           type: 'ADD',
           level: 'error',
-          message: 'Your session has expired. Please log in and try again',
+          message: 'Your session has expired. Please log in and try again.',
         });
       } else {
         setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');

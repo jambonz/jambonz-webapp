@@ -40,7 +40,7 @@ const CreatePassword = () => {
         dispatch({
           type: 'ADD',
           level: 'error',
-          message: 'That page is only accessible during setup',
+          message: 'That page is only accessible during setup.',
         });
         return;
       }
@@ -115,7 +115,7 @@ const CreatePassword = () => {
         dispatch({
           type: 'ADD',
           level: 'error',
-          message: 'Your session has expired. Please log in again',
+          message: 'Your session has expired. Please log in again.',
         });
         return;
       }
