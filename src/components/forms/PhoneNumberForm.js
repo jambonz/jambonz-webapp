@@ -193,6 +193,22 @@ const PhoneNumberForm = props => {
       }
 
       // check if phone number is already in use
+      for (const num of phoneNumbers) {
+        if (num.phone_number_sid === props.phone_number_sid) {
+          continue;
+        }
+
+        if (num.number === phoneNumber) {
+          errorMessages.push(
+            'The phone number you have entered is already in use.'
+          );
+          setInvalidPhoneNumber(true);
+          if (!focusHasBeenSet) {
+            refPhoneNumber.current.focus();
+            focusHasBeenSet = true;
+          }
+        }
+      };
 
       if (!sipTrunk) {
         errorMessages.push('Please select a SIP trunk');
