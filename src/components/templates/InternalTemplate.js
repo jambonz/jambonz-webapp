@@ -119,7 +119,7 @@ const MenuLink = props => {
   );
 };
 
-const SetupTemplate = props => {
+const InternalTemplate = props => {
   const history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
 
@@ -167,4 +167,4 @@ const SetupTemplate = props => {
   );
 };
 
-export default SetupTemplate;
+export default InternalTemplate;
