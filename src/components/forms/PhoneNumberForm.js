@@ -375,7 +375,12 @@ const PhoneNumberForm = props => {
             value={application}
             onChange={e => setApplication(e.target.value)}
           >
-            <option value="">-- OPTIONAL: Choose the application that will receive calls from this number --</option>
+            <option value="">
+              {props.type === 'add'
+                ? '-- OPTIONAL: Choose the application that will receive calls from this number --'
+                : '-- NONE --'
+              }
+            </option>
             {applicationValues.map(a => (
               <option
                 key={a.application_sid}
