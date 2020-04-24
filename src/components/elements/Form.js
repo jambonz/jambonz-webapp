@@ -17,7 +17,10 @@ const Form = styled.form`
   }
   ${props => props.large && `
     display: grid;
-    grid-template-columns: 1.3fr 10fr;
+    grid-template-columns: ${props.wideLabel
+      ? '1.75fr'
+      : '1.3fr'
+    } 10fr;
     grid-row-gap: 1rem;
     grid-column-gap: 0.75rem;
     align-items: center;

@@ -12,6 +12,7 @@ import FormError from '../blocks/FormError';
 import Loader from '../blocks/Loader';
 import Button from '../elements/Button';
 import Link from '../elements/Link';
+import Tooltip from '../elements/Tooltip';
 
 const AccountForm = props => {
   let history = useHistory();
@@ -27,6 +28,7 @@ const AccountForm = props => {
   // Form inputs
   const [ name,       setName       ] = useState('');
   const [ sipRealm,   setSipRealm   ] = useState('');
+  const [ deviceCallingApplication, setDeviceCallingApplication ] = useState('');
   const [ regWebhook, setRegWebhook ] = useState('');
   const [ method,     setMethod     ] = useState('POST');
   const [ user,       setUser       ] = useState('' || '');
@@ -48,6 +50,7 @@ const AccountForm = props => {
   const [ accounts, setAccounts ] = useState([]);
   const [ accountSid, setAccountSid ] = useState('');
   const [ serviceProviderSid, setServiceProviderSid ] = useState('');
+  const [ accountApplications, setAccountApplications ] = useState([]);
 
   useEffect(() => {
     const getAccounts = async () => {
@@ -62,7 +65,8 @@ const AccountForm = props => {
           return;
         }
 
-        const accountsResponse = await axios({
+        const promiseList = [];
+        const accountsPromise = axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
           url: '/Accounts',
@@ -70,10 +74,51 @@ const AccountForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        promiseList.push(accountsPromise);
 
-        setAccounts(accountsResponse.data);
+        if (props.type === 'edit') {
+          const applicationsPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/Applications',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          promiseList.push(applicationsPromise);
+        }
 
-        if (props.type === 'setup' && accountsResponse.data.length > 1) {
+        if (props.type === 'add') {
+          const serviceProvidersPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/ServiceProviders',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          promiseList.push(serviceProvidersPromise);
+        }
+
+        const promiseAllValues = await Promise.all(promiseList);
+
+        const accountsData = (promiseAllValues[0] && promiseAllValues[0].data) || [];
+        setAccounts(accountsData);
+
+        if (props.type === 'edit') {
+          const allApplications = (promiseAllValues[1] && promiseAllValues[1].data) || [];
+          const accountApplicationsData = allApplications.filter(app => {
+            return app.account_sid === props.account_sid;
+          });
+          setAccountApplications(accountApplicationsData);
+        }
+
+        if (props.type === 'add') {
+          const serviceProviders = (promiseAllValues[1] && promiseAllValues[1].data) || '';
+          setServiceProviderSid(serviceProviders[0].service_provider_sid);
+        }
+
+        if (props.type === 'setup' && accountsData.length > 1) {
           history.push('/internal/accounts');
           dispatch({
             type: 'ADD',
@@ -84,8 +129,8 @@ const AccountForm = props => {
 
         if (props.type === 'setup' || props.type === 'edit') {
           const currentAccount = props.account_sid
-            ? accountsResponse.data.filter(a => a.account_sid === props.account_sid)
-            : accountsResponse.data;
+            ? accountsData.filter(a => a.account_sid === props.account_sid)
+            : accountsData;
 
           const noAccountMessage = props.type === 'setup'
             ? 'You do not have an account. Please add one through the accounts page.'
@@ -104,6 +149,7 @@ const AccountForm = props => {
           setAccountSid(acc.account_sid || '');
                 setName(acc.name        || '');
             setSipRealm(acc.sip_realm   || '');
+          setDeviceCallingApplication(acc.device_calling_application_sid || '');
           setRegWebhook((acc.registration_hook && acc.registration_hook.url     ) || '');
               setMethod((acc.registration_hook && acc.registration_hook.method  ) || 'post');
                 setUser((acc.registration_hook && acc.registration_hook.username) || '');
@@ -140,44 +186,6 @@ const AccountForm = props => {
       }
     };
     getAccounts();
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (props.type === 'add') {
-      const getServiceProviders = async () => {
-        try {
-          const serviceProviders = await axios({
-            method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
-            url: '/ServiceProviders',
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          setServiceProviderSid(serviceProviders.data[0].service_provider_sid);
-        } catch (err) {
-          if (err.response && err.response.status === 401) {
-            localStorage.removeItem('token');
-            sessionStorage.clear();
-            history.push('/');
-            dispatch({
-              type: 'ADD',
-              level: 'error',
-              message: 'Your session has expired. Please log in and try again.',
-            });
-          } else {
-            dispatch({
-              type: 'ADD',
-              level: 'error',
-              message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
-            });
-            console.log(err.response || err);
-          }
-        }
-      };
-      getServiceProviders();
-    }
     // eslint-disable-next-line
   }, []);
 
@@ -269,6 +277,10 @@ const AccountForm = props => {
         axiosData.service_provider_sid = serviceProviderSid;
       }
 
+      if (props.type === 'edit') {
+        axiosData.device_calling_application_sid = deviceCallingApplication || null;
+      }
+
       const url = props.type === 'add'
         ? `/Accounts`
         : `/Accounts/${accountSid}`;
@@ -326,6 +338,7 @@ const AccountForm = props => {
       />
     : <Form
         large
+        wideLabel={props.type === 'edit'}
         onSubmit={handleSumit}
       >
         {(props.type === 'add' || props.type === 'edit') && (
@@ -357,6 +370,36 @@ const AccountForm = props => {
           autoFocus={props.type === 'setup'}
           ref={refSipRealm}
         />
+
+        {props.type === 'edit' && (
+          <React.Fragment>
+            <Label tooltip htmlFor="deviceCallingApplication">
+              <span style={{ position: 'relative' }}>
+                Application for SIP Device Calls
+                <Tooltip large>
+                  This application is used to handle incoming calls from SIP users who have registered to the Account’s SIP Realm.
+                </Tooltip>
+              </span>
+            </Label>
+            <Select
+              large={props.type === 'setup'}
+              name="deviceCallingApplication"
+              id="deviceCallingApplication"
+              value={deviceCallingApplication}
+              onChange={e => setDeviceCallingApplication(e.target.value)}
+            >
+              <option value="">-- NONE --</option>
+              {accountApplications && accountApplications.map(app => (
+                <option
+                  key={app.application_sid}
+                  value={app.application_sid}
+                >
+                  {app.name}
+                </option>
+              ))}
+            </Select>
+          </React.Fragment>
+        )}
 
         <Label htmlFor="regWebhook">Registration Webhook</Label>
         <InputGroup>
