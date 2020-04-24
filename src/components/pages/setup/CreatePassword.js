@@ -7,6 +7,7 @@ import Form from '../../elements/Form';
 import Button from '../../elements/Button';
 import Input from '../../elements/Input';
 import FormError from '../../blocks/FormError';
+import Loader from '../../blocks/Loader';
 
 const CreatePassword = () => {
   let history = useHistory();
@@ -27,6 +28,7 @@ const CreatePassword = () => {
   const [ invalidPassword,        setInvalidPassword        ] = useState(false);
   const [ invalidPasswordConfirm, setInvalidPasswordConfirm ] = useState(false);
 
+  const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
 
   // Handle Password visibility
@@ -36,26 +38,134 @@ const CreatePassword = () => {
   const toggleShowPassword = () => setShowPassword(!showPassword);
 
   useEffect(() => {
-    if (!sessionStorage.getItem('user_sid')) {
+    const getAPIData = async () => {
+      try {
+        if (!sessionStorage.getItem('user_sid')) {
 
-      if (localStorage.getItem('token')) {
-        history.push('/internal/accounts');
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: 'That page is only accessible during setup.',
-        });
-        return;
+          if (!localStorage.getItem('token')) {
+            history.push('/');
+            dispatch({
+              type: 'ADD',
+              level: 'error',
+              message: 'You must log in to view that page.',
+            });
+            return;
+          }
+
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'The create password page can only be used once.',
+          });
+
+          //-----------------------------------------------------------------------------
+          // Get account data
+          //-----------------------------------------------------------------------------
+          const serviceProvidersPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/serviceProviders',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          const accountsPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/Accounts',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          const applicationsPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/applications',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          const voipCarriersPromise = axios({
+            method: 'get',
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: '/voipCarriers',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          const promiseAllValues = await Promise.all([
+            serviceProvidersPromise,
+            accountsPromise,
+            applicationsPromise,
+            voipCarriersPromise,
+          ]);
+
+          const serviceProviders = promiseAllValues[0].data;
+          const accounts         = promiseAllValues[1].data;
+          const applications     = promiseAllValues[2].data;
+          const voipCarriers     = promiseAllValues[3].data;
+
+          //-----------------------------------------------------------------------------
+          // Determine where to route user
+          //-----------------------------------------------------------------------------
+          if (
+            (serviceProviders.length > 1) ||
+            (accounts.length         > 1) ||
+            (accounts.length         < 1) ||
+            (applications.length     > 1) ||
+            (voipCarriers.length     > 0)
+          ) {
+            history.push('/internal/accounts');
+            return;
+          }
+
+          const { sip_realm, registration_hook } = accounts[0];
+
+          if (
+            (!sip_realm || !registration_hook) &&
+            !applications.length
+          ) {
+            history.push('/configure-account');
+            return;
+          }
+
+          if (!applications.length) {
+            history.push('/create-application');
+            return;
+          }
+
+          if (!voipCarriers.length) {
+            history.push('/configure-sip-trunk');
+            return;
+          }
+
+          history.push('/internal/accounts');
+        }
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'Your session has expired. Please log in and try again.',
+          });
+        } else {
+          setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
+          console.log(err.response || err);
+        }
+      } finally {
+        setShowLoader(false);
       }
-
-      history.push('/');
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: 'You must log in to view that page.',
-      });
-    }
-  }, [history, dispatch]);
+    };
+    getAPIData();
+    // eslint-disable-next-line
+  }, []);
 
   const handleSubmit = async e => {
     try {
@@ -152,45 +262,25 @@ const CreatePassword = () => {
   };
 
   return (
-    <SetupTemplate
-      title="Create Password"
-      subtitle="You must create a new password"
-    >
-      <Form onSubmit={handleSubmit}>
-        <Input
-          large
-          allowShowPassword={showPassword}
-          showPassword={showPassword}
-          toggleShowPassword={toggleShowPassword}
-          type={showPassword ? "text" : "password"}
-          name="password"
-          id="password"
-          placeholder="New Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          onKeyDown={e => {
-            if (!showPassword && e.getModifierState('CapsLock')) {
-              setErrorMessage('CAPSLOCK is enabled!');
-            } else {
-              setErrorMessage('');
-            }
-          }}
-          ref={refPassword}
-          invalid={invalidPassword}
-          autoFocus
-        />
-        {!showPassword && (
+    showLoader ? (
+      <Loader height="309px" />
+    ) : (
+      <SetupTemplate
+        title="Create Password"
+        subtitle="You must create a new password"
+      >
+        <Form onSubmit={handleSubmit}>
           <Input
             large
-            allowShowPassword
+            allowShowPassword={showPassword}
             showPassword={showPassword}
             toggleShowPassword={toggleShowPassword}
-            type="password"
-            name="confirmPassword"
-            id="confirmPassword"
-            placeholder="Confirm New Password"
-            value={passwordConfirm}
-            onChange={e => setPasswordConfirm(e.target.value)}
+            type={showPassword ? "text" : "password"}
+            name="password"
+            id="password"
+            placeholder="New Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
             onKeyDown={e => {
               if (!showPassword && e.getModifierState('CapsLock')) {
                 setErrorMessage('CAPSLOCK is enabled!');
@@ -198,21 +288,45 @@ const CreatePassword = () => {
                 setErrorMessage('');
               }
             }}
-            ref={refPasswordConfirm}
-            invalid={invalidPasswordConfirm}
+            ref={refPassword}
+            invalid={invalidPassword}
+            autoFocus
           />
-        )}
-        {errorMessage && (
-          <FormError message={errorMessage} />
-        )}
-        <Button
-          large
-          fullWidth
-        >
-          Create Password
-        </Button>
-      </Form>
-    </SetupTemplate>
+          {!showPassword && (
+            <Input
+              large
+              allowShowPassword
+              showPassword={showPassword}
+              toggleShowPassword={toggleShowPassword}
+              type="password"
+              name="confirmPassword"
+              id="confirmPassword"
+              placeholder="Confirm New Password"
+              value={passwordConfirm}
+              onChange={e => setPasswordConfirm(e.target.value)}
+              onKeyDown={e => {
+                if (!showPassword && e.getModifierState('CapsLock')) {
+                  setErrorMessage('CAPSLOCK is enabled!');
+                } else {
+                  setErrorMessage('');
+                }
+              }}
+              ref={refPasswordConfirm}
+              invalid={invalidPasswordConfirm}
+            />
+          )}
+          {errorMessage && (
+            <FormError message={errorMessage} />
+          )}
+          <Button
+            large
+            fullWidth
+          >
+            Create Password
+          </Button>
+        </Form>
+      </SetupTemplate>
+    )
   );
 };
 
