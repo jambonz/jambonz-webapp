@@ -105,6 +105,31 @@ const ApplicationsList = () => {
         });
         return;
       }
+
+      // check if any account requires this application for SIP device calls
+      const accounts = await axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: '/Accounts',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const accountsRequiringThisApp = accounts.data.filter(acc => {
+        return acc.device_calling_application_sid === applicationToDelete.sid;
+      });
+
+      if (accountsRequiringThisApp.length) {
+        const accountName = accountsRequiringThisApp[0].name;
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: `This application cannot be deleted because it is set to receive SIP Device Calls on account: ${accountName}`,
+        });
+        return false;
+      }
+
       await axios({
         method: 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
