@@ -18,7 +18,8 @@ const PageContainer = styled.div`
 const SideMenu = styled.div`
   width: 15rem;
   flex-shrink: 0;
-  min-height: calc(100vh - 4rem);
+  height: calc(100vh - 4rem);
+  overflow: auto;
   background: #FFF;
   padding-top: 3.25rem;
 `;
@@ -73,7 +74,9 @@ const MenuText = styled.span`
 `;
 
 const PageMain = styled.main`
+  height: calc(100vh - 4rem);
   width: calc(100% - 15rem);
+  overflow: auto;
   padding: 2.5rem 3rem;
 `;
 
