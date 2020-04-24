@@ -476,6 +476,7 @@ const ApplicationForm = props => {
                 id="callWebhookUser"
                 value={callWebhookUser}
                 onChange={e => setCallWebhookUser(e.target.value)}
+                placeholder="Optional"
                 invalid={invalidCallWebhookUser}
                 ref={refCallWebhookUser}
               />
@@ -488,6 +489,7 @@ const ApplicationForm = props => {
                 password={callWebhookPass}
                 setPassword={setCallWebhookPass}
                 setErrorMessage={setErrorMessage}
+                placeholder="Optional"
                 invalid={invalidCallWebhookPass}
                 ref={refCallWebhookPass}
               />
@@ -545,6 +547,7 @@ const ApplicationForm = props => {
                 id="statusWebhookUser"
                 value={statusWebhookUser}
                 onChange={e => setStatusWebhookUser(e.target.value)}
+                placeholder="Optional"
                 invalid={invalidStatusWebhookUser}
                 ref={refStatusWebhookUser}
               />
@@ -557,6 +560,7 @@ const ApplicationForm = props => {
                 password={statusWebhookPass}
                 setPassword={setStatusWebhookPass}
                 setErrorMessage={setErrorMessage}
+                placeholder="Optional"
                 invalid={invalidStatusWebhookPass}
                 ref={refStatusWebhookPass}
               />

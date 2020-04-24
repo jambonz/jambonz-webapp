@@ -441,6 +441,7 @@ const AccountForm = props => {
               id="user"
               value={user || ''}
               onChange={e => setUser(e.target.value)}
+              placeholder="Optional"
               invalid={invalidUser}
               ref={refUser}
             />
@@ -453,6 +454,7 @@ const AccountForm = props => {
               password={password}
               setPassword={setPassword}
               setErrorMessage={setErrorMessage}
+              placeholder="Optional"
               invalid={invalidPassword}
               ref={refPassword}
             />
