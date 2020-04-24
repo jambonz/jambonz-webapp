@@ -11,13 +11,17 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "serve": "^11.3.0",
     "styled-components": "^5.0.1"
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "serve -s build -l 3001",
+    "pm2": "pm2 start npm --name \"jambonz-webapp\" -- run serve",
+    "deploy": "npm i && npm run build && npm run pm2"
   },
   "eslintConfig": {
     "extends": "react-app"
