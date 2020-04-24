@@ -43,19 +43,18 @@ const PhoneNumberForm = props => {
 
   // Check if user is logged in
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      history.push('/');
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: 'You must log in to view that page.',
-      });
-    }
-  }, [history, dispatch]);
-
-  useEffect(() => {
     const getAPIData = async () => {
       try {
+        if (!localStorage.getItem('token')) {
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must log in to view that page.',
+          });
+          return;
+        }
+
         const sipTrunksPromise = axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -160,12 +159,23 @@ const PhoneNumberForm = props => {
 
         setShowLoader(false);
       } catch (err) {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get necessary data',
-        });
-        console.log(err.response || err);
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'Your session has expired. Please log in and try again.',
+          });
+        } else {
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
+          });
+          console.log(err.response || err);
+        }
         setShowLoader(false);
       }
     };
@@ -281,7 +291,7 @@ const PhoneNumberForm = props => {
     } catch (err) {
       setErrorMessage(
         (err.response && err.response.data && err.response.data.msg) ||
-        'Something went wrong, please try again'
+        'Something went wrong, please try again.'
       );
       console.log(err.response || err);
     }

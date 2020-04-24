@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 
 const PhoneNumbersList = () => {
+  let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   useEffect(() => {
     document.title = `Phone Number Routing | Jambonz | Open Source CPAAS`;
@@ -15,6 +17,15 @@ const PhoneNumbersList = () => {
   //=============================================================================
   const getPhoneNumbers = async () => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       const phoneNumbersPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -90,12 +101,23 @@ const PhoneNumbersList = () => {
       });
       return(combinedData);
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get phone number data',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get phone number data',
+        });
+        console.log(err.response || err);
+      }
     }
   };
 
@@ -112,6 +134,15 @@ const PhoneNumbersList = () => {
   };
   const deletePhoneNumber = async phoneNumber => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       await axios({
         method: 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -122,12 +153,23 @@ const PhoneNumbersList = () => {
       });
       return true;
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete phone number',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete phone number',
+        });
+        console.log(err.response || err);
+      }
       return false;
     }
   };
@@ -138,6 +180,15 @@ const PhoneNumbersList = () => {
   const [ applications, setApplications ] = useState([]);
   const handleBulkEditApplications = async (phoneNumberSids, application) => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       for (const sid of phoneNumberSids) {
         await axios({
           method: 'put',
@@ -153,12 +204,23 @@ const PhoneNumbersList = () => {
       }
       return true;
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
+        });
+        console.log(err.response || err);
+      }
       return false;
     }
   };

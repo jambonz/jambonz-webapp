@@ -1,11 +1,13 @@
 import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import Sbcs from '../../blocks/Sbcs';
 
 const SipTrunksList = () => {
+  let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   useEffect(() => {
     document.title = `SIP Trunks | Jambonz | Open Source CPAAS`;
@@ -16,6 +18,16 @@ const SipTrunksList = () => {
   //=============================================================================
   const getSipTrunks = async () => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
+
       // Get all SIP trunks
       const trunkResults = await axios({
         method: 'get',
@@ -56,12 +68,23 @@ const SipTrunksList = () => {
       }));
       return(simplifiedSipTrunks);
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get SIP trunk data',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get SIP trunk data',
+        });
+        console.log(err.response || err);
+      }
     }
   };
 
@@ -83,6 +106,15 @@ const SipTrunksList = () => {
   };
   const deleteSipTrunk = async sipTrunkToDelete => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       // delete associated gateways
       for (const sid of sipTrunkToDelete.gatewaysSid) {
         await axios({
@@ -105,12 +137,23 @@ const SipTrunksList = () => {
       });
       return true;
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete SIP trunk',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete SIP trunk',
+        });
+        console.log(err.response || err);
+      }
       return false;
     }
   };

@@ -1,10 +1,12 @@
 import React, { useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 
 const AccountsList = () => {
+  let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   useEffect(() => {
     document.title = `Accounts | Jambonz | Open Source CPAAS`;
@@ -15,6 +17,15 @@ const AccountsList = () => {
   //=============================================================================
   const getAccounts = async () => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       const results = await axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -34,12 +45,23 @@ const AccountsList = () => {
       }));
       return(simplifiedAccounts);
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get account data',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get account data',
+        });
+        console.log(err.response || err);
+      }
     }
   };
 
@@ -59,6 +81,16 @@ const AccountsList = () => {
   };
   const deleteAccount = async accountToDelete => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
+
       // Check if any application or phone number uses this account
       const applicationsPromise = axios({
         method: 'get',
@@ -143,12 +175,23 @@ const AccountsList = () => {
       });
       return true;
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete account',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete account',
+        });
+        console.log(err.response || err);
+      }
       return false;
     }
   };

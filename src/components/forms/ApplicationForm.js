@@ -71,22 +71,18 @@ const ApplicationForm = props => {
 
   // See if user logged in
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      history.push('/');
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: 'You must log in to view that page.',
-      });
-    }
-  }, [history, dispatch]);
-
-  // Get Account info
-  // Account SID needed for setup/add (when creating a new application
-  // Account list needed add/edit
-  useEffect(() => {
     const getAPIData = async () => {
       try {
+        if (!localStorage.getItem('token')) {
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must log in to view that page.',
+          });
+          return;
+        }
+
         const accountsPromise = axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -194,13 +190,23 @@ const ApplicationForm = props => {
         }
         setShowLoader(false);
       } catch (err) {
-        setErrorMessage('Something went wrong, please try again');
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: (err.response && err.response.message) || 'Unable to get accounts',
-        });
-        console.log(err.response || err);
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'Your session has expired. Please log in and try again.',
+          });
+        } else {
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get accounts',
+          });
+          console.log(err.response || err);
+        }
         setShowLoader(false);
       }
     };
@@ -358,7 +364,7 @@ const ApplicationForm = props => {
       }
 
     } catch (err) {
-      if (err.response.status === 401) {
+      if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.clear();
         history.push('/');
@@ -368,7 +374,7 @@ const ApplicationForm = props => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
+        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
       }
     }

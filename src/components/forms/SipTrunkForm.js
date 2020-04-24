@@ -49,90 +49,110 @@ const SipTrunkForm = props => {
   const [ errorMessage, setErrorMessage ] = useState('');
 
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      history.push('/');
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: 'You must log in to view that page.',
-      });
-    }
-  }, [history, dispatch]);
-
-  useEffect(() => {
     const getAPIData = async () => {
-      const sipTrunksPromise = axios({
-        method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/VoipCarriers`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const sipGatewaysPromise = axios({
-        method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/SipGateways`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const promiseAllValues = await Promise.all([
-        sipTrunksPromise,
-        sipGatewaysPromise,
-      ]);
-
-      const allSipTrunks   = promiseAllValues[0].data;
-      const allSipGateways = promiseAllValues[1].data;
-
-      setSipTrunks(allSipTrunks);
-
-      if (props.type === 'setup' && allSipTrunks.length > 1) {
-        history.push('/internal/sip-trunks');
+      if (!localStorage.getItem('token')) {
+        history.push('/');
         dispatch({
           type: 'ADD',
           level: 'error',
-          message: 'That page is only accessible during setup.',
+          message: 'You must log in to view that page.',
         });
+        return;
       }
+      try {
+        const sipTrunksPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: `/VoipCarriers`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const sipGatewaysPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: `/SipGateways`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const promiseAllValues = await Promise.all([
+          sipTrunksPromise,
+          sipGatewaysPromise,
+        ]);
 
-      if (props.type === 'edit' || props.type === 'setup') {
-        const currentSipTrunk = props.type === 'edit'
-          ? allSipTrunks.filter(s => s.voip_carrier_sid === props.voip_carrier_sid)
-          : allSipTrunks;
+        const allSipTrunks   = promiseAllValues[0].data;
+        const allSipGateways = promiseAllValues[1].data;
 
-        if (props.type === 'edit' && !currentSipTrunk.length) {
+        setSipTrunks(allSipTrunks);
+
+        if (props.type === 'setup' && allSipTrunks.length > 1) {
           history.push('/internal/sip-trunks');
           dispatch({
             type: 'ADD',
             level: 'error',
-            message: 'That SIP trunk does not exist.',
+            message: 'That page is only accessible during setup.',
           });
-          return;
         }
 
-        const currentSipGateways = allSipGateways.filter(s => {
-          return s.voip_carrier_sid === currentSipTrunk[0].voip_carrier_sid;
-        });
+        if (props.type === 'edit' || props.type === 'setup') {
+          const currentSipTrunk = props.type === 'edit'
+            ? allSipTrunks.filter(s => s.voip_carrier_sid === props.voip_carrier_sid)
+            : allSipTrunks;
 
-        if (currentSipTrunk.length) {
-          setName(currentSipTrunk[0].name);
-          setDescription(currentSipTrunk[0].description);
-          setSipGateways(currentSipGateways.map(s => ({
-            sip_gateway_sid: s.sip_gateway_sid,
-            ip: s.ipv4,
-            port: s.port,
-            inbound: s.inbound === 1,
-            outbound: s.outbound === 1,
-            invalidIp: false,
-            invalidPort: false,
-            invalidInbound: false,
-            invalidOutbound: false,
-          })));
-          setSipTrunkSid(currentSipTrunk[0].voip_carrier_sid);
+          if (props.type === 'edit' && !currentSipTrunk.length) {
+            history.push('/internal/sip-trunks');
+            dispatch({
+              type: 'ADD',
+              level: 'error',
+              message: 'That SIP trunk does not exist.',
+            });
+            return;
+          }
+
+          const currentSipGateways = allSipGateways.filter(s => {
+            return s.voip_carrier_sid === currentSipTrunk[0].voip_carrier_sid;
+          });
+
+          if (currentSipTrunk.length) {
+            setName(currentSipTrunk[0].name);
+            setDescription(currentSipTrunk[0].description);
+            setSipGateways(currentSipGateways.map(s => ({
+              sip_gateway_sid: s.sip_gateway_sid,
+              ip: s.ipv4,
+              port: s.port,
+              inbound: s.inbound === 1,
+              outbound: s.outbound === 1,
+              invalidIp: false,
+              invalidPort: false,
+              invalidInbound: false,
+              invalidOutbound: false,
+            })));
+            setSipTrunkSid(currentSipTrunk[0].voip_carrier_sid);
+          }
         }
+        setShowLoader(false);
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'Your session has expired. Please log in and try again.',
+          });
+        } else {
+          setErrorMessage('Something went wrong, please try again.');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get accounts',
+          });
+          console.log(err.response || err);
+        }
+        setShowLoader(false);
       }
-      setShowLoader(false);
     };
     getAPIData();
     // eslint-disable-next-line
@@ -496,7 +516,7 @@ const SipTrunkForm = props => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
+        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
       }
     }

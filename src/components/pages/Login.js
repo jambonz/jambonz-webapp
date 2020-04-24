@@ -178,7 +178,7 @@ const Login = props => {
       } else {
         setErrorMessage(
           (err.response && err.response.data && err.response.data.msg) ||
-          'Something went wrong, please try again'
+          'Something went wrong, please try again.'
         );
         console.log(err.response || err);
       }

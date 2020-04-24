@@ -50,19 +50,18 @@ const AccountForm = props => {
   const [ serviceProviderSid, setServiceProviderSid ] = useState('');
 
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      history.push('/');
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: 'You must log in to view that page.',
-      });
-    }
-  }, [history, dispatch]);
-
-  useEffect(() => {
     const getAccounts = async () => {
       try {
+        if (!localStorage.getItem('token')) {
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'You must log in to view that page.',
+          });
+          return;
+        }
+
         const accountsResponse = await axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -120,12 +119,29 @@ const AccountForm = props => {
         setShowLoader(false);
 
       } catch (err) {
-        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
-        console.log(err.response || err);
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          history.push('/');
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: 'Your session has expired. Please log in and try again.',
+          });
+        } else {
+          dispatch({
+            type: 'ADD',
+            level: 'error',
+            message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
+          });
+          console.log(err.response || err);
+        }
+        setShowLoader(false);
       }
     };
     getAccounts();
-  }, [props.account_sid, props.type, dispatch, history]);
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     if (props.type === 'add') {
@@ -141,13 +157,29 @@ const AccountForm = props => {
           });
           setServiceProviderSid(serviceProviders.data[0].service_provider_sid);
         } catch (err) {
-          setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
-          console.log(err.response || err);
+          if (err.response && err.response.status === 401) {
+            localStorage.removeItem('token');
+            sessionStorage.clear();
+            history.push('/');
+            dispatch({
+              type: 'ADD',
+              level: 'error',
+              message: 'Your session has expired. Please log in and try again.',
+            });
+          } else {
+            dispatch({
+              type: 'ADD',
+              level: 'error',
+              message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
+            });
+            console.log(err.response || err);
+          }
         }
       };
       getServiceProviders();
     }
-  }, [props.type]);
+    // eslint-disable-next-line
+  }, []);
 
   const handleSumit = async (e) => {
     try {
@@ -277,7 +309,7 @@ const AccountForm = props => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again');
+        setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
       }
     }

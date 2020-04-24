@@ -1,10 +1,12 @@
 import React, { useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 
 const ApplicationsList = () => {
+  let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   useEffect(() => {
     document.title = `Applications | Jambonz | Open Source CPAAS`;
@@ -15,6 +17,15 @@ const ApplicationsList = () => {
   //=============================================================================
   const getApplications = async () => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       const applicationsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -53,12 +64,23 @@ const ApplicationsList = () => {
       });
       return(simplifiedApplications);
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get application data',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get application data',
+        });
+        console.log(err.response || err);
+      }
     }
   };
 
@@ -74,6 +96,15 @@ const ApplicationsList = () => {
   };
   const deleteApplication = async applicationToDelete => {
     try {
+      if (!localStorage.getItem('token')) {
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You must log in to view that page.',
+        });
+        return;
+      }
       await axios({
         method: 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -84,12 +115,23 @@ const ApplicationsList = () => {
       });
       return true;
     } catch (err) {
-      dispatch({
-        type: 'ADD',
-        level: 'error',
-        message: (err.response && err.response.data && err.response.data.msg) || 'Unable to get delete application',
-      });
-      console.log(err.response || err);
+      if (err.response && err.response.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+        history.push('/');
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'Your session has expired. Please log in and try again.',
+        });
+      } else {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete application',
+        });
+        console.log(err.response || err);
+      }
       return false;
     }
   };
