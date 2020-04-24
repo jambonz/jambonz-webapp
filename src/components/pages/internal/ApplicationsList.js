@@ -89,9 +89,10 @@ const ApplicationsList = () => {
   //=============================================================================
   const formatApplicationToDelete = app => {
     return [
-      { name: 'Name:',                content: app.name            || '' },
-      { name: 'Calling Webhook:',     content: app.call_hook_url   || '' },
-      { name: 'Call Status Webhook:', content: app.status_hook_url || '' },
+      { name: 'Name:',                content: app.name            || '[none]' },
+      { name: 'Account:',             content: app.account         || '[none]' },
+      { name: 'Calling Webhook:',     content: app.call_hook_url   || '[none]' },
+      { name: 'Call Status Webhook:', content: app.status_hook_url || '[none]' },
     ];
   };
   const deleteApplication = async applicationToDelete => {

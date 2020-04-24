@@ -99,9 +99,9 @@ const SipTrunksList = () => {
       ? trunk.gatewaysList
       : trunk.gatewaysList[0];
     return [
-      { name: 'Name:',        content: trunk.name        || '' },
-      { name: 'Description:', content: trunk.description || '' },
-      { name: gatewayName,    content: gatewayContent    || '' },
+      { name: 'Name:',        content: trunk.name        || '[none]' },
+      { name: 'Description:', content: trunk.description || '[none]' },
+      { name: gatewayName,    content: gatewayContent    || '[none]' },
     ];
   };
   const deleteSipTrunk = async sipTrunkToDelete => {

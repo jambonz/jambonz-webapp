@@ -69,15 +69,12 @@ const AccountsList = () => {
   // Delete account
   //=============================================================================
   const formatAccountToDelete = account => {
-    const password = '•'.repeat(account.password && account.password.length) || '[none]';
-    return [
-      { name: 'Name:'                  , content: account.name      || '' },
-      { name: 'SIP Realm:'             , content: account.sip_realm || '' },
-      { name: 'Registration Webhook:'  , content: account.url       || '' },
-      { name: 'Registration Method:'   , content: account.method    || '' },
-      { name: 'Registration Username:' , content: account.username  || '[none]' },
-      { name: 'Registration Password:' , content: password },
+    const items = [
+      { name: 'Name:'                  , content: account.name      || '[none]' },
+      { name: 'SIP Realm:'             , content: account.sip_realm || '[none]' },
+      { name: 'Registration Webhook:'  , content: account.url       || '[none]' },
     ];
+    return items;
   };
   const deleteAccount = async accountToDelete => {
     try {

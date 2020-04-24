@@ -126,10 +126,10 @@ const PhoneNumbersList = () => {
   //=============================================================================
   const formatPhoneNumberToDelete = p => {
     return [
-      { name: 'Number:',      content: p.number      || '' },
-      { name: 'Account:',     content: p.account     || '' },
-      { name: 'Application:', content: p.application || '' },
-      { name: 'SIP Trunk:',   content: p.sipTrunk    || '' },
+      { name: 'Number:',      content: p.number      || '[none]' },
+      { name: 'SIP Trunk:',   content: p.sipTrunk    || '[none]' },
+      { name: 'Account:',     content: p.account     || '[none]' },
+      { name: 'Application:', content: p.application || '[none]' },
     ];
   };
   const deletePhoneNumber = async phoneNumber => {
