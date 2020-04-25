@@ -265,12 +265,12 @@ const AccountForm = props => {
       }
 
       const axiosData = {
-        name,
-        sip_realm: sipRealm || null,
+        name: name.trim(),
+        sip_realm: sipRealm.trim() || null,
         registration_hook: {
-          url: regWebhook,
+          url: regWebhook.trim(),
           method: method,
-          username: user || null,
+          username: user.trim() || null,
           password: password || null,
         },
       };

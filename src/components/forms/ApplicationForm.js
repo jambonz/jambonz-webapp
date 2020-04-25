@@ -321,17 +321,17 @@ const ApplicationForm = props => {
 
       const data = {
         account_sid: accountSid,
-        name,
+        name: name.trim(),
         call_hook: {
-          url: callWebhook,
+          url: callWebhook.trim(),
           method: callWebhookMethod,
-          username: callWebhookUser || null,
+          username: callWebhookUser.trim() || null,
           password: callWebhookPass || null,
         },
         call_status_hook: {
-          url: statusWebhook,
+          url: statusWebhook.trim(),
           method: statusWebhookMethod,
-          username: statusWebhookUser || null,
+          username: statusWebhookUser.trim() || null,
           password: statusWebhookPass || null,
         },
         speech_synthesis_vendor:    speechSynthesisVendor,

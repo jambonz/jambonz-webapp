@@ -264,8 +264,10 @@ const PhoneNumberForm = props => {
         application_sid: application || null,
       };
 
+      const cleanedUpNumber = phoneNumber.trim().replace(/[\s-()+]/g,'');
+
       if (props.type === 'add') {
-        data.number = phoneNumber;
+        data.number = cleanedUpNumber;
         data.voip_carrier_sid = sipTrunk;
       }
 

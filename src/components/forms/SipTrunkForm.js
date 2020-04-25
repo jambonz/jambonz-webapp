@@ -247,11 +247,11 @@ const SipTrunkForm = props => {
         //-----------------------------------------------------------------------------
         // IP validation
         //-----------------------------------------------------------------------------
-        const type = regIp.test(gateway.ip)
+        const type = regIp.test(gateway.ip.trim())
           ? 'ip'
-          : regFqdn.test(gateway.ip)
+          : regFqdn.test(gateway.ip.trim())
             ? 'fqdn'
-            : regFqdnTopLevel.test(gateway.ip)
+            : regFqdnTopLevel.test(gateway.ip.trim())
               ? 'fqdn-top-level'
               : 'invalid';
 
@@ -287,9 +287,9 @@ const SipTrunkForm = props => {
         //-----------------------------------------------------------------------------
         if (
           gateway.port && (
-            !(regPort.test(gateway.port))
-            || (parseInt(gateway.port) < 0)
-            || (parseInt(gateway.port) > 65535)
+            !(regPort.test(gateway.port.toString().trim()))
+            || (parseInt(gateway.port.toString().trim()) < 0)
+            || (parseInt(gateway.port.toString().trim()) > 65535)
           )
         ) {
           errorMessages.push('Please provide a valid port number between 0 and 65535');
@@ -390,8 +390,8 @@ const SipTrunkForm = props => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         data: {
-          name,
-          description,
+          name: name.trim(),
+          description: description.trim(),
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -429,8 +429,8 @@ const SipTrunkForm = props => {
             : `/SipGateways/${s.sip_gateway_sid}`;
 
           const data = {
-            ipv4: s.ip,
-            port: s.port,
+            ipv4: s.ip.trim(),
+            port: s.port.toString().trim(),
             inbound: s.inbound,
             outbound: s.outbound,
           };
