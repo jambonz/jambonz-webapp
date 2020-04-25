@@ -118,47 +118,26 @@ const AccountsList = () => {
       const accountPhoneNumbers = phoneNumbers.filter(p => (
         p.account_sid === accountToDelete.sid
       ));
-      if (accountApps.length) {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message:
-          <div>
+      let errorMessages = [];
+      for (const app of accountApps) {
+        errorMessages.push(`Application: ${app.name}`);
+      }
+      for (const num of accountPhoneNumbers) {
+        errorMessages.push(`Phone Number: ${num.number}`);
+      }
+      if (errorMessages.length) {
+        return (
+          <React.Fragment>
             <p style={{ margin: '0.5rem 0' }}>
-              This account cannot be deleted because it is in use by the
-              following application{accountApps.length > 1 && 's'}:
+              This account cannot be deleted because it is in use by:
             </p>
             <ul style={{ margin: '0.5rem 0' }}>
-              {accountApps.map((app, i) => (
-                <li key={i}>{app.name}</li>
+              {errorMessages.map((err, i) => (
+                <li key={i}>{err}</li>
               ))}
             </ul>
-          </div>
-          ,
-        });
-      }
-      if (accountPhoneNumbers.length) {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message:
-          <div>
-            <p style={{ margin: '0.5rem 0' }}>
-              This account cannot be deleted because it is in use by the
-              following phone number{accountPhoneNumbers.length > 1 && 's'}:
-            </p>
-            <ul style={{ margin: '0.5rem 0' }}>
-              {accountPhoneNumbers.map((p, i) => (
-                <li key={i}>{p.number}</li>
-              ))}
-            </ul>
-          </div>
-          ,
-        });
-      }
-
-      if (accountApps.length || accountPhoneNumbers.length) {
-        return false;
+          </React.Fragment>
+        );
       }
 
       // Delete account
@@ -170,7 +149,7 @@ const AccountsList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      return true;
+      return 'success';
     } catch (err) {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
@@ -182,14 +161,9 @@ const AccountsList = () => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete account',
-        });
         console.log(err.response || err);
+        return ((err.response && err.response.data && err.response.data.msg) || 'Unable to delete account');
       }
-      return false;
     }
   };
 

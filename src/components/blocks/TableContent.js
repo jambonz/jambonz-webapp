@@ -9,6 +9,7 @@ import Checkbox from '../elements/Checkbox.js';
 import TableMenu from '../blocks/TableMenu.js';
 import Loader from '../blocks/Loader.js';
 import Modal from '../blocks/Modal.js';
+import FormError from '../blocks/FormError.js';
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -132,10 +133,11 @@ const TableContent = props => {
   //=============================================================================
   // Handle Deleting content
   //=============================================================================
+  const [ errorMessage, setErrorMessage ] = useState('');
   const deleteContent = async () => {
     setShowModalLoader(true);
-    const success = await props.deleteContent(contentToDelete);
-    if (success) {
+    const result = await props.deleteContent(contentToDelete);
+    if (result === 'success') {
       const newContent = await props.getContent();
       sortTableContent({ newContent });
       setContentToDelete({});
@@ -144,7 +146,10 @@ const TableContent = props => {
         level: 'success',
         message: `${props.name.charAt(0).toUpperCase()}${props.name.slice(1)} deleted successfully`,
       });
+    } else {
+      setErrorMessage(result);
     }
+    setSelected([]);
     setShowModalLoader(false);
   };
 
@@ -159,27 +164,35 @@ const TableContent = props => {
           content={
             showModalLoader
               ? <Loader />
-              : <table>
-                  <tbody>
-                    {props.formatContentToDelete(contentToDelete).map((d, i) => (
-                      <tr key={i}>
-                        <Td>{d.name}</Td>
-                        <Td>
-                          {typeof d.content === 'string'
-                            ? d.content
-                            : <ul>
-                                {d.content.map((c, i) => (
-                                  <li key={i}>{c}</li>
-                                ))}
-                              </ul>
-                          }
-                        </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              : <div>
+                  <table>
+                    <tbody>
+                      {props.formatContentToDelete(contentToDelete).map((d, i) => (
+                        <tr key={i}>
+                          <Td>{d.name}</Td>
+                          <Td>
+                            {typeof d.content === 'string'
+                              ? d.content
+                              : <ul>
+                                  {d.content.map((c, i) => (
+                                    <li key={i}>{c}</li>
+                                  ))}
+                                </ul>
+                            }
+                          </Td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {errorMessage && (
+                    <FormError message={errorMessage} />
+                  )}
+                </div>
           }
-          handleCancel={() => setContentToDelete({})}
+          handleCancel={() => {
+            setContentToDelete({});
+            setErrorMessage('');
+          }}
           handleSubmit={deleteContent}
           actionText="Delete"
         />

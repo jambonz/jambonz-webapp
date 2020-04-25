@@ -123,12 +123,17 @@ const ApplicationsList = () => {
 
       if (accountsRequiringThisApp.length) {
         const accountName = accountsRequiringThisApp[0].name;
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: `This application cannot be deleted because it is set to receive SIP Device Calls on account: ${accountName}`,
-        });
-        return false;
+        return (
+          <React.Fragment>
+            <p style={{ margin: '0.5rem 0' }}>
+              This application cannot be deleted because the following
+              account uses it to receive SIP Device Calls:
+            </p>
+            <ul style={{ margin: '0.5rem 0' }}>
+              <li>{accountName}</li>
+            </ul>
+          </React.Fragment>
+        );
       }
 
       await axios({
@@ -139,7 +144,7 @@ const ApplicationsList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      return true;
+      return 'success';
     } catch (err) {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
@@ -151,14 +156,9 @@ const ApplicationsList = () => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete application',
-        });
         console.log(err.response || err);
+        return ((err.response && err.response.data && err.response.data.msg) || 'Unable to delete application');
       }
-      return false;
     }
   };
 

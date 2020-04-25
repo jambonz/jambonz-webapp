@@ -13,7 +13,7 @@ const FormErrorContainer = styled.div`
   font-weight: 500;
   text-align: left;
   ${props => props.grid && `grid-column: 2;`}
-  & > span {
+  & > div {
     margin-left: 0.5rem;
   }
   & ul {
@@ -28,7 +28,7 @@ const FormErrorContainer = styled.div`
 const FormError = props => (
   <FormErrorContainer {...props}>
     <ErrorIcon />
-    <span>
+    <div>
       {typeof props.message === 'object' && props.message.length ? (
         <ul>
           {props.message.map((message, i) => (
@@ -38,7 +38,7 @@ const FormError = props => (
       ) : (
         props.message
       )}
-    </span>
+    </div>
   </FormErrorContainer>
 );
 

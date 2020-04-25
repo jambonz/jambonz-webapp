@@ -135,7 +135,7 @@ const SipTrunksList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      return true;
+      return 'success';
     } catch (err) {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
@@ -147,14 +147,9 @@ const SipTrunksList = () => {
           message: 'Your session has expired. Please log in and try again.',
         });
       } else {
-        dispatch({
-          type: 'ADD',
-          level: 'error',
-          message: (err.response && err.response.data && err.response.data.msg) || 'Unable to delete SIP trunk',
-        });
         console.log(err.response || err);
+        return ((err.response && err.response.data && err.response.data.msg) || 'Unable to delete SIP trunk');
       }
-      return false;
     }
   };
 
