@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import { ModalDispatchContext } from '../../contexts/ModalContext';
 import styled from 'styled-components/macro';
 import Button from '../elements/Button';
+import Loader from '../blocks/Loader';
 
 const Overlay = styled.div`
   position: fixed;
@@ -28,6 +29,22 @@ const ModalContainer = styled.div`
     margin-top: 0;
     font-size: 1.25rem;
   }
+`;
+
+const ContentContainer = styled.div`
+  position: relative;
+`;
+
+const LoaderContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: -1.5rem;
+  height: 100%;
+  width: calc(100% + 3rem);
+  background: #FFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ButtonContainer = styled.div`
@@ -76,15 +93,26 @@ const Modal = props => {
     <Overlay onClick={props.handleCancel}>
       <ModalContainer onClick={e => e.stopPropagation()}>
         <h1>{props.title}</h1>
-        {props.content}
-        <ButtonContainer>
-          <Button inModal gray onClick={props.handleCancel}>
-            Cancel
-          </Button>
-          <Button inModal onClick={props.handleSubmit}>
-            {props.actionText}
-          </Button>
-        </ButtonContainer>
+        <ContentContainer>
+          {props.content}
+          <ButtonContainer>
+            <Button inModal gray onClick={props.handleCancel}>
+              Cancel
+            </Button>
+            <Button
+              inModal
+              disabled={props.loader}
+              onClick={props.handleSubmit}
+            >
+              {props.actionText}
+            </Button>
+          </ButtonContainer>
+          {props.loader && (
+            <LoaderContainer>
+              <Loader />
+            </LoaderContainer>
+          )}
+        </ContentContainer>
       </ModalContainer>
     </Overlay>
   );

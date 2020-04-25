@@ -260,7 +260,7 @@ const Button = (props, ref) => {
     <StyledButton
       {...props}
       ref={buttonRef}
-      disabled={modalOpen && !props.inModal}
+      disabled={(modalOpen && !props.inModal) || props.disabled}
     >
       <span tabIndex="-1">
         {props.children}

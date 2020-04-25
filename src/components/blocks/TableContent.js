@@ -161,33 +161,32 @@ const TableContent = props => {
       {contentToDelete && (contentToDelete.name || contentToDelete.number) && (
         <Modal
           title={`Are you sure you want to delete the following ${props.name}?`}
+          loader={showModalLoader}
           content={
-            showModalLoader
-              ? <Loader />
-              : <div>
-                  <table>
-                    <tbody>
-                      {props.formatContentToDelete(contentToDelete).map((d, i) => (
-                        <tr key={i}>
-                          <Td>{d.name}</Td>
-                          <Td>
-                            {typeof d.content === 'string'
-                              ? d.content
-                              : <ul>
-                                  {d.content.map((c, i) => (
-                                    <li key={i}>{c}</li>
-                                  ))}
-                                </ul>
-                            }
-                          </Td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {errorMessage && (
-                    <FormError message={errorMessage} />
-                  )}
-                </div>
+            <div>
+              <table>
+                <tbody>
+                  {props.formatContentToDelete(contentToDelete).map((d, i) => (
+                    <tr key={i}>
+                      <Td>{d.name}</Td>
+                      <Td>
+                        {typeof d.content === 'string'
+                          ? d.content
+                          : <ul>
+                              {d.content.map((c, i) => (
+                                <li key={i}>{c}</li>
+                              ))}
+                            </ul>
+                        }
+                      </Td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {errorMessage && (
+                <FormError message={errorMessage} />
+              )}
+            </div>
           }
           handleCancel={() => {
             setContentToDelete({});
