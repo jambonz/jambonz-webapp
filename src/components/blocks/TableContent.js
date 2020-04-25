@@ -310,14 +310,16 @@ const TableContent = props => {
                   {props.columns.map((c, i) => (
                     <td key={c.key}>
                       {i === 0
-                        ? <Link
-                            to={`/internal/${props.urlParam}/${a.sid}/edit`}
-                            tabIndex={modalOpen ? '-1' : ''}
-                          >
-                            <span tabIndex="-1" title={a[c.key]}>
-                              {a[c.key]}
-                            </span>
-                          </Link>
+                        ? <span>
+                            <Link
+                              to={`/internal/${props.urlParam}/${a.sid}/edit`}
+                              tabIndex={modalOpen ? '-1' : ''}
+                            >
+                              <span tabIndex="-1" title={a[c.key]}>
+                                {a[c.key]}
+                              </span>
+                            </Link>
+                          </span>
                         : <span title={a[c.key]}>{a[c.key]}</span>
                       }
                     </td>

@@ -38,27 +38,29 @@ const Table = styled.table`
     padding: 0 1.5rem;
   }
 
-  & td {
+  & td > span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: block;
+    padding: 0.5rem 0;
   }
 
-  & td > a {
+  & td > span > a {
     outline: 0;
     text-decoration: none;
   }
 
-  & td > a > span {
+  & td > span > a > span {
     outline: 0;
     color: #565656;
   }
 
-  & td > a:hover > span {
+  & td > span > a:hover > span {
     box-shadow: 0 0.125rem 0 #565656;
   }
 
-  & td > a:focus > span {
+  & td > span > a:focus > span {
     padding: 0.625rem;
     margin: -0.625rem;
     border-radius: 0.25rem;
