@@ -10,6 +10,7 @@ import InputGroup from '../elements/InputGroup';
 import FormError from '../blocks/FormError';
 import Loader from '../blocks/Loader';
 import Button from '../elements/Button';
+import phoneNumberFormat from '../../helpers/phoneNumberFormat';
 
 const PhoneNumberForm = props => {
 
@@ -146,7 +147,7 @@ const PhoneNumberForm = props => {
             return;
           }
 
-          setPhoneNumber (( phoneNumberData[0] && phoneNumberData[0].number           ) || '');
+          setPhoneNumber (( phoneNumberData[0] && phoneNumberFormat(phoneNumberData[0].number)) || '');
           setSipTrunk    (( phoneNumberData[0] && phoneNumberData[0].voip_carrier_sid ) || '');
           setAccount     (( phoneNumberData[0] && phoneNumberData[0].account_sid      ) || '');
           setApplication (( phoneNumberData[0] && phoneNumberData[0].application_sid  ) || '');

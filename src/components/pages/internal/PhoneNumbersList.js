@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
+import phoneNumberFormat from '../../../helpers/phoneNumberFormat';
 
 const PhoneNumbersList = () => {
   let history = useHistory();
@@ -93,7 +94,7 @@ const PhoneNumbersList = () => {
         const sipTrunk    =    sipTrunks.filter(a => a.voip_carrier_sid === p.voip_carrier_sid );
         return {
           sid:         p.phone_number_sid,
-          number:      p.number,
+          number:      phoneNumberFormat(p.number),
           account:     account[0]     && account[0].name,
           application: application[0] && application[0].name,
           sipTrunk:    sipTrunk[0]    && sipTrunk[0].name,
