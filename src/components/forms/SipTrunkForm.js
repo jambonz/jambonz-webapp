@@ -11,6 +11,7 @@ import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
 import TrashButton from '../elements/TrashButton';
 import Loader from '../blocks/Loader';
+import sortSipGateways from '../../helpers/sortSipGateways';
 
 const SipTrunkForm = props => {
   const history = useHistory();
@@ -113,6 +114,7 @@ const SipTrunkForm = props => {
           const currentSipGateways = allSipGateways.filter(s => {
             return s.voip_carrier_sid === currentSipTrunk[0].voip_carrier_sid;
           });
+          sortSipGateways(currentSipGateways);
 
           if (currentSipTrunk.length) {
             setName(currentSipTrunk[0].name);

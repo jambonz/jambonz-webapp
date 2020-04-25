@@ -5,6 +5,7 @@ import { NotificationDispatchContext } from '../../../contexts/NotificationConte
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import Sbcs from '../../blocks/Sbcs';
+import sortSipGateways from '../../../helpers/sortSipGateways';
 
 const SipTrunksList = () => {
   let history = useHistory();
@@ -51,6 +52,7 @@ const SipTrunksList = () => {
       // Add appropriate gateways to each trunk
       const trunksWithGateways = trunkResults.data.map(t => {
         const gateways = gatewayResults.data.filter(g => t.voip_carrier_sid === g.voip_carrier_sid);
+        sortSipGateways(gateways);
         return {
           ...t,
           gateways,
