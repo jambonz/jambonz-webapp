@@ -210,7 +210,9 @@ const SipTrunkForm = props => {
   };
 
   const handleSumit = async e => {
+    let isMounted = true;
     try {
+      setShowLoader(true);
       e.preventDefault();
       setErrorMessage('');
       resetInvalidFields();
@@ -492,8 +494,10 @@ const SipTrunkForm = props => {
       }
 
       if (props.type === 'setup') {
+        isMounted = false;
         history.push('/setup-complete');
       } else {
+        isMounted = false;
         history.push('/internal/sip-trunks');
         const dispatchMessage = props.type === 'add'
           ? 'SIP trunk created successfully'
@@ -509,6 +513,7 @@ const SipTrunkForm = props => {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.clear();
+        isMounted = false;
         history.push('/');
         dispatch({
           type: 'ADD',
@@ -518,6 +523,10 @@ const SipTrunkForm = props => {
       } else {
         setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
+      }
+    } finally {
+      if (isMounted) {
+        setShowLoader(false);
       }
     }
   };

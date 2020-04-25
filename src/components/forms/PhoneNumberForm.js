@@ -184,7 +184,9 @@ const PhoneNumberForm = props => {
   }, []);
 
   const handleSubmit = async e => {
+    let isMounted = true;
     try {
+      setShowLoader(true);
       e.preventDefault();
       setErrorMessage('');
       setInvalidPhoneNumber(false);
@@ -287,6 +289,7 @@ const PhoneNumberForm = props => {
         message: dispatchMessage
       });
 
+      isMounted = false;
       history.push('/internal/phone-numbers');
     } catch (err) {
       setErrorMessage(
@@ -294,6 +297,10 @@ const PhoneNumberForm = props => {
         'Something went wrong, please try again.'
       );
       console.log(err.response || err);
+    } finally {
+      if (isMounted) {
+        setShowLoader(false);
+      }
     }
   };
 

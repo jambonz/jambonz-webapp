@@ -216,7 +216,9 @@ const ApplicationForm = props => {
 
 
   const handleSumit = async (e) => {
+    let isMounted = true;
     try {
+      setShowLoader(true);
       e.preventDefault();
       setErrorMessage('');
       setInvalidName(false);
@@ -350,8 +352,10 @@ const ApplicationForm = props => {
       });
 
       if (props.type === 'setup') {
+        isMounted = false;
         history.push('/configure-sip-trunk');
       } else {
+        isMounted = false;
         history.push('/internal/applications');
         const dispatchMessage = props.type === 'add'
           ? 'Application created successfully'
@@ -367,6 +371,7 @@ const ApplicationForm = props => {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.clear();
+        isMounted = false;
         history.push('/');
         dispatch({
           type: 'ADD',
@@ -376,6 +381,10 @@ const ApplicationForm = props => {
       } else {
         setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
+      }
+    } finally {
+      if (isMounted) {
+        setShowLoader(false);
       }
     }
   };

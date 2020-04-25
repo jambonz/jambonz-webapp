@@ -190,7 +190,9 @@ const AccountForm = props => {
   }, []);
 
   const handleSumit = async (e) => {
+    let isMounted = true;
     try {
+      setShowLoader(true);
       e.preventDefault();
       setErrorMessage('');
       setInvalidName(false);
@@ -296,8 +298,10 @@ const AccountForm = props => {
       });
 
       if (props.type === 'setup') {
+        isMounted = false;
         history.push('/create-application');
       } else {
+        isMounted = false;
         history.push('/internal/accounts');
         const dispatchMessage = props.type === 'add'
           ? 'Account created successfully'
@@ -314,6 +318,7 @@ const AccountForm = props => {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.clear();
+        isMounted = false;
         history.push('/');
         dispatch({
           type: 'ADD',
@@ -323,6 +328,10 @@ const AccountForm = props => {
       } else {
         setErrorMessage((err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.');
         console.log(err.response || err);
+      }
+    } finally {
+      if (isMounted) {
+        setShowLoader(false);
       }
     }
   };
