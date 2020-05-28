@@ -37,6 +37,7 @@ const StyledInput = styled.input`
   }
   &:disabled {
     background: #DDD;
+    border: 1px solid #B6B6B6;
     cursor: not-allowed;
   }
 `;
