@@ -215,7 +215,7 @@ const ApplicationForm = props => {
   }, []);
 
 
-  const handleSumit = async (e) => {
+  const handleSubmit = async (e) => {
     let isMounted = true;
     try {
       setShowLoader(true);
@@ -394,7 +394,7 @@ const ApplicationForm = props => {
       ? <Loader height={props.type === 'setup' ? '505px' : '630px'}/>
       : <Form
           large
-          onSubmit={handleSumit}
+          onSubmit={handleSubmit}
         >
           {(props.type === 'add' || props.type === 'edit') && (
             <React.Fragment>

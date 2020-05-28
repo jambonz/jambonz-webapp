@@ -211,7 +211,7 @@ const SipTrunkForm = props => {
     setSipGateways(newSipGateways);
   };
 
-  const handleSumit = async e => {
+  const handleSubmit = async e => {
     let isMounted = true;
     try {
       setShowLoader(true);
@@ -538,7 +538,7 @@ const SipTrunkForm = props => {
       ? <Loader height={props.type === 'setup' ? '424px' : '376px'}/>
       : <Form
           large
-          onSubmit={handleSumit}
+          onSubmit={handleSubmit}
         >
           <Label htmlFor="name">Name</Label>
           <Input

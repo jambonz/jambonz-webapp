@@ -189,7 +189,7 @@ const AccountForm = props => {
     // eslint-disable-next-line
   }, []);
 
-  const handleSumit = async (e) => {
+  const handleSubmit = async (e) => {
     let isMounted = true;
     try {
       setShowLoader(true);
@@ -348,7 +348,7 @@ const AccountForm = props => {
     : <Form
         large
         wideLabel={props.type === 'edit'}
-        onSubmit={handleSumit}
+        onSubmit={handleSubmit}
       >
         {(props.type === 'add' || props.type === 'edit') && (
           <React.Fragment>
@@ -522,7 +522,7 @@ const AccountForm = props => {
             right
             to="/create-application"
           >
-            Skip for now &mdash; I'l complete later
+            Skip for now &mdash; I'll complete later
           </Link>
         )}
       </Form>
