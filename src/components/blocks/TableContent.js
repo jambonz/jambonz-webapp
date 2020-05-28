@@ -299,7 +299,7 @@ const TableContent = props => {
                   {props.withCheckboxes && (
                     <td>
                       <Checkbox
-                        forTable
+                        noLeftMargin
                         id={a.sid}
                         value={a.sid}
                         onChange={checkboxesToggleOne}

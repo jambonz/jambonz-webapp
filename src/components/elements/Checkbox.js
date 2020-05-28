@@ -4,7 +4,7 @@ import Label from './Label';
 import Tooltip from './Tooltip';
 
 const CheckboxContainer = styled.div`
-  margin-left: ${props => props.forTable
+  margin-left: ${props => props.noLeftMargin
     ? '0'
     : props.invalid
       ? '0.5rem'
@@ -104,7 +104,7 @@ const Checkbox = (props, ref) => {
   return (
     <CheckboxContainer
       invalid={props.invalid}
-      forTable={props.forTable}
+      noLeftMargin={props.noLeftMargin}
     >
       <StyledCheckbox
         id={props.id}
