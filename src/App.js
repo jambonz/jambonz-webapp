@@ -21,6 +21,7 @@ import InvalidRoute from './components/pages/InvalidRoute';
 
 import Notification from './components/blocks/Notification';
 import Nav from './components/blocks/Nav';
+import SideMenu from './components/blocks/SideMenu';
 
 function App() {
   const notifications = useContext(NotificationStateContext);
@@ -36,40 +37,45 @@ function App() {
         <Route exact path="/configure-sip-trunk"><ConfigureSipTrunk /></Route>
         <Route exact path="/setup-complete"><SetupComplete /></Route>
 
-        <Route exact path="/internal/accounts"><AccountsList /></Route>
-        <Route exact path="/internal/applications"><ApplicationsList /></Route>
-        <Route exact path="/internal/sip-trunks"><SipTrunksList /></Route>
-        <Route exact path="/internal/phone-numbers"><PhoneNumbersList /></Route>
+        <Route path="/internal">
+          <div style={{ display: "flex" }}>
+            <SideMenu />
+            <Route exact path="/internal/accounts"><AccountsList /></Route>
+            <Route exact path="/internal/applications"><ApplicationsList /></Route>
+            <Route exact path="/internal/sip-trunks"><SipTrunksList /></Route>
+            <Route exact path="/internal/phone-numbers"><PhoneNumbersList /></Route>
 
-        <Route exact path={[
-          "/internal/accounts/add",
-          "/internal/accounts/:account_sid/edit"
-        ]}>
-          <AccountsAddEdit />
+            <Route exact path={[
+              "/internal/accounts/add",
+              "/internal/accounts/:account_sid/edit"
+            ]}>
+              <AccountsAddEdit />
+            </Route>
+
+            <Route exact path={[
+              "/internal/applications/add",
+              "/internal/applications/:application_sid/edit"
+            ]}>
+              <ApplicationsAddEdit />
+            </Route>
+
+            <Route exact path={[
+              "/internal/sip-trunks/add",
+              "/internal/sip-trunks/:voip_carrier_sid/edit"
+            ]}>
+              <SipTrunksAddEdit />
+            </Route>
+
+            <Route exact path={[
+              "/internal/phone-numbers/add",
+              "/internal/phone-numbers/:phone_number_sid/edit"
+            ]}>
+              <PhoneNumbersAddEdit />
+            </Route>
+
+            <Route exact path="/internal/settings"><Settings /></Route>
+          </div>
         </Route>
-
-        <Route exact path={[
-          "/internal/applications/add",
-          "/internal/applications/:application_sid/edit"
-        ]}>
-          <ApplicationsAddEdit />
-        </Route>
-
-        <Route exact path={[
-          "/internal/sip-trunks/add",
-          "/internal/sip-trunks/:voip_carrier_sid/edit"
-        ]}>
-          <SipTrunksAddEdit />
-        </Route>
-
-        <Route exact path={[
-          "/internal/phone-numbers/add",
-          "/internal/phone-numbers/:phone_number_sid/edit"
-        ]}>
-          <PhoneNumbersAddEdit />
-        </Route>
-
-        <Route exact path="/internal/settings"><Settings /></Route>
 
         <Route><InvalidRoute /></Route>
       </Switch>
