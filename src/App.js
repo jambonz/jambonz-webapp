@@ -16,6 +16,7 @@ import AccountsAddEdit from './components/pages/internal/AccountsAddEdit';
 import ApplicationsAddEdit from './components/pages/internal/ApplicationsAddEdit';
 import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
 import PhoneNumbersAddEdit from './components/pages/internal/PhoneNumbersAddEdit';
+import Settings from './components/pages/internal/Settings';
 import InvalidRoute from './components/pages/InvalidRoute';
 
 import Notification from './components/blocks/Notification';
@@ -67,6 +68,8 @@ function App() {
         ]}>
           <PhoneNumbersAddEdit />
         </Route>
+
+        <Route exact path="/internal/settings"><Settings /></Route>
 
         <Route><InvalidRoute /></Route>
       </Switch>

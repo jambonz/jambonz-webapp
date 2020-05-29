@@ -8,6 +8,7 @@ import { ReactComponent as AccountsIcon } from '../../images/AccountsIcon.svg';
 import { ReactComponent as ApplicationsIcon } from '../../images/ApplicationsIcon.svg';
 import { ReactComponent as SipTrunksIcon } from '../../images/SipTrunksIcon.svg';
 import { ReactComponent as PhoneNumbersIcon } from '../../images/PhoneNumbersIcon.svg';
+import { ReactComponent as SettingsIcon } from '../../images/SettingsIcon.svg';
 import AddButton from '../elements/AddButton';
 import Breadcrumbs from '../blocks/Breadcrumbs';
 
@@ -141,6 +142,7 @@ const InternalTemplate = props => {
         <MenuLink to="/internal/applications"  name="Applications"  icon={<ApplicationsIcon />} />
         <MenuLink to="/internal/sip-trunks"    name="SIP Trunks"    icon={<SipTrunksIcon    />} />
         <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
+        <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
       </SideMenu>
       <PageMain>
         {props.breadcrumbs && (
