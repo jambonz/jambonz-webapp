@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
+import { ShowMsTeamsDispatchContext } from '../../contexts/ShowMsTeamsContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
@@ -16,6 +17,7 @@ import Loader from '../blocks/Loader';
 const SettingsForm = () => {
   const history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const refreshMsTeamsData = useContext(ShowMsTeamsDispatchContext);
 
   // Refs
   const refEnableMsTeams = useRef(null);
@@ -245,6 +247,8 @@ const SettingsForm = () => {
         },
         data,
       });
+
+      refreshMsTeamsData();
 
       //=============================================================================
       // redirect

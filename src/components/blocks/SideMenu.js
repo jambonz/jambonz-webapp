@@ -1,11 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ModalStateContext } from '../../contexts/ModalContext';
+import { ShowMsTeamsStateContext, ShowMsTeamsDispatchContext } from '../../contexts/ShowMsTeamsContext';
 import { ReactComponent as AccountsIcon } from '../../images/AccountsIcon.svg';
 import { ReactComponent as ApplicationsIcon } from '../../images/ApplicationsIcon.svg';
 import { ReactComponent as SipTrunksIcon } from '../../images/SipTrunksIcon.svg';
 import { ReactComponent as PhoneNumbersIcon } from '../../images/PhoneNumbersIcon.svg';
+import { ReactComponent as MsTeamsIcon } from '../../images/MsTeamsIcon.svg';
 import { ReactComponent as SettingsIcon } from '../../images/SettingsIcon.svg';
 
 const StyledSideMenu = styled.div`
@@ -85,12 +87,21 @@ const MenuLink = props => {
 };
 
 const SideMenu = () => {
+  const showMsTeams = useContext(ShowMsTeamsStateContext);
+  const getMsTeamsData = useContext(ShowMsTeamsDispatchContext);
+  useEffect(() => {
+    getMsTeamsData();
+    // eslint-disable-next-line
+  }, []);
   return (
     <StyledSideMenu>
       <MenuLink to="/internal/accounts"      name="Accounts"      icon={<AccountsIcon     />} />
       <MenuLink to="/internal/applications"  name="Applications"  icon={<ApplicationsIcon />} />
       <MenuLink to="/internal/sip-trunks"    name="SIP Trunks"    icon={<SipTrunksIcon    />} />
       <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
+      {showMsTeams && (
+        <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
+      )}
       <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
     </StyledSideMenu>
   );
