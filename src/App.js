@@ -12,6 +12,7 @@ import AccountsList from './components/pages/internal/AccountsList';
 import ApplicationsList from './components/pages/internal/ApplicationsList';
 import SipTrunksList from './components/pages/internal/SipTrunksList';
 import PhoneNumbersList from './components/pages/internal/PhoneNumbersList';
+import MsTeamsTenantsList from './components/pages/internal/MsTeamsTenantsList';
 import AccountsAddEdit from './components/pages/internal/AccountsAddEdit';
 import ApplicationsAddEdit from './components/pages/internal/ApplicationsAddEdit';
 import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
@@ -44,6 +45,7 @@ function App() {
             <Route exact path="/internal/applications"><ApplicationsList /></Route>
             <Route exact path="/internal/sip-trunks"><SipTrunksList /></Route>
             <Route exact path="/internal/phone-numbers"><PhoneNumbersList /></Route>
+            <Route exact path="/internal/ms-teams-tenants"><MsTeamsTenantsList /></Route>
 
             <Route exact path={[
               "/internal/accounts/add",
