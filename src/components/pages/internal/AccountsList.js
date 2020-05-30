@@ -88,7 +88,7 @@ const AccountsList = () => {
         return;
       }
 
-      // Check if any application or phone number uses this account
+      // Check if any application, phone number, or MS Teams tenant uses this account
       const applicationsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -105,12 +105,22 @@ const AccountsList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
+      const msTeamsTenantsPromise = axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: '/MicrosoftTeamsTenants',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       const promiseAllValues = await Promise.all([
         applicationsPromise,
         phoneNumbersPromise,
+        msTeamsTenantsPromise,
       ]);
-      const applications = promiseAllValues[0].data;
-      const phoneNumbers = promiseAllValues[1].data;
+      const applications   = promiseAllValues[0].data;
+      const phoneNumbers   = promiseAllValues[1].data;
+      const msTeamsTenants = promiseAllValues[2].data;
 
       const accountApps = applications.filter(app => (
         app.account_sid === accountToDelete.sid
@@ -118,12 +128,18 @@ const AccountsList = () => {
       const accountPhoneNumbers = phoneNumbers.filter(p => (
         p.account_sid === accountToDelete.sid
       ));
+      const accountMsTeamsTenants = msTeamsTenants.filter(tenant => (
+        tenant.account_sid === accountToDelete.sid
+      ));
       let errorMessages = [];
       for (const app of accountApps) {
         errorMessages.push(`Application: ${app.name}`);
       }
       for (const num of accountPhoneNumbers) {
         errorMessages.push(`Phone Number: ${num.number}`);
+      }
+      for (const tenant of accountMsTeamsTenants) {
+        errorMessages.push(`Microsoft Teams Tenant: ${tenant.tenant_fqdn}`);
       }
       if (errorMessages.length) {
         return (
