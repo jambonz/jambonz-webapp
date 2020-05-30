@@ -17,6 +17,7 @@ import AccountsAddEdit from './components/pages/internal/AccountsAddEdit';
 import ApplicationsAddEdit from './components/pages/internal/ApplicationsAddEdit';
 import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
 import PhoneNumbersAddEdit from './components/pages/internal/PhoneNumbersAddEdit';
+import MsTeamsTenantsAddEdit from './components/pages/internal/MsTeamsTenantsAddEdit';
 import Settings from './components/pages/internal/Settings';
 import InvalidRoute from './components/pages/InvalidRoute';
 
@@ -73,6 +74,13 @@ function App() {
               "/internal/phone-numbers/:phone_number_sid/edit"
             ]}>
               <PhoneNumbersAddEdit />
+            </Route>
+
+            <Route exact path={[
+              "/internal/ms-teams-tenants/add",
+              "/internal/ms-teams-tenants/:ms_teams_tenant_sid/edit"
+            ]}>
+              <MsTeamsTenantsAddEdit />
             </Route>
 
             <Route exact path="/internal/settings"><Settings /></Route>
