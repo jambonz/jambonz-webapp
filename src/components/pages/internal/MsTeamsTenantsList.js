@@ -64,7 +64,7 @@ const MsTeamsTenantsList = () => {
         const application = applications.filter(a => a.application_sid  === team.application_sid);
         return {
           sid:         team.ms_teams_tenant_sid,
-          fqdn:        team.tenant_fqdn,
+          tenant_fqdn: team.tenant_fqdn,
           account:     account[0]     && account[0].name,
           application: application[0] && application[0].name,
         };
@@ -96,7 +96,7 @@ const MsTeamsTenantsList = () => {
   //=============================================================================
   const formatTenantsToDelete = team => {
     return [
-      { name: 'FQDN:',        content: team.fqdn        || '[none]' },
+      { name: 'Domain Name:', content: team.tenant_fqdn || '[none]' },
       { name: 'Account:',     content: team.account     || '[none]' },
       { name: 'Application:', content: team.application || '[none]' },
     ];
@@ -152,7 +152,7 @@ const MsTeamsTenantsList = () => {
         urlParam="ms-teams-tenants"
         getContent={getMsTeamsTenants}
         columns={[
-          { header: 'FQDN',        key: 'fqdn'        },
+          { header: 'Domain Name', key: 'tenant_fqdn' },
           { header: 'Account',     key: 'account'     },
           { header: 'Application', key: 'application' },
         ]}

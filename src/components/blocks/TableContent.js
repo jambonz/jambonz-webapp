@@ -158,7 +158,7 @@ const TableContent = props => {
   //=============================================================================
   return (
     <React.Fragment>
-      {contentToDelete && (contentToDelete.name || contentToDelete.number || contentToDelete.fqdn) && (
+      {contentToDelete && (contentToDelete.name || contentToDelete.number || contentToDelete.tenant_fqdn) && (
         <Modal
           title={`Are you sure you want to delete the following ${props.name}?`}
           loader={showModalLoader}
