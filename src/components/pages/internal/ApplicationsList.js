@@ -107,8 +107,8 @@ const ApplicationsList = () => {
         return;
       }
 
-      // check if any account requires this application for SIP device calls
-      const accounts = await axios({
+      // check if any account or Microsoft Teams Tenant uses this application
+      const accountsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
         url: '/Accounts',
@@ -116,26 +116,51 @@ const ApplicationsList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-
-      const accountsRequiringThisApp = accounts.data.filter(acc => {
-        return acc.device_calling_application_sid === applicationToDelete.sid;
+      const msTeamsTenantsPromise = axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: '/MicrosoftTeamsTenants',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
+      const promiseAllValues = await Promise.all([
+        accountsPromise,
+        msTeamsTenantsPromise,
+      ]);
 
-      if (accountsRequiringThisApp.length) {
-        const accountName = accountsRequiringThisApp[0].name;
+      const accounts       = promiseAllValues[0].data;
+      const msTeamsTenants = promiseAllValues[1].data;
+
+      const appAccounts = accounts.filter(acc => (
+        acc.device_calling_application_sid === applicationToDelete.sid
+      ));
+      const appMsTeamsTenants = msTeamsTenants.filter(tenant => (
+        tenant.application_sid === applicationToDelete.sid
+      ));
+      let errorMessages = [];
+      for (const account of appAccounts) {
+        errorMessages.push(`Account: ${account.name}`);
+      }
+      for (const tenant of appMsTeamsTenants) {
+        errorMessages.push(`Microsoft Teams Tenant: ${tenant.tenant_fqdn}`);
+      }
+      if (errorMessages.length) {
         return (
           <React.Fragment>
             <p style={{ margin: '0.5rem 0' }}>
-              This application cannot be deleted because the following
-              account uses it to receive SIP Device Calls:
+              This application cannot be deleted because it is in use by:
             </p>
             <ul style={{ margin: '0.5rem 0' }}>
-              <li>{accountName}</li>
+              {errorMessages.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
             </ul>
           </React.Fragment>
         );
       }
 
+      // Delete application
       await axios({
         method: 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
