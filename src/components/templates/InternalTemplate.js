@@ -13,11 +13,8 @@ const PageMain = styled.main`
   padding: 2.5rem 3rem;
 `;
 
-const P = styled.p`
-  margin: 0.75rem 0 1.5rem;
-`;
-
 const ContentContainer = styled.div`
+  margin-top: 1.5rem;
   background: #FFF;
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.1),
@@ -61,9 +58,9 @@ const InternalTemplate = props => {
           to={props.addButtonLink}
         />
       )}
-      {typeof props.subtitle === 'object'
-        ? props.subtitle
-        : <P>{props.subtitle}</P>
+      {props.subtitle
+        ? <div>{props.subtitle}</div>
+        : null
       }
       <ContentContainer
         type={props.type}

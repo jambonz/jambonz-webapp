@@ -11,7 +11,7 @@ const ConfigureSipTrunk = () => {
     <SetupTemplate
       wide
       title="Configure SIP Trunk"
-      subtitle={<Sbcs />}
+      subtitle={<Sbcs centered />}
       progress={3}
     >
       <SipTrunkForm

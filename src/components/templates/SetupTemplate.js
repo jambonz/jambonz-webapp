@@ -14,8 +14,8 @@ const StyledH1 = styled(H1)`
   text-align: center;
 `;
 
-const P = styled.p`
-  margin: 0.75rem 0 1.5rem;
+const Subtitle = styled.div`
+  margin: -0.25rem 0 0.25rem;
   text-align: center;
 `;
 
@@ -30,6 +30,7 @@ const ContentContainer = styled.div`
   }) {
     width: 100%;
   }
+  margin-top: 1.25rem;
   background: #FFF;
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.1),
@@ -49,10 +50,9 @@ const SetupTemplate = props => (
   <PageContainer>
     <ProgressVisualization progress={props.progress} />
     <StyledH1>{props.title}</StyledH1>
-    {
-      typeof props.subtitle === 'object'
-        ? props.subtitle
-        : <P>{props.subtitle}</P>
+    {props.subtitle
+      ? <Subtitle>{props.subtitle}</Subtitle>
+      : null
     }
     <ContentContainer wide={props.wide}>
       {props.children}

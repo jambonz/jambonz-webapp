@@ -1,9 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 
-const Sbcs = () => {
+const Container = styled.div`
+  margin-top: 0.25rem;
+  ${props => props.centered && `
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    & ul {
+      padding: 0;
+      margin-bottom: 0;
+    }
+  `}
+`;
+
+const Sbcs = props => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const [ sbcs, setSbcs ] = useState('');
@@ -52,25 +66,24 @@ const Sbcs = () => {
     // eslint-disable-next-line
   }, []);
 
+  const text = 'Have your SIP trunking provider(s) send calls to';
   return (
-    <div style={{ margin: '1rem 0 1.5rem' }}>
-      Have your SIP trunking provider(s) send calls to
-      {sbcs.length > 1
-        ? <React.Fragment>
-            {':'}
-            <ul>
-              {sbcs.map(sbc => (
-                <li key={sbc.sbc_address_sid}>
-                  {`${sbc.ipv4}:${sbc.port}`}
-                </li>
-              ))}
-            </ul>
-          </React.Fragment>
-        : sbcs.length === 1
-          ? ` ${sbcs[0].ipv4}:${sbcs[0].port}`
-          : null
-      }
-    </div>
+    sbcs.length > 1
+      ? <Container centered={props.centered}>
+          {text}:
+          <ul>
+            {sbcs.map(sbc => (
+              <li key={sbc.sbc_address_sid}>
+                {`${sbc.ipv4}:${sbc.port}`}
+              </li>
+            ))}
+          </ul>
+        </Container>
+      : sbcs.length === 1
+        ? <Container>
+            {text} {sbcs[0].ipv4}:{sbcs[0].port}
+          </Container>
+        : null
   );
 };
 
