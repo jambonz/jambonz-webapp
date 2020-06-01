@@ -12,6 +12,7 @@ import Button from '../elements/Button';
 import TrashButton from '../elements/TrashButton';
 import Loader from '../blocks/Loader';
 import sortSipGateways from '../../helpers/sortSipGateways';
+import Link from '../elements/Link';
 
 const SipTrunkForm = props => {
   const history = useHistory();
@@ -671,6 +672,16 @@ const SipTrunkForm = props => {
               }
             </Button>
           </InputGroup>
+
+          {props.type === 'setup' && (
+            <Link
+              formLink
+              right
+              to="/setup-complete"
+            >
+              Skip for now &mdash; I'll complete later
+            </Link>
+          )}
         </Form>
   );
 };

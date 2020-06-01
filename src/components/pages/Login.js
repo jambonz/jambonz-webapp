@@ -158,11 +158,6 @@ const Login = props => {
         return;
       }
 
-      if (!voipCarriers.length) {
-        history.push('/configure-sip-trunk');
-        return;
-      }
-
       history.push('/internal/accounts');
 
     } catch (err) {
