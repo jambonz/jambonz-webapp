@@ -22,7 +22,7 @@ const SettingsForm = () => {
   // Refs
   const refEnableMsTeams = useRef(null);
   const refSbcDomainName = useRef(null);
-  const refSipDomain = useRef(null);
+  const refSipRealm = useRef(null);
   const refRegWebhook = useRef(null);
   const refUser = useRef(null);
   const refPassword = useRef(null);
@@ -30,7 +30,7 @@ const SettingsForm = () => {
   // Form inputs
   const [ enableMsTeams, setEnableMsTeams ] = useState(false);
   const [ sbcDomainName, setSbcDomainName ] = useState('');
-  const [ sipDomain,     setSipDomain     ] = useState('');
+  const [ sipRealm,      setSipRealm      ] = useState('');
   const [ regWebhook,    setRegWebhook    ] = useState('');
   const [ method,        setMethod        ] = useState('POST');
   const [ user,          setUser          ] = useState('');
@@ -42,7 +42,7 @@ const SettingsForm = () => {
   // Invalid form inputs
   const [ invalidEnableMsTeams, setInvalidEnableMsTeams ] = useState(false);
   const [ invalidSbcDomainName, setInvalidSbcDomainName ] = useState(false);
-  const [ invalidSipDomain,     setInvalidSipDomain     ] = useState(false);
+  const [ invalidSipRealm,      setInvalidSipRealm      ] = useState(false);
   const [ invalidRegWebhook,    setInvalidRegWebhook    ] = useState(false);
   const [ invalidUser,          setInvalidUser          ] = useState(false);
   const [ invalidPassword,      setInvalidPassword      ] = useState(false);
@@ -82,7 +82,7 @@ const SettingsForm = () => {
         setServiceProviderSid(sp.service_provider_sid || '');
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
-        setSipDomain(sp.root_domain || '');
+        setSipRealm(sp.root_domain || '');
         setRegWebhook((sp.registration_hook && sp.registration_hook.url) || '');
         setMethod((sp.registration_hook && sp.registration_hook.method) || 'post');
         setUser((sp.registration_hook && sp.registration_hook.username) || '');
@@ -145,7 +145,7 @@ const SettingsForm = () => {
       setErrorMessage('');
       setInvalidEnableMsTeams(false);
       setInvalidSbcDomainName(false);
-      setInvalidSipDomain(false);
+      setInvalidSipRealm(false);
       setInvalidRegWebhook(false);
       setInvalidUser(false);
       setInvalidPassword(false);
@@ -177,20 +177,20 @@ const SettingsForm = () => {
         }
       }
 
-      if (!sipDomain && (regWebhook || user || password)) {
+      if (!sipRealm && (regWebhook || user || password)) {
         errorMessages.push(
-          'You must provide a SIP Domain in order to provide a Registration Webhook'
+          'You must provide a SIP Realm in order to provide a Registration Webhook'
         );
-        setInvalidSipDomain(true);
+        setInvalidSipRealm(true);
         if (!focusHasBeenSet) {
-          refSipDomain.current.focus();
+          refSipRealm.current.focus();
           focusHasBeenSet = true;
         }
       }
 
-      if (sipDomain && !regWebhook) {
+      if (sipRealm && !regWebhook) {
         errorMessages.push(
-          'You must provide a Registration Webhook when providing a SIP Domain'
+          'You must provide a Registration Webhook when providing a SIP Realm'
         );
         setInvalidRegWebhook(true);
         if (!focusHasBeenSet) {
@@ -226,7 +226,7 @@ const SettingsForm = () => {
       //=============================================================================
       const data = {
         ms_teams_fqdn: sbcDomainName.trim() || null,
-        root_domain: sipDomain.trim() || null,
+        root_domain: sipRealm.trim() || null,
       };
 
       if (regWebhook) {
@@ -318,16 +318,16 @@ const SettingsForm = () => {
 
         <hr />
 
-        <Label htmlFor="sipDomain">Fallback SIP Domain</Label>
+        <Label htmlFor="sipRealm">Fallback SIP Realm</Label>
         <Input
-          name="sipDomain"
-          id="sipDomain"
-          value={sipDomain}
-          onChange={e => setSipDomain(e.target.value)}
+          name="sipRealm"
+          id="sipRealm"
+          value={sipRealm}
+          onChange={e => setSipRealm(e.target.value)}
           placeholder="Domain name that accounts will use as a fallback"
-          invalid={invalidSipDomain}
+          invalid={invalidSipRealm}
           autoFocus={!enableMsTeams}
-          ref={refSipDomain}
+          ref={refSipRealm}
         />
 
         <Label htmlFor="regWebhook">Registration Webhook</Label>
@@ -340,13 +340,13 @@ const SettingsForm = () => {
             placeholder="URL for your web application that handles registrations"
             invalid={invalidRegWebhook}
             ref={refRegWebhook}
-            disabled={!sipDomain && !regWebhook && !user && !password}
+            disabled={!sipRealm && !regWebhook && !user && !password}
             title={(
-              !sipDomain &&
+              !sipRealm &&
               !regWebhook &&
               !user &&
               !password &&
-              "You must provide a SIP Domain in order to enter a registration webhook"
+              "You must provide a SIP Realm in order to enter a registration webhook"
             ) || ""}
           />
 
@@ -361,13 +361,13 @@ const SettingsForm = () => {
             id="method"
             value={method}
             onChange={e => setMethod(e.target.value)}
-            disabled={!sipDomain && !regWebhook && !user && !password}
+            disabled={!sipRealm && !regWebhook && !user && !password}
             title={(
-              !sipDomain &&
+              !sipRealm &&
               !regWebhook &&
               !user &&
               !password &&
-              "You must provide a SIP Domain in order to enter a registration webhook"
+              "You must provide a SIP Realm in order to enter a registration webhook"
             ) || ""}
           >
             <option value="POST">POST</option>
@@ -386,13 +386,13 @@ const SettingsForm = () => {
               placeholder="Optional"
               invalid={invalidUser}
               ref={refUser}
-              disabled={!sipDomain && !regWebhook && !user && !password}
+              disabled={!sipRealm && !regWebhook && !user && !password}
               title={(
-                !sipDomain &&
+                !sipRealm &&
                 !regWebhook &&
                 !user &&
                 !password &&
-                "You must provide a SIP Domain in order to enter a registration webhook"
+                "You must provide a SIP Realm in order to enter a registration webhook"
               ) || ""}
             />
             <Label htmlFor="password" middle>Password</Label>
@@ -406,13 +406,13 @@ const SettingsForm = () => {
               placeholder="Optional"
               invalid={invalidPassword}
               ref={refPassword}
-              disabled={!sipDomain && !regWebhook && !user && !password}
+              disabled={!sipRealm && !regWebhook && !user && !password}
               title={(
-                !sipDomain &&
+                !sipRealm &&
                 !regWebhook &&
                 !user &&
                 !password &&
-                "You must provide a SIP Domain in order to enter a registration webhook"
+                "You must provide a SIP Realm in order to enter a registration webhook"
               ) || ""}
             />
           </InputGroup>
