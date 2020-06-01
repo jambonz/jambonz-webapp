@@ -16,6 +16,13 @@ NOTE: Here is what `npm run deploy` does:
 
 Alternatively, you can serve the app manually (without pm2) with `npm run serve`.
 
+## Updates
+
+If there is an update to this code base, you can update the code without re-deploying.
+
+  1. run `git pull`
+  2. run `npm run build`
+
 ## Development
 
 Like production, you must specify the IP:port of the Jambonz API you will be hitting.
