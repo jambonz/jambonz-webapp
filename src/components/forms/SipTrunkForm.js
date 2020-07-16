@@ -31,6 +31,7 @@ const SipTrunkForm = props => {
   const [ name,        setName        ] = useState('');
   const [ nameInvalid, setNameInvalid ] = useState(false);
   const [ description, setDescription ] = useState('');
+  const [ e164, setE164 ]               = useState(false);
   const [ sipGateways, setSipGateways ] = useState([
     {
       sip_gateway_sid: '',
@@ -120,6 +121,7 @@ const SipTrunkForm = props => {
           if (currentSipTrunk.length) {
             setName(currentSipTrunk[0].name);
             setDescription(currentSipTrunk[0].description);
+            setE164(currentSipTrunk[0].e164_leading_plus === 1);
             setSipGateways(currentSipGateways.map(s => ({
               sip_gateway_sid: s.sip_gateway_sid,
               ip: s.ipv4,
@@ -393,6 +395,7 @@ const SipTrunkForm = props => {
         data: {
           name: name.trim(),
           description: description.trim(),
+          e164_leading_plus: e164 ? 1 : 0
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -562,6 +565,17 @@ const SipTrunkForm = props => {
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional"
           />
+          <Label htmlFor="e164">E.164 Syntax</Label>
+          <Checkbox 
+            noLeftMargin
+            large={props.type === 'setup'}
+            name="e164"
+            id="e164"
+            label="prepend a leading + on origination attempts"
+            checked={e164}
+            onChange={e => setE164(e.target.checked)}
+          />
+
           <hr style={{ margin: '0.5rem -2rem' }} />
           <div
             style={{ whiteSpace: 'nowrap' }}
