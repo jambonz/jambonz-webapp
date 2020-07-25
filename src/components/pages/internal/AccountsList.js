@@ -198,6 +198,7 @@ const AccountsList = () => {
         getContent={getAccounts}
         columns={[
           { header: 'Name',                 key: 'name'      },
+          { header: 'AccountSid',           key: 'sid'       },
           { header: 'SIP Realm',            key: 'sip_realm' },
           { header: 'Registration Webhook', key: 'url'       },
         ]}
