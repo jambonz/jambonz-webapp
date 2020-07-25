@@ -13,6 +13,7 @@ import Loader from '../blocks/Loader';
 import Button from '../elements/Button';
 import Link from '../elements/Link';
 import Tooltip from '../elements/Tooltip';
+import CopyableText from '../elements/CopyableText';
 
 const AccountForm = props => {
   let history = useHistory();
@@ -342,7 +343,9 @@ const AccountForm = props => {
         height={
           props.type === 'setup'
             ? '309px'
-            : '292px'
+            : props.type === 'edit'
+              ? '381px'
+              : '292px'
         }
       />
     : <Form
@@ -350,6 +353,14 @@ const AccountForm = props => {
         wideLabel={props.type === 'edit'}
         onSubmit={handleSubmit}
       >
+
+        {props.type === 'edit' && (
+          <React.Fragment>
+            <Label>AccountSid</Label>
+            <CopyableText text={accountSid} textType="AccountSid" />
+          </React.Fragment>
+        )}
+
         {(props.type === 'add' || props.type === 'edit') && (
           <React.Fragment>
             <Label htmlFor="name">Name</Label>

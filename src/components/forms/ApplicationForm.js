@@ -14,6 +14,7 @@ import SpeechSynthesisLanguageGoogle from '../../data/SpeechSynthesisLanguageGoo
 import SpeechSynthesisLanguageAws from '../../data/SpeechSynthesisLanguageAws';
 import SpeechRecognizerLanguageGoogle from '../../data/SpeechRecognizerLanguageGoogle';
 import Loader from '../blocks/Loader';
+import CopyableText from '../elements/CopyableText';
 
 const ApplicationForm = props => {
   let history = useHistory();
@@ -391,11 +392,27 @@ const ApplicationForm = props => {
 
   return (
     showLoader
-      ? <Loader height={props.type === 'setup' ? '505px' : '630px'}/>
+      ? <Loader
+          height={
+            props.type === 'setup'
+              ? '505px'
+              : props.type === 'edit'
+                ? '646px'
+                : '611px'
+          }
+        />
       : <Form
           large
           onSubmit={handleSubmit}
         >
+
+          {props.type === 'edit' && (
+            <React.Fragment>
+              <Label>ApplicationSid</Label>
+              <CopyableText text={applicationSid} textType="ApplicationSid" />
+            </React.Fragment>
+          )}
+
           {(props.type === 'add' || props.type === 'edit') && (
             <React.Fragment>
               <Label htmlFor="name">Name</Label>
