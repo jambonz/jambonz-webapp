@@ -37,11 +37,18 @@ const AccountsAddEdit = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      const simplifiedApiKeys = results.data.map(a => ({
-        sid:         a.api_key_sid,
-        token:       a.token,
-        last_used:   a.last_used || "Never used",
-      }));
+      const simplifiedApiKeys = results.data.map(a => {
+        const { token } = a;
+        const maskLength = token.length - 4;
+        const maskedPortion = token.substring(0, maskLength).replace(/[a-zA-Z0-9]/g, '*');
+        const revealedPortion = token.substring(maskLength);
+        const maskedToken = `${maskedPortion}${revealedPortion}`;
+        return {
+          sid:       a.api_key_sid,
+          token:     maskedToken,
+          last_used: a.last_used || "Never used",
+        };
+      });
       return(simplifiedApiKeys);
     } catch (err) {
       if (err.response && err.response.status === 401) {
