@@ -5,6 +5,15 @@ import Button from './Button';
 
 const Span = styled.span`
   text-align: left;
+  ${props => props.hasBorder ? `
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 1rem;
+    border: 1px solid #B6B6B6;
+    border-radius: 0.125rem;
+  ` : ''}
 `;
 
 const StyledButton = styled(Button)`
@@ -32,11 +41,12 @@ const CopyableText = props => {
   };
 
   return (
-    <Span>
+    <Span hasBorder={props.hasBorder}>
       {props.text}
       <StyledButton
         text
         formLink
+        inModal={props.inModal}
         type="button"
         onClick={copyText}
       >
