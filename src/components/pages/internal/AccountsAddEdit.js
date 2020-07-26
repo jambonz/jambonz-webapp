@@ -43,10 +43,28 @@ const AccountsAddEdit = () => {
         const maskedPortion = token.substring(0, maskLength).replace(/[a-zA-Z0-9]/g, '*');
         const revealedPortion = token.substring(maskLength);
         const maskedToken = `${maskedPortion}${revealedPortion}`;
+
+        const { last_used } = a;
+        let lastUsedString = 'Never used';
+        if (last_used) {
+          const currentDate = new Date();
+          const lastUsedDate = new Date(last_used);
+          currentDate.setHours(0,0,0,0);
+          lastUsedDate.setHours(0,0,0,0);
+          const daysDifference = Math.round((currentDate - lastUsedDate) / 1000 / 60 / 60 / 24);
+          lastUsedString = daysDifference > 1
+            ? `${daysDifference} days ago`
+            : daysDifference === 1
+              ? 'Yesterday'
+              : daysDifference === 0
+                ? 'Today'
+                : 'Never used';
+        }
+
         return {
           sid:       a.api_key_sid,
           token:     maskedToken,
-          last_used: a.last_used || "Never used",
+          last_used: lastUsedString,
         };
       });
       return(simplifiedApiKeys);
