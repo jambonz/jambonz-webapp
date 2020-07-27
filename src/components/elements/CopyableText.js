@@ -40,7 +40,21 @@ const CopyableText = props => {
     }
   };
 
-  return (
+  if (typeof navigator.clipboard === 'undefined') {
+    return (
+      <Span hasBorder={props.hasBorder}>
+        {props.text}
+        <StyledButton
+          text
+          formLink
+          inModal={props.inModal}
+          type="button"
+        >
+        </StyledButton>
+      </Span>
+    );
+  }
+  else return (
     <Span hasBorder={props.hasBorder}>
       {props.text}
       <StyledButton
