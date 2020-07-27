@@ -62,9 +62,16 @@ const AccountsAddEdit = () => {
         }
 
         return {
-          sid:       a.api_key_sid,
-          token:     maskedToken,
-          last_used: lastUsedString,
+          sid: a.api_key_sid,
+          token: {
+            type: 'masked',
+            masked: maskedToken,
+            revealed: token,
+          },
+          last_used: {
+            type: 'normal',
+            content: lastUsedString,
+          },
         };
       });
       return(simplifiedApiKeys);
@@ -142,8 +149,8 @@ const AccountsAddEdit = () => {
   //=============================================================================
   const formatApiKeyToDelete = apiKey => {
     const items = [
-      { name: 'API Key:'   , content: apiKey.token     || '[none]'     },
-      { name: 'Last Used:' , content: apiKey.last_used || 'Never used' },
+      { name: 'API Key:'   , content: apiKey.token.masked      || '[none]'     },
+      { name: 'Last Used:' , content: apiKey.last_used.content || 'Never used' },
     ];
     return items;
   };
@@ -200,8 +207,8 @@ const AccountsAddEdit = () => {
           name="API key"
           getContent={getApiKeys}
           columns={[
-            { header: 'API Key',   key: 'token'     },
-            { header: 'Last Used', key: 'last_used' },
+            { header: 'API Key',   key: 'token',     width: '27rem', fontWeight: 'normal' },
+            { header: 'Last Used', key: 'last_used', width: '10rem' },
           ]}
           addContent={createApiKey}
           formatContentToDelete={formatApiKeyToDelete}

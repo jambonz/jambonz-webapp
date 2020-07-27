@@ -11,6 +11,7 @@ import Loader from '../blocks/Loader.js';
 import Modal from '../blocks/Modal.js';
 import FormError from '../blocks/FormError.js';
 import CopyableText from '../elements/CopyableText';
+import ToggleText from '../blocks/ToggleText.js';
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -52,8 +53,24 @@ const TableContent = props => {
     newContent = newContent || content;
     const sortedContent = [...newContent];
     sortedContent.sort((a, b) => {
-      let valA = (a[column] && a[column].toLowerCase()) || '';
-      let valB = (b[column] && b[column].toLowerCase()) || '';
+      let valA;
+      let valB;
+      if (!a[column]) {
+        valA = '';
+        valB = '';
+      } else if (typeof a[column] === 'object') {
+        if (a[column].type === 'masked') {
+          valA = a[column].masked;
+          valB = b[column].masked;
+        }
+        if (a[column].type === 'normal') {
+          valA = a[column].content;
+          valB = b[column].content;
+        }
+      } else {
+        valA = (a[column] && a[column].toLowerCase()) || '';
+        valB = (b[column] && b[column].toLowerCase()) || '';
+      }
       if (newSortOrder === 'asc') {
         return valA > valB ? 1 : valA < valB ? -1 : 0;
       } else {
@@ -279,6 +296,7 @@ const TableContent = props => {
             {props.columns.map((c, i) => (
               <th
                 key={c.key}
+                style={{ width: c.width }}
                 colSpan={!props.addContent && (i === props.columns.length - 1) ? '2' : null}
               >
                 {selected.length && i === props.columns.length - 1 ? (
@@ -361,23 +379,40 @@ const TableContent = props => {
                       />
                     </td>
                   )}
-                  {props.columns.map((c, i) => (
-                    <td key={c.key}>
-                      {i === 0 && props.urlParam
-                        ? <span>
-                            <Link
-                              to={`/internal/${props.urlParam}/${a.sid}/edit`}
-                              tabIndex={modalOpen ? '-1' : ''}
-                            >
-                              <span tabIndex="-1" title={a[c.key]}>
-                                {a[c.key]}
-                              </span>
-                            </Link>
-                          </span>
-                        : <span title={a[c.key]}>{a[c.key]}</span>
+                  {props.columns.map((c, i) => {
+                    let columnContent = '';
+                    let columnTitle = null;
+                    if (a[c.key]) {
+                      if (typeof a[c.key] === 'object') {
+                        if (a[c.key].type === 'normal') {
+                          columnContent = a[c.key].content;
+                          columnTitle = columnContent;
+                        } else if (a[c.key].type === 'masked') {
+                          columnContent = <ToggleText masked={a[c.key].masked} revealed={a[c.key].revealed} />;
+                        }
+                      } else {
+                        columnContent = a[c.key];
+                        columnTitle = columnContent;
                       }
-                    </td>
-                  ))}
+                    }
+                    return (
+                      <td key={c.key} style={{ fontWeight: c.fontWeight }}>
+                        {i === 0 && props.urlParam
+                          ? <span>
+                              <Link
+                                to={`/internal/${props.urlParam}/${a.sid}/edit`}
+                                tabIndex={modalOpen ? '-1' : ''}
+                              >
+                                <span tabIndex="-1" title={columnTitle}>
+                                  {columnContent}
+                                </span>
+                              </Link>
+                            </span>
+                          : <span title={columnTitle}>{columnContent}</span>
+                        }
+                      </td>
+                    );
+                  })}
                   <td>
                     {props.rowsHaveDeleteButtons ? (
                       <Button
