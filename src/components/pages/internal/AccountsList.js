@@ -89,6 +89,7 @@ const AccountsList = () => {
       }
 
       // Check if any application, phone number, or MS Teams tenant uses this account
+      // or if the account has any API keys
       const applicationsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -113,14 +114,24 @@ const AccountsList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
+      const apiKeysPromise = axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: `/Accounts/${accountToDelete.sid}/ApiKeys`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       const promiseAllValues = await Promise.all([
         applicationsPromise,
         phoneNumbersPromise,
         msTeamsTenantsPromise,
+        apiKeysPromise,
       ]);
       const applications   = promiseAllValues[0].data;
       const phoneNumbers   = promiseAllValues[1].data;
       const msTeamsTenants = promiseAllValues[2].data;
+      const apiKeys        = promiseAllValues[3].data;
 
       const accountApps = applications.filter(app => (
         app.account_sid === accountToDelete.sid
@@ -140,6 +151,13 @@ const AccountsList = () => {
       }
       for (const tenant of accountMsTeamsTenants) {
         errorMessages.push(`Microsoft Teams Tenant: ${tenant.tenant_fqdn}`);
+      }
+      for (const apiKey of apiKeys) {
+        const maskLength = apiKey.token.length - 4;
+        const maskedPortion = apiKey.token.substring(0, maskLength).replace(/[a-zA-Z0-9]/g, '*');
+        const revealedPortion = apiKey.token.substring(maskLength);
+        const maskedToken = `${maskedPortion}${revealedPortion}`;
+        errorMessages.push(`API Key: ${maskedToken}`);
       }
       if (errorMessages.length) {
         return (

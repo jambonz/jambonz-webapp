@@ -87,6 +87,17 @@ const Table = styled.table`
       font-weight: bold;
     }
   `}
+
+  ${props => props.rowsHaveDeleteButtons && `
+    & th:last-child {
+      width: 9rem;
+      text-align: right;
+    }
+    & td:last-child {
+      padding: 0 1.5rem;
+      text-align: right;
+    }
+  `}
 `;
 
 export default Table;

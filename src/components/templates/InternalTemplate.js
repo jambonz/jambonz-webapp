@@ -67,6 +67,12 @@ const InternalTemplate = props => {
       >
         {props.children}
       </ContentContainer>
+
+      {props.additionalTable && (
+        <ContentContainer>
+          {props.additionalTable}
+        </ContentContainer>
+      )}
     </PageMain>
   );
 };

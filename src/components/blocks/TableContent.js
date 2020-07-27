@@ -10,6 +10,8 @@ import TableMenu from '../blocks/TableMenu.js';
 import Loader from '../blocks/Loader.js';
 import Modal from '../blocks/Modal.js';
 import FormError from '../blocks/FormError.js';
+import CopyableText from '../elements/CopyableText';
+import ToggleText from '../blocks/ToggleText.js';
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -51,8 +53,24 @@ const TableContent = props => {
     newContent = newContent || content;
     const sortedContent = [...newContent];
     sortedContent.sort((a, b) => {
-      let valA = (a[column] && a[column].toLowerCase()) || '';
-      let valB = (b[column] && b[column].toLowerCase()) || '';
+      let valA;
+      let valB;
+      if (!a[column]) {
+        valA = '';
+        valB = '';
+      } else if (typeof a[column] === 'object') {
+        if (a[column].type === 'masked') {
+          valA = a[column].masked;
+          valB = b[column].masked;
+        }
+        if (a[column].type === 'normal') {
+          valA = a[column].content;
+          valB = b[column].content;
+        }
+      } else {
+        valA = (a[column] && a[column].toLowerCase()) || '';
+        valB = (b[column] && b[column].toLowerCase()) || '';
+      }
       if (newSortOrder === 'asc') {
         return valA > valB ? 1 : valA < valB ? -1 : 0;
       } else {
@@ -131,6 +149,26 @@ const TableContent = props => {
   };
 
   //=============================================================================
+  // Handle Adding content
+  //=============================================================================
+  const [ showNewContentModal,  setShowNewContentModal  ] = useState(false);
+  const [ showNewContentLoader, setShowNewContentLoader ] = useState(false);
+  const [ newItem,              setNewItem              ] = useState('');
+  const addContent = async () => {
+    setShowNewContentModal(true);
+    setShowNewContentLoader(true);
+    const result = await props.addContent();
+    if (result !== 'error') {
+      const newContent = await props.getContent();
+      sortTableContent({ newContent });
+      setNewItem(result);
+    } else {
+      setShowNewContentModal(false);
+    }
+    setShowNewContentLoader(false);
+  };
+
+  //=============================================================================
   // Handle Deleting content
   //=============================================================================
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -158,7 +196,30 @@ const TableContent = props => {
   //=============================================================================
   return (
     <React.Fragment>
-      {contentToDelete && (contentToDelete.name || contentToDelete.number || contentToDelete.tenant_fqdn) && (
+      {showNewContentModal && (
+        <Modal
+          title={`Here is your new ${props.name}`}
+          closeText="Close"
+          loader={showNewContentLoader}
+          content={
+            <CopyableText
+              text={newItem}
+              textType={props.name}
+              inModal
+              hasBorder
+            />
+          }
+          handleCancel={() => setShowNewContentModal(false)}
+          normalButtonPadding
+        />
+      )}
+
+      {contentToDelete && (
+        contentToDelete.name ||
+        contentToDelete.number ||
+        contentToDelete.tenant_fqdn ||
+        contentToDelete.token
+      ) && (
         <Modal
           title={`Are you sure you want to delete the following ${props.name}?`}
           loader={showModalLoader}
@@ -196,21 +257,26 @@ const TableContent = props => {
           actionText="Delete"
         />
       )}
-      <Table withCheckboxes={props.withCheckboxes}>
+      <Table
+        withCheckboxes={props.withCheckboxes}
+        rowsHaveDeleteButtons={props.rowsHaveDeleteButtons}
+      >
         {/* colgroup is used to set the width of the last column because the
         last two <th> are combined in a colSpan="2", preventing the columns from
         being given an expicit width (`table-layout: fixed;` requires setting
         column width in the first row) */}
-        <colgroup>
-          <col
-            span={
-              props.withCheckboxes
-                ? props.columns.length + 1
-                : props.columns.length
-            }
-          />
-          <col style={{ width: '4rem' }}></col>
-        </colgroup>
+        {!props.rowsHaveDeleteButtons && (
+          <colgroup>
+            <col
+              span={
+                props.withCheckboxes
+                  ? props.columns.length + 1
+                  : props.columns.length
+              }
+            />
+            <col style={{ width: '4rem' }}></col>
+          </colgroup>
+        )}
         <thead>
           <tr>
             {props.withCheckboxes && (
@@ -230,7 +296,8 @@ const TableContent = props => {
             {props.columns.map((c, i) => (
               <th
                 key={c.key}
-                colSpan={i === props.columns.length - 1 ? '2' : null}
+                style={{ width: c.width }}
+                colSpan={!props.addContent && (i === props.columns.length - 1) ? '2' : null}
               >
                 {selected.length && i === props.columns.length - 1 ? (
                   <div
@@ -274,6 +341,11 @@ const TableContent = props => {
                 )}
               </th>
             ))}
+            {props.addContent && (
+              <th>
+                <Button onClick={addContent}>+</Button>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -307,42 +379,68 @@ const TableContent = props => {
                       />
                     </td>
                   )}
-                  {props.columns.map((c, i) => (
-                    <td key={c.key}>
-                      {i === 0
-                        ? <span>
-                            <Link
-                              to={`/internal/${props.urlParam}/${a.sid}/edit`}
-                              tabIndex={modalOpen ? '-1' : ''}
-                            >
-                              <span tabIndex="-1" title={a[c.key]}>
-                                {a[c.key]}
-                              </span>
-                            </Link>
-                          </span>
-                        : <span title={a[c.key]}>{a[c.key]}</span>
+                  {props.columns.map((c, i) => {
+                    let columnContent = '';
+                    let columnTitle = null;
+                    if (a[c.key]) {
+                      if (typeof a[c.key] === 'object') {
+                        if (a[c.key].type === 'normal') {
+                          columnContent = a[c.key].content;
+                          columnTitle = columnContent;
+                        } else if (a[c.key].type === 'masked') {
+                          columnContent = <ToggleText masked={a[c.key].masked} revealed={a[c.key].revealed} />;
+                        }
+                      } else {
+                        columnContent = a[c.key];
+                        columnTitle = columnContent;
                       }
-                    </td>
-                  ))}
+                    }
+                    return (
+                      <td key={c.key} style={{ fontWeight: c.fontWeight }}>
+                        {i === 0 && props.urlParam
+                          ? <span>
+                              <Link
+                                to={`/internal/${props.urlParam}/${a.sid}/edit`}
+                                tabIndex={modalOpen ? '-1' : ''}
+                              >
+                                <span tabIndex="-1" title={columnTitle}>
+                                  {columnContent}
+                                </span>
+                              </Link>
+                            </span>
+                          : <span title={columnTitle}>{columnContent}</span>
+                        }
+                      </td>
+                    );
+                  })}
                   <td>
-                    <TableMenu
-                      sid={a.sid}
-                      open={menuOpen === a.sid}
-                      handleMenuOpen={handleMenuOpen}
-                      disabled={modalOpen}
-                      menuItems={[
-                        {
-                          name: 'Edit',
-                          type: 'link',
-                          url: `/internal/${props.urlParam}/${a.sid}/edit`,
-                        },
-                        {
-                          name: 'Delete',
-                          type: 'button',
-                          action: () => setContentToDelete(a),
-                        },
-                      ]}
-                    />
+                    {props.rowsHaveDeleteButtons ? (
+                      <Button
+                        gray
+                        onClick={() => setContentToDelete(a)}
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      <TableMenu
+                        sid={a.sid}
+                        open={menuOpen === a.sid}
+                        handleMenuOpen={handleMenuOpen}
+                        disabled={modalOpen}
+                        menuItems={[
+                          {
+                            name: 'Edit',
+                            type: 'link',
+                            url: `/internal/${props.urlParam}/${a.sid}/edit`,
+                          },
+                          {
+                            name: 'Delete',
+                            type: 'button',
+                            action: () => setContentToDelete(a),
+                          },
+                        ]}
+                      />
+                    )}
                   </td>
                 </tr>
               ))

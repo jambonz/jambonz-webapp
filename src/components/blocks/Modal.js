@@ -50,7 +50,11 @@ const LoaderContainer = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin: 1rem -0.5rem -0.5rem 0;
+  ${props => props.normalPadding ? `
+    margin-top: 1rem;
+  ` : `
+    margin: 1rem -0.5rem -0.5rem 0;
+  `}
   & > * {
     margin-left: 1rem;
   }
@@ -95,17 +99,19 @@ const Modal = props => {
         <h1>{props.title}</h1>
         <ContentContainer>
           {props.content}
-          <ButtonContainer>
+          <ButtonContainer normalPadding={props.normalButtonPadding}>
             <Button inModal gray onClick={props.handleCancel}>
-              Cancel
+              {props.closeText || "Cancel"}
             </Button>
-            <Button
-              inModal
-              disabled={props.loader}
-              onClick={props.handleSubmit}
-            >
-              {props.actionText}
-            </Button>
+            {props.actionText && (
+              <Button
+                inModal
+                disabled={props.loader}
+                onClick={props.handleSubmit}
+              >
+                {props.actionText}
+              </Button>
+            )}
           </ButtonContainer>
           {props.loader && (
             <LoaderContainer>
