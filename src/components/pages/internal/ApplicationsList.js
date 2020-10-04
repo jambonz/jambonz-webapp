@@ -54,12 +54,13 @@ const ApplicationsList = () => {
       const simplifiedApplications = applications.map(app => {
         const account = accounts.filter(acc => acc.account_sid === app.account_sid);
         return {
-          sid:             app.application_sid,
-          name:            app.name,
-          account_sid:     app.account_sid,
-          call_hook_url:   app.call_hook && app.call_hook.url,
-          status_hook_url: app.call_status_hook && app.call_status_hook.url,
-          account:         account[0].name,
+          sid:                app.application_sid,
+          name:               app.name,
+          account_sid:        app.account_sid,
+          call_hook_url:      app.call_hook && app.call_hook.url,
+          status_hook_url:    app.call_status_hook && app.call_status_hook.url,
+          messaging_hook_url: app.messaging_hook && app.messaging_hook.url,
+          account:            account[0].name,
         };
       });
       return(simplifiedApplications);
@@ -89,10 +90,11 @@ const ApplicationsList = () => {
   //=============================================================================
   const formatApplicationToDelete = app => {
     return [
-      { name: 'Name:',                content: app.name            || '[none]' },
-      { name: 'Account:',             content: app.account         || '[none]' },
-      { name: 'Calling Webhook:',     content: app.call_hook_url   || '[none]' },
-      { name: 'Call Status Webhook:', content: app.status_hook_url || '[none]' },
+      { name: 'Name:',                content: app.name               || '[none]' },
+      { name: 'Account:',             content: app.account            || '[none]' },
+      { name: 'Calling Webhook:',     content: app.call_hook_url      || '[none]' },
+      { name: 'Call Status Webhook:', content: app.status_hook_url    || '[none]' },
+      { name: 'Messaging Webhook:',   content: app.messaging_hook_url || '[none]' },
     ];
   };
   const deleteApplication = async applicationToDelete => {
