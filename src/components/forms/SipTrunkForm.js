@@ -4,6 +4,7 @@ import axios from 'axios';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
+import PasswordInput from '../elements/PasswordInput';
 import Label from '../elements/Label';
 import Checkbox from '../elements/Checkbox';
 import InputGroup from '../elements/InputGroup';
@@ -20,6 +21,9 @@ const SipTrunkForm = props => {
 
   // Refs
   const refName = useRef(null);
+  const refUsername = useRef(null);
+  const refPassword = useRef(null);
+  const refRealm = useRef(null);
   const refIp = useRef([]);
   const refPort = useRef([]);
   const refInbound = useRef([]);
@@ -28,11 +32,18 @@ const SipTrunkForm = props => {
   const refAdd = useRef(null);
 
   // Form inputs
-  const [ name,        setName        ] = useState('');
-  const [ nameInvalid, setNameInvalid ] = useState(false);
-  const [ description, setDescription ] = useState('');
-  const [ e164,        setE164        ] = useState(false);
-  const [ sipGateways, setSipGateways ] = useState([
+  const [ name,            setName            ] = useState('');
+  const [ nameInvalid,     setNameInvalid     ] = useState(false);
+  const [ description,     setDescription     ] = useState('');
+  const [ e164,            setE164            ] = useState(false);
+  const [ register,        setRegister        ] = useState(false);
+  const [ username,        setUsername        ] = useState('');
+  const [ usernameInvalid, setUsernameInvalid ] = useState(false);
+  const [ password,        setPassword        ] = useState('');
+  const [ passwordInvalid, setPasswordInvalid ] = useState(false);
+  const [ realm,           setRealm           ] = useState('');
+  const [ realmInvalid,    setRealmInvalid    ] = useState(false);
+  const [ sipGateways,     setSipGateways     ] = useState([
     {
       sip_gateway_sid: '',
       ip: '',
@@ -122,6 +133,10 @@ const SipTrunkForm = props => {
             setName(currentSipTrunk[0].name);
             setDescription(currentSipTrunk[0].description);
             setE164(currentSipTrunk[0].e164_leading_plus === 1);
+            setRegister(currentSipTrunk[0].requires_register === 1);
+            setUsername(currentSipTrunk[0].register_username || '');
+            setPassword(currentSipTrunk[0].register_password || '');
+            setRealm(currentSipTrunk[0].register_sip_realm || '');
             setSipGateways(currentSipGateways.map(s => ({
               sip_gateway_sid: s.sip_gateway_sid,
               ip: s.ipv4,
@@ -204,6 +219,9 @@ const SipTrunkForm = props => {
 
   const resetInvalidFields = () => {
     setNameInvalid(false);
+    setUsernameInvalid(false);
+    setPasswordInvalid(false);
+    setRealmInvalid(false);
     const newSipGateways = [...sipGateways];
     newSipGateways.forEach((s, i) => {
       newSipGateways[i].invalidIp = false;
@@ -229,6 +247,33 @@ const SipTrunkForm = props => {
         setNameInvalid(true);
         if (!focusHasBeenSet) {
           refName.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (register && !username) {
+        errorMessages.push('If outbound registration is required, you must provide a SIP username.');
+        setUsernameInvalid(true);
+        if (!focusHasBeenSet) {
+          refUsername.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (register && !password) {
+        errorMessages.push('If outbound registration is required, you must provide a SIP password.');
+        setPasswordInvalid(true);
+        if (!focusHasBeenSet) {
+          refPassword.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (register && !realm) {
+        errorMessages.push('If outbound registration is required, you must provide a SIP realm.');
+        setRealmInvalid(true);
+        if (!focusHasBeenSet) {
+          refRealm.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -394,7 +439,11 @@ const SipTrunkForm = props => {
         data: {
           name: name.trim(),
           description: description.trim(),
-          e164_leading_plus: e164 ? 1 : 0
+          e164_leading_plus: e164 ? 1 : 0,
+          requires_register: register ? 1 : 0,
+          register_username: register ? username.trim() : null,
+          register_password: register ? password : null,
+          register_sip_realm: register ? realm.trim() : null,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -574,6 +623,62 @@ const SipTrunkForm = props => {
             checked={e164}
             onChange={e => setE164(e.target.checked)}
           />
+
+          <hr style={{ margin: '0.5rem -2rem' }} />
+          <Label htmlFor="register">Registration</Label>
+          <Checkbox
+            noLeftMargin
+            large={props.type === 'setup'}
+            name="register"
+            id="register"
+            label="Requires outbound registration"
+            checked={register}
+            onChange={e => setRegister(e.target.checked)}
+          />
+          {
+            register
+            ? (
+              <React.Fragment>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="username"
+                  id="username"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  placeholder="SIP username used for outbound registration"
+                  invalid={usernameInvalid}
+                  ref={refUsername}
+                />
+                <Label htmlFor="password">Password</Label>
+                <PasswordInput
+                  large={props.type === 'setup'}
+                  allowShowPassword
+                  name="password"
+                  id="password"
+                  password={password}
+                  setPassword={setPassword}
+                  setErrorMessage={setErrorMessage}
+                  placeholder="SIP password used for outbound registration"
+                  invalid={passwordInvalid}
+                  ref={refPassword}
+                />
+                <Label htmlFor="realm">SIP Realm</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="realm"
+                  id="realm"
+                  value={realm}
+                  onChange={e => setRealm(e.target.value)}
+                  placeholder="SIP realm used for outbound registration"
+                  invalid={realmInvalid}
+                  ref={refRealm}
+                />
+              </React.Fragment>
+            ) : (
+              null
+            )
+          }
 
           <hr style={{ margin: '0.5rem -2rem' }} />
           <div
