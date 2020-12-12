@@ -31,7 +31,7 @@ const SipTrunkForm = props => {
   const [ name,        setName        ] = useState('');
   const [ nameInvalid, setNameInvalid ] = useState(false);
   const [ description, setDescription ] = useState('');
-  const [ e164, setE164 ]               = useState(false);
+  const [ e164,        setE164        ] = useState(false);
   const [ sipGateways, setSipGateways ] = useState([
     {
       sip_gateway_sid: '',
@@ -379,7 +379,6 @@ const SipTrunkForm = props => {
         ? 'post'
         : 'put';
 
-
       const url = creatingNewTrunk
         ? '/VoipCarriers'
         : `/VoipCarriers/${sipTrunkSid}`;
@@ -566,7 +565,7 @@ const SipTrunkForm = props => {
             placeholder="Optional"
           />
           <Label htmlFor="e164">E.164 Syntax</Label>
-          <Checkbox 
+          <Checkbox
             noLeftMargin
             large={props.type === 'setup'}
             name="e164"
