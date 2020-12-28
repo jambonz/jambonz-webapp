@@ -15,11 +15,11 @@
     "styled-components": "^5.0.1"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "PORT=${HTTP_PORT:-3001} react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "serve -s build -l 3001",
+    "serve": "serve -s build -l ${HTTP_PORT:-3001}",
     "pm2": "pm2 start npm --name \"jambonz-webapp\" -- run serve",
     "deploy": "npm i && npm run build && npm run pm2"
   },
