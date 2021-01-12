@@ -36,6 +36,7 @@ const SipTrunkForm = props => {
   const [ nameInvalid,     setNameInvalid     ] = useState(false);
   const [ description,     setDescription     ] = useState('');
   const [ e164,            setE164            ] = useState(false);
+  const [ authenticate,    setAuthenticate    ] = useState(false);
   const [ register,        setRegister        ] = useState(false);
   const [ username,        setUsername        ] = useState('');
   const [ usernameInvalid, setUsernameInvalid ] = useState(false);
@@ -133,6 +134,7 @@ const SipTrunkForm = props => {
             setName(currentSipTrunk[0].name);
             setDescription(currentSipTrunk[0].description);
             setE164(currentSipTrunk[0].e164_leading_plus === 1);
+            setAuthenticate(currentSipTrunk[0].register_username ? true : false);
             setRegister(currentSipTrunk[0].requires_register === 1);
             setUsername(currentSipTrunk[0].register_username || '');
             setPassword(currentSipTrunk[0].register_password || '');
@@ -251,8 +253,22 @@ const SipTrunkForm = props => {
         }
       }
 
+      if (!register && ((username && !password) || (!username && password))) {
+        errorMessages.push('Username and password must be either both filled out or both empty.');
+        setUsernameInvalid(true);
+        setPasswordInvalid(true);
+        if (!focusHasBeenSet) {
+          if (!username) {
+            refUsername.current.focus();
+          } else {
+            refPassword.current.focus();
+          }
+          focusHasBeenSet = true;
+        }
+      }
+
       if (register && !username) {
-        errorMessages.push('If outbound registration is required, you must provide a SIP username.');
+        errorMessages.push('If registration is required, you must provide a username.');
         setUsernameInvalid(true);
         if (!focusHasBeenSet) {
           refUsername.current.focus();
@@ -261,7 +277,7 @@ const SipTrunkForm = props => {
       }
 
       if (register && !password) {
-        errorMessages.push('If outbound registration is required, you must provide a SIP password.');
+        errorMessages.push('If registration is required, you must provide a password.');
         setPasswordInvalid(true);
         if (!focusHasBeenSet) {
           refPassword.current.focus();
@@ -270,7 +286,7 @@ const SipTrunkForm = props => {
       }
 
       if (register && !realm) {
-        errorMessages.push('If outbound registration is required, you must provide a SIP realm.');
+        errorMessages.push('If registration is required, you must provide a SIP realm.');
         setRealmInvalid(true);
         if (!focusHasBeenSet) {
           refRealm.current.focus();
@@ -441,8 +457,8 @@ const SipTrunkForm = props => {
           description: description.trim(),
           e164_leading_plus: e164 ? 1 : 0,
           requires_register: register ? 1 : 0,
-          register_username: register ? username.trim() : null,
-          register_password: register ? password : null,
+          register_username: username ? username.trim() : null,
+          register_password: password ? password : null,
           register_sip_realm: register ? realm.trim() : null,
         },
       });
@@ -625,19 +641,21 @@ const SipTrunkForm = props => {
           />
 
           <hr style={{ margin: '0.5rem -2rem' }} />
-          <Label htmlFor="register">Registration</Label>
-          <Checkbox
-            noLeftMargin
-            large={props.type === 'setup'}
-            name="register"
-            id="register"
-            label="Requires outbound registration"
-            checked={register}
-            onChange={e => setRegister(e.target.checked)}
-          />
+
           {
-            register
-            ? (
+            !authenticate ? (
+              <React.Fragment>
+                <div></div>
+                <Button
+                  text
+                  formLink
+                  type="button"
+                  onClick={e => setAuthenticate(!authenticate)}
+                >
+                  Does your carrier require authentication?
+                </Button>
+              </React.Fragment>
+            ) : (
               <React.Fragment>
                 <Label htmlFor="username">Username</Label>
                 <Input
@@ -646,7 +664,7 @@ const SipTrunkForm = props => {
                   id="username"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="SIP username used for outbound registration"
+                  placeholder="SIP username for authentication"
                   invalid={usernameInvalid}
                   ref={refUsername}
                 />
@@ -659,24 +677,40 @@ const SipTrunkForm = props => {
                   password={password}
                   setPassword={setPassword}
                   setErrorMessage={setErrorMessage}
-                  placeholder="SIP password used for outbound registration"
+                  placeholder="SIP password for authentication"
                   invalid={passwordInvalid}
                   ref={refPassword}
                 />
-                <Label htmlFor="realm">SIP Realm</Label>
-                <Input
+                <div></div>
+                <Checkbox
+                  noLeftMargin
                   large={props.type === 'setup'}
-                  name="realm"
-                  id="realm"
-                  value={realm}
-                  onChange={e => setRealm(e.target.value)}
-                  placeholder="SIP realm used for outbound registration"
-                  invalid={realmInvalid}
-                  ref={refRealm}
+                  name="register"
+                  id="register"
+                  label="Requires registration"
+                  checked={register}
+                  onChange={e => setRegister(e.target.checked)}
                 />
+                {
+                  register ? (
+                    <React.Fragment>
+                      <Label htmlFor="realm">SIP Realm</Label>
+                      <Input
+                        large={props.type === 'setup'}
+                        name="realm"
+                        id="realm"
+                        value={realm}
+                        onChange={e => setRealm(e.target.value)}
+                        placeholder="SIP realm for registration"
+                        invalid={realmInvalid}
+                        ref={refRealm}
+                      />
+                    </React.Fragment>
+                  ) : (
+                    null
+                  )
+                }
               </React.Fragment>
-            ) : (
-              null
             )
           }
 
