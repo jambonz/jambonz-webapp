@@ -13,6 +13,7 @@ import Button from '../elements/Button';
 import SpeechSynthesisLanguageGoogle from '../../data/SpeechSynthesisLanguageGoogle';
 import SpeechSynthesisLanguageAws from '../../data/SpeechSynthesisLanguageAws';
 import SpeechRecognizerLanguageGoogle from '../../data/SpeechRecognizerLanguageGoogle';
+import SpeechRecognizerLanguageAws from '../../data/SpeechRecognizerLanguageAws';
 import Loader from '../blocks/Loader';
 import CopyableText from '../elements/CopyableText';
 
@@ -840,9 +841,25 @@ const ApplicationForm = props => {
               name="speechRecognizerVendor"
               id="speechRecognizerVendor"
               value={speechRecognizerVendor}
-              onChange={e => setSpeechRecognizerVendor(e.target.value)}
+              onChange={e => {
+                setSpeechRecognizerVendor(e.target.value);
+
+                // Google and AWS have different language lists. If the newly chosen
+                // vendor doesn't have the same language that was already in use,
+                // select US English
+                if ((
+                  e.target.value === 'google' &&
+                  !SpeechRecognizerLanguageGoogle.some(l => l.code === speechRecognizerLanguage)
+                ) || (
+                  e.target.value === 'aws' &&
+                  !SpeechRecognizerLanguageAws.some(l => l.code === speechRecognizerLanguage)
+                )) {
+                  setSpeechRecognizerLanguage('en-US');
+                }
+              }}
             >
               <option value="google">Google</option>
+              <option value="aws">AWS</option>
             </Select>
             <Label middle htmlFor="speechRecognizerLanguage">Language</Label>
             <Select
@@ -852,9 +869,15 @@ const ApplicationForm = props => {
               value={speechRecognizerLanguage}
               onChange={e => setSpeechRecognizerLanguage(e.target.value)}
             >
-              {SpeechRecognizerLanguageGoogle.map(l => (
-                <option key={l.code} value={l.code}>{l.name}</option>
-              ))}
+              {speechRecognizerVendor === 'google' ? (
+                SpeechRecognizerLanguageGoogle.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))
+              ) : (
+                SpeechRecognizerLanguageAws.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))
+              )}
             </Select>
           </InputGroup>
 
