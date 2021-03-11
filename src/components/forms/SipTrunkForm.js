@@ -303,6 +303,7 @@ const SipTrunkForm = props => {
       }
 
       const regIp = /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/;
+      const regIpCidr = /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\/(([1-2]?[0-9])|(3[0-2])))?$/;
       const regFqdn = /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/;
       const regFqdnTopLevel = /^([a-zA-Z][^.]*)(\.[^.]+)$/;
       const regPort = /^[0-9]+$/;
@@ -313,11 +314,13 @@ const SipTrunkForm = props => {
         //-----------------------------------------------------------------------------
         const type = regIp.test(gateway.ip.trim())
           ? 'ip'
-          : regFqdn.test(gateway.ip.trim())
-            ? 'fqdn'
-            : regFqdnTopLevel.test(gateway.ip.trim())
-              ? 'fqdn-top-level'
-              : 'invalid';
+            :regIpCidr.test(gateway.ip.trim())
+            ? 'ip-cidr'
+              : regFqdn.test(gateway.ip.trim())
+                ? 'fqdn'
+                : regFqdnTopLevel.test(gateway.ip.trim())
+                  ? 'fqdn-top-level'
+                  : 'invalid';
 
         if (!gateway.ip) {
           errorMessages.push('The IP Address cannot be blank. Please provide an IP address or delete the row.');
@@ -367,7 +370,22 @@ const SipTrunkForm = props => {
         //-----------------------------------------------------------------------------
         // inbound/outbound validation
         //-----------------------------------------------------------------------------
-        if (type === 'fqdn' && (!gateway.outbound || gateway.inbound)) {
+        if (type === 'ip-cidr' && (!gateway.inbound || gateway.outbound)){
+          errorMessages.push('A CIDR IP address may only be used for inbound calls.');
+          updateSipGateways(null, i, 'invalidIp');
+          if (!gateway.inbound) updateSipGateways(null, i, 'invalidInbound');
+          if (gateway.outbound) updateSipGateways(null, i, 'invalidOutbound');
+          if (!focusHasBeenSet) {
+            if (!gateway.inbound) {
+              refInbound.current[i].focus();
+            } else {
+              refOutbound.current[i].focus();
+            }
+            focusHasBeenSet = true;
+          }
+        }
+
+        else if (type === 'fqdn' && (!gateway.outbound || gateway.inbound)) {
           errorMessages.push('A fully qualified domain name may only be used for outbound calls.');
           updateSipGateways(null, i, 'invalidIp');
           if (gateway.inbound) updateSipGateways(null, i, 'invalidInbound');
