@@ -1,5 +1,5 @@
 FROM node:alpine as builder
-RUN apk update && apk add --no-cache python make g++
+RUN apk update && apk add --no-cache python3 make g++
 WORKDIR /opt/app/
 COPY package.json ./
 RUN npm install
