@@ -37,7 +37,7 @@ const StyledButton = styled(Button)`
 `;
 
 const StyledInputGroup = styled(InputGroup)`
-  padding: 2rem 2rem 1rem;
+  padding: 1rem 1rem 0;
 
   @media (max-width: 767.98px) {
     display: grid;
