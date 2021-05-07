@@ -9,6 +9,7 @@ import { ReactComponent as SipTrunksIcon } from '../../images/SipTrunksIcon.svg'
 import { ReactComponent as PhoneNumbersIcon } from '../../images/PhoneNumbersIcon.svg';
 import { ReactComponent as MsTeamsIcon } from '../../images/MsTeamsIcon.svg';
 import { ReactComponent as SettingsIcon } from '../../images/SettingsIcon.svg';
+import { ReactComponent as RecentCallsIcon  } from '../../images/RecentCallsIcon.svg';
 
 const StyledSideMenu = styled.div`
   width: 15rem;
@@ -102,6 +103,7 @@ const SideMenu = () => {
       {showMsTeams && (
         <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
       )}
+      <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
       <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
     </StyledSideMenu>
   );
