@@ -24,6 +24,7 @@ const StyledReactRouterLink = styled(FilteredLink)`
     align-items: center;
     position: relative;
     outline: 0;
+    color: #D91C5C;
   }
 
   &:focus > span {
@@ -31,14 +32,18 @@ const StyledReactRouterLink = styled(FilteredLink)`
     margin: -0.25rem;
     border-radius: 0.25rem;
     box-shadow: 0 0 0 0.125rem #D91C5C;
+    color: #D91C5C;
   }
 
   &:hover > span {
     box-shadow: 0 0.125rem 0 #D91C5C;
     border-radius: 0;
+    color: #D91C5C;
   }
 
-  &:active > span {}
+  &:active > span {
+    color: #D91C5C;
+  }
 
   ${props => props.formLink && `
     grid-column: 2;
