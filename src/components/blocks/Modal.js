@@ -25,6 +25,8 @@ const ModalContainer = styled.div`
   padding: 2rem;
   border-radius: 0.5rem;
   background: #FFF;
+  text-align: left;
+  
   & h1 {
     margin-top: 0;
     font-size: 1.25rem;

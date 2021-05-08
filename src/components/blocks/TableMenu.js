@@ -70,6 +70,7 @@ const TableMenu = props => (
       selected={props.open}
       disabled={props.disabled}
       onClick={e => {
+        e.preventDefault();
         e.stopPropagation();
         props.handleMenuOpen(props.sid);
       }}
