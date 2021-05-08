@@ -70,6 +70,9 @@ const MenuText = styled.span`
   outline: 0;
 `;
 
+const supportAlerts = process.env.REACT_APP_SUPPORT_ALERTS;
+const supportRecentCalls = process.env.REACT_APP_SUPPORT_RECENT_CALLS;
+
 const MenuLink = props => {
   const modalOpen = useContext(ModalStateContext);
   return (
@@ -104,8 +107,12 @@ const SideMenu = () => {
       {showMsTeams && (
         <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
       )}
-      <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
-      <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
+      {supportRecentCalls && (
+        <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
+      )}
+      {supportAlerts && (
+        <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
+      )}
       <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
     </StyledSideMenu>
   );
