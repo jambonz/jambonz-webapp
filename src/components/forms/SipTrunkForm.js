@@ -10,6 +10,7 @@ import Checkbox from '../elements/Checkbox';
 import InputGroup from '../elements/InputGroup';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
+import Select from '../elements/Select';
 import TrashButton from '../elements/TrashButton';
 import Loader from '../blocks/Loader';
 import sortSipGateways from '../../helpers/sortSipGateways';
@@ -37,6 +38,7 @@ const SipTrunkForm = props => {
   const [ nameInvalid,     setNameInvalid     ] = useState(false);
   const [ description,     setDescription     ] = useState('');
   const [ e164,            setE164            ] = useState(false);
+  const [ application,     setApplication     ] = useState('');
   const [ authenticate,    setAuthenticate    ] = useState(false);
   const [ register,        setRegister        ] = useState(false);
   const [ username,        setUsername        ] = useState('');
@@ -61,6 +63,8 @@ const SipTrunkForm = props => {
   const [requiredTechPrefix, setRequiredTechPrefix] = useState(false);
   const [techPrefix, setTechPrefix] = useState('');
   const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
+
+  const [ applicationValues, setApplicationValues ] = useState([]);
 
   const [ sipTrunks,    setSipTrunks    ] = useState([]);
   const [ sipTrunkSid,  setSipTrunkSid  ] = useState('');
@@ -95,15 +99,25 @@ const SipTrunkForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        const applicationsPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Applications',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         const promiseAllValues = await Promise.all([
           sipTrunksPromise,
           sipGatewaysPromise,
+          applicationsPromise,
         ]);
 
         const allSipTrunks   = promiseAllValues[0].data;
         const allSipGateways = promiseAllValues[1].data;
 
         setSipTrunks(allSipTrunks);
+        setApplicationValues(promiseAllValues[2].data);
 
         if (props.type === 'setup' && allSipTrunks.length > 1) {
           history.push('/internal/sip-trunks');
@@ -138,6 +152,7 @@ const SipTrunkForm = props => {
             setName(currentSipTrunk[0].name);
             setDescription(currentSipTrunk[0].description);
             setE164(currentSipTrunk[0].e164_leading_plus === 1);
+            setApplication(currentSipTrunk[0].application_sid || '');
             setAuthenticate(currentSipTrunk[0].register_username ? true : false);
             setRegister(currentSipTrunk[0].requires_register === 1);
             setUsername(currentSipTrunk[0].register_username || '');
@@ -491,6 +506,7 @@ const SipTrunkForm = props => {
           name: name.trim(),
           description: description.trim(),
           e164_leading_plus: e164 ? 1 : 0,
+          application_sid: application || null,
           requires_register: register ? 1 : 0,
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
@@ -675,6 +691,29 @@ const SipTrunkForm = props => {
             checked={e164}
             onChange={e => setE164(e.target.checked)}
           />
+
+          <Label htmlFor="application">Application</Label>
+          <Select
+            name="application"
+            id="application"
+            value={application}
+            onChange={e => setApplication(e.target.value)}
+          >
+            <option value="">
+              {props.type === 'add'
+                ? '-- OPTIONAL: Application to invoke on calls arriving from this carrier --'
+                : '-- NONE --'
+              }
+            </option>
+            {applicationValues.map(a => (
+              <option
+                key={a.application_sid}
+                value={a.application_sid}
+              >
+                {a.name}
+              </option>
+            ))}
+          </Select>
 
           <hr style={{ margin: '0.5rem -2rem' }} />
 
