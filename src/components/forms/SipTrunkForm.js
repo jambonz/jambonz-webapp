@@ -63,6 +63,8 @@ const SipTrunkForm = props => {
   const [requiredTechPrefix, setRequiredTechPrefix] = useState(false);
   const [techPrefix, setTechPrefix] = useState('');
   const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
+  const [suportSIP, setSupportSIP] = useState(false);
+  const [diversion, setDiversion] = useState("");
 
   const [ applicationValues, setApplicationValues ] = useState([]);
 
@@ -172,6 +174,8 @@ const SipTrunkForm = props => {
             setSipTrunkSid(currentSipTrunk[0].voip_carrier_sid);
             setTechPrefix(currentSipTrunk[0].tech_prefix || '');
             setRequiredTechPrefix(currentSipTrunk[0].tech_prefix ? true : false);
+            setSupportSIP(currentSipTrunk[0].diversion ? true : false);
+            setDiversion(currentSipTrunk[0].diversion || '');
           }
         }
         setShowLoader(false);
@@ -512,6 +516,7 @@ const SipTrunkForm = props => {
           register_password: password ? password : null,
           register_sip_realm: register ? realm.trim() : null,
           tech_prefix: techPrefix ? techPrefix.trim() : null,
+          diversion: diversion ? diversion.trim() : null,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -816,6 +821,36 @@ const SipTrunkForm = props => {
                   onClick={e => setRequiredTechPrefix(!requiredTechPrefix)}
                 >
                   Does your carrier require a tech prefix on outbound calls?
+                </Button>
+              </React.Fragment>
+            )
+          }
+
+          <hr style={{ margin: '0.5rem -2rem' }} />
+
+          {
+            suportSIP ? (
+              <React.Fragment>
+                <Label htmlFor="diversion">Diversion</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="diversion"
+                  id="diversion"
+                  value={diversion}
+                  onChange={e => setDiversion(e.target.value)}
+                  placeholder="Phone number or SIP URI"
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div></div>
+                <Button
+                  text
+                  formLink
+                  type="button"
+                  onClick={e => setSupportSIP(!suportSIP)}
+                >
+                  Does your carrier support the SIP Diversion header for authenticating the calling number?
                 </Button>
               </React.Fragment>
             )
