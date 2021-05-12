@@ -30,6 +30,7 @@ const SipTrunkForm = props => {
   const refOutbound = useRef([]);
   const refTrash = useRef([]);
   const refAdd = useRef(null);
+  const refTechPrefix = useRef(null);
 
   // Form inputs
   const [ name,            setName            ] = useState('');
@@ -57,6 +58,9 @@ const SipTrunkForm = props => {
       invalidOutbound: false,
     }
   ]);
+  const [requiredTechPrefix, setRequiredTechPrefix] = useState(false);
+  const [techPrefix, setTechPrefix] = useState('');
+  const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
 
   const [ sipTrunks,    setSipTrunks    ] = useState([]);
   const [ sipTrunkSid,  setSipTrunkSid  ] = useState('');
@@ -151,6 +155,8 @@ const SipTrunkForm = props => {
               invalidOutbound: false,
             })));
             setSipTrunkSid(currentSipTrunk[0].voip_carrier_sid);
+            setTechPrefix(currentSipTrunk[0].tech_prefix || '');
+            setRequiredTechPrefix(currentSipTrunk[0].tech_prefix ? true : false);
           }
         }
         setShowLoader(false);
@@ -224,6 +230,7 @@ const SipTrunkForm = props => {
     setUsernameInvalid(false);
     setPasswordInvalid(false);
     setRealmInvalid(false);
+    setTechPrefixInvalid(false);
     const newSipGateways = [...sipGateways];
     newSipGateways.forEach((s, i) => {
       newSipGateways[i].invalidIp = false;
@@ -290,6 +297,16 @@ const SipTrunkForm = props => {
         setRealmInvalid(true);
         if (!focusHasBeenSet) {
           refRealm.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      console.log('******* techPrefix = ', techPrefix)
+      if (techPrefix && techPrefix.length < 2) {
+        errorMessages.push('If registration is required, you must provide a Tech prefix with more than 2 characters.');
+        setTechPrefixInvalid(true);
+        if (!focusHasBeenSet) {
+          refTechPrefix.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -478,6 +495,7 @@ const SipTrunkForm = props => {
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
           register_sip_realm: register ? realm.trim() : null,
+          tech_prefix: techPrefix ? techPrefix.trim() : null,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -728,6 +746,38 @@ const SipTrunkForm = props => {
                     null
                   )
                 }
+              </React.Fragment>
+            )
+          }
+
+          <hr style={{ margin: '0.5rem -2rem' }} />
+
+          {
+            requiredTechPrefix ? (
+              <React.Fragment>
+                <Label htmlFor="techPrefix">Tech prefix</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="techPrefix"
+                  id="techPrefix"
+                  value={techPrefix}
+                  onChange={e => setTechPrefix(e.target.value)}
+                  placeholder="Tech Prefix"
+                  invalid={techPrefixInvalid}
+                  ref={refTechPrefix}
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div></div>
+                <Button
+                  text
+                  formLink
+                  type="button"
+                  onClick={e => setRequiredTechPrefix(!requiredTechPrefix)}
+                >
+                  Does your carrier require a tech prefix on outbound calls?
+                </Button>
               </React.Fragment>
             )
           }
