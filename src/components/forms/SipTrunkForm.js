@@ -65,6 +65,7 @@ const SipTrunkForm = props => {
   const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
   const [suportSIP, setSupportSIP] = useState(false);
   const [diversion, setDiversion] = useState("");
+  const [carrierActive, setCarrierActive] = useState(false);
 
   const [ applicationValues, setApplicationValues ] = useState([]);
 
@@ -176,6 +177,7 @@ const SipTrunkForm = props => {
             setRequiredTechPrefix(currentSipTrunk[0].tech_prefix ? true : false);
             setSupportSIP(currentSipTrunk[0].diversion ? true : false);
             setDiversion(currentSipTrunk[0].diversion || '');
+            setCarrierActive(currentSipTrunk[0].is_active === 1);
           }
         }
         setShowLoader(false);
@@ -517,6 +519,7 @@ const SipTrunkForm = props => {
           register_sip_realm: register ? realm.trim() : null,
           tech_prefix: techPrefix ? techPrefix.trim() : null,
           diversion: diversion ? diversion.trim() : null,
+          is_active: carrierActive ? 1 : 0,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -686,6 +689,17 @@ const SipTrunkForm = props => {
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional"
           />
+
+          <Label htmlFor="active">active</Label>
+          <Checkbox
+            noLeftMargin
+            name="active"
+            id="active"
+            label=""
+            checked={carrierActive}
+            onChange={e => setCarrierActive(e.target.checked)}
+          />
+
           <Label htmlFor="e164">E.164 Syntax</Label>
           <Checkbox
             noLeftMargin
