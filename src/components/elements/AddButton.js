@@ -51,6 +51,7 @@ const StyledLink = styled(FilteredLink)`
 
 const Tooltip = styled.span`
   display: none;
+  color: #767676;
   a:focus > &,
   a:hover > & {
     display: inline;

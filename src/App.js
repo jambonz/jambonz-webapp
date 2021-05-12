@@ -19,6 +19,8 @@ import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
 import PhoneNumbersAddEdit from './components/pages/internal/PhoneNumbersAddEdit';
 import MsTeamsTenantsAddEdit from './components/pages/internal/MsTeamsTenantsAddEdit';
 import Settings from './components/pages/internal/Settings';
+import RecentCallsList from './components/pages/internal/RecentCallsList';
+import AlertsList from './components/pages/internal/AlertsList';
 import InvalidRoute from './components/pages/InvalidRoute';
 
 import Notification from './components/blocks/Notification';
@@ -84,6 +86,9 @@ function App() {
             </Route>
 
             <Route exact path="/internal/settings"><Settings /></Route>
+
+            <Route exact path="/internal/recent-calls"><RecentCallsList /></Route>
+            <Route exact path="/internal/alerts"><AlertsList /></Route>
           </div>
         </Route>
 

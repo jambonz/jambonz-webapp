@@ -9,15 +9,40 @@ import Select from '../elements/Select';
 import InputGroup from '../elements/InputGroup';
 import PasswordInput from '../elements/PasswordInput';
 import FormError from '../blocks/FormError';
+import TableMenu from '../blocks/TableMenu';
 import Loader from '../blocks/Loader';
+import Modal from '../blocks/Modal';
 import Button from '../elements/Button';
 import Link from '../elements/Link';
 import Tooltip from '../elements/Tooltip';
 import CopyableText from '../elements/CopyableText';
+import handleErrors from "../../helpers/handleErrors";
+import styled from 'styled-components/macro';
+
+const StyledInputGroup = styled(InputGroup)`
+  position: relative;
+
+  & > div:last-child {
+    margin-top: -24px;
+  }
+`;
+
+const ModalContainer = styled.div`
+  margin-top: 2rem;
+`;
+
+const P = styled.p`
+  margin: 0 0 1.5rem;
+  font-size: 14px;
+  font-weight: 500;
+  font-weight: 500;
+  color: #231f20;
+`;
 
 const AccountForm = props => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const jwt = localStorage.getItem("token");
 
   // Refs
   const refName = useRef(null);
@@ -34,6 +59,7 @@ const AccountForm = props => {
   const [ method,     setMethod     ] = useState('POST');
   const [ user,       setUser       ] = useState('' || '');
   const [ password,   setPassword   ] = useState('' || '');
+  const [ webhookSecret, setWebhookSecret ] = useState('');
 
   // Invalid form inputs
   const [ invalidName,       setInvalidName       ] = useState(false);
@@ -53,10 +79,76 @@ const AccountForm = props => {
   const [ serviceProviderSid, setServiceProviderSid ] = useState('');
   const [ accountApplications, setAccountApplications ] = useState([]);
 
+  const [ menuOpen, setMenuOpen ] = useState(null);
+  const [showConfirmSecret, setShowConfirmSecret] = useState(false);
+  const [generatingSecret, setGeneratingSecret] = useState(false);
+
+  const handleMenuOpen = sid => {
+    if (menuOpen === sid) {
+      setMenuOpen(null);
+    } else {
+      setMenuOpen(sid);
+    }
+  };
+
+  const copyWebhookSecret = async e => {
+    e.preventDefault();
+    setMenuOpen(null);
+
+    try {
+      await navigator.clipboard.writeText(webhookSecret);
+      dispatch({
+        type: 'ADD',
+        level: 'success',
+        message: `Webhook Secret copied to clipboard`,
+      });
+    } catch (err) {
+      dispatch({
+        type: 'ADD',
+        level: 'error',
+        message: `Unable to copy Webhook Secret.`,
+      });
+    }
+  };
+
+  const generateWebhookSecret = async e => {
+    e.preventDefault();
+    setShowConfirmSecret(true);
+    setMenuOpen(null);
+  };
+
+  const updateWebhookSecret = async () => {
+    try {
+      setGeneratingSecret(true);
+      const apiKeyResponse = await axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: `/Accounts/${accountSid}/WebhookSecret?regenerate=true`,
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+
+      if (apiKeyResponse.status === 200) {
+        setWebhookSecret(apiKeyResponse.data.webhook_secret);
+        dispatch({
+          type: 'ADD',
+          level: 'success',
+          message: 'Webhook signing secret was successfully generated.',
+        });
+      }
+    } catch (err) {
+      handleErrors({ err, history, dispatch });
+    } finally {
+      setGeneratingSecret(false);
+      setShowConfirmSecret(false);
+    }
+  };
+
   useEffect(() => {
     const getAccounts = async () => {
       try {
-        if (!localStorage.getItem('token')) {
+        if (!jwt) {
           history.push('/');
           dispatch({
             type: 'ADD',
@@ -72,7 +164,7 @@ const AccountForm = props => {
           baseURL: process.env.REACT_APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${jwt}`,
           },
         });
         promiseList.push(accountsPromise);
@@ -83,7 +175,7 @@ const AccountForm = props => {
             baseURL: process.env.REACT_APP_API_BASE_URL,
             url: '/Applications',
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              Authorization: `Bearer ${jwt}`,
             },
           });
           promiseList.push(applicationsPromise);
@@ -95,7 +187,7 @@ const AccountForm = props => {
             baseURL: process.env.REACT_APP_API_BASE_URL,
             url: '/ServiceProviders',
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              Authorization: `Bearer ${jwt}`,
             },
           });
           promiseList.push(serviceProvidersPromise);
@@ -155,6 +247,7 @@ const AccountForm = props => {
               setMethod((acc.registration_hook && acc.registration_hook.method  ) || 'post');
                 setUser((acc.registration_hook && acc.registration_hook.username) || '');
             setPassword((acc.registration_hook && acc.registration_hook.password) || '');
+            setWebhookSecret(acc.webhook_secret || '');
 
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
@@ -274,6 +367,7 @@ const AccountForm = props => {
           username: user.trim() || null,
           password: password || null,
         },
+        webhook_secret: webhookSecret || null,
       };
 
       if (props.type === 'add') {
@@ -293,7 +387,7 @@ const AccountForm = props => {
         baseURL: process.env.REACT_APP_API_BASE_URL,
         url,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${jwt}`,
         },
         data: axiosData,
       });
@@ -336,6 +430,19 @@ const AccountForm = props => {
       }
     }
   };
+
+  const menuItems = [
+    {
+      type: 'button',
+      name: 'Copy',
+      action: copyWebhookSecret,
+    },
+    {
+      type: 'button',
+      name: 'Generate new secret',
+      action: generateWebhookSecret,
+    },
+  ];
 
   return (
     showLoader
@@ -390,6 +497,22 @@ const AccountForm = props => {
           autoFocus={props.type === 'setup'}
           ref={refSipRealm}
         />
+        <Label htmlFor="webhookSecret">Webhook Secret</Label>
+        <StyledInputGroup>
+          <Input
+            large={props.type === 'setup'}
+            name="webhookSecret"
+            id="webhookSecret"
+            value={webhookSecret}
+            readOnly={true}
+          />
+          <TableMenu
+            sid="webhook"
+            open={menuOpen === "webhook"}
+            handleMenuOpen={handleMenuOpen}
+            menuItems={webhookSecret ? menuItems: menuItems.slice(1)}
+          />
+        </StyledInputGroup>
 
         {props.type === 'edit' && (
           <React.Fragment>
@@ -535,6 +658,23 @@ const AccountForm = props => {
           >
             Skip for now &mdash; I'll complete later
           </Link>
+        )}
+        {showConfirmSecret && (
+          <Modal
+            title={generatingSecret ? "" : "Generate new secret"}
+            loader={generatingSecret}
+            hideButtons={generatingSecret}
+            maskClosable={!generatingSecret}
+            actionText="OK"
+            content={
+              <ModalContainer>
+                <P>Press OK to generate a new webhook signing secret.</P>
+                <P>Note: this will immediately invalidate the old webhook signing secret.</P>
+              </ModalContainer>
+            }
+            handleCancel={() => setShowConfirmSecret(false)}
+            handleSubmit={updateWebhookSecret}
+          />
         )}
       </Form>
   );
