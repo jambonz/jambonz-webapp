@@ -21,6 +21,12 @@ import styled from 'styled-components/macro';
 
 const StyledInputGroup = styled(InputGroup)`
   position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+
+  & > label {
+    text-align: left;
+  }
 
   & > div:last-child {
     margin-top: -24px;
@@ -499,13 +505,7 @@ const AccountForm = props => {
         />
         <Label htmlFor="webhookSecret">Webhook Secret</Label>
         <StyledInputGroup>
-          <Input
-            large={props.type === 'setup'}
-            name="webhookSecret"
-            id="webhookSecret"
-            value={webhookSecret}
-            readOnly={true}
-          />
+          <Label>{webhookSecret || "123123"}</Label>
           <TableMenu
             sid="webhook"
             open={menuOpen === "webhook"}
