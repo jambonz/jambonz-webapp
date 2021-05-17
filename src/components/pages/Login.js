@@ -143,20 +143,20 @@ const Login = props => {
         return;
       }
 
-      const { sip_realm, registration_hook } = accounts[0];
+      // const { sip_realm, registration_hook } = accounts[0];
 
-      if (
-        (!sip_realm || !registration_hook) &&
-        !applications.length
-      ) {
-        history.push('/configure-account');
-        return;
-      }
+      // if (
+      //   (!sip_realm || !registration_hook) &&
+      //   !applications.length
+      // ) {
+      //   history.push('/configure-account');
+      //   return;
+      // }
 
-      if (!applications.length) {
-        history.push('/create-application');
-        return;
-      }
+      // if (!applications.length) {
+      //   history.push('/create-application');
+      //   return;
+      // }
 
       history.push('/internal/accounts');
 
