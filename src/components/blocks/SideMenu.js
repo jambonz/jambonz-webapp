@@ -34,14 +34,12 @@ const StyledNavLink = styled(NavLink).attrs({ activeClassName })`
   fill: #565656;
 
   &.${activeClassName} {
-    box-shadow: inset 3px 0 0 0 #D91C5C;
     color: #D91C5C;
     fill: #D91C5C;
   }
 
   &:focus {
     outline: 0;
-    box-shadow: inset 0 0 0 3px #D91C5C;
   }
 
   &:hover {
@@ -68,6 +66,13 @@ const MenuText = styled.span`
   flex-grow: 1;
   align-items: center;
   outline: 0;
+`;
+
+const StyledH2 = styled.h2`
+  margin: 3rem 0 1rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #757575;
 `;
 
 const supportAlerts = process.env.REACT_APP_SUPPORT_ALERTS;
@@ -102,16 +107,17 @@ const SideMenu = () => {
     <StyledSideMenu>
       <MenuLink to="/internal/accounts"      name="Accounts"      icon={<AccountsIcon     />} />
       <MenuLink to="/internal/applications"  name="Applications"  icon={<ApplicationsIcon />} />
-      <MenuLink to="/internal/sip-trunks"    name="SIP Trunks"    icon={<SipTrunksIcon    />} />
-      <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
-      {showMsTeams && (
-        <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
-      )}
       {supportRecentCalls && (
         <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
       )}
       {supportAlerts && (
         <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
+      )}
+      <StyledH2>Services</StyledH2>
+      <MenuLink to="/internal/sip-trunks"    name="Carriers"    icon={<SipTrunksIcon    />} />
+      <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
+      {showMsTeams && (
+        <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
       )}
       <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
     </StyledSideMenu>

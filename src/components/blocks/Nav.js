@@ -3,6 +3,9 @@ import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Button from '../elements/Button';
+import { Link as ReactRouterLink } from 'react-router-dom';
+
+import LogoJambong from "../../images/LogoJambong.svg";
 
 const StyledNav = styled.nav`
   position: relative;
@@ -14,18 +17,19 @@ const StyledNav = styled.nav`
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.12);
 `;
 
-const NavH1 = styled.h1`
-  margin: 1.25rem 0 1.25rem 2rem;
-  font-size: 1.5rem;
-  font-weight: normal;
-  line-height: 1em;
-`;
-
 const LogOutContainer = styled.div`
   margin-right: 3rem;
   @media (max-width: 34rem) {
     margin-right: 1rem;
   }
+`;
+
+const StyledLink = styled(ReactRouterLink)`
+  text-decoration: none;
+  margin: 0 0 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
 `;
 
 const Nav = () => {
@@ -46,7 +50,9 @@ const Nav = () => {
 
   return (
     <StyledNav>
-      <NavH1>Jambonz</NavH1>
+      <StyledLink to="/internal/accounts">
+        <img src={LogoJambong} alt="link-img" />
+      </StyledLink>
       {location.pathname !== '/' && (
         <LogOutContainer>
           <Button
