@@ -10,6 +10,7 @@ import Checkbox from '../elements/Checkbox';
 import InputGroup from '../elements/InputGroup';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
+import Select from '../elements/Select';
 import TrashButton from '../elements/TrashButton';
 import Loader from '../blocks/Loader';
 import sortSipGateways from '../../helpers/sortSipGateways';
@@ -30,12 +31,14 @@ const SipTrunkForm = props => {
   const refOutbound = useRef([]);
   const refTrash = useRef([]);
   const refAdd = useRef(null);
+  const refTechPrefix = useRef(null);
 
   // Form inputs
   const [ name,            setName            ] = useState('');
   const [ nameInvalid,     setNameInvalid     ] = useState(false);
   const [ description,     setDescription     ] = useState('');
   const [ e164,            setE164            ] = useState(false);
+  const [ application,     setApplication     ] = useState('');
   const [ authenticate,    setAuthenticate    ] = useState(false);
   const [ register,        setRegister        ] = useState(false);
   const [ username,        setUsername        ] = useState('');
@@ -57,6 +60,15 @@ const SipTrunkForm = props => {
       invalidOutbound: false,
     }
   ]);
+  const [requiredTechPrefix, setRequiredTechPrefix] = useState(false);
+  const [techPrefix, setTechPrefix] = useState('');
+  const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
+  const [suportSIP, setSupportSIP] = useState(false);
+  const [diversion, setDiversion] = useState("");
+  const [carrierActive, setCarrierActive] = useState(false);
+
+  const [ applicationValues, setApplicationValues ] = useState([]);
+  const [ accountData, setAccountData ] = useState({});
 
   const [ sipTrunks,    setSipTrunks    ] = useState([]);
   const [ sipTrunkSid,  setSipTrunkSid  ] = useState('');
@@ -91,15 +103,35 @@ const SipTrunkForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        const applicationsPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Applications',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const accountsPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Accounts',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         const promiseAllValues = await Promise.all([
           sipTrunksPromise,
           sipGatewaysPromise,
+          applicationsPromise,
+          accountsPromise,
         ]);
 
         const allSipTrunks   = promiseAllValues[0].data;
         const allSipGateways = promiseAllValues[1].data;
 
         setSipTrunks(allSipTrunks);
+        setApplicationValues(promiseAllValues[2].data);
+        setAccountData(promiseAllValues[3].data[0]);
 
         if (props.type === 'setup' && allSipTrunks.length > 1) {
           history.push('/internal/sip-trunks');
@@ -134,6 +166,7 @@ const SipTrunkForm = props => {
             setName(currentSipTrunk[0].name);
             setDescription(currentSipTrunk[0].description);
             setE164(currentSipTrunk[0].e164_leading_plus === 1);
+            setApplication(currentSipTrunk[0].application_sid || '');
             setAuthenticate(currentSipTrunk[0].register_username ? true : false);
             setRegister(currentSipTrunk[0].requires_register === 1);
             setUsername(currentSipTrunk[0].register_username || '');
@@ -151,6 +184,11 @@ const SipTrunkForm = props => {
               invalidOutbound: false,
             })));
             setSipTrunkSid(currentSipTrunk[0].voip_carrier_sid);
+            setTechPrefix(currentSipTrunk[0].tech_prefix || '');
+            setRequiredTechPrefix(currentSipTrunk[0].tech_prefix ? true : false);
+            setSupportSIP(currentSipTrunk[0].diversion ? true : false);
+            setDiversion(currentSipTrunk[0].diversion || '');
+            setCarrierActive(currentSipTrunk[0].is_active === 1);
           }
         }
         setShowLoader(false);
@@ -224,6 +262,7 @@ const SipTrunkForm = props => {
     setUsernameInvalid(false);
     setPasswordInvalid(false);
     setRealmInvalid(false);
+    setTechPrefixInvalid(false);
     const newSipGateways = [...sipGateways];
     newSipGateways.forEach((s, i) => {
       newSipGateways[i].invalidIp = false;
@@ -290,6 +329,15 @@ const SipTrunkForm = props => {
         setRealmInvalid(true);
         if (!focusHasBeenSet) {
           refRealm.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (techPrefix && techPrefix.length < 2) {
+        errorMessages.push('If registration is required, you must provide a Tech prefix with more than 2 characters.');
+        setTechPrefixInvalid(true);
+        if (!focusHasBeenSet) {
+          refTechPrefix.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -474,10 +522,15 @@ const SipTrunkForm = props => {
           name: name.trim(),
           description: description.trim(),
           e164_leading_plus: e164 ? 1 : 0,
+          application_sid: application || null,
           requires_register: register ? 1 : 0,
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
           register_sip_realm: register ? realm.trim() : null,
+          tech_prefix: techPrefix ? techPrefix.trim() : null,
+          diversion: diversion ? diversion.trim() : null,
+          is_active: carrierActive ? 1 : 0,
+          account_sid: accountData.account_sid,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
@@ -647,6 +700,17 @@ const SipTrunkForm = props => {
             onChange={e => setDescription(e.target.value)}
             placeholder="Optional"
           />
+
+          <Label htmlFor="active">active</Label>
+          <Checkbox
+            noLeftMargin
+            name="active"
+            id="active"
+            label=""
+            checked={carrierActive}
+            onChange={e => setCarrierActive(e.target.checked)}
+          />
+
           <Label htmlFor="e164">E.164 Syntax</Label>
           <Checkbox
             noLeftMargin
@@ -657,6 +721,29 @@ const SipTrunkForm = props => {
             checked={e164}
             onChange={e => setE164(e.target.checked)}
           />
+
+          <Label htmlFor="application">Application</Label>
+          <Select
+            name="application"
+            id="application"
+            value={application}
+            onChange={e => setApplication(e.target.value)}
+          >
+            <option value="">
+              {props.type === 'add'
+                ? '-- OPTIONAL: Application to invoke on calls arriving from this carrier --'
+                : '-- NONE --'
+              }
+            </option>
+            {applicationValues.map(a => (
+              <option
+                key={a.application_sid}
+                value={a.application_sid}
+              >
+                {a.name}
+              </option>
+            ))}
+          </Select>
 
           <hr style={{ margin: '0.5rem -2rem' }} />
 
@@ -728,6 +815,68 @@ const SipTrunkForm = props => {
                     null
                   )
                 }
+              </React.Fragment>
+            )
+          }
+
+          <hr style={{ margin: '0.5rem -2rem' }} />
+
+          {
+            requiredTechPrefix ? (
+              <React.Fragment>
+                <Label htmlFor="techPrefix">Tech prefix</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="techPrefix"
+                  id="techPrefix"
+                  value={techPrefix}
+                  onChange={e => setTechPrefix(e.target.value)}
+                  placeholder="Tech Prefix"
+                  invalid={techPrefixInvalid}
+                  ref={refTechPrefix}
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div></div>
+                <Button
+                  text
+                  formLink
+                  type="button"
+                  onClick={e => setRequiredTechPrefix(!requiredTechPrefix)}
+                >
+                  Does your carrier require a tech prefix on outbound calls?
+                </Button>
+              </React.Fragment>
+            )
+          }
+
+          <hr style={{ margin: '0.5rem -2rem' }} />
+
+          {
+            suportSIP ? (
+              <React.Fragment>
+                <Label htmlFor="diversion">Diversion</Label>
+                <Input
+                  large={props.type === 'setup'}
+                  name="diversion"
+                  id="diversion"
+                  value={diversion}
+                  onChange={e => setDiversion(e.target.value)}
+                  placeholder="Phone number or SIP URI"
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div></div>
+                <Button
+                  text
+                  formLink
+                  type="button"
+                  onClick={e => setSupportSIP(!suportSIP)}
+                >
+                  Does your carrier support the SIP Diversion header for authenticating the calling number?
+                </Button>
               </React.Fragment>
             )
           }
