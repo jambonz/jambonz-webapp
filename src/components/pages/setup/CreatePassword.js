@@ -241,6 +241,9 @@ const CreatePassword = () => {
           old_password,
           new_password: password,
         },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
       });
 
       sessionStorage.removeItem('user_sid');
