@@ -68,6 +68,7 @@ const SipTrunkForm = props => {
   const [carrierActive, setCarrierActive] = useState(false);
 
   const [ applicationValues, setApplicationValues ] = useState([]);
+  const [ accountData, setAccountData ] = useState({});
 
   const [ sipTrunks,    setSipTrunks    ] = useState([]);
   const [ sipTrunkSid,  setSipTrunkSid  ] = useState('');
@@ -110,10 +111,19 @@ const SipTrunkForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+        const accountsPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Accounts',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         const promiseAllValues = await Promise.all([
           sipTrunksPromise,
           sipGatewaysPromise,
           applicationsPromise,
+          accountsPromise,
         ]);
 
         const allSipTrunks   = promiseAllValues[0].data;
@@ -121,6 +131,7 @@ const SipTrunkForm = props => {
 
         setSipTrunks(allSipTrunks);
         setApplicationValues(promiseAllValues[2].data);
+        setAccountData(promiseAllValues[3].data[0]);
 
         if (props.type === 'setup' && allSipTrunks.length > 1) {
           history.push('/internal/sip-trunks');
@@ -322,7 +333,6 @@ const SipTrunkForm = props => {
         }
       }
 
-      console.log('******* techPrefix = ', techPrefix)
       if (techPrefix && techPrefix.length < 2) {
         errorMessages.push('If registration is required, you must provide a Tech prefix with more than 2 characters.');
         setTechPrefixInvalid(true);
@@ -520,6 +530,7 @@ const SipTrunkForm = props => {
           tech_prefix: techPrefix ? techPrefix.trim() : null,
           diversion: diversion ? diversion.trim() : null,
           is_active: carrierActive ? 1 : 0,
+          account_sid: accountData.account_sid,
         },
       });
       const voip_carrier_sid = voipCarrier.data.sid;
