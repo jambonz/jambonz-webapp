@@ -6,10 +6,8 @@ import { ShowMsTeamsDispatchContext } from '../../contexts/ShowMsTeamsContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
-import Select from '../elements/Select';
 import Checkbox from '../elements/Checkbox';
 import InputGroup from '../elements/InputGroup';
-import PasswordInput from '../elements/PasswordInput';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
@@ -23,18 +21,11 @@ const SettingsForm = () => {
   const refEnableMsTeams = useRef(null);
   const refSbcDomainName = useRef(null);
   const refSipRealm = useRef(null);
-  const refRegWebhook = useRef(null);
-  const refUser = useRef(null);
-  const refPassword = useRef(null);
 
   // Form inputs
   const [ enableMsTeams, setEnableMsTeams ] = useState(false);
   const [ sbcDomainName, setSbcDomainName ] = useState('');
   const [ sipRealm,      setSipRealm      ] = useState('');
-  const [ regWebhook,    setRegWebhook    ] = useState('');
-  const [ method,        setMethod        ] = useState('POST');
-  const [ user,          setUser          ] = useState('');
-  const [ password,      setPassword      ] = useState('');
 
   // For when user has data in sbcDomainName and then taps the checkbox to disable MsTeams
   const [ savedSbcDomainName, setSavedSbcDomainName ] = useState('');
@@ -43,15 +34,9 @@ const SettingsForm = () => {
   const [ invalidEnableMsTeams, setInvalidEnableMsTeams ] = useState(false);
   const [ invalidSbcDomainName, setInvalidSbcDomainName ] = useState(false);
   const [ invalidSipRealm,      setInvalidSipRealm      ] = useState(false);
-  const [ invalidRegWebhook,    setInvalidRegWebhook    ] = useState(false);
-  const [ invalidUser,          setInvalidUser          ] = useState(false);
-  const [ invalidPassword,      setInvalidPassword      ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
-
-  const [ showAuth, setShowAuth ] = useState(false);
-  const toggleAuth = () => setShowAuth(!showAuth);
 
   const [ serviceProviderSid, setServiceProviderSid ] = useState('');
 
@@ -83,17 +68,6 @@ const SettingsForm = () => {
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
         setSipRealm(sp.root_domain || '');
-        setRegWebhook((sp.registration_hook && sp.registration_hook.url) || '');
-        setMethod((sp.registration_hook && sp.registration_hook.method) || 'post');
-        setUser((sp.registration_hook && sp.registration_hook.username) || '');
-        setPassword((sp.registration_hook && sp.registration_hook.password) || '');
-
-        if (
-          (sp.registration_hook && sp.registration_hook.username) ||
-          (sp.registration_hook && sp.registration_hook.password)
-        ) {
-          setShowAuth(true);
-        }
 
         setShowLoader(false);
 
@@ -146,9 +120,6 @@ const SettingsForm = () => {
       setInvalidEnableMsTeams(false);
       setInvalidSbcDomainName(false);
       setInvalidSipRealm(false);
-      setInvalidRegWebhook(false);
-      setInvalidUser(false);
-      setInvalidPassword(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -177,38 +148,13 @@ const SettingsForm = () => {
         }
       }
 
-      if (!sipRealm && (regWebhook || user || password)) {
+      if (!sipRealm) {
         errorMessages.push(
           'You must provide a SIP Realm in order to provide a Registration Webhook'
         );
         setInvalidSipRealm(true);
         if (!focusHasBeenSet) {
           refSipRealm.current.focus();
-          focusHasBeenSet = true;
-        }
-      }
-
-      if (sipRealm && !regWebhook) {
-        errorMessages.push(
-          'You must provide a Registration Webhook when providing a SIP Realm'
-        );
-        setInvalidRegWebhook(true);
-        if (!focusHasBeenSet) {
-          refRegWebhook.current.focus();
-          focusHasBeenSet = true;
-        }
-      }
-
-      if ((user && !password) || (!user && password)) {
-        errorMessages.push('Username and password must be either both filled out or both empty.');
-        setInvalidUser(true);
-        setInvalidPassword(true);
-        if (!focusHasBeenSet) {
-          if (!user) {
-            refUser.current.focus();
-          } else {
-            refPassword.current.focus();
-          }
           focusHasBeenSet = true;
         }
       }
@@ -228,15 +174,6 @@ const SettingsForm = () => {
         ms_teams_fqdn: sbcDomainName.trim() || null,
         root_domain: sipRealm.trim() || null,
       };
-
-      if (regWebhook) {
-        data.registration_hook = {
-          url: regWebhook.trim() || null,
-          method,
-          username: user.trim() || null,
-          password: password || null,
-        };
-      }
 
       await axios({
         method: 'put',
@@ -329,103 +266,6 @@ const SettingsForm = () => {
           autoFocus={!enableMsTeams}
           ref={refSipRealm}
         />
-
-        <Label htmlFor="regWebhook">Registration Webhook</Label>
-        <InputGroup>
-          <Input
-            name="regWebhook"
-            id="regWebhook"
-            value={regWebhook}
-            onChange={e => setRegWebhook(e.target.value)}
-            placeholder="URL for your web application that handles registrations"
-            invalid={invalidRegWebhook}
-            ref={refRegWebhook}
-            disabled={!sipRealm && !regWebhook && !user && !password}
-            title={(
-              !sipRealm &&
-              !regWebhook &&
-              !user &&
-              !password &&
-              "You must provide a SIP Realm in order to enter a registration webhook"
-            ) || ""}
-          />
-
-          <Label
-            middle
-            htmlFor="method"
-          >
-            Method
-          </Label>
-          <Select
-            name="method"
-            id="method"
-            value={method}
-            onChange={e => setMethod(e.target.value)}
-            disabled={!sipRealm && !regWebhook && !user && !password}
-            title={(
-              !sipRealm &&
-              !regWebhook &&
-              !user &&
-              !password &&
-              "You must provide a SIP Realm in order to enter a registration webhook"
-            ) || ""}
-          >
-            <option value="POST">POST</option>
-            <option value="GET">GET</option>
-          </Select>
-        </InputGroup>
-
-        {showAuth ? (
-          <InputGroup>
-            <Label indented htmlFor="user">User</Label>
-            <Input
-              name="user"
-              id="user"
-              value={user || ''}
-              onChange={e => setUser(e.target.value)}
-              placeholder="Optional"
-              invalid={invalidUser}
-              ref={refUser}
-              disabled={!sipRealm && !regWebhook && !user && !password}
-              title={(
-                !sipRealm &&
-                !regWebhook &&
-                !user &&
-                !password &&
-                "You must provide a SIP Realm in order to enter a registration webhook"
-              ) || ""}
-            />
-            <Label htmlFor="password" middle>Password</Label>
-            <PasswordInput
-              allowShowPassword
-              name="password"
-              id="password"
-              password={password}
-              setPassword={setPassword}
-              setErrorMessage={setErrorMessage}
-              placeholder="Optional"
-              invalid={invalidPassword}
-              ref={refPassword}
-              disabled={!sipRealm && !regWebhook && !user && !password}
-              title={(
-                !sipRealm &&
-                !regWebhook &&
-                !user &&
-                !password &&
-                "You must provide a SIP Realm in order to enter a registration webhook"
-              ) || ""}
-            />
-          </InputGroup>
-        ) : (
-          <Button
-            text
-            formLink
-            type="button"
-            onClick={toggleAuth}
-          >
-            Use HTTP Basic Authentication
-          </Button>
-        )}
 
         {errorMessage && (
           <FormError grid message={errorMessage} />

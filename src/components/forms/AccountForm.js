@@ -505,7 +505,7 @@ const AccountForm = props => {
         />
         <Label htmlFor="webhookSecret">Webhook Secret</Label>
         <StyledInputGroup>
-          <Label>{webhookSecret || "123123"}</Label>
+          <Label>{webhookSecret || "None"}</Label>
           <TableMenu
             sid="webhook"
             open={menuOpen === "webhook"}
