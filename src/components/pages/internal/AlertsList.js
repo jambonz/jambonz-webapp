@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/react-in-jsx-scope */
 import React, { useContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -12,6 +13,7 @@ import Label from "../../../components/elements/Label";
 import Select from "../../../components/elements/Select";
 import AntdTable from "../../../components/blocks/AntdTable";
 import handleErrors from "../../../helpers/handleErrors";
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
 const StyledButton = styled(Button)`
   & > span {
@@ -23,11 +25,15 @@ const StyledInputGroup = styled(InputGroup)`
   padding: 1rem 1rem 0;
 `;
 
+const AccountSelect = styled(Select)`
+  min-width: 150px;
+`;
+
 const AlertsIndex = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const jwt = localStorage.getItem("token");
-  const account_sid = localStorage.getItem("user_sid");
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Table props
   const [alertsData, setAlertsData] = useState([]);
@@ -37,6 +43,8 @@ const AlertsIndex = () => {
   const [loading, setLoading] = useState(false);
 
   // Filter values
+  const [account, setAccount] = useState("");
+  const [accountList, setAccountList] = useState([]);
   const [attemptedAt, setAttemptedAt] = useState("today");
 
   //=============================================================================
@@ -87,6 +95,12 @@ const AlertsIndex = () => {
         count: rowCount,
       };
 
+      if (!account) {
+        setAlertsData([]);
+        setTotalCount(0);
+        return;
+      }
+
       setLoading(true);
 
       switch (attemptedAt) {
@@ -102,7 +116,7 @@ const AlertsIndex = () => {
       const alerts = await axios({
         method: "get",
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/Accounts/${account_sid}/Alerts`,
+        url: `/Accounts/${account}/Alerts`,
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
@@ -141,17 +155,67 @@ const AlertsIndex = () => {
       setCurrentPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attemptedAt]);
+  }, [account, attemptedAt]);
 
   useEffect(() => {
     getAlerts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, rowCount]);
 
+  useEffect(() => {
+    if (currentServiceProvider) {
+      const getAccounts = async () => {
+        let isMounted = true;
+
+        try {
+          setLoading(true);
+          const accountResponse = await axios({
+            method: "get",
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/ServiceProvider/${currentServiceProvider}/Accounts`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+
+          setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+          if (accountResponse.data.length > 0) {
+            setAccount(accountResponse.data[0].account_sid);
+          } else {
+            setAccount("");
+          }
+        } catch (err) {
+          handleErrors({ err, history, dispatch });
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      };
+
+      getAccounts();
+    } else {
+      setAccountList([]);
+    }
+  }, [currentServiceProvider]);
+
   return (
     <InternalTemplate title="Alerts">
       <StyledInputGroup flexEnd space>
-        <Label indented htmlFor="daterange">
+        <Label indented htmlFor="account">
+          Account
+        </Label>
+        <AccountSelect
+          name="account"
+          id="account"
+          value={account}
+          onChange={(e) => setAccount(e.target.value)}
+        >
+          {accountList.map((acc) => (
+            <option key={acc.account_sid} value={acc.account_sid}>{acc.name}</option>
+          ))}
+        </AccountSelect>
+        <Label middle htmlFor="daterange">
           Date
         </Label>
         <Select
