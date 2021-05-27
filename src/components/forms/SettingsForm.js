@@ -11,19 +11,24 @@ import InputGroup from '../elements/InputGroup';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
+import handleErrors from "../../helpers/handleErrors";
 
 const SettingsForm = () => {
   const history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const refreshMsTeamsData = useContext(ShowMsTeamsDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Refs
   const refEnableMsTeams = useRef(null);
   const refSbcDomainName = useRef(null);
+  const refServiceProviderName = useRef(null);
 
   // Form inputs
   const [ enableMsTeams, setEnableMsTeams ] = useState(false);
   const [ sbcDomainName, setSbcDomainName ] = useState('');
+  const [serviceProviderName, setServiceProviderName] = useState('');
 
   // For when user has data in sbcDomainName and then taps the checkbox to disable MsTeams
   const [ savedSbcDomainName, setSavedSbcDomainName ] = useState('');
@@ -31,6 +36,7 @@ const SettingsForm = () => {
   // Invalid form inputs
   const [ invalidEnableMsTeams, setInvalidEnableMsTeams ] = useState(false);
   const [ invalidSbcDomainName, setInvalidSbcDomainName ] = useState(false);
+  const [invalidServiceProviderName, setInvalidServiceProviderName] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -53,44 +59,30 @@ const SettingsForm = () => {
         const serviceProvidersResponse = await axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: '/ServiceProviders',
+          url: `/ServiceProviders/${currentServiceProvider}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
-        const sp = serviceProvidersResponse.data[0];
+        const sp = serviceProvidersResponse.data;
 
+        setServiceProviderName(sp.name || '');
         setServiceProviderSid(sp.service_provider_sid || '');
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
-
-        setShowLoader(false);
-
       } catch (err) {
-        if (err.response && err.response.status === 401) {
-          localStorage.removeItem('token');
-          sessionStorage.clear();
-          history.push('/');
-          dispatch({
-            type: 'ADD',
-            level: 'error',
-            message: 'Your session has expired. Please log in and try again.',
-          });
-        } else {
-          dispatch({
-            type: 'ADD',
-            level: 'error',
-            message: (err.response && err.response.data && err.response.data.msg) || 'Something went wrong, please try again.',
-          });
-          console.log(err.response || err);
-        }
+        handleErrors({ err, history, dispatch });
+      } finally {
         setShowLoader(false);
       }
     };
-    getSettingsData();
+
+    if (currentServiceProvider) {
+      getSettingsData();
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [currentServiceProvider]);
 
   const toggleMsTeams = (e) => {
     if (!e.target.checked && sbcDomainName) {
@@ -115,12 +107,23 @@ const SettingsForm = () => {
       setErrorMessage('');
       setInvalidEnableMsTeams(false);
       setInvalidSbcDomainName(false);
+      setInvalidServiceProviderName(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
       //=============================================================================
       // data checks
       //=============================================================================
+      if (!serviceProviderName.trim()) {
+        errorMessages.push(
+          'Please enter a Service Provider Name.'
+        );
+        setInvalidServiceProviderName(true);
+        if (!focusHasBeenSet) {
+          refServiceProviderName.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
       if (enableMsTeams && !sbcDomainName) {
         errorMessages.push(
           'You must provide an SBC Domain Name in order to enable Microsoft Teams Direct Routing'
@@ -156,6 +159,7 @@ const SettingsForm = () => {
       //=============================================================================
       const data = {
         ms_teams_fqdn: sbcDomainName.trim() || null,
+        name: serviceProviderName.trim(),
       };
 
       await axios({
@@ -211,6 +215,15 @@ const SettingsForm = () => {
         wideLabel
         onSubmit={handleSubmit}
       >
+        <Label htmlFor="serviceProviderName">Service Provider Name</Label>
+        <Input
+          name="serviceProviderName"
+          id="serviceProviderName"
+          value={serviceProviderName}
+          onChange={e => setServiceProviderName(e.target.value)}
+          invalid={invalidServiceProviderName}
+          ref={refServiceProviderName}
+        />
         <div>{/* needed for CSS grid layout */}</div>
         <Checkbox
           noLeftMargin
