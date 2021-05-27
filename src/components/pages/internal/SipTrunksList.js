@@ -1,4 +1,5 @@
-import React, { useEffect, useContext } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
@@ -6,18 +7,21 @@ import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import Sbcs from '../../blocks/Sbcs';
 import sortSipGateways from '../../../helpers/sortSipGateways';
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
 const SipTrunksList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
+
   useEffect(() => {
-    document.title = `SIP Trunks | Jambonz | Open Source CPAAS`;
-  });
+    document.title = `Carriers | Jambonz | Open Source CPAAS`;
+  }, []);
 
   //=============================================================================
   // Get sip trunks
   //=============================================================================
-  const getSipTrunks = async () => {
+  const getSipTrunks = useCallback(async () => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -33,7 +37,7 @@ const SipTrunksList = () => {
       const trunkResults = await axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/VoipCarriers',
+        url: `/ServiceProviders/${currentServiceProvider}/VoipCarriers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -63,8 +67,12 @@ const SipTrunksList = () => {
       const simplifiedSipTrunks = trunksWithGateways.map(t => ({
         sid:            t.voip_carrier_sid,
         name:           t.name,
-        description:    t.description,
-        gatewaysConcat: t.gateways.map(g => `${g.ipv4}:${g.port}`).join(', '),
+        status:    t.is_active === 1 ? "active" : "inactive",
+        gatewaysConcat: `${
+          t.gateways.filter((item) => item.inbound === 1).length
+        } inbound, ${
+          t.gateways.filter((item) => item.outbound === 1).length
+        } outbound`,
         gatewaysList:   t.gateways.map(g => `${g.ipv4}:${g.port}`),
         gatewaysSid:    t.gateways.map(g => g.sip_gateway_sid),
       }));
@@ -88,7 +96,7 @@ const SipTrunksList = () => {
         console.log(err.response || err);
       }
     }
-  };
+  }, [currentServiceProvider]);
 
   //=============================================================================
   // Delete sip trunk
@@ -97,13 +105,11 @@ const SipTrunksList = () => {
     const gatewayName = trunk.gatewaysList.length > 1
       ? 'SIP Gateways:'
       : 'SIP Gateway:';
-    const gatewayContent = trunk.gatewaysList.length > 1
-      ? trunk.gatewaysList
-      : trunk.gatewaysList[0];
-    return [
+
+      return [
       { name: 'Name:',        content: trunk.name        || '[none]' },
-      { name: 'Description:', content: trunk.description || '[none]' },
-      { name: gatewayName,    content: gatewayContent    || '[none]' },
+      { name: 'Status:', content: trunk.status || '[none]' },
+      { name: gatewayName, content: trunk.gatewaysConcat || '[none]' },
     ];
   };
   const deleteSipTrunk = async sipTrunkToDelete => {
@@ -160,19 +166,19 @@ const SipTrunksList = () => {
   //=============================================================================
   return (
     <InternalTemplate
-      title="SIP Trunks"
-      addButtonText="Add a SIP Trunk"
+      title="Carriers"
+      addButtonText="Add a Carrier"
       addButtonLink="/internal/sip-trunks/add"
       subtitle={<Sbcs />}
     >
       <TableContent
-        name="SIP trunk"
+        name="Carrier"
         urlParam="sip-trunks"
         getContent={getSipTrunks}
         columns={[
           { header: 'Name',         key: 'name'           },
-          { header: 'Description',  key: 'description'    },
-          { header: 'SIP Gateways', key: 'gatewaysConcat' },
+          { header: 'Status', key: 'status' },
+          { header: 'Gateways', key: 'gatewaysConcat' },
         ]}
         formatContentToDelete={formatSipTrunkToDelete}
         deleteContent={deleteSipTrunk}
