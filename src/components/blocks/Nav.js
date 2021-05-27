@@ -113,7 +113,11 @@ const Nav = () => {
         },
       });
 
-      setServiceProviders(serviceProvidersResponse.data || []);
+      setServiceProviders(
+        (serviceProvidersResponse.data || []).sort(
+          (a, b) => a.name.localeCompare(b.name)
+        )
+      );
 
       const isExisted = serviceProvidersResponse.data.find(item => item.service_provider_sid === currentServiceProvider);
       if (!isExisted) {
