@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -13,6 +14,7 @@ import Button from "../../../components/elements/Button";
 import InputGroup from "../../../components/elements/InputGroup";
 import Select from "../../../components/elements/Select";
 import handleErrors from "../../../helpers/handleErrors";
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
 const FilterLabel = styled.span`
   color: #231f20;
@@ -52,11 +54,16 @@ const StyledInputGroup = styled(InputGroup)`
   }
 `;
 
+const AccountSelect = styled(Select)`
+  min-width: 150px;
+`;
+
 const RecentCallsIndex = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const jwt = localStorage.getItem("token");
   const user_sid = localStorage.getItem("user_sid");
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Table props
   const [recentCallsData, setRecentCallsData] = useState([]);
@@ -68,6 +75,8 @@ const RecentCallsIndex = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
   // Filter values
+  const [account, setAccount] = useState("");
+  const [accountList, setAccountList] = useState([]);
   const [attemptedAt, setAttemptedAt] = useState("today");
   const [dirFilter, setDirFilter] = useState("io");
   const [answered, setAnswered] = useState("all");
@@ -286,12 +295,49 @@ const RecentCallsIndex = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, rowCount]);
 
+  useEffect(() => {
+    if (currentServiceProvider) {
+      const getAccounts = async () => {
+        const accountResponse = await axios({
+          method: "get",
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: `/ServiceProvider/${currentServiceProvider}/Accounts`,
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+
+        setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+        if (accountResponse.data.length > 0) {
+          setAccount(accountResponse.data[0].account_sid);
+        } else {
+          setAccount("");
+        }
+      };
+
+      getAccounts();
+    } else {
+      setAccountList([]);
+    }
+  }, [currentServiceProvider]);
+
   //=============================================================================
   // Render
   //=============================================================================
   return (
       <InternalTemplate title="Recent Calls">
         <StyledInputGroup flexEnd space>
+          <FilterLabel htmlFor="account">Account:</FilterLabel>
+          <AccountSelect
+            name="account"
+            id="account"
+            value={account}
+            onChange={(e) => setAccount(e.target.value)}
+          >
+            {accountList.map((acc) => (
+              <option key={acc.account_sid} value={acc.account_sid}>{acc.name}</option>
+            ))}
+          </AccountSelect>
           <FilterLabel htmlFor="daterange">Date:</FilterLabel>
           <Select
             name="daterange"
