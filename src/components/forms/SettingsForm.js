@@ -236,8 +236,6 @@ const SettingsForm = () => {
           title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
         />
 
-        <hr />
-
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}
