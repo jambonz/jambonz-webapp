@@ -62,7 +62,6 @@ const RecentCallsIndex = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const jwt = localStorage.getItem("token");
-  const user_sid = localStorage.getItem("user_sid");
   const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Table props
@@ -167,12 +166,18 @@ const RecentCallsIndex = () => {
   const getRecentCallsData = async (filter = {}) => {
     let isMounted = true;
 
+    if (!account) {
+      setRecentCallsData([]);
+      setTotalCount(0);
+      return;
+    }
+
     try {
       setLoading(true);
       const result = await axios({
         method: "get",
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/Accounts/${user_sid}/RecentCalls`,
+        url: `/Accounts/${account}/RecentCalls`,
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
@@ -288,7 +293,7 @@ const RecentCallsIndex = () => {
       setCurrentPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attemptedAt, dirFilter, answered]);
+  }, [account, attemptedAt, dirFilter, answered]);
 
   useEffect(() => {
     handleFilterChange();
@@ -298,20 +303,31 @@ const RecentCallsIndex = () => {
   useEffect(() => {
     if (currentServiceProvider) {
       const getAccounts = async () => {
-        const accountResponse = await axios({
-          method: "get",
-          baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: `/ServiceProvider/${currentServiceProvider}/Accounts`,
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        });
+        let isMounted = true;
 
-        setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
-        if (accountResponse.data.length > 0) {
-          setAccount(accountResponse.data[0].account_sid);
-        } else {
-          setAccount("");
+        try {
+          setLoading(true);
+          const accountResponse = await axios({
+            method: "get",
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/ServiceProvider/${currentServiceProvider}/Accounts`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+
+          setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+          if (accountResponse.data.length > 0) {
+            setAccount(accountResponse.data[0].account_sid);
+          } else {
+            setAccount("");
+          }
+        } catch (err) {
+          handleErrors({ err, history, dispatch });
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
         }
       };
 
