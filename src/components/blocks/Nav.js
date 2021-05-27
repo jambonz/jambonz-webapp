@@ -1,9 +1,15 @@
-import React, { useContext } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Button from '../elements/Button';
+import Label from '../elements/Label';
+import Select from '../elements/Select';
+import Form from '../elements/Form';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import { ServiceProviderValueContext, ServiceProviderMethodContext } from '../../contexts/ServiceProviderContext';
 
 import LogoJambong from "../../images/LogoJambong.svg";
 
@@ -32,10 +38,26 @@ const StyledLink = styled(ReactRouterLink)`
   align-items: center;
 `;
 
+const StyledForm = styled(Form)`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 50%;
+  transform: translate(-50%, 0);
+`;
+
+const StyledLabel = styled(Label)`
+  margin-right: 1rem;
+`;
+
 const Nav = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
+  const setCurrentServiceProvider = useContext(ServiceProviderMethodContext);
+  const [serviceProviders, setServiceProviders] = useState([]);
 
   const logOut = () => {
     localStorage.removeItem('token');
@@ -48,11 +70,66 @@ const Nav = () => {
     });
   };
 
+  const onChangeServiceProvider = (sp) => {
+    if (sp === "add") {
+
+    } else {
+      setCurrentServiceProvider(sp);
+    }
+  };
+
+  useEffect(() => {
+    const getServiceProviders = async () => {
+      const jwt = localStorage.getItem('token');
+      if (history.location.pathname !== '' && jwt) {
+        const serviceProvidersResponse = await axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/ServiceProviders',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+
+        setServiceProviders(serviceProvidersResponse.data || []);
+
+        const isExisted = serviceProvidersResponse.data.find(item => item.service_provider_sid === currentServiceProvider);
+        if (!isExisted) {
+          setCurrentServiceProvider(serviceProvidersResponse.data[0].service_provider_sid);
+        }
+      }
+    };
+
+    getServiceProviders();
+  }, [history.location.pathname]);
+
   return (
     <StyledNav>
       <StyledLink to="/internal/accounts">
         <img src={LogoJambong} alt="link-img" />
       </StyledLink>
+      {location.pathname !== '/' && (
+        <StyledForm>
+          <StyledLabel htmlFor="serviceProvider">Service Provider:</StyledLabel>
+          <Select
+            name="serviceProvider"
+            id="serviceProvider"
+            value={currentServiceProvider}
+            onChange={e => onChangeServiceProvider(e.target.value)}
+          >
+            {serviceProviders.map(a => (
+              <option
+                key={a.service_provider_sid}
+                value={a.service_provider_sid}
+              >
+                {a.name}
+              </option>
+            ))}
+            <option value="add" >Add New Service Provider</option>
+          </Select>
+        </StyledForm>
+
+      )}
       {location.pathname !== '/' && (
         <LogOutContainer>
           <Button
