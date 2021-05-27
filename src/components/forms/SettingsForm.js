@@ -20,12 +20,10 @@ const SettingsForm = () => {
   // Refs
   const refEnableMsTeams = useRef(null);
   const refSbcDomainName = useRef(null);
-  const refSipRealm = useRef(null);
 
   // Form inputs
   const [ enableMsTeams, setEnableMsTeams ] = useState(false);
   const [ sbcDomainName, setSbcDomainName ] = useState('');
-  const [ sipRealm,      setSipRealm      ] = useState('');
 
   // For when user has data in sbcDomainName and then taps the checkbox to disable MsTeams
   const [ savedSbcDomainName, setSavedSbcDomainName ] = useState('');
@@ -33,7 +31,6 @@ const SettingsForm = () => {
   // Invalid form inputs
   const [ invalidEnableMsTeams, setInvalidEnableMsTeams ] = useState(false);
   const [ invalidSbcDomainName, setInvalidSbcDomainName ] = useState(false);
-  const [ invalidSipRealm,      setInvalidSipRealm      ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -67,7 +64,6 @@ const SettingsForm = () => {
         setServiceProviderSid(sp.service_provider_sid || '');
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
-        setSipRealm(sp.root_domain || '');
 
         setShowLoader(false);
 
@@ -119,7 +115,6 @@ const SettingsForm = () => {
       setErrorMessage('');
       setInvalidEnableMsTeams(false);
       setInvalidSbcDomainName(false);
-      setInvalidSipRealm(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -148,17 +143,6 @@ const SettingsForm = () => {
         }
       }
 
-      if (!sipRealm) {
-        errorMessages.push(
-          'You must provide a SIP Realm in order to provide a Registration Webhook'
-        );
-        setInvalidSipRealm(true);
-        if (!focusHasBeenSet) {
-          refSipRealm.current.focus();
-          focusHasBeenSet = true;
-        }
-      }
-
       if (errorMessages.length > 1) {
         setErrorMessage(errorMessages);
         return;
@@ -172,7 +156,6 @@ const SettingsForm = () => {
       //=============================================================================
       const data = {
         ms_teams_fqdn: sbcDomainName.trim() || null,
-        root_domain: sipRealm.trim() || null,
       };
 
       await axios({
@@ -254,18 +237,6 @@ const SettingsForm = () => {
         />
 
         <hr />
-
-        <Label htmlFor="sipRealm">Fallback SIP Realm</Label>
-        <Input
-          name="sipRealm"
-          id="sipRealm"
-          value={sipRealm}
-          onChange={e => setSipRealm(e.target.value)}
-          placeholder="Domain name that accounts will use as a fallback"
-          invalid={invalidSipRealm}
-          autoFocus={!enableMsTeams}
-          ref={refSipRealm}
-        />
 
         {errorMessage && (
           <FormError grid message={errorMessage} />
