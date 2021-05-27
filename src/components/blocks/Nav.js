@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -8,6 +8,10 @@ import Button from '../elements/Button';
 import Label from '../elements/Label';
 import Select from '../elements/Select';
 import Form from '../elements/Form';
+import Input from '../elements/Input';
+import Modal from '../blocks/Modal';
+import FormError from '../blocks/FormError';
+import handleErrors from "../../helpers/handleErrors";
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { ServiceProviderValueContext, ServiceProviderMethodContext } from '../../contexts/ServiceProviderContext';
 
@@ -51,6 +55,18 @@ const StyledLabel = styled(Label)`
   margin-right: 1rem;
 `;
 
+const ModalContainer = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  padding: 1rem;
+  width: 500;
+`;
+
+const StyledFormError = styled(FormError)`
+  margin-top: 1rem;
+`;
+
 const Nav = () => {
   const history = useHistory();
   const location = useLocation();
@@ -58,6 +74,13 @@ const Nav = () => {
   const currentServiceProvider = useContext(ServiceProviderValueContext);
   const setCurrentServiceProvider = useContext(ServiceProviderMethodContext);
   const [serviceProviders, setServiceProviders] = useState([]);
+  const [showServiceProviderModal, setShowServiceProviderModal] = useState(false);
+  const [showModalLoader, setShowModalLoader] = useState(false);
+  const [serviceProviderName, setServiceProviderName] = useState("");
+  const [serviceProviderInvalid, setServiceProviderInvalid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const refServiceProvider = useRef(null);
 
   const logOut = () => {
     localStorage.removeItem('token');
@@ -72,34 +95,73 @@ const Nav = () => {
 
   const onChangeServiceProvider = (sp) => {
     if (sp === "add") {
-
+      setShowServiceProviderModal(true);
     } else {
       setCurrentServiceProvider(sp);
     }
   };
 
-  useEffect(() => {
-    const getServiceProviders = async () => {
-      const jwt = localStorage.getItem('token');
-      if (history.location.pathname !== '' && jwt) {
-        const serviceProvidersResponse = await axios({
-          method: 'get',
+  const getServiceProviders = async () => {
+    const jwt = localStorage.getItem('token');
+    if (history.location.pathname !== '' && jwt) {
+      const serviceProvidersResponse = await axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: '/ServiceProviders',
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+
+      setServiceProviders(serviceProvidersResponse.data || []);
+
+      const isExisted = serviceProvidersResponse.data.find(item => item.service_provider_sid === currentServiceProvider);
+      if (!isExisted) {
+        setCurrentServiceProvider(serviceProvidersResponse.data[0].service_provider_sid);
+      }
+    }
+  };
+
+  const handleAddServiceProvider = async () => {
+    if (serviceProviderName) {
+      setServiceProviderInvalid(false);
+      setErrorMessage("");
+
+      try {
+        setShowModalLoader(true);
+        const jwt = localStorage.getItem('token');
+
+        const serviceProviderResponse = await axios({
+          method: 'post',
           baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: '/ServiceProviders',
+          url: `/ServiceProviders`,
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
+          data: {
+            name: serviceProviderName,
+          },
         });
 
-        setServiceProviders(serviceProvidersResponse.data || []);
+        setCurrentServiceProvider(serviceProviderResponse.data.sid);
 
-        const isExisted = serviceProvidersResponse.data.find(item => item.service_provider_sid === currentServiceProvider);
-        if (!isExisted) {
-          setCurrentServiceProvider(serviceProvidersResponse.data[0].service_provider_sid);
-        }
+        getServiceProviders();
+        setShowServiceProviderModal(false);
+      } catch (err) {
+        handleErrors({ err, history, dispatch, setErrorMessage });
+      } finally {
+        setShowModalLoader(false);
       }
-    };
+    } else {
+      setServiceProviderInvalid(true);
+      setErrorMessage("Please enter a name for Service Provider");
+      if (refServiceProvider && refServiceProvider.current) {
+        refServiceProvider.current.focus();
+      }
+    }
+  };
 
+  useEffect(() => {
     getServiceProviders();
   }, [history.location.pathname]);
 
@@ -141,6 +203,37 @@ const Nav = () => {
             Log Out
           </Button>
         </LogOutContainer>
+      )}
+      {showServiceProviderModal && (
+        <Modal
+          title="Add New Service Provider"
+          loader={showModalLoader}
+          closeText="Close"
+          actionText="Add"
+          handleCancel={() => {
+            setServiceProviderName("");
+            setShowServiceProviderModal(false);
+          }}
+          handleSubmit={handleAddServiceProvider}
+          content={
+            <ModalContainer>
+              <StyledLabel htmlFor="name">Name:</StyledLabel>
+              <Input
+                name="name"
+                id="name"
+                value={serviceProviderName}
+                onChange={e => setServiceProviderName(e.target.value)}
+                placeholder="Service provider name"
+                invalid={serviceProviderInvalid}
+                autoFocus
+                ref={refServiceProvider}
+              />
+              {errorMessage && (
+                <StyledFormError grid message={errorMessage} />
+              )}
+            </ModalContainer>
+          }
+        />
       )}
     </StyledNav>
   );
