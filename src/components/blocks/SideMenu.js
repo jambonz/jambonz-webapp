@@ -102,17 +102,17 @@ const SideMenu = () => {
   }, []);
   return (
     <StyledSideMenu>
+      <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
       <MenuLink to="/internal/accounts"      name="Accounts"      icon={<AccountsIcon     />} />
       <MenuLink to="/internal/applications"  name="Applications"  icon={<ApplicationsIcon />} />
       <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
       <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
-      <StyledH2>Services</StyledH2>
+      <StyledH2>Bring Your Own Services</StyledH2>
       <MenuLink to="/internal/sip-trunks"    name="Carriers"    icon={<SipTrunksIcon    />} />
       <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
       {showMsTeams && (
         <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
       )}
-      <MenuLink to="/internal/settings" name="Settings" icon={<SettingsIcon />} />
     </StyledSideMenu>
   );
 };
