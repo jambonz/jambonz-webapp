@@ -75,9 +75,6 @@ const StyledH2 = styled.h2`
   color: #757575;
 `;
 
-const supportAlerts = process.env.REACT_APP_SUPPORT_ALERTS;
-const supportRecentCalls = process.env.REACT_APP_SUPPORT_RECENT_CALLS;
-
 const MenuLink = props => {
   const modalOpen = useContext(ModalStateContext);
   return (
@@ -107,12 +104,8 @@ const SideMenu = () => {
     <StyledSideMenu>
       <MenuLink to="/internal/accounts"      name="Accounts"      icon={<AccountsIcon     />} />
       <MenuLink to="/internal/applications"  name="Applications"  icon={<ApplicationsIcon />} />
-      {supportRecentCalls && (
-        <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
-      )}
-      {supportAlerts && (
-        <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
-      )}
+      <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
+      <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
       <StyledH2>Services</StyledH2>
       <MenuLink to="/internal/sip-trunks"    name="Carriers"    icon={<SipTrunksIcon    />} />
       <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
