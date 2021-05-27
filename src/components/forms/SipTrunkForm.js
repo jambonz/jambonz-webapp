@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
@@ -15,6 +16,52 @@ import TrashButton from '../elements/TrashButton';
 import Loader from '../blocks/Loader';
 import sortSipGateways from '../../helpers/sortSipGateways';
 import Link from '../elements/Link';
+
+const SIPGatewaysInputGroup = styled(InputGroup)`
+  grid-column: 1 / 3;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 80px 80px auto;
+
+  @media (max-width: 978.98px) {
+    grid-template-columns: 1fr 80px 80px auto;
+  }
+
+  @media (max-width: 899.98px) {
+    grid-template-columns: 1fr 100px 80px;
+  }
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: 1fr 80px 80px auto;
+  }
+
+  @media (max-width: 549.98px) {
+    grid-template-columns: 1fr 100px 80px;
+  }
+`;
+
+const StyledLabel = styled(Label)`
+  grid-column: 1 / 3;
+  text-align: left;
+`;
+
+const SIPGatewaysChecboxGroup = styled.div`
+  display: flex;
+
+  @media (max-width: 978.98px) {
+    & > *:first-child {
+      margin-left: -0.5rem;
+    }
+  }
+
+  @media (max-width: 549.98px) {
+    grid-column: 1 / 3;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  grid-column: 1 / 3;
+`;
 
 const SipTrunkForm = props => {
   const history = useHistory();
@@ -51,7 +98,7 @@ const SipTrunkForm = props => {
       ip: '',
       port: 5060,
       inbound: true,
-      outbound: true,
+      outbound: false,
       invalidIp: false,
       invalidPort: false,
       invalidInbound: false,
@@ -211,7 +258,7 @@ const SipTrunkForm = props => {
         ip: '',
         port: 5060,
         inbound: true,
-        outbound: true,
+        outbound: false,
         invalidIp: false,
         invalidPort: false,
         invalidInbound: false,
@@ -269,7 +316,7 @@ const SipTrunkForm = props => {
       let focusHasBeenSet = false;
 
       if (!name) {
-        errorMessages.push('Please enter a name for this SIP Trunk.');
+        errorMessages.push('Please enter a name for this Carrier.');
         setNameInvalid(true);
         if (!focusHasBeenSet) {
           refName.current.focus();
@@ -553,6 +600,7 @@ const SipTrunkForm = props => {
           const data = {
             ipv4: s.ip.trim(),
             port: s.port.toString().trim(),
+            netmask: s.netmask,
             inbound: s.inbound,
             outbound: s.outbound,
           };
@@ -841,37 +889,44 @@ const SipTrunkForm = props => {
             ? <div>{/* for CSS grid layout */}</div>
             : null
           }
+          <SIPGatewaysInputGroup>
+            <StyledLabel>{`Network Address / Port / Netmask`}</StyledLabel>
+          </SIPGatewaysInputGroup>
           {sipGateways.map((g, i) => (
-            <React.Fragment key={i}>
-              <Label htmlFor={`sipGatewaysIp[${i}]`}>IP Address</Label>
-              <InputGroup>
-                <Input
-                  large={props.type === 'setup'}
-                  name={`sipGatewaysIp[${i}]`}
-                  id={`sipGatewaysIp[${i}]`}
-                  value={sipGateways[i].ip}
-                  onChange={e => updateSipGateways(e, i, 'ip')}
-                  placeholder={'1.2.3.4'}
-                  invalid={sipGateways[i].invalidIp}
-                  ref={ref => refIp.current[i] = ref}
-                />
-                <Label
-                  middle
-                  htmlFor={`sipGatewaysPort[${i}]`}
-                >
-                  Port
-                </Label>
-                <Input
-                  large={props.type === 'setup'}
-                  width="5rem"
-                  name={`sipGatewaysPort[${i}]`}
-                  id={`sipGatewaysPort[${i}]`}
-                  value={sipGateways[i].port}
-                  onChange={e => updateSipGateways(e, i, 'port')}
-                  placeholder="5060"
-                  invalid={sipGateways[i].invalidPort}
-                  ref={ref => refPort.current[i] = ref}
-                />
+            <SIPGatewaysInputGroup key={i}>
+              <Input
+                large={props.type === 'setup'}
+                name={`sipGatewaysIp[${i}]`}
+                id={`sipGatewaysIp[${i}]`}
+                value={sipGateways[i].ip}
+                onChange={e => updateSipGateways(e, i, 'ip')}
+                placeholder={'1.2.3.4'}
+                invalid={sipGateways[i].invalidIp}
+                ref={ref => refIp.current[i] = ref}
+              />
+              <Input
+                large={props.type === 'setup'}
+                width="5rem"
+                name={`sipGatewaysPort[${i}]`}
+                id={`sipGatewaysPort[${i}]`}
+                value={sipGateways[i].port}
+                onChange={e => updateSipGateways(e, i, 'port')}
+                placeholder="5060"
+                invalid={sipGateways[i].invalidPort}
+                ref={ref => refPort.current[i] = ref}
+              />
+              <Select
+                name={`sipgatewaysNetmask[${i}]`}
+                id={`sipgatewaysNetmask[${i}]`}
+                value={sipGateways[i].netmask}
+                disabled={sipGateways[i].outbound}
+                onChange={e => updateSipGateways(e, i, 'netmask')}
+              >
+                {Array.from(Array(32 + 1).keys()).slice(1).reverse().map((item) => (
+                  <option value={item} key={item}>{item}</option>
+                ))}
+              </Select>
+              <SIPGatewaysChecboxGroup>
                 <Checkbox
                   large={props.type === 'setup'}
                   id={`inbound[${i}]`}
@@ -896,17 +951,17 @@ const SipTrunkForm = props => {
                   onClick={() => removeSipGateway(i)}
                   ref={ref => refTrash.current[i] = ref}
                 />
-              </InputGroup>
-            </React.Fragment>
+              </SIPGatewaysChecboxGroup>
+            </SIPGatewaysInputGroup>
           ))}
-          <Button
+          <StyledButton
             square
             type="button"
             onClick={addSipGateway}
             ref={refAdd}
           >
             +
-          </Button>
+          </StyledButton>
           {errorMessage && (
             <FormError grid message={errorMessage} />
           )}
@@ -937,7 +992,7 @@ const SipTrunkForm = props => {
               {props.type === 'setup'
                 ? 'Save and Continue'
                 : props.type === 'add'
-                  ? 'Add SIP Trunk'
+                  ? 'Add Carrier'
                   : 'Save'
               }
             </Button>
