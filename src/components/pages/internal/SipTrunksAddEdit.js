@@ -6,7 +6,7 @@ import Sbcs from '../../blocks/Sbcs';
 
 const SipTrunksAddEdit = () => {
   let { voip_carrier_sid } = useParams();
-  const pageTitle = voip_carrier_sid ? 'Edit SIP Trunk' : 'Add SIP Trunk';
+  const pageTitle = voip_carrier_sid ? 'Edit Carrier' : 'Add Carrier';
   useEffect(() => {
     document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
   });
@@ -16,7 +16,7 @@ const SipTrunksAddEdit = () => {
       title={pageTitle}
       subtitle={<Sbcs />}
       breadcrumbs={[
-        { name: 'SIP Trunks', url: '/internal/sip-trunks' },
+        { name: 'Carriers', url: '/internal/sip-trunks' },
         { name: pageTitle },
       ]}
     >

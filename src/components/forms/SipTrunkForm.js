@@ -36,9 +36,7 @@ const SipTrunkForm = props => {
   // Form inputs
   const [ name,            setName            ] = useState('');
   const [ nameInvalid,     setNameInvalid     ] = useState(false);
-  const [ description,     setDescription     ] = useState('');
   const [ e164,            setE164            ] = useState(false);
-  const [ application,     setApplication     ] = useState('');
   const [ authenticate,    setAuthenticate    ] = useState(false);
   const [ register,        setRegister        ] = useState(false);
   const [ username,        setUsername        ] = useState('');
@@ -67,7 +65,6 @@ const SipTrunkForm = props => {
   const [diversion, setDiversion] = useState("");
   const [carrierActive, setCarrierActive] = useState(false);
 
-  const [ applicationValues, setApplicationValues ] = useState([]);
   const [ accountData, setAccountData ] = useState({});
 
   const [ sipTrunks,    setSipTrunks    ] = useState([]);
@@ -103,14 +100,6 @@ const SipTrunkForm = props => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const applicationsPromise = axios({
-          method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: '/Applications',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
         const accountsPromise = axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -122,7 +111,6 @@ const SipTrunkForm = props => {
         const promiseAllValues = await Promise.all([
           sipTrunksPromise,
           sipGatewaysPromise,
-          applicationsPromise,
           accountsPromise,
         ]);
 
@@ -130,8 +118,7 @@ const SipTrunkForm = props => {
         const allSipGateways = promiseAllValues[1].data;
 
         setSipTrunks(allSipTrunks);
-        setApplicationValues(promiseAllValues[2].data);
-        setAccountData(promiseAllValues[3].data[0]);
+        setAccountData(promiseAllValues[2].data[0]);
 
         if (props.type === 'setup' && allSipTrunks.length > 1) {
           history.push('/internal/sip-trunks');
@@ -164,9 +151,7 @@ const SipTrunkForm = props => {
 
           if (currentSipTrunk.length) {
             setName(currentSipTrunk[0].name);
-            setDescription(currentSipTrunk[0].description);
             setE164(currentSipTrunk[0].e164_leading_plus === 1);
-            setApplication(currentSipTrunk[0].application_sid || '');
             setAuthenticate(currentSipTrunk[0].register_username ? true : false);
             setRegister(currentSipTrunk[0].requires_register === 1);
             setUsername(currentSipTrunk[0].register_username || '');
@@ -520,9 +505,7 @@ const SipTrunkForm = props => {
         },
         data: {
           name: name.trim(),
-          description: description.trim(),
           e164_leading_plus: e164 ? 1 : 0,
-          application_sid: application || null,
           requires_register: register ? 1 : 0,
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
@@ -686,21 +669,12 @@ const SipTrunkForm = props => {
             id="name"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="SIP trunk provider name"
+            placeholder="Carrier name"
             invalid={nameInvalid}
             autoFocus
             ref={refName}
           />
-          <Label htmlFor="description">Description</Label>
-          <Input
-            large={props.type === 'setup'}
-            name="description"
-            id="description"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            placeholder="Optional"
-          />
-
+          
           <Label htmlFor="active">active</Label>
           <Checkbox
             noLeftMargin
@@ -721,29 +695,6 @@ const SipTrunkForm = props => {
             checked={e164}
             onChange={e => setE164(e.target.checked)}
           />
-
-          <Label htmlFor="application">Application</Label>
-          <Select
-            name="application"
-            id="application"
-            value={application}
-            onChange={e => setApplication(e.target.value)}
-          >
-            <option value="">
-              {props.type === 'add'
-                ? '-- OPTIONAL: Application to invoke on calls arriving from this carrier --'
-                : '-- NONE --'
-              }
-            </option>
-            {applicationValues.map(a => (
-              <option
-                key={a.application_sid}
-                value={a.application_sid}
-              >
-                {a.name}
-              </option>
-            ))}
-          </Select>
 
           <hr style={{ margin: '0.5rem -2rem' }} />
 
