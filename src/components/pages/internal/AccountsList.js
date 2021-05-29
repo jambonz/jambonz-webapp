@@ -4,9 +4,11 @@ import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
 const AccountsList = () => {
   let history = useHistory();
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
   const dispatch = useContext(NotificationDispatchContext);
   useEffect(() => {
     document.title = `Accounts | Jambonz | Open Source CPAAS`;
@@ -26,10 +28,11 @@ const AccountsList = () => {
         });
         return;
       }
+      if(!currentServiceProvider) return [];
       const results = await axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/Accounts',
+        url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

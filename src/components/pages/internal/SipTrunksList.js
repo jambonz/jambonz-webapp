@@ -32,7 +32,7 @@ const SipTrunksList = () => {
         });
         return;
       }
-
+      if(!currentServiceProvider) return [];
       // Get all SIP trunks
       const trunkResults = await axios({
         method: 'get',
