@@ -11,6 +11,7 @@ import { ReactComponent as MsTeamsIcon } from '../../images/MsTeamsIcon.svg';
 import { ReactComponent as SettingsIcon } from '../../images/SettingsIcon.svg';
 import { ReactComponent as RecentCallsIcon  } from '../../images/RecentCallsIcon.svg';
 import { ReactComponent as AlertsIcon } from '../../images/AlertsIcon.svg';
+import { ReactComponent as SpeechIcon } from '../../images/SpeechIcon.svg';
 
 const StyledSideMenu = styled.div`
   width: 15rem;
@@ -109,6 +110,7 @@ const SideMenu = () => {
       <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
       <StyledH2>Bring Your Own Services</StyledH2>
       <MenuLink to="/internal/sip-trunks"    name="Carriers"    icon={<SipTrunksIcon    />} />
+      <MenuLink to="/internal/speech-services"    name="Speech"    icon={<SpeechIcon       />} />
       <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
       {showMsTeams && (
         <MenuLink to="/internal/ms-teams-tenants" name="MS Teams Tenants" icon={<MsTeamsIcon />} />
