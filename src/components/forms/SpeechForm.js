@@ -504,6 +504,7 @@ const SpeechServicesAddEdit = (props) => {
 
         {vendor === 'google' || vendor === 'aws' ? (
           <>
+            <div/>
             <Checkbox
               noLeftMargin
               name="useForTts"
@@ -514,6 +515,7 @@ const SpeechServicesAddEdit = (props) => {
               invalid={invalidUseForTts}
               ref={refUseForTts}
             />
+            <div/>
             <Checkbox
               noLeftMargin
               name="useForStt"
