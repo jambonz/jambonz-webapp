@@ -5,7 +5,7 @@ import { ModalStateContext } from '../../contexts/ModalContext';
 import { ShowMsTeamsStateContext, ShowMsTeamsDispatchContext } from '../../contexts/ShowMsTeamsContext';
 import { ReactComponent as AccountsIcon } from '../../images/AccountsIcon.svg';
 import { ReactComponent as ApplicationsIcon } from '../../images/ApplicationsIcon.svg';
-import { ReactComponent as SipTrunksIcon } from '../../images/SipTrunksIcon.svg';
+import { ReactComponent as CarriersIcon } from '../../images/CarriersIcon.svg';
 import { ReactComponent as PhoneNumbersIcon } from '../../images/PhoneNumbersIcon.svg';
 import { ReactComponent as MsTeamsIcon } from '../../images/MsTeamsIcon.svg';
 import { ReactComponent as SettingsIcon } from '../../images/SettingsIcon.svg';
@@ -109,7 +109,7 @@ const SideMenu = () => {
       <MenuLink to="/internal/recent-calls" name="Recent Calls" icon={<RecentCallsIcon  />} />
       <MenuLink to="/internal/alerts" name="Alerts" icon={<AlertsIcon  />} />
       <StyledH2>Bring Your Own Services</StyledH2>
-      <MenuLink to="/internal/sip-trunks"    name="Carriers"    icon={<SipTrunksIcon    />} />
+      <MenuLink to="/internal/carriers"    name="Carriers"    icon={<CarriersIcon    />} />
       <MenuLink to="/internal/speech-services"    name="Speech"    icon={<SpeechIcon       />} />
       <MenuLink to="/internal/phone-numbers" name="Phone Numbers" icon={<PhoneNumbersIcon />} />
       {showMsTeams && (

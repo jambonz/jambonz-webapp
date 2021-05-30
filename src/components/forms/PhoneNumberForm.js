@@ -128,7 +128,7 @@ const PhoneNumberForm = props => {
           history.push('/internal/accounts');
           return;
         } else if (!sipTrunks.length) {
-          history.push('/internal/sip-trunks');
+          history.push('/internal/carriers');
           return;
         }
 

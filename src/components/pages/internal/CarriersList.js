@@ -9,7 +9,7 @@ import Sbcs from '../../blocks/Sbcs';
 import sortSipGateways from '../../../helpers/sortSipGateways';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
-const SipTrunksList = () => {
+const CarriersList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const currentServiceProvider = useContext(ServiceProviderValueContext);
@@ -21,7 +21,7 @@ const SipTrunksList = () => {
   //=============================================================================
   // Get sip trunks
   //=============================================================================
-  const getSipTrunks = useCallback(async () => {
+  const getCarriers = useCallback(async () => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -64,7 +64,7 @@ const SipTrunksList = () => {
       });
 
 
-      const simplifiedSipTrunks = trunksWithGateways.map(t => ({
+      const simplifiedCarriers = trunksWithGateways.map(t => ({
         sid:            t.voip_carrier_sid,
         name:           t.name,
         status:    t.is_active === 1 ? "active" : "inactive",
@@ -76,7 +76,7 @@ const SipTrunksList = () => {
         gatewaysList:   t.gateways.map(g => `${g.ipv4}:${g.port}`),
         gatewaysSid:    t.gateways.map(g => g.sip_gateway_sid),
       }));
-      return(simplifiedSipTrunks);
+      return(simplifiedCarriers);
     } catch (err) {
       if (err.response && err.response.status === 401) {
         localStorage.removeItem('token');
@@ -101,7 +101,7 @@ const SipTrunksList = () => {
   //=============================================================================
   // Delete sip trunk
   //=============================================================================
-  const formatSipTrunkToDelete = trunk => {
+  const formatCarrierToDelete = trunk => {
     const gatewayName = trunk.gatewaysList.length > 1
       ? 'SIP Gateways:'
       : 'SIP Gateway:';
@@ -112,7 +112,7 @@ const SipTrunksList = () => {
       { name: gatewayName, content: trunk.gatewaysConcat || '[none]' },
     ];
   };
-  const deleteSipTrunk = async sipTrunkToDelete => {
+  const deleteCarrier = async carrierToDelete => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -124,7 +124,7 @@ const SipTrunksList = () => {
         return;
       }
       // delete associated gateways
-      for (const sid of sipTrunkToDelete.gatewaysSid) {
+      for (const sid of carrierToDelete.gatewaysSid) {
         await axios({
           method: 'delete',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -138,7 +138,7 @@ const SipTrunksList = () => {
       await axios({
         method: 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/VoipCarriers/${sipTrunkToDelete.sid}`,
+        url: `/VoipCarriers/${carrierToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -168,23 +168,23 @@ const SipTrunksList = () => {
     <InternalTemplate
       title="Carriers"
       addButtonText="Add a Carrier"
-      addButtonLink="/internal/sip-trunks/add"
+      addButtonLink="/internal/carriers/add"
       subtitle={<Sbcs />}
     >
       <TableContent
         name="Carrier"
-        urlParam="sip-trunks"
-        getContent={getSipTrunks}
+        urlParam="carriers"
+        getContent={getCarriers}
         columns={[
           { header: 'Name',         key: 'name'           },
           { header: 'Status', key: 'status' },
           { header: 'Gateways', key: 'gatewaysConcat' },
         ]}
-        formatContentToDelete={formatSipTrunkToDelete}
-        deleteContent={deleteSipTrunk}
+        formatContentToDelete={formatCarrierToDelete}
+        deleteContent={deleteCarrier}
       />
     </InternalTemplate>
   );
 };
 
-export default SipTrunksList;
+export default CarriersList;
