@@ -7,6 +7,7 @@ import handleErrors from '../../../helpers/handleErrors';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../../components/blocks/TableContent';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import Sbcs from '../../blocks/Sbcs';
 
 const SpeechServicesList = () => {
   let history = useHistory();
@@ -195,6 +196,7 @@ const SpeechServicesList = () => {
     <InternalTemplate
       type="normalTable"
       title="Speech Services"
+      subtitle={<Sbcs />}
       addButtonText="Add Speech Service"
       addButtonLink="/internal/speech-services/add"
     >

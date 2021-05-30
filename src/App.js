@@ -23,6 +23,7 @@ import RecentCallsList from './components/pages/internal/RecentCallsList';
 import AlertsList from './components/pages/internal/AlertsList';
 import InvalidRoute from './components/pages/InvalidRoute';
 import SpeechServicesList from './components/pages/internal/SpeechServicesList';
+import SpeechServicesAddEdit from './components/pages/internal/SpeechServicesAddEdit';
 
 import Notification from './components/blocks/Notification';
 import Nav from './components/blocks/Nav';
