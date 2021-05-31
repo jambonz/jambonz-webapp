@@ -14,8 +14,8 @@ import FormError from '../blocks/FormError';
 import handleErrors from "../../helpers/handleErrors";
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { ServiceProviderValueContext, ServiceProviderMethodContext } from '../../contexts/ServiceProviderContext';
-
 import LogoJambong from "../../images/LogoJambong.svg";
+import AddModalButton from '../elements/AddModalButton';
 
 const StyledNav = styled.nav`
   position: relative;
@@ -191,8 +191,11 @@ const Nav = () => {
                 {a.name}
               </option>
             ))}
-            <option value="add" >Add New Service Provider</option>
           </Select>
+          <AddModalButton
+            addButtonText="Add Service Provider"
+            onClick={()=>setShowServiceProviderModal(true)}
+          />
         </StyledForm>
 
       )}
