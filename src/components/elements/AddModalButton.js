@@ -19,7 +19,7 @@ const StyledLink = styled(FilteredLink)`
   text-decoration: none;
   color: #565656;
   margin-left: 1rem;
-
+  position: relative;
   & > span:first-child {
     display: flex;
     justify-content: center;
@@ -54,9 +54,8 @@ const Tooltip = styled.span`
     display: inline;
     position: absolute;
     white-space: nowrap;
-    right: calc(100% + 0.75rem);
-    top: 0.5rem;
-    padding: 0.75rem 1rem;
+    left: calc(100% + 0.75rem);
+    padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     background: #FFF;
     box-shadow: 0 0.375rem 0.25rem rgba(0, 0, 0, 0.12),
