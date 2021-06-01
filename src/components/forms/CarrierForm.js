@@ -347,7 +347,7 @@ const CarrierForm = (props) => {
     };
     getAPIData();
     // eslint-disable-next-line
-  }, []);
+  }, [history.location.pathname]);
 
   const addSipGateway = () => {
     const newSipGateways = [
