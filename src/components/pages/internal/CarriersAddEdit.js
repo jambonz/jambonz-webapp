@@ -10,7 +10,7 @@ const CarriersAddEdit = () => {
   useEffect(() => {
     document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
   });
-  
+
   return (
     <InternalTemplate
       type="form"

@@ -172,7 +172,7 @@ const AlertsIndex = () => {
           const accountResponse = await axios({
             method: "get",
             baseURL: process.env.REACT_APP_API_BASE_URL,
-            url: `/ServiceProvider/${currentServiceProvider}/Accounts`,
+            url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${jwt}`,
             },

@@ -301,7 +301,7 @@ const CarrierForm = (props) => {
           const result = await axios({
             method: 'get',
             baseURL: process.env.REACT_APP_API_BASE_URL,
-            url: `/ServiceProviders/${currentServiceProvider}/VoipCarriers`,
+            url: `/PredefinedCarriers`,
             headers: {
               Authorization: `Bearer ${jwt}`,
             },
