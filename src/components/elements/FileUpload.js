@@ -48,7 +48,7 @@ const StyledInput = styled.input`
   }
 `;
 
-const FileUpload = props => {
+const FileUpload = (props, ref) => {
   return (
     <Container>
       <StyledInput
