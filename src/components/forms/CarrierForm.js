@@ -195,7 +195,7 @@ const CarrierForm = (props) => {
   const [techPrefixInvalid, setTechPrefixInvalid ] = useState(false);
   const [suportSIP, setSupportSIP] = useState(false);
   const [diversion, setDiversion] = useState("");
-  const [carrierActive, setCarrierActive] = useState(false);
+  const [carrierActive, setCarrierActive] = useState(true);
 
   const [predefinedCarriers, setPredefinedCarriers] = useState([]);
 
