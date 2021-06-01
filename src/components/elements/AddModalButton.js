@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ModalStateContext } from '../../contexts/ModalContext';
 
@@ -66,9 +66,11 @@ const Tooltip = styled.span`
 
 const AddModalButton = props => {
   const modalOpen = useContext(ModalStateContext);
+  const history = useHistory();
   return (
     <StyledLink
       {...props}
+      to={history.location.pathname}
       tabIndex={modalOpen ? '-1' : ''}
     >
       <span tabIndex="-1">
