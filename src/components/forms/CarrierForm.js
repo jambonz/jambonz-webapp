@@ -656,7 +656,7 @@ const CarrierForm = (props) => {
         const results = await axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: '/SipGateways',
+          url: `/SipGateways?voip_carrier_sid=${carrierSid}`,
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
