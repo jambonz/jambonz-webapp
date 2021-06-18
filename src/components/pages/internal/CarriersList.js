@@ -43,26 +43,28 @@ const CarriersList = () => {
         },
       });
 
-      // Get all SIP gateways
-      const gatewayResults = await axios({
-        method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/SipGateways',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
       // Add appropriate gateways to each trunk
+      const trunkMap = {};
+      for (const t of trunkResults.data) {
+        const gws = await axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: `/SipGateways?voip_carrier_sid=${t.voip_carrier_sid}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        trunkMap[t.voip_carrier_sid] = gws.data;
+      }
+
       const trunksWithGateways = trunkResults.data.map(t => {
-        const gateways = gatewayResults.data.filter(g => t.voip_carrier_sid === g.voip_carrier_sid);
+        const gateways = trunkMap[t.voip_carrier_sid] || [];
         sortSipGateways(gateways);
         return {
           ...t,
           gateways,
         };
       });
-
 
       const simplifiedCarriers = trunksWithGateways.map(t => ({
         sid:            t.voip_carrier_sid,
