@@ -1,21 +1,90 @@
-import React, { useEffect, useContext } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useContext, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
+import styled from "styled-components/macro";
+import Select from "../../../components/elements/Select";
+import InputGroup from "../../../components/elements/InputGroup";
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import handleErrors from "../../../helpers/handleErrors";
+
+const FilterLabel = styled.span`
+  color: #231f20;
+  text-align: right;
+  font-size: 14px;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+`;
+
+const StyledInputGroup = styled(InputGroup)`
+  padding: 1rem 1rem 0;
+
+  @media (max-width: 767.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    grid-row-gap: 1rem;
+  }
+
+  @media (max-width: 575.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-row-gap: 1rem;
+  }
+`;
+
+const AccountSelect = styled(Select)`
+  min-width: 150px;
+`;
 
 const ApplicationsList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
+  const jwt = localStorage.getItem('token');
+  const [account, setAccount] = useState("");
+  const [accountList, setAccountList] = useState([]);
+
   useEffect(() => {
     document.title = `Applications | Jambonz | Open Source CPAAS`;
   });
 
+  useEffect(() => {
+    if (currentServiceProvider) {
+      const getAccounts = async () => {
+        try {
+          const accountResponse = await axios({
+            method: "get",
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+
+          setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+          if (accountResponse.data.length > 0) {
+            setAccount(accountResponse.data[0].account_sid);
+          } else {
+            setAccount("");
+          }
+        } catch (err) {
+          handleErrors({ err, history, dispatch });
+        }
+      };
+
+      getAccounts();
+    } else {
+      setAccountList([]);
+    }
+  }, [currentServiceProvider]);
+
   //=============================================================================
   // Get applications
   //=============================================================================
-  const getApplications = async () => {
+  const getApplications = useCallback(async () => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -26,18 +95,13 @@ const ApplicationsList = () => {
         });
         return;
       }
+      if (!account) {
+        return [];
+      }
       const applicationsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/Applications',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const accountsPromise = axios({
-        method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/Accounts',
+        url: `/Accounts/${account}/Applications`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -45,14 +109,11 @@ const ApplicationsList = () => {
 
       const promiseAllValues = await Promise.all([
         applicationsPromise,
-        accountsPromise,
       ]);
 
       const applications = promiseAllValues[0].data;
-      const accounts     = promiseAllValues[1].data;
 
       const simplifiedApplications = applications.map(app => {
-        const account = accounts.filter(acc => acc.account_sid === app.account_sid);
         return {
           sid:                app.application_sid,
           name:               app.name,
@@ -60,7 +121,7 @@ const ApplicationsList = () => {
           call_hook_url:      app.call_hook && app.call_hook.url,
           status_hook_url:    app.call_status_hook && app.call_status_hook.url,
           messaging_hook_url: app.messaging_hook && app.messaging_hook.url,
-          account:            account[0].name,
+          account:            app.account
         };
       });
       return(simplifiedApplications);
@@ -83,7 +144,7 @@ const ApplicationsList = () => {
         console.log(err.response || err);
       }
     }
-  };
+  }, [account]);
 
   //=============================================================================
   // Delete application
@@ -198,6 +259,19 @@ const ApplicationsList = () => {
       addButtonText="Add an Application"
       addButtonLink="/internal/applications/add"
     >
+      <StyledInputGroup flexEnd space>
+        <FilterLabel htmlFor="account">Account:</FilterLabel>
+        <AccountSelect
+          name="account"
+          id="account"
+          value={account}
+          onChange={(e) => setAccount(e.target.value)}
+        >
+          {accountList.map((acc) => (
+            <option key={acc.account_sid} value={acc.account_sid}>{acc.name}</option>
+          ))}
+        </AccountSelect>
+      </StyledInputGroup>
       <TableContent
         name="application"
         urlParam="applications"

@@ -10,16 +10,20 @@ import ConfigureSipTrunk from './components/pages/setup/ConfigureSipTrunk';
 import SetupComplete from './components/pages/setup/SetupComplete';
 import AccountsList from './components/pages/internal/AccountsList';
 import ApplicationsList from './components/pages/internal/ApplicationsList';
-import SipTrunksList from './components/pages/internal/SipTrunksList';
+import CarriersList from './components/pages/internal/CarriersList';
 import PhoneNumbersList from './components/pages/internal/PhoneNumbersList';
 import MsTeamsTenantsList from './components/pages/internal/MsTeamsTenantsList';
 import AccountsAddEdit from './components/pages/internal/AccountsAddEdit';
 import ApplicationsAddEdit from './components/pages/internal/ApplicationsAddEdit';
-import SipTrunksAddEdit from './components/pages/internal/SipTrunksAddEdit';
+import CarriersAddEdit from './components/pages/internal/CarriersAddEdit';
 import PhoneNumbersAddEdit from './components/pages/internal/PhoneNumbersAddEdit';
 import MsTeamsTenantsAddEdit from './components/pages/internal/MsTeamsTenantsAddEdit';
 import Settings from './components/pages/internal/Settings';
+import RecentCallsList from './components/pages/internal/RecentCallsList';
+import AlertsList from './components/pages/internal/AlertsList';
 import InvalidRoute from './components/pages/InvalidRoute';
+import SpeechServicesList from './components/pages/internal/SpeechServicesList';
+import SpeechServicesAddEdit from './components/pages/internal/SpeechServicesAddEdit';
 
 import Notification from './components/blocks/Notification';
 import Nav from './components/blocks/Nav';
@@ -44,7 +48,8 @@ function App() {
             <SideMenu />
             <Route exact path="/internal/accounts"><AccountsList /></Route>
             <Route exact path="/internal/applications"><ApplicationsList /></Route>
-            <Route exact path="/internal/sip-trunks"><SipTrunksList /></Route>
+            <Route exact path="/internal/carriers"><CarriersList /></Route>
+            <Route exact path="/internal/speech-services"><SpeechServicesList /></Route>
             <Route exact path="/internal/phone-numbers"><PhoneNumbersList /></Route>
             <Route exact path="/internal/ms-teams-tenants"><MsTeamsTenantsList /></Route>
 
@@ -63,10 +68,17 @@ function App() {
             </Route>
 
             <Route exact path={[
-              "/internal/sip-trunks/add",
-              "/internal/sip-trunks/:voip_carrier_sid/edit"
+              "/internal/carriers/add",
+              "/internal/carriers/:voip_carrier_sid/edit"
             ]}>
-              <SipTrunksAddEdit />
+              <CarriersAddEdit />
+            </Route>
+
+            <Route exact path={[
+              "/internal/speech-services/add",
+              "/internal/speech-services/:speech_service_sid/edit"
+            ]}>
+              <SpeechServicesAddEdit />
             </Route>
 
             <Route exact path={[
@@ -84,6 +96,9 @@ function App() {
             </Route>
 
             <Route exact path="/internal/settings"><Settings /></Route>
+
+            <Route exact path="/internal/recent-calls"><RecentCallsList /></Route>
+            <Route exact path="/internal/alerts"><AlertsList /></Route>
           </div>
         </Route>
 

@@ -123,25 +123,25 @@ const CreatePassword = () => {
             return;
           }
 
-          const { sip_realm, registration_hook } = accounts[0];
+          // const { sip_realm, registration_hook } = accounts[0];
 
-          if (
-            (!sip_realm || !registration_hook) &&
-            !applications.length
-          ) {
-            history.push('/configure-account');
-            return;
-          }
+          // if (
+          //   (!sip_realm || !registration_hook) &&
+          //   !applications.length
+          // ) {
+          //   history.push('/configure-account');
+          //   return;
+          // }
 
-          if (!applications.length) {
-            history.push('/create-application');
-            return;
-          }
+          // if (!applications.length) {
+          //   history.push('/create-application');
+          //   return;
+          // }
 
-          if (!voipCarriers.length) {
-            history.push('/configure-sip-trunk');
-            return;
-          }
+          // if (!voipCarriers.length) {
+          //   history.push('/configure-sip-trunk');
+          //   return;
+          // }
 
           history.push('/internal/accounts');
         }
@@ -241,6 +241,9 @@ const CreatePassword = () => {
           old_password,
           new_password: password,
         },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
       });
 
       sessionStorage.removeItem('user_sid');
@@ -250,7 +253,8 @@ const CreatePassword = () => {
         localStorage.setItem('token', response.data.token);
       }
 
-      history.push('/configure-account');
+      // history.push('/configure-account');
+      history.push('/internal/accounts');
 
     } catch(err) {
       console.log(err);

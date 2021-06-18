@@ -69,6 +69,7 @@ const Login = props => {
         // They're saved to sessionStorage so that the data does not persist.
         sessionStorage.setItem('user_sid', response.data.user_sid);
         sessionStorage.setItem('old_password', password);
+        localStorage.setItem('token', response.data.token);
         history.push('/create-password');
         return;
       }
@@ -143,20 +144,20 @@ const Login = props => {
         return;
       }
 
-      const { sip_realm, registration_hook } = accounts[0];
+      // const { sip_realm, registration_hook } = accounts[0];
 
-      if (
-        (!sip_realm || !registration_hook) &&
-        !applications.length
-      ) {
-        history.push('/configure-account');
-        return;
-      }
+      // if (
+      //   (!sip_realm || !registration_hook) &&
+      //   !applications.length
+      // ) {
+      //   history.push('/configure-account');
+      //   return;
+      // }
 
-      if (!applications.length) {
-        history.push('/create-application');
-        return;
-      }
+      // if (!applications.length) {
+      //   history.push('/create-application');
+      //   return;
+      // }
 
       history.push('/internal/accounts');
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import SetupTemplate from '../../templates/SetupTemplate';
-import SipTrunkForm from '../../forms/SipTrunkForm';
+import CarrierForm from '../../forms/CarrierForm';
 import Sbcs from '../../blocks/Sbcs';
 
 const ConfigureSipTrunk = () => {
@@ -14,7 +14,7 @@ const ConfigureSipTrunk = () => {
       subtitle={<Sbcs centered />}
       progress={3}
     >
-      <SipTrunkForm
+      <CarrierForm
         type="setup"
       />
     </SetupTemplate>

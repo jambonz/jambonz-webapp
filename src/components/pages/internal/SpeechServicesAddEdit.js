@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
-import SipTrunkForm from '../../forms/SipTrunkForm';
+import SpeechForm from '../../forms/SpeechForm';
 import Sbcs from '../../blocks/Sbcs';
 
-const SipTrunksAddEdit = () => {
-  let { voip_carrier_sid } = useParams();
-  const pageTitle = voip_carrier_sid ? 'Edit SIP Trunk' : 'Add SIP Trunk';
+const SpeechServicesAddEdit = () => {
+  let { speech_service_sid } = useParams();
+  const pageTitle = speech_service_sid ? 'Edit Speech Service' : 'Add Speech Service';
   useEffect(() => {
     document.title = `${pageTitle} | Jambonz | Open Source CPAAS`;
   });
@@ -16,16 +16,16 @@ const SipTrunksAddEdit = () => {
       title={pageTitle}
       subtitle={<Sbcs />}
       breadcrumbs={[
-        { name: 'SIP Trunks', url: '/internal/sip-trunks' },
+        { name: 'Speech Services', url: '/internal/speech-services' },
         { name: pageTitle },
       ]}
     >
-      <SipTrunkForm
-        type={voip_carrier_sid ? 'edit' : 'add'}
-        voip_carrier_sid={voip_carrier_sid}
+      <SpeechForm
+        type={speech_service_sid ? 'edit' : 'add'}
+        speech_service_sid={speech_service_sid}
       />
     </InternalTemplate>
   );
 };
 
-export default SipTrunksAddEdit;
+export default SpeechServicesAddEdit;

@@ -91,7 +91,7 @@ const TableContent = props => {
     };
     getNewContent();
     // eslint-disable-next-line
-  }, []);
+  }, [props.getContent]);
 
   //=============================================================================
   // Handle checkboxes

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { ModalStateContext } from '../../contexts/ModalContext';
 
@@ -8,9 +8,6 @@ const FilteredLink = ({ addButtonText, ...props }) => (
 );
 
 const StyledLink = styled(FilteredLink)`
-  position: absolute;
-  top: 7rem;
-  right: 3rem;
   display: flex;
   padding: 0;
   border: 0;
@@ -21,14 +18,14 @@ const StyledLink = styled(FilteredLink)`
   border-radius: 50%;
   text-decoration: none;
   color: #565656;
-
+  margin-left: 1rem;
+  position: relative;
   & > span:first-child {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    height: 3.5rem;
-    width: 3.5rem;
+    height: 2rem;
+    width: 2rem;
     border-radius: 50%;
     outline: 0;
     background: #D91C5C;
@@ -57,9 +54,8 @@ const Tooltip = styled.span`
     display: inline;
     position: absolute;
     white-space: nowrap;
-    right: calc(100% + 0.75rem);
-    top: 0.5rem;
-    padding: 0.75rem 1rem;
+    left: calc(100% + 0.75rem);
+    padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     background: #FFF;
     box-shadow: 0 0.375rem 0.25rem rgba(0, 0, 0, 0.12),
@@ -68,11 +64,13 @@ const Tooltip = styled.span`
   }
 `;
 
-const AddButton = props => {
+const AddModalButton = props => {
   const modalOpen = useContext(ModalStateContext);
+  const history = useHistory();
   return (
     <StyledLink
       {...props}
+      to={history.location.pathname}
       tabIndex={modalOpen ? '-1' : ''}
     >
       <span tabIndex="-1">
@@ -83,4 +81,4 @@ const AddButton = props => {
   );
 };
 
-export default AddButton;
+export default AddModalButton;
