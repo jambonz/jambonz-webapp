@@ -5,10 +5,13 @@ import { NotificationDispatchContext } from '../../../contexts/NotificationConte
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import phoneNumberFormat from '../../../helpers/phoneNumberFormat';
+import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 
 const PhoneNumbersList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
+
   useEffect(() => {
     document.title = `Phone Number Routing | Jambonz | Open Source CPAAS`;
   });
@@ -27,10 +30,11 @@ const PhoneNumbersList = () => {
         });
         return;
       }
+      if(!currentServiceProvider) return [];
       const phoneNumbersPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/PhoneNumbers',
+        url: `/ServiceProviders/${currentServiceProvider}/PhoneNumbers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -38,7 +42,7 @@ const PhoneNumbersList = () => {
       const accountsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/Accounts',
+        url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -46,7 +50,7 @@ const PhoneNumbersList = () => {
       const applicationsPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/Applications',
+        url: `/ServiceProviders/${currentServiceProvider}/Applications`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -54,7 +58,7 @@ const PhoneNumbersList = () => {
       const sipTrunksPromise = axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: '/VoipCarriers',
+        url: `/ServiceProviders/${currentServiceProvider}/VoipCarriers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
