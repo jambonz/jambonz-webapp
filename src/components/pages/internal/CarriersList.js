@@ -98,7 +98,7 @@ const CarriersList = () => {
         console.log(err.response || err);
       }
     }
-  }, [currentServiceProvider]);
+  }, [currentServiceProvider, history, dispatch]);
 
   //=============================================================================
   // Delete sip trunk

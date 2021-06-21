@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
@@ -14,12 +14,12 @@ const PhoneNumbersList = () => {
 
   useEffect(() => {
     document.title = `Phone Number Routing | Jambonz | Open Source CPAAS`;
-  });
+  }, []);
 
   //=============================================================================
   // Get phone numbers
   //=============================================================================
-  const getPhoneNumbers = async () => {
+  const getPhoneNumbers = useCallback(async () => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -124,7 +124,7 @@ const PhoneNumbersList = () => {
         console.log(err.response || err);
       }
     }
-  };
+  }, [currentServiceProvider, dispatch, history]);
 
   //=============================================================================
   // Delete phone number
