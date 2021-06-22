@@ -12,6 +12,8 @@ import Modal from '../blocks/Modal.js';
 import FormError from '../blocks/FormError.js';
 import CopyableText from '../elements/CopyableText';
 import ToggleText from '../blocks/ToggleText.js';
+import { ReactComponent as CheckGreen } from '../../images/CheckGreen.svg';
+import { ReactComponent as ErrorIcon } from '../../images/ErrorIcon.svg';
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -389,6 +391,11 @@ const TableContent = props => {
                           columnTitle = columnContent;
                         } else if (a[c.key].type === 'masked') {
                           columnContent = <ToggleText masked={a[c.key].masked} revealed={a[c.key].revealed} />;
+                        } else if (a[c.key].type === 'status') {
+                          columnContent = a[c.key].content === 'ok' ? <CheckGreen />
+                                        : a[c.key].content === 'fail' ? <ErrorIcon />
+                                        : a[c.key].content;
+                          columnTitle = a[c.key].title;
                         }
                       } else {
                         columnContent = a[c.key];
