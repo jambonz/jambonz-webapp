@@ -58,6 +58,72 @@ const AccountSelect = styled(Select)`
   min-width: 150px;
 `;
 
+const StyledPcapLink = styled.a`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  outline: 0;
+  height: 36px;
+  padding: 10px 26px 8px;
+  border-radius: 0.25rem;
+  background: #D91C5C;
+  color: #FFF;
+  text-decoration: none;
+
+  &:hover {
+    color: #FFF;
+    background: #BD164E;
+  }
+`;
+
+const PcapButton = ({call_data, account_sid, jwt_token}) => {
+  const [pcap, setPcap] = useState(null);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      baseURL: process.env.REACT_APP_API_BASE_URL,
+      url: `/Accounts/${account_sid}/RecentCalls/${call_data.sip_callid}`,
+      headers: {
+        Authorization: `Bearer ${jwt_token}`,
+      },
+    }).then((result_1) => {
+      if (result_1.status === 200 && result_1.data.total > 0) {
+        axios({
+          method: "get",
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: `/Accounts/${account_sid}/RecentCalls/${call_data.sip_callid}/pcap`,
+          headers: {
+            Authorization: `Bearer ${jwt_token}`,
+          },
+          responseType: "blob",
+        }).then((result_2) => {
+          setPcap({
+            dataUrl: URL.createObjectURL(result_2.data),
+            fileName: `callid-${call_data.sip_callid}.pcap`,
+          });
+        });
+      }
+    });
+  }, [call_data, account_sid, jwt_token, setPcap]);
+
+  if (pcap) {
+    return (
+      <Label>
+        <StyledPcapLink
+          href={pcap.dataUrl}
+          download={pcap.fileName}
+        >
+          Download pcap
+        </StyledPcapLink>
+      </Label>
+    );
+  }
+
+  return null;
+};
+
 const RecentCallsIndex = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
@@ -253,6 +319,7 @@ const RecentCallsIndex = () => {
             </React.Fragment>
           );
         })}
+        <PcapButton call_data={data} account_sid={account} jwt_token={jwt} />
       </ExpandedSection>
     );
   };
