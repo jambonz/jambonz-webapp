@@ -54,31 +54,43 @@ const AccountForm = props => {
   const refName = useRef(null);
   const refSipRealm = useRef(null);
   const refRegWebhook = useRef(null);
-  const refUser = useRef(null);
-  const refPassword = useRef(null);
+  const refRegUser = useRef(null);
+  const refRegPassword = useRef(null);
+  const refQueueWebhook = useRef(null);
+  const refQueueUser = useRef(null);
+  const refQueuePassword = useRef(null);
 
   // Form inputs
-  const [ name,       setName       ] = useState('');
-  const [ sipRealm,   setSipRealm   ] = useState('');
+  const [ name,          setName       ] = useState('');
+  const [ sipRealm,      setSipRealm   ] = useState('');
   const [ deviceCallingApplication, setDeviceCallingApplication ] = useState('');
-  const [ regWebhook, setRegWebhook ] = useState('');
-  const [ method,     setMethod     ] = useState('POST');
-  const [ user,       setUser       ] = useState('' || '');
-  const [ password,   setPassword   ] = useState('' || '');
+  const [ regWebhook,    setRegWebhook ] = useState('');
+  const [ regMethod,     setRegMethod     ] = useState('POST');
+  const [ regUser,       setRegUser       ] = useState('' || '');
+  const [ regPassword,   setRegPassword   ] = useState('' || '');
   const [ webhookSecret, setWebhookSecret ] = useState('');
+  const [ queueWebhook,  setQueueWebhook ] = useState('');
+  const [ queueMethod,   setQueueMethod     ] = useState('POST');
+  const [ queueUser,     setQueueUser       ] = useState('' || '');
+  const [ queuePassword, setQueuePassword   ] = useState('' || '');
 
   // Invalid form inputs
-  const [ invalidName,       setInvalidName       ] = useState(false);
-  const [ invalidSipRealm,   setInvalidSipRealm   ] = useState(false);
-  const [ invalidRegWebhook, setInvalidRegWebhook ] = useState(false);
-  const [ invalidUser,       setInvalidUser       ] = useState(false);
-  const [ invalidPassword,   setInvalidPassword   ] = useState(false);
+  const [ invalidName,          setInvalidName       ] = useState(false);
+  const [ invalidSipRealm,      setInvalidSipRealm   ] = useState(false);
+  const [ invalidRegWebhook,    setInvalidRegWebhook ] = useState(false);
+  const [ invalidRegUser,       setInvalidRegUser       ] = useState(false);
+  const [ invalidRegPassword,   setInvalidRegPassword   ] = useState(false);
+  const [ invalidQueueWebhook,  setInvalidQueueWebhook ] = useState(false);
+  const [ invalidQueueUser,     setInvalidQueueUser       ] = useState(false);
+  const [ invalidQueuePassword, setInvalidQueuePassword   ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
 
-  const [ showAuth, setShowAuth ] = useState(false);
-  const toggleAuth = () => setShowAuth(!showAuth);
+  const [ showRegAuth, setShowRegAuth ] = useState(false);
+  const [ showQueueAuth, setShowQueueAuth ] = useState(false);
+  const toggleRegAuth = () => setShowRegAuth(!showRegAuth);
+  const toggleQueueAuth = () => setShowQueueAuth(!showQueueAuth);
 
   const [ accounts, setAccounts ] = useState([]);
   const [ accountSid, setAccountSid ] = useState('');
@@ -250,16 +262,27 @@ const AccountForm = props => {
             setSipRealm(acc.sip_realm   || '');
           setDeviceCallingApplication(acc.device_calling_application_sid || '');
           setRegWebhook((acc.registration_hook && acc.registration_hook.url     ) || '');
-              setMethod((acc.registration_hook && acc.registration_hook.method  ) || 'post');
-                setUser((acc.registration_hook && acc.registration_hook.username) || '');
-            setPassword((acc.registration_hook && acc.registration_hook.password) || '');
+              setRegMethod((acc.registration_hook && acc.registration_hook.method  ) || 'post');
+                setRegUser((acc.registration_hook && acc.registration_hook.username) || '');
+            setRegPassword((acc.registration_hook && acc.registration_hook.password) || '');
+            setQueueWebhook((acc.queue_event_hook && acc.queue_event_hook.url     ) || '');
+              setQueueMethod((acc.queue_event_hook && acc.queue_event_hook.method  ) || 'post');
+                setQueueUser((acc.queue_event_hook && acc.queue_event_hook.username) || '');
+            setQueuePassword((acc.queue_event_hook && acc.queue_event_hook.password) || '');
             setWebhookSecret(acc.webhook_secret || '');
 
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
             (acc.registration_hook && acc.registration_hook.password)
           ) {
-            setShowAuth(true);
+            setShowRegAuth(true);
+          }
+
+          if (
+            (acc.queue_event_hook && acc.queue_event_hook.username) ||
+            (acc.queue_event_hook && acc.queue_event_hook.password)
+          ) {
+            setShowQueueAuth(true);
           }
         }
         setShowLoader(false);
@@ -298,8 +321,11 @@ const AccountForm = props => {
       setInvalidName(false);
       setInvalidSipRealm(false);
       setInvalidRegWebhook(false);
-      setInvalidUser(false);
-      setInvalidPassword(false);
+      setInvalidRegUser(false);
+      setInvalidRegPassword(false);
+      setInvalidQueueWebhook(false);
+      setInvalidQueueUser(false);
+      setInvalidQueuePassword(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -342,15 +368,29 @@ const AccountForm = props => {
       });
 
 
-      if ((user && !password) || (!user && password)) {
-        errorMessages.push('Username and password must be either both filled out or both empty.');
-        setInvalidUser(true);
-        setInvalidPassword(true);
+      if ((regUser && !regPassword) || (!regUser && regPassword)) {
+        errorMessages.push('Registration webhook username and password must be either both filled out or both empty.');
+        setInvalidRegUser(true);
+        setInvalidRegPassword(true);
         if (!focusHasBeenSet) {
-          if (!user) {
-            refUser.current.focus();
+          if (!regUser) {
+            refRegUser.current.focus();
           } else {
-            refPassword.current.focus();
+            refRegPassword.current.focus();
+          }
+          focusHasBeenSet = true;
+        }
+      }
+
+      if ((queueUser && !queuePassword) || (!queueUser && queuePassword)) {
+        errorMessages.push('Queue event webhook username and password must be either both filled out or both empty.');
+        setInvalidQueueUser(true);
+        setInvalidQueuePassword(true);
+        if (!focusHasBeenSet) {
+          if (!queueUser) {
+            refQueueUser.current.focus();
+          } else {
+            refQueuePassword.current.focus();
           }
           focusHasBeenSet = true;
         }
@@ -369,9 +409,15 @@ const AccountForm = props => {
         sip_realm: sipRealm.trim() || null,
         registration_hook: {
           url: regWebhook.trim(),
-          method: method,
-          username: user.trim() || null,
-          password: password || null,
+          method: regMethod,
+          username: regUser.trim() || null,
+          password: regPassword || null,
+        },
+        queue_event_hook: {
+          url: queueWebhook.trim(),
+          method: queueMethod,
+          username: queueUser.trim() || null,
+          password: queuePassword || null,
         },
         webhook_secret: webhookSecret || null,
       };
@@ -567,26 +613,26 @@ const AccountForm = props => {
             large={props.type === 'setup'}
             name="method"
             id="method"
-            value={method}
-            onChange={e => setMethod(e.target.value)}
+            value={regMethod}
+            onChange={e => setRegMethod(e.target.value)}
           >
             <option value="POST">POST</option>
             <option value="GET">GET</option>
           </Select>
         </InputGroup>
 
-        {showAuth ? (
+        {showRegAuth ? (
           <InputGroup>
             <Label indented htmlFor="user">User</Label>
             <Input
               large={props.type === 'setup'}
               name="user"
               id="user"
-              value={user || ''}
-              onChange={e => setUser(e.target.value)}
+              value={regUser || ''}
+              onChange={e => setRegUser(e.target.value)}
               placeholder="Optional"
-              invalid={invalidUser}
-              ref={refUser}
+              invalid={invalidRegUser}
+              ref={refRegUser}
             />
             <Label htmlFor="password" middle>Password</Label>
             <PasswordInput
@@ -594,12 +640,12 @@ const AccountForm = props => {
               allowShowPassword
               name="password"
               id="password"
-              password={password}
-              setPassword={setPassword}
+              password={regPassword}
+              setPassword={setRegPassword}
               setErrorMessage={setErrorMessage}
               placeholder="Optional"
-              invalid={invalidPassword}
-              ref={refPassword}
+              invalid={invalidRegPassword}
+              ref={refRegPassword}
             />
           </InputGroup>
         ) : (
@@ -607,7 +653,75 @@ const AccountForm = props => {
             text
             formLink
             type="button"
-            onClick={toggleAuth}
+            onClick={toggleRegAuth}
+          >
+            Use HTTP Basic Authentication
+          </Button>
+        )}
+
+        <Label htmlFor="queueWebhook">Queue Event Webhook</Label>
+        <InputGroup>
+          <Input
+            large={props.type === 'setup'}
+            name="queueWebhook"
+            id="queueWebhook"
+            value={queueWebhook}
+            onChange={e => setQueueWebhook(e.target.value)}
+            placeholder="URL to notify when a member joins or leaves a queue"
+            invalid={invalidQueueWebhook}
+            ref={refQueueWebhook}
+          />
+
+          <Label
+            middle
+            htmlFor="method"
+          >
+            Method
+          </Label>
+          <Select
+            large={props.type === 'setup'}
+            name="method"
+            id="method"
+            value={queueMethod}
+            onChange={e => setQueueMethod(e.target.value)}
+          >
+            <option value="POST">POST</option>
+          </Select>
+        </InputGroup>
+
+        {showQueueAuth ? (
+          <InputGroup>
+            <Label indented htmlFor="user">User</Label>
+            <Input
+              large={props.type === 'setup'}
+              name="user"
+              id="user"
+              value={queueUser || ''}
+              onChange={e => setQueueUser(e.target.value)}
+              placeholder="Optional"
+              invalid={invalidQueueUser}
+              ref={refQueueUser}
+            />
+            <Label htmlFor="password" middle>Password</Label>
+            <PasswordInput
+              large={props.type === 'setup'}
+              allowShowPassword
+              name="password"
+              id="password"
+              password={queuePassword}
+              setPassword={setQueuePassword}
+              setErrorMessage={setErrorMessage}
+              placeholder="Optional"
+              invalid={invalidQueuePassword}
+              ref={refQueuePassword}
+            />
+          </InputGroup>
+        ) : (
+          <Button
+            text
+            formLink
+            type="button"
+            onClick={toggleQueueAuth}
           >
             Use HTTP Basic Authentication
           </Button>

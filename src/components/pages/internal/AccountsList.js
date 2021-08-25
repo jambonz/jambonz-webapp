@@ -41,10 +41,8 @@ const AccountsList = () => {
         sid:         a.account_sid,
         name:        a.name,
         sip_realm:   a.sip_realm,
-        url:         a.registration_hook && a.registration_hook.url,
-        method:      a.registration_hook && a.registration_hook.method,
-        username:    a.registration_hook && a.registration_hook.username,
-        password:    a.registration_hook && a.registration_hook.password,
+        url_reg:     a.registration_hook && a.registration_hook.url,
+        url_queue:   a.queue_event_hook && a.queue_event_hook.url,
       }));
       return(simplifiedAccounts);
     } catch (err) {
@@ -75,7 +73,7 @@ const AccountsList = () => {
     const items = [
       { name: 'Name:'                  , content: account.name      || '[none]' },
       { name: 'SIP Realm:'             , content: account.sip_realm || '[none]' },
-      { name: 'Registration Webhook:'  , content: account.url       || '[none]' },
+      { name: 'Registration Webhook:'  , content: account.url_reg   || '[none]' },
     ];
     return items;
   };
@@ -221,7 +219,8 @@ const AccountsList = () => {
           { header: 'Name',                 key: 'name'      },
           { header: 'AccountSid',           key: 'sid'       },
           { header: 'SIP Realm',            key: 'sip_realm' },
-          { header: 'Registration Webhook', key: 'url'       },
+          { header: 'Registration Webhook', key: 'url_reg'       },
+          { header: 'Queue Event Webhook',  key: 'url_queue'       },
         ]}
         formatContentToDelete={formatAccountToDelete}
         deleteContent={deleteAccount}
