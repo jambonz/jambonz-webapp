@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
@@ -20,6 +21,7 @@ import CopyableText from '../elements/CopyableText';
 const ApplicationForm = props => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Refs
   const refName = useRef(null);
@@ -493,7 +495,7 @@ const ApplicationForm = props => {
                     -- Choose the account this application will be associated with --
                   </option>
                 )}
-                {accounts.map(a => (
+                {accounts.filter(a => a.service_provider_sid === currentServiceProvider).map(a => (
                   <option
                     key={a.account_sid}
                     value={a.account_sid}
