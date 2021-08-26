@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
@@ -49,6 +50,7 @@ const AccountForm = props => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const jwt = localStorage.getItem("token");
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Refs
   const refName = useRef(null);
@@ -94,7 +96,6 @@ const AccountForm = props => {
 
   const [ accounts, setAccounts ] = useState([]);
   const [ accountSid, setAccountSid ] = useState('');
-  const [ serviceProviderSid, setServiceProviderSid ] = useState('');
   const [ accountApplications, setAccountApplications ] = useState([]);
 
   const [ menuOpen, setMenuOpen ] = useState(null);
@@ -199,18 +200,6 @@ const AccountForm = props => {
           promiseList.push(applicationsPromise);
         }
 
-        if (props.type === 'add') {
-          const serviceProvidersPromise = axios({
-            method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
-            url: '/ServiceProviders',
-            headers: {
-              Authorization: `Bearer ${jwt}`,
-            },
-          });
-          promiseList.push(serviceProvidersPromise);
-        }
-
         const promiseAllValues = await Promise.all(promiseList);
 
         const accountsData = (promiseAllValues[0] && promiseAllValues[0].data) || [];
@@ -222,11 +211,6 @@ const AccountForm = props => {
             return app.account_sid === props.account_sid;
           });
           setAccountApplications(accountApplicationsData);
-        }
-
-        if (props.type === 'add') {
-          const serviceProviders = (promiseAllValues[1] && promiseAllValues[1].data) || '';
-          setServiceProviderSid(serviceProviders[0].service_provider_sid);
         }
 
         if (props.type === 'setup' && accountsData.length > 1) {
@@ -423,7 +407,7 @@ const AccountForm = props => {
       };
 
       if (props.type === 'add') {
-        axiosData.service_provider_sid = serviceProviderSid;
+        axiosData.service_provider_sid = currentServiceProvider;
       }
 
       if (props.type === 'edit') {
