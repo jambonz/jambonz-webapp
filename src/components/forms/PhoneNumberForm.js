@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
@@ -16,6 +17,7 @@ const PhoneNumberForm = props => {
 
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
+  const currentServiceProvider = useContext(ServiceProviderValueContext);
 
   // Refs
   const refPhoneNumber = useRef(null);
@@ -358,7 +360,10 @@ const PhoneNumberForm = props => {
             name="account"
             id="account"
             value={account}
-            onChange={e => setAccount(e.target.value)}
+            onChange={(e) => {
+              setAccount(e.target.value);
+              setApplication('');
+            }}
             invalid={invalidAccount}
             ref={refAccount}
           >
@@ -368,7 +373,7 @@ const PhoneNumberForm = props => {
             ) && (
               <option value="">-- Choose the account that this phone number should be associated with --</option>
             )}
-            {accountValues.map(a => (
+            {accountValues.filter(a => a.service_provider_sid === currentServiceProvider).map(a => (
               <option
                 key={a.account_sid}
                 value={a.account_sid}
@@ -391,7 +396,16 @@ const PhoneNumberForm = props => {
                 : '-- NONE --'
               }
             </option>
-            {applicationValues.map(a => (
+            {applicationValues.filter((a) => {
+              // Map an application to a service provider through it's account_sid
+              const acct = accountValues.find(ac => a.account_sid === ac.account_sid);
+
+              if (account) {
+                return a.account_sid === account;
+              }
+
+              return acct.service_provider_sid === currentServiceProvider;
+            }).map(a => (
               <option
                 key={a.application_sid}
                 value={a.application_sid}
