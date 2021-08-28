@@ -5,6 +5,7 @@ import styled from "styled-components/macro";
 import { Menu, Dropdown } from "antd";
 
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import PasswordInput from '../elements/PasswordInput';
@@ -18,7 +19,6 @@ import Loader from '../blocks/Loader';
 import sortSipGateways from '../../helpers/sortSipGateways';
 import Select from '../elements/Select';
 import handleErrors from "../../helpers/handleErrors";
-import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext'
 
 const StyledForm = styled(Form)`
   @media (max-width: 978.98px) {
@@ -185,6 +185,8 @@ const CarrierForm = (props) => {
   ]);
 
   const [ applicationValues, setApplicationValues ] = useState([]);
+  const [ accounts, setAccounts ] = useState([]);
+  const [ accountSid, setAccountSid ] = useState('');
 
   const [ carrierSid,   setCarrierSid   ] = useState('');
   const [ showLoader,   setShowLoader   ] = useState(true);
@@ -220,7 +222,16 @@ const CarrierForm = (props) => {
             Authorization: `Bearer ${jwt}`,
           },
         });
+        const accountsPromise = axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Accounts',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
         promises.push(applicationPromise);
+        promises.push(accountsPromise);
 
         if (type === 'edit') {
           const carrierPromise = axios({
@@ -248,11 +259,12 @@ const CarrierForm = (props) => {
         const promiseResponses = await Promise.all(promises);
 
         setApplicationValues(promiseResponses[0].data);
+        setAccounts(promiseResponses[1].data);
 
         if (type === 'edit') {
 
-          const carrier = promiseResponses[1].data;
-          const allSipGateways = promiseResponses[2].data;
+          const carrier = promiseResponses[2].data;
+          const allSipGateways = promiseResponses[3].data;
 
           if (!carrier) {
             isMounted = false;
@@ -274,6 +286,7 @@ const CarrierForm = (props) => {
           setName(carrier.name || '');
           setE164(carrier.e164_leading_plus === 1);
           setApplication(carrier.application_sid || '');
+          setAccountSid(carrier.account_sid || '');
           setAuthenticate(carrier.register_username ? true : false);
           setRegister(carrier.requires_register === 1);
           setUsername(carrier.register_username || '');
@@ -639,6 +652,7 @@ const CarrierForm = (props) => {
           name: name.trim() || null,
           e164_leading_plus: e164 ? 1 : 0,
           application_sid: application || null,
+          account_sid: accountSid || null,
           requires_register: register ? 1 : 0,
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
@@ -894,28 +908,64 @@ const CarrierForm = (props) => {
           onChange={e => setE164(e.target.checked)}
         />
 
-        <Label htmlFor="application">Application</Label>
+        <Label htmlFor="account">Used by</Label>
         <Select
-          name="application"
-          id="application"
-          value={application}
-          onChange={e => setApplication(e.target.value)}
+          name="account"
+          id="account"
+          value={accountSid}
+          onChange={(e) => {
+            setAccountSid(e.target.value);
+            setApplication('');
+          }}
         >
           <option value="">
-            {type === 'add'
-              ? '-- OPTIONAL: Application to invoke on calls arriving from this carrier --'
-              : '-- NONE --'
-            }
+            All accounts
           </option>
-          {applicationValues.map(a => (
+          {accounts.filter(a => a.service_provider_sid === currentServiceProvider).map(a => (
             <option
-              key={a.application_sid}
-              value={a.application_sid}
+              key={a.account_sid}
+              value={a.account_sid}
             >
               {a.name}
             </option>
           ))}
         </Select>
+
+        {accountSid && (
+          <>
+            <Label htmlFor="application">Default Application</Label>
+            <Select
+              name="application"
+              id="application"
+              value={application}
+              onChange={e => setApplication(e.target.value)}
+            >
+              <option value="">
+                {type === 'add'
+                  ? '-- OPTIONAL: Application to invoke on calls arriving from this carrier --'
+                  : '-- NONE --'
+                }
+              </option>
+              {applicationValues.filter((a) => {
+                // Map an application to a service provider through it's account_sid
+                const acct = accounts.find(ac => a.account_sid === ac.account_sid);
+    
+                if (accountSid) {
+                  return a.account_sid === accountSid;
+                }
+    
+                return acct.service_provider_sid === currentServiceProvider;
+              }).map(a => (
+                <option
+                  key={a.application_sid}
+                  value={a.application_sid}
+                >
+                  {a.name}
+                </option>
+              ))}
+            </Select>
+          </>
+        )}
 
         <hr style={{ margin: '0.5rem -2rem' }} />
 

@@ -120,7 +120,7 @@ const ApplicationForm = props => {
           applicationsPromise,
         ]);
 
-        const accounts     = promiseAllValues[0].data;
+        const accounts     = promiseAllValues[0].data.filter(a => a.service_provider_sid === currentServiceProvider);
         const applications = promiseAllValues[1].data;
 
         setAccounts(accounts);
