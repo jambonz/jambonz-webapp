@@ -8,6 +8,7 @@ import handleErrors from '../../helpers/handleErrors';
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
+import Select from '../elements/Select';
 import InputGroup from '../elements/InputGroup';
 import PasswordInput from '../elements/PasswordInput';
 import Radio from '../elements/Radio';
@@ -79,6 +80,8 @@ const SpeechServicesAddEdit = (props) => {
   const [ secretAccessKey,     setSecretAccessKey     ] = useState('');
   const [ useForTts,           setUseForTts           ] = useState(false);
   const [ useForStt,           setUseForStt           ] = useState(false);
+  const [ accounts,            setAccounts            ] = useState([]);
+  const [ accountSid,          setAccountSid          ] = useState('');
 
   // Invalid form inputs
   const [ invalidVendorGoogle,    setInvalidVendorGoogle    ] = useState(false);
@@ -100,6 +103,17 @@ const SpeechServicesAddEdit = (props) => {
     const getAPIData = async () => {
       let isMounted = true;
       try {
+        const accountsResponse = await axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Accounts',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+
+        setAccounts(accountsResponse.data);
+
         if (type === 'edit') {
           const speechCredential = await axios({
             method: 'get',
@@ -119,6 +133,7 @@ const SpeechServicesAddEdit = (props) => {
           } catch (err) {
           }
 
+          setAccountSid(          speechCredential.data.account_sid       || '');
           setVendor(              speechCredential.data.vendor            || undefined);
           setServiceKey(          serviceKeyJson                          || '');
           setDisplayedServiceKey( displayedServiceKeyJson                 || '');
@@ -290,6 +305,8 @@ const SpeechServicesAddEdit = (props) => {
           secret_access_key: vendor === 'aws' ? secretAccessKey : null,
           use_for_tts: useForTts,
           use_for_stt: useForStt,
+          service_provider_sid: accountSid ? null : currentServiceProvider,
+          account_sid: accountSid || null,
         }
       });
 
@@ -451,6 +468,26 @@ const SpeechServicesAddEdit = (props) => {
             disabled={type === 'edit'}
           />
         </InputGroup>
+
+        <Label htmlFor="account">Used by</Label>
+        <Select
+          name="account"
+          id="account"
+          value={accountSid}
+          onChange={e => setAccountSid(e.target.value)}
+        >
+          <option value="">
+            All accounts
+          </option>
+          {accounts.filter(a => a.service_provider_sid === currentServiceProvider).map(a => (
+            <option
+              key={a.account_sid}
+              value={a.account_sid}
+            >
+              {a.name}
+            </option>
+          ))}
+        </Select>
 
         {vendor === 'google' ? (
           <>
