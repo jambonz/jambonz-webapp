@@ -1,27 +1,97 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useContext, useCallback } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import styled from 'styled-components/macro';
+
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import Sbcs from '../../blocks/Sbcs';
 import sortSipGateways from '../../../helpers/sortSipGateways';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import InputGroup from '../../../components/elements/InputGroup';
+import Select from '../../../components/elements/Select';
+import handleErrors from '../../../helpers/handleErrors';
+
+const FilterLabel = styled.span`
+  color: #231f20;
+  text-align: right;
+  font-size: 14px;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+`;
+
+const StyledInputGroup = styled(InputGroup)`
+  padding: 1rem 1rem 0;
+
+  @media (max-width: 767.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    grid-row-gap: 1rem;
+  }
+
+  @media (max-width: 575.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-row-gap: 1rem;
+  }
+`;
+
+const AccountSelect = styled(Select)`
+  min-width: 150px;
+`;
 
 const CarriersList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const currentServiceProvider = useContext(ServiceProviderValueContext);
+  const location = useLocation();
+  const locationAccountSid = new URLSearchParams(location.search).get('account_sid');
+
+  const [accountSid, setAccountSid] = useState('');
+  const [accountList, setAccountList] = useState([]);
 
   useEffect(() => {
     document.title = `Carriers | Jambonz | Open Source CPAAS`;
   }, []);
 
   //=============================================================================
+  // Get accounts
+  //=============================================================================
+  useEffect(() => {
+    if (currentServiceProvider) {
+      const getAccounts = async () => {
+        try {
+          const accountResponse = await axios({
+            method: "get",
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          if (locationAccountSid) {
+            setAccountSid(locationAccountSid);
+          }
+
+          setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+        } catch (err) {
+          handleErrors({ err, history, dispatch });
+        }
+      };
+
+      getAccounts();
+    } else {
+      setAccountList([]);
+    }
+  }, [currentServiceProvider]);
+
+  //=============================================================================
   // Get sip trunks
   //=============================================================================
-  const getCarriers = useCallback(async () => {
+  const getCarriers = async () => {
     try {
       if (!localStorage.getItem('token')) {
         history.push('/');
@@ -33,6 +103,7 @@ const CarriersList = () => {
         return;
       }
       if(!currentServiceProvider) return [];
+      if (!accountList.length) return [];
       // Get all SIP trunks
       const trunkResults = await axios({
         method: 'get',
@@ -43,9 +114,13 @@ const CarriersList = () => {
         },
       });
 
+      const trunkResultsFiltered = accountSid ? 
+        trunkResults.data.filter(t => t.account_sid === accountSid) : 
+        trunkResults.data.filter(t => t.account_sid === null);
+
       // Add appropriate gateways to each trunk
       const trunkMap = {};
-      for (const t of trunkResults.data) {
+      for (const t of trunkResultsFiltered) {
         const gws = await axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -57,7 +132,7 @@ const CarriersList = () => {
         trunkMap[t.voip_carrier_sid] = gws.data;
       }
 
-      const trunksWithGateways = trunkResults.data.map(t => {
+      const trunksWithGateways = trunkResultsFiltered.map(t => {
         const gateways = trunkMap[t.voip_carrier_sid] || [];
         sortSipGateways(gateways);
         return {
@@ -98,7 +173,7 @@ const CarriersList = () => {
         console.log(err.response || err);
       }
     }
-  }, [currentServiceProvider, history, dispatch]);
+  };
 
   //=============================================================================
   // Delete sip trunk
@@ -173,6 +248,22 @@ const CarriersList = () => {
       addButtonLink="/internal/carriers/add"
       subtitle={<Sbcs />}
     >
+      <StyledInputGroup flexEnd space>
+        <FilterLabel htmlFor="account">Used By:</FilterLabel>
+        <AccountSelect
+          name="account"
+          id="account"
+          value={accountSid}
+          onChange={e => setAccountSid(e.target.value)}
+        >
+          <option value="">
+            All accounts
+          </option>
+          {accountList.map((acc) => (
+            <option key={acc.account_sid} value={acc.account_sid}>{acc.name}</option>
+          ))}
+        </AccountSelect>
+      </StyledInputGroup>
       <TableContent
         name="Carrier"
         urlParam="carriers"

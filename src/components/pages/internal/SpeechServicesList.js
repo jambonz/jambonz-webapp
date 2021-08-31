@@ -101,23 +101,17 @@ const SpeechServicesList = () => {
 
       if(!currentServiceProvider) return [];
 
-      const speechServices = accountSid ? 
-        await axios({
-          method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: `/Accounts/${accountSid}/SpeechCredentials`,
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        }) :
-        await axios({
-          method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`,
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        });
+      const speechApiUrl = accountSid ? 
+        `/Accounts/${accountSid}/SpeechCredentials` : 
+        `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`;
+      const speechServices = await axios({
+        method: 'get',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: speechApiUrl,
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
 
       const credentialTestPromises = speechServices.data.map(s => {
         if (s.use_for_stt || s.use_for_tts) {
