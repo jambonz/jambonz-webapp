@@ -400,7 +400,11 @@ const SpeechServicesAddEdit = (props) => {
       // If successful, go to speech services
       //===============================================
       isMounted = false;
-      history.push('/internal/speech-services');
+      if (accountSid) {
+        history.push(`/internal/speech-services?account_sid=${accountSid}`);
+      } else {
+        history.push('/internal/speech-services');
+      }
       const dispatchMessage = type === 'add'
         ? 'Speech service created successfully'
         : 'Speech service updated successfully';
