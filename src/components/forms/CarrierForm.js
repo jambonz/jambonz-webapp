@@ -765,7 +765,11 @@ const CarrierForm = (props) => {
       }
 
       isMounted = false;
-      history.push('/internal/carriers');
+      if (accountSid) {
+        history.push(`/internal/carriers?account_sid=${accountSid}`);
+      } else {
+        history.push('/internal/carriers');
+      }
       const dispatchMessage = type === 'add'
         ? 'Carrier created successfully'
         : 'Carrier updated successfully';

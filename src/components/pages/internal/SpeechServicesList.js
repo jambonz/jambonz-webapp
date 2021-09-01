@@ -1,24 +1,93 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components/macro';
+
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import handleErrors from '../../../helpers/handleErrors';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../../components/blocks/TableContent';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 import Sbcs from '../../blocks/Sbcs';
+import InputGroup from '../../../components/elements/InputGroup';
+import Select from '../../../components/elements/Select';
+
+const FilterLabel = styled.span`
+  color: #231f20;
+  text-align: right;
+  font-size: 14px;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+`;
+
+const StyledInputGroup = styled(InputGroup)`
+  padding: 1rem 1rem 0;
+
+  @media (max-width: 767.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    grid-row-gap: 1rem;
+  }
+
+  @media (max-width: 575.98px) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-row-gap: 1rem;
+  }
+`;
+
+const AccountSelect = styled(Select)`
+  min-width: 150px;
+`;
 
 const SpeechServicesList = () => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
   const currentServiceProvider = useContext(ServiceProviderValueContext);
+  const jwt = localStorage.getItem('token');
+  const location = useLocation();
+  const locationAccountSid = new URLSearchParams(location.search).get('account_sid');
+
+  const [accountSid, setAccountSid] = useState('');
+  const [accountList, setAccountList] = useState([]);
+
+  //=============================================================================
+  // Get accounts
+  //=============================================================================
+  useEffect(() => {
+    if (currentServiceProvider) {
+      const getAccounts = async () => {
+        try {
+          const accountResponse = await axios({
+            method: "get",
+            baseURL: process.env.REACT_APP_API_BASE_URL,
+            url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+
+          setAccountList((accountResponse.data || []).sort((a, b) => a.name.localeCompare(b.name)));
+
+          if (locationAccountSid) {
+            setAccountSid(locationAccountSid);
+          }
+        } catch (err) {
+          handleErrors({ err, history, dispatch });
+        }
+      };
+
+      getAccounts();
+    } else {
+      setAccountList([]);
+    }
+  }, [currentServiceProvider]);
 
   //=============================================================================
   // Get speech services
   //=============================================================================
-  const getSpeechServices = useCallback(async () => {
-    const jwt = localStorage.getItem('token');
+  const getSpeechServices = async () => {
     try {
       if (!jwt) {
         history.push('/');
@@ -31,10 +100,14 @@ const SpeechServicesList = () => {
       }
 
       if(!currentServiceProvider) return [];
+
+      const speechApiUrl = accountSid ? 
+        `/Accounts/${accountSid}/SpeechCredentials` : 
+        `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`;
       const speechServices = await axios({
         method: 'get',
         baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`,
+        url: speechApiUrl,
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
@@ -137,7 +210,7 @@ const SpeechServicesList = () => {
     } catch (err) {
       handleErrors({ err, history, dispatch, fallbackMessage: 'Unable to get speech services' });
     }
-  }, [currentServiceProvider]);
+  };
 
   //=============================================================================
   // Delete speech service
@@ -149,8 +222,7 @@ const SpeechServicesList = () => {
       { name: 'Last Used', content: s.last_used || 'Never' },
     ];
   };
-  const deleteSpeechService = useCallback(async speechServiceToDelete => {
-    const jwt = localStorage.getItem('token');
+  const deleteSpeechService = async speechServiceToDelete => {
     try {
       if (!jwt) {
         history.push('/');
@@ -187,7 +259,7 @@ const SpeechServicesList = () => {
         return ((err.response && err.response.data && err.response.data.msg) || 'Unable to delete speech service');
       }
     }
-  }, [currentServiceProvider]);
+  };
 
   //=============================================================================
   // Render
@@ -200,6 +272,22 @@ const SpeechServicesList = () => {
       addButtonText="Add Speech Service"
       addButtonLink="/internal/speech-services/add"
     >
+      <StyledInputGroup flexEnd space>
+        <FilterLabel htmlFor="account">Used By:</FilterLabel>
+        <AccountSelect
+          name="account"
+          id="account"
+          value={accountSid}
+          onChange={e => setAccountSid(e.target.value)}
+        >
+          <option value="">
+            All accounts
+          </option>
+          {accountList.map((acc) => (
+            <option key={acc.account_sid} value={acc.account_sid}>{acc.name}</option>
+          ))}
+        </AccountSelect>
+      </StyledInputGroup>
       <TableContent
         normalTable
         name="speech service"
