@@ -253,33 +253,6 @@ const SpeechServicesAddEdit = (props) => {
         return;
       }
 
-      // Check if user already has a speech service with the selected vendor
-      const speechServices = await axios({
-        method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
-        url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`,
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      });
-
-      if (type === 'add' && speechServices.data.some(speech => speech.vendor === vendor)) {
-        setErrorMessage('You can only have one speech credential per vendor.');
-        setShowLoader(false);
-        if (vendor === 'google') {
-          setInvalidVendorGoogle(true);
-          if (!focusHasBeenSet) {
-            refVendorGoogle.current.focus();
-          }
-        } else if (vendor === 'aws') {
-          setInvalidVendorAws(true);
-          if (!focusHasBeenSet) {
-            refVendorAws.current.focus();
-          }
-        }
-        return;
-      }
-
       //===============================================
       // Submit
       //===============================================
