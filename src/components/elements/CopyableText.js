@@ -2,19 +2,8 @@ import React, { useContext } from 'react';
 import styled from 'styled-components/macro';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
 import Button from './Button';
+import Span from './Span';
 
-const Span = styled.span`
-  text-align: left;
-  ${props => props.hasBorder ? `
-    height: 2.25rem;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 0 1rem;
-    border: 1px solid #B6B6B6;
-    border-radius: 0.125rem;
-  ` : ''}
-`;
 
 const StyledButton = styled(Button)`
   margin-left: 1rem;
