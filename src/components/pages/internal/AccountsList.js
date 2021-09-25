@@ -221,6 +221,7 @@ const AccountsList = () => {
           { header: 'SIP Realm',            key: 'sip_realm' },
           { header: 'Registration Webhook', key: 'url_reg'       },
           { header: 'Queue Event Webhook',  key: 'url_queue'       },
+          { header: 'Subspace', key: 'subspace_enabled' },
         ]}
         formatContentToDelete={formatAccountToDelete}
         deleteContent={deleteAccount}
