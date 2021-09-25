@@ -17,6 +17,7 @@ import Button from '../elements/Button';
 import Link from '../elements/Link';
 import Tooltip from '../elements/Tooltip';
 import CopyableText from '../elements/CopyableText';
+import Span from '../elements/Span';
 import handleErrors from "../../helpers/handleErrors";
 import styled from 'styled-components/macro';
 
@@ -79,7 +80,8 @@ const AccountForm = props => {
   const [ queuePassword, setQueuePassword   ] = useState('' || '');
   const [ subspaceId,    setSubspaceId      ] = useState('' || '');
   const [ subspaceSecret, setSubspaceSecret ] = useState('' || '');
-  const [ subspaceSipTeleportEnabled, setSubspaceSipTeleportEnabled ] = useState(false);
+  const [ subspaceSipTeleportId, setSubspaceSipTeleportId ] = useState('' || '');
+  const [ subspaceSipTeleportEntryPoints, setSubspaceSipTeleportEntryPoints ] = useState([]);
 
   // Invalid form inputs
   const [ invalidName,          setInvalidName       ] = useState(false);
@@ -106,10 +108,16 @@ const AccountForm = props => {
   const [ menuOpen, setMenuOpen ] = useState(null);
   const [showConfirmSecret, setShowConfirmSecret] = useState(false);
   const [generatingSecret, setGeneratingSecret] = useState(false);
-  const [ togglingSubspaceTeleport, setTogglingSubspaceTeleport ] = useState(false);
-
 
   const handleMenuOpen = sid => {
+    if (menuOpen === sid) {
+      setMenuOpen(null);
+    } else {
+      setMenuOpen(sid);
+    }
+  };
+
+  const handleSubspaceMenuOpen = sid => {
     if (menuOpen === sid) {
       setMenuOpen(null);
     } else {
@@ -171,9 +179,10 @@ const AccountForm = props => {
     }
   };
 
-  const toggleSubspaceTeleport = async (enable) => {
+  const toggleSubspaceTeleport = async (enable, e) => {
+    e.preventDefault();
+    setMenuOpen(null);
     try {
-      setTogglingSubspaceTeleport(true);
       const apiKeyResponse = await axios({
         method: enable ? 'post' : 'delete',
         baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -183,7 +192,10 @@ const AccountForm = props => {
         },
       });
 
-      if (apiKeyResponse.status === 204) {
+      if (apiKeyResponse.status === 200) {
+        setSubspaceSipTeleportId(apiKeyResponse.data.subspace_sip_teleport_id || '');
+        setSubspaceSipTeleportEntryPoints(enable ? JSON.parse(apiKeyResponse.data.subspace_sip_teleport_entry_points) : []);
+
         dispatch({
           type: 'ADD',
           level: 'success',
@@ -192,8 +204,6 @@ const AccountForm = props => {
       }
     } catch (err) {
       handleErrors({ err, history, dispatch });
-    } finally {
-      setTogglingSubspaceTeleport(false);
     }
   };
 
@@ -287,8 +297,10 @@ const AccountForm = props => {
                 setQueueUser((acc.queue_event_hook && acc.queue_event_hook.username) || '');
             setQueuePassword((acc.queue_event_hook && acc.queue_event_hook.password) || '');
             setWebhookSecret(acc.webhook_secret || '');
-            setSubspaceId(acc.subspace_id || '');
-            setSubspaceSecret(acc.subspace_secret || '');
+            setSubspaceId(acc.subspace_client_id || '');
+            setSubspaceSecret(acc.subspace_client_secret || '');
+            setSubspaceSipTeleportId(acc.subspace_sip_teleport_id || '');
+            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_entry_points ? JSON.parse(acc.subspace_sip_teleport_entry_points) : '');
 
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
@@ -439,6 +451,8 @@ const AccountForm = props => {
           password: queuePassword || null,
         },
         webhook_secret: webhookSecret || null,
+        subspace_client_id: subspaceId || null,
+        subspace_client_secret: subspaceSecret || null,
       };
 
       if (props.type === 'add') {
@@ -653,42 +667,6 @@ const AccountForm = props => {
           </Select>
         </InputGroup>
 
-        <Label htmlFor="regWebhook">Subspace</Label>
-        <InputGroup>
-          <Input
-            large={props.type === 'setup'}
-            name="subspaceId"
-            id="subspaceId"
-            value={subspaceId}
-            onChange={e => setSubspaceId(e.target.value)}
-            placeholder="Client Id for Subspace"
-            invalid={invalidSubspaceId}
-            ref={refSubspaceId}
-          />
-
-          <PasswordInput
-            large={props.type === 'setup'}
-            allowShowPassword
-            name="subspaceSecret"
-            id="subspaceSecret"
-            password={subspaceSecret}
-            setPassword={setSubspaceSecret}
-            setErrorMessage={setErrorMessage}
-            placeholder="Client Secret for Subspace"
-            invalid={invalidSubspaceClient}
-            ref={refSubspaceSecret}
-          />
-          <StyledInputGroup>
-            <Label>{webhookSecret || "None"}</Label>
-            <TableMenu
-              sid="webhook"
-              open={menuOpen === "webhook"}
-              handleMenuOpen={handleMenuOpen}
-              menuItems={subspaceSipTeleportEnabled ? subspaceMenuItems[1]: subspaceMenuItems[0]}
-            />
-          </StyledInputGroup>
-        </InputGroup>
-
         {showRegAuth ? (
           <InputGroup>
             <Label indented htmlFor="user">User</Label>
@@ -794,6 +772,48 @@ const AccountForm = props => {
             Use HTTP Basic Authentication
           </Button>
         )}
+
+        <Label htmlFor="regWebhook">Subspace</Label>
+        <InputGroup>
+          <Input
+            large={props.type === 'setup'}
+            name="subspaceId"
+            id="subspaceId"
+            value={subspaceId}
+            onChange={e => setSubspaceId(e.target.value)}
+            placeholder="Client Id for Subspace"
+            ref={refSubspaceId}
+          />
+
+          <PasswordInput
+            large={props.type === 'setup'}
+            allowShowPassword
+            name="subspaceSecret"
+            id="subspaceSecret"
+            password={subspaceSecret}
+            setPassword={setSubspaceSecret}
+            setErrorMessage={setErrorMessage}
+            placeholder="Client Secret for Subspace"
+            ref={refSubspaceSecret}
+          />
+
+          <StyledInputGroup>
+            <TableMenu
+              disabled={!subspaceSecret || !subspaceId}
+              sid="subspace"
+              open={menuOpen === "subspace"}
+              handleMenuOpen={handleSubspaceMenuOpen}
+              menuItems={subspaceSipTeleportId ? [subspaceMenuItems[1]] : [subspaceMenuItems[0]]}
+            />
+          </StyledInputGroup>
+        </InputGroup>
+        {subspaceSipTeleportId && subspaceSipTeleportEntryPoints ? (
+          subspaceSipTeleportEntryPoints.map(entrypoint => (
+            <InputGroup key={entrypoint.transport_type}>
+              <Span>({entrypoint.transport_type})</Span><CopyableText text={entrypoint.address} textType="Address" />
+            </InputGroup>
+          ))
+        ) : null}
 
         {errorMessage && (
           <FormError grid message={errorMessage} />
