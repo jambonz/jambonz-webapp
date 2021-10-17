@@ -7,7 +7,6 @@ import styled from 'styled-components/macro';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
-import Sbcs from '../../blocks/Sbcs';
 import sortSipGateways from '../../../helpers/sortSipGateways';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 import InputGroup from '../../../components/elements/InputGroup';
@@ -246,7 +245,6 @@ const CarriersList = () => {
       title="Carriers"
       addButtonText="Add a Carrier"
       addButtonLink="/internal/carriers/add"
-      subtitle={<Sbcs />}
     >
       <StyledInputGroup flexEnd space>
         <FilterLabel htmlFor="account">Used By:</FilterLabel>

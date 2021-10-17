@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import CarrierForm from '../../forms/CarrierForm';
-import Sbcs from '../../blocks/Sbcs';
 
 const CarriersAddEdit = () => {
   let { voip_carrier_sid } = useParams();
@@ -15,7 +14,6 @@ const CarriersAddEdit = () => {
     <InternalTemplate
       type="form"
       title={pageTitle}
-      subtitle={<Sbcs />}
       breadcrumbs={[
         { name: 'Carriers', url: '/internal/carriers' },
         { name: pageTitle },

@@ -3,7 +3,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../contexts/NotificationContext';
-import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
+// import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
 const Container = styled.div`
   margin-top: 0.25rem;
@@ -21,7 +21,7 @@ const Container = styled.div`
 const Sbcs = props => {
   let history = useHistory();
   const dispatch = useContext(NotificationDispatchContext);
-  const currentServiceProvider = useContext(ServiceProviderValueContext);
+  // const currentServiceProvider = useContext(ServiceProviderValueContext);
   const [ sbcs, setSbcs ] = useState('');
   useEffect(() => {
     const getAPIData = async () => {
@@ -38,7 +38,8 @@ const Sbcs = props => {
         const sbcResults = await axios({
           method: 'get',
           baseURL: process.env.REACT_APP_API_BASE_URL,
-          url: `/Sbcs?service_provider_sid=${currentServiceProvider}`,
+          // url: `/Sbcs?service_provider_sid=${currentServiceProvider}`,
+          url: '/Sbcs',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
