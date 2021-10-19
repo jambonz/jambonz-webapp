@@ -189,20 +189,20 @@ const Subtitle = styled.p`
 
 const CarriersVoiceTipText = ({sbcs}) => {
   const text = <>
-    SIP signaling IPs:
-    {sbcs.map((sbc) => <span key={sbc.ipv4}><br />{sbc.ipv4}</span>)}
+    Have your carriers send SIP calls to our servers at:
+    {sbcs.map((sbc) => <span key={sbc.ipv4}><br />{sbc.ipv4}:{sbc.port}</span>)}
   </>;
 
-  return <span>Have your carriers whitelist and send calls to our <LinkWithTooltip tipText={text}>SIP signaling IPs</LinkWithTooltip></span>;
+  return <span>Have your carriers whitelist our <LinkWithTooltip tipText={text}>SIP signaling IPs</LinkWithTooltip></span>;
 };
 
 const CarriersSmppTipText = ({smpps}) => {
   const text = <>
-    SMPP signaling IPs:
-    {smpps.map((smpp) => <span key={smpp.ipv4}><br />{smpp.ipv4}</span>)}
+    Have your carriers send SMPP messages to our servers at:
+    {smpps.map((smpp) => <span key={smpp.ipv4}><br />{smpp.ipv4}:{smpp.port}{smpp.use_tls && ' (TLS)'}</span>)}
   </>;
 
-  return <span>Have your carriers whitelist and send SMPP to our <LinkWithTooltip tipText={text}>SMPP signaling IPs</LinkWithTooltip></span>;
+  return <span>Have your carriers whitelist our <LinkWithTooltip tipText={text}>SMPP signaling IPs</LinkWithTooltip></span>;
 };
 
 const CarrierForm = (props) => {
