@@ -1,6 +1,6 @@
 {
   "name": "jambonz-webapp",
-  "version": "0.6.7-rc2",
+  "version": "0.6.7-rc3",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
