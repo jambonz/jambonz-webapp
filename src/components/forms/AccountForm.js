@@ -92,6 +92,10 @@ const AccountForm = props => {
   const [ invalidQueueWebhook,  setInvalidQueueWebhook ] = useState(false);
   const [ invalidQueueUser,     setInvalidQueueUser       ] = useState(false);
   const [ invalidQueuePassword, setInvalidQueuePassword   ] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [ invalidSubspaceId, setInvalidSubspaceId   ] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [ invalidSubspaceClient, setInvalidSubspaceClient   ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -773,47 +777,51 @@ const AccountForm = props => {
           </Button>
         )}
 
-        <Label htmlFor="regWebhook">Subspace</Label>
-        <InputGroup>
-          <Input
-            large={props.type === 'setup'}
-            name="subspaceId"
-            id="subspaceId"
-            value={subspaceId}
-            onChange={e => setSubspaceId(e.target.value)}
-            placeholder="Client Id for Subspace"
-            ref={refSubspaceId}
-          />
+        { process.env.ENABLE_SUBSPACE ? (
+          <>
+            <Label htmlFor="subspaceId">Subspace</Label>
+            <InputGroup>
+              <Input
+                large={props.type === 'setup'}
+                name="subspaceId"
+                id="subspaceId"
+                value={subspaceId}
+                onChange={e => setSubspaceId(e.target.value)}
+                placeholder="Client Id for Subspace"
+                ref={refSubspaceId}
+              />
 
-          <PasswordInput
-            large={props.type === 'setup'}
-            allowShowPassword
-            name="subspaceSecret"
-            id="subspaceSecret"
-            password={subspaceSecret}
-            setPassword={setSubspaceSecret}
-            setErrorMessage={setErrorMessage}
-            placeholder="Client Secret for Subspace"
-            ref={refSubspaceSecret}
-          />
+              <PasswordInput
+                large={props.type === 'setup'}
+                allowShowPassword
+                name="subspaceSecret"
+                id="subspaceSecret"
+                password={subspaceSecret}
+                setPassword={setSubspaceSecret}
+                setErrorMessage={setErrorMessage}
+                placeholder="Client Secret for Subspace"
+                ref={refSubspaceSecret}
+              />
 
-          <StyledInputGroup>
-            <TableMenu
-              disabled={!subspaceSecret || !subspaceId}
-              sid="subspace"
-              open={menuOpen === "subspace"}
-              handleMenuOpen={handleSubspaceMenuOpen}
-              menuItems={subspaceSipTeleportId ? [subspaceMenuItems[1]] : [subspaceMenuItems[0]]}
-            />
-          </StyledInputGroup>
-        </InputGroup>
-        {subspaceSipTeleportId && subspaceSipTeleportEntryPoints ? (
-          subspaceSipTeleportEntryPoints.map(entrypoint => (
-            <InputGroup key={entrypoint.transport_type}>
-              <Span>({entrypoint.transport_type})</Span><CopyableText text={entrypoint.address} textType="Address" />
+              <StyledInputGroup>
+                <TableMenu
+                  disabled={!subspaceSecret || !subspaceId}
+                  sid="subspace"
+                  open={menuOpen === "subspace"}
+                  handleMenuOpen={handleSubspaceMenuOpen}
+                  menuItems={subspaceSipTeleportId ? [subspaceMenuItems[1]] : [subspaceMenuItems[0]]}
+                />
+              </StyledInputGroup>
             </InputGroup>
-          ))
-        ) : null}
+            {subspaceSipTeleportId && subspaceSipTeleportEntryPoints ? (
+              subspaceSipTeleportEntryPoints.map(entrypoint => (
+                <InputGroup key={entrypoint.transport_type}>
+                  <Span>({entrypoint.transport_type})</Span><CopyableText text={entrypoint.address} textType="Address" />
+                </InputGroup>
+              ))
+            ) : null}
+          </>
+        ) : null }
 
         {errorMessage && (
           <FormError grid message={errorMessage} />
