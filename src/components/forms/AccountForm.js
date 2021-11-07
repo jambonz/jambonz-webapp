@@ -777,7 +777,7 @@ const AccountForm = props => {
           </Button>
         )}
 
-        { process.env.ENABLE_SUBSPACE ? (
+        { process.env.REACT_APP_ENABLE_SUBSPACE ? (
           <>
             <Label htmlFor="subspaceId">Subspace</Label>
             <InputGroup>
