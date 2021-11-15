@@ -20,6 +20,8 @@ import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext'
 
+import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
+
 
 const StyledButtonGroup = styled(InputGroup)`
   @media (max-width: 576.98px) {
@@ -67,10 +69,13 @@ const SpeechServicesAddEdit = (props) => {
   // Refs
   const refVendorGoogle = useRef(null);
   const refVendorAws = useRef(null);
+  const refVendorMs = useRef(null);
   const refAccessKeyId = useRef(null);
   const refSecretAccessKey = useRef(null);
   const refUseForTts = useRef(null);
   const refUseForStt = useRef(null);
+  const refApiKey = useRef(null);
+  const refRegion = useRef(null);
 
   // Form inputs
   const [ vendor,              setVendor              ] = useState('');
@@ -82,14 +87,19 @@ const SpeechServicesAddEdit = (props) => {
   const [ useForStt,           setUseForStt           ] = useState(false);
   const [ accounts,            setAccounts            ] = useState([]);
   const [ accountSid,          setAccountSid          ] = useState('');
+  const [ apiKey,              setApiKey              ] = useState('');
+  const [ region,              setRegion              ] = useState('');
 
   // Invalid form inputs
   const [ invalidVendorGoogle,    setInvalidVendorGoogle    ] = useState(false);
   const [ invalidVendorAws,       setInvalidVendorAws       ] = useState(false);
+  const [ invalidVendorMs,        setInvalidVendorMs       ] = useState(false);
   const [ invalidAccessKeyId,     setInvalidAccessKeyId     ] = useState(false);
   const [ invalidSecretAccessKey, setInvalidSecretAccessKey ] = useState(false);
   const [ invalidUseForTts,       setInvalidUseForTts       ] = useState(false);
   const [ invalidUseForStt,       setInvalidUseForStt       ] = useState(false);
+  const [ invalidApiKey,          setInvalidApiKey          ] = useState(false);
+  const [ invalidRegion,          setInvalidRegion          ] = useState(false);
 
   const [ originalTtsValue,       setOriginalTtsValue       ] = useState(null);
   const [ originalSttValue,       setOriginalSttValue       ] = useState(null);
@@ -139,6 +149,8 @@ const SpeechServicesAddEdit = (props) => {
           setDisplayedServiceKey( displayedServiceKeyJson                 || '');
           setAccessKeyId(         speechCredential.data.access_key_id     || '');
           setSecretAccessKey(     speechCredential.data.secret_access_key || '');
+          setApiKey(              speechCredential.data.api_key           || '');
+          setRegion(              speechCredential.data.region            || '');
           setUseForTts(           speechCredential.data.use_for_tts       || false);
           setUseForStt(           speechCredential.data.use_for_stt       || false);
           setOriginalTtsValue(    speechCredential.data.use_for_tts       || false);
@@ -206,10 +218,12 @@ const SpeechServicesAddEdit = (props) => {
       setErrorMessage('');
       setInvalidVendorGoogle(false);
       setInvalidVendorAws(false);
+      setInvalidVendorMs(false);
       setInvalidAccessKeyId(false);
       setInvalidSecretAccessKey(false);
       setInvalidUseForTts(false);
       setInvalidUseForStt(false);
+      setInvalidApiKey(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -217,6 +231,7 @@ const SpeechServicesAddEdit = (props) => {
         errorMessages.push('Please select a vendor.');
         setInvalidVendorGoogle(true);
         setInvalidVendorAws(true);
+        setInvalidVendorMs(true);
         if (!focusHasBeenSet) {
           refVendorGoogle.current.focus();
           focusHasBeenSet = true;
@@ -241,6 +256,24 @@ const SpeechServicesAddEdit = (props) => {
         setInvalidSecretAccessKey(true);
         if (!focusHasBeenSet) {
           refSecretAccessKey.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (vendor === 'microsoft' && !apiKey) {
+        errorMessages.push('Please provide an API key.');
+        setInvalidApiKey(true);
+        if (!focusHasBeenSet) {
+          refApiKey.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (vendor === 'microsoft' && !region) {
+        errorMessages.push('Please select a region.');
+        setInvalidRegion(true);
+        if (!focusHasBeenSet) {
+          refRegion.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -276,6 +309,8 @@ const SpeechServicesAddEdit = (props) => {
           service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
           access_key_id: vendor === 'aws' ? accessKeyId : null,
           secret_access_key: vendor === 'aws' ? secretAccessKey : null,
+          api_key: vendor === 'microsoft' ? apiKey : null,
+          region: vendor === 'microsoft' ? region : null,
           use_for_tts: useForTts,
           use_for_stt: useForStt,
           service_provider_sid: accountSid ? null : currentServiceProvider,
@@ -444,6 +479,17 @@ const SpeechServicesAddEdit = (props) => {
             ref={refVendorAws}
             disabled={type === 'edit'}
           />
+
+          <Radio
+            name="vendor"
+            id="microsoft"
+            label="Microsoft"
+            checked={vendor === 'microsoft'}
+            onChange={() => setVendor('microsoft')}
+            invalid={invalidVendorMs}
+            ref={refVendorMs}
+            disabled={type === 'edit'}
+          />
         </InputGroup>
 
         <Label htmlFor="account">Used by</Label>
@@ -512,11 +558,47 @@ const SpeechServicesAddEdit = (props) => {
               disabled={type === 'edit'}
             />
           </>
+        ) : vendor === 'microsoft' ? (
+          <>
+            <Label htmlFor="apiKey">API Key</Label>
+            <Input
+              name="apiKey"
+              id="apiKey"
+              value={apiKey}
+              onChange={e => setApiKey(e.target.value)}
+              placeholder=""
+              invalid={invalidApiKey}
+              ref={refApiKey}
+              disabled={type === 'edit'}
+            />
+
+            <Label htmlFor="region">Region</Label>
+            <Select
+              name="region"
+              id="region"
+              value={region}
+              onChange={e => setRegion(e.target.value)}
+              ref={refRegion}
+              invalid={invalidRegion}
+            >
+              <option value="">
+                All regions
+              </option>
+              {MicrosoftAzureRegions.map(r => (
+                <option
+                  key={r.value}
+                  value={r.value}
+                >
+                  {r.name}
+                </option>
+              ))}
+            </Select>
+          </>
         ) : (
           null
         )}
 
-        {vendor === 'google' || vendor === 'aws' ? (
+        {vendor === 'google' || vendor === 'aws' || vendor === 'microsoft' ? (
           <>
             <div/>
             <Checkbox

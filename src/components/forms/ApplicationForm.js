@@ -15,6 +15,8 @@ import SpeechSynthesisLanguageGoogle from '../../data/SpeechSynthesisLanguageGoo
 import SpeechSynthesisLanguageAws from '../../data/SpeechSynthesisLanguageAws';
 import SpeechRecognizerLanguageGoogle from '../../data/SpeechRecognizerLanguageGoogle';
 import SpeechRecognizerLanguageAws from '../../data/SpeechRecognizerLanguageAws';
+import SpeechRecognizerLanguageMicrosoft from '../../data/SpeechRecognizerLanguageMicrosoft';
+import SpeechSynthesisLanguageMicrosoft from '../../data/SpeechSynthesisLanguageMicrosoft';
 import Loader from '../blocks/Loader';
 import CopyableText from '../elements/CopyableText';
 
@@ -745,6 +747,10 @@ const ApplicationForm = props => {
                   ? SpeechSynthesisLanguageGoogle.find(l => (
                       l.code === speechSynthesisLanguage
                     ))
+                  : e.target.value === 'microsoft'
+                  ? SpeechSynthesisLanguageMicrosoft.find(l => (
+                      l.code === speechSynthesisLanguage
+                    ))
                   : SpeechSynthesisLanguageAws.find(l => (
                       l.code === speechSynthesisLanguage
                     ));
@@ -758,9 +764,13 @@ const ApplicationForm = props => {
                     return;
                   }
 
-                  newLang = SpeechSynthesisLanguageAws.find(l => (
-                    l.code === 'en-US'
-                  ));
+                  newLang = e.target.value === 'aws'
+                    ? SpeechSynthesisLanguageAws.find(l => (
+                        l.code === 'en-US'
+                      ))
+                    : SpeechSynthesisLanguageMicrosoft.find(l => (
+                        l.code === 'en-US'
+                      ));
                 }
 
                 // Update state to reflect first voice option for language
@@ -769,6 +779,7 @@ const ApplicationForm = props => {
             >
               <option value="google">Google</option>
               <option value="aws">AWS</option>
+              <option value="microsoft">Microsoft</option>
             </Select>
             <Label middle htmlFor="speechSynthesisLanguage">Language</Label>
             <Select
@@ -792,6 +803,10 @@ const ApplicationForm = props => {
                   ? SpeechSynthesisLanguageGoogle.find(l => (
                       l.code === e.target.value
                     ))
+                  : speechSynthesisVendor === 'microsoft'
+                  ? SpeechSynthesisLanguageMicrosoft.find(l => (
+                      l.code === e.target.value
+                    ))
                   : SpeechSynthesisLanguageAws.find(l => (
                       l.code === e.target.value
                     ));
@@ -802,6 +817,10 @@ const ApplicationForm = props => {
             >
               {speechSynthesisVendor === 'google' ? (
                 SpeechSynthesisLanguageGoogle.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))
+              ) : speechSynthesisVendor === 'microsoft' ? (
+                SpeechSynthesisLanguageMicrosoft.map(l => (
                   <option key={l.code} value={l.code}>{l.name}</option>
                 ))
               ) : (
@@ -823,6 +842,12 @@ const ApplicationForm = props => {
                   .filter(l => l.code === speechSynthesisLanguage)
                   .map(m => m.voices.map(v => (
                       <option key={v.value} value={v.value}>{v.name}</option>
+                  )))
+              ) : speechSynthesisVendor === 'microsoft' ? (
+                SpeechSynthesisLanguageMicrosoft
+                  .filter(l => l.code === speechSynthesisLanguage)
+                  .map(m => m.voices.map(v => (
+                    <option key={v.value} value={v.value}>{v.name}</option>
                   )))
               ) : (
                 SpeechSynthesisLanguageAws
@@ -862,6 +887,7 @@ const ApplicationForm = props => {
             >
               <option value="google">Google</option>
               <option value="aws">AWS</option>
+              <option value="microsoft">Microsoft</option>
             </Select>
             <Label middle htmlFor="speechRecognizerLanguage">Language</Label>
             <Select
@@ -873,6 +899,10 @@ const ApplicationForm = props => {
             >
               {speechRecognizerVendor === 'google' ? (
                 SpeechRecognizerLanguageGoogle.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))
+              ) : speechRecognizerVendor === 'microsoft' ? (
+                SpeechRecognizerLanguageMicrosoft.map(l => (
                   <option key={l.code} value={l.code}>{l.name}</option>
                 ))
               ) : (

@@ -9,7 +9,6 @@ import handleErrors from '../../../helpers/handleErrors';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../../components/blocks/TableContent';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
-import Sbcs from '../../blocks/Sbcs';
 import InputGroup from '../../../components/elements/InputGroup';
 import Select from '../../../components/elements/Select';
 
@@ -268,7 +267,6 @@ const SpeechServicesList = () => {
     <InternalTemplate
       type="normalTable"
       title="Speech Services"
-      subtitle={<Sbcs />}
       addButtonText="Add Speech Service"
       addButtonLink="/internal/speech-services/add"
     >

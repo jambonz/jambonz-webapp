@@ -10,6 +10,7 @@ const Select = styled.select`
   border-radius: 0.125rem;
   background: #fff;
   color: inherit;
+  max-width: 230px;
   &:focus {
     border-color: #565656;
     outline: none;
