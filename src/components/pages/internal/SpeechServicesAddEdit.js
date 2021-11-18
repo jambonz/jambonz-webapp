@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import InternalTemplate from '../../templates/InternalTemplate';
 import SpeechForm from '../../forms/SpeechForm';
-import Sbcs from '../../blocks/Sbcs';
 
 const SpeechServicesAddEdit = () => {
   let { speech_service_sid } = useParams();
@@ -14,7 +13,6 @@ const SpeechServicesAddEdit = () => {
     <InternalTemplate
       type="form"
       title={pageTitle}
-      subtitle={<Sbcs />}
       breadcrumbs={[
         { name: 'Speech Services', url: '/internal/speech-services' },
         { name: pageTitle },
