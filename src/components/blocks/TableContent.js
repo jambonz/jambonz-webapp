@@ -220,7 +220,8 @@ const TableContent = props => {
         contentToDelete.name ||
         contentToDelete.number ||
         contentToDelete.tenant_fqdn ||
-        contentToDelete.token
+        contentToDelete.token ||
+        contentToDelete.vendor
       ) && (
         <Modal
           title={`Are you sure you want to delete the following ${props.name}?`}
