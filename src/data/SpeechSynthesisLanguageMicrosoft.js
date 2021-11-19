@@ -3463,7 +3463,7 @@ rawData.forEach((data) => {
         return d.Locale === data.Locale;
       }).map((d) => {
         return {
-          value: d.DisplayName,
+          value: d.ShortName,
           name: `${d.DisplayName} (${d.Gender})`,
         };
       }),
