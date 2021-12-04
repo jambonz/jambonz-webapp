@@ -198,7 +198,7 @@ const AccountForm = props => {
 
       if (apiKeyResponse.status === 200) {
         setSubspaceSipTeleportId(apiKeyResponse.data.subspace_sip_teleport_id || '');
-        setSubspaceSipTeleportEntryPoints(enable ? JSON.parse(apiKeyResponse.data.subspace_sip_teleport_entry_points) : []);
+        setSubspaceSipTeleportEntryPoints(enable ? JSON.parse(apiKeyResponse.data.subspace_sip_teleport_destinations) : []);
 
         dispatch({
           type: 'ADD',
@@ -304,7 +304,7 @@ const AccountForm = props => {
             setSubspaceId(acc.subspace_client_id || '');
             setSubspaceSecret(acc.subspace_client_secret || '');
             setSubspaceSipTeleportId(acc.subspace_sip_teleport_id || '');
-            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_entry_points ? JSON.parse(acc.subspace_sip_teleport_entry_points) : '');
+            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_destinations ? JSON.parse(acc.subspace_sip_teleport_destinations) : '');
 
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
