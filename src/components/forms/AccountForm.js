@@ -6,6 +6,7 @@ import { ServiceProviderValueContext } from '../../contexts/ServiceProviderConte
 import Form from '../elements/Form';
 import Input from '../elements/Input';
 import Label from '../elements/Label';
+import Radio from '../elements/Radio';
 import Select from '../elements/Select';
 import InputGroup from '../elements/InputGroup';
 import PasswordInput from '../elements/PasswordInput';
@@ -17,6 +18,7 @@ import Button from '../elements/Button';
 import Link from '../elements/Link';
 import Tooltip from '../elements/Tooltip';
 import CopyableText from '../elements/CopyableText';
+import Span from '../elements/Span';
 import handleErrors from "../../helpers/handleErrors";
 import styled from 'styled-components/macro';
 
@@ -61,6 +63,9 @@ const AccountForm = props => {
   const refQueueWebhook = useRef(null);
   const refQueueUser = useRef(null);
   const refQueuePassword = useRef(null);
+  const refSubspaceId = useRef(null);
+  const refSubspaceSecret = useRef(null);
+  const refSubspaceOtherSip = useRef(null);
 
   // Form inputs
   const [ name,          setName       ] = useState('');
@@ -68,13 +73,24 @@ const AccountForm = props => {
   const [ deviceCallingApplication, setDeviceCallingApplication ] = useState('');
   const [ regWebhook,    setRegWebhook ] = useState('');
   const [ regMethod,     setRegMethod     ] = useState('POST');
-  const [ regUser,       setRegUser       ] = useState('' || '');
-  const [ regPassword,   setRegPassword   ] = useState('' || '');
+  const [ regUser,       setRegUser       ] = useState('');
+  const [ regPassword,   setRegPassword   ] = useState('');
   const [ webhookSecret, setWebhookSecret ] = useState('');
   const [ queueWebhook,  setQueueWebhook ] = useState('');
   const [ queueMethod,   setQueueMethod     ] = useState('POST');
-  const [ queueUser,     setQueueUser       ] = useState('' || '');
-  const [ queuePassword, setQueuePassword   ] = useState('' || '');
+  const [ queueUser,     setQueueUser       ] = useState('');
+  const [ queuePassword, setQueuePassword   ] = useState('');
+  const [ hasSubspace,    setHasSubspace      ] = useState(false);
+  const [ subspaceId,    setSubspaceId      ] = useState('');
+  const [ subspaceSecret, setSubspaceSecret ] = useState('');
+  const [ subspaceSipTeleportId, setSubspaceSipTeleportId ] = useState('');
+  const [ subspaceSipTeleportEntryPoints, setSubspaceSipTeleportEntryPoints ] = useState([]);
+  const [ showSubspaceModal, setShowSubspaceModal ] = useState(false);
+  const [ generatingSubspace, setGeneratingSubspace ] = useState(false);
+  const [ subspaceSipRealm, setSubspaceSipRealm ] = useState('');
+  const [ sbcs, setSbcs ] = useState([]);
+  const [ subspaceSipRealmOtherValue, setSubspaceSipRealmOtherValue ] = useState('');
+  const [ subspaceEnable, setSubspaceEnable ] = useState(false);
 
   // Invalid form inputs
   const [ invalidName,          setInvalidName       ] = useState(false);
@@ -85,6 +101,10 @@ const AccountForm = props => {
   const [ invalidQueueWebhook,  setInvalidQueueWebhook ] = useState(false);
   const [ invalidQueueUser,     setInvalidQueueUser       ] = useState(false);
   const [ invalidQueuePassword, setInvalidQueuePassword   ] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [ invalidSubspaceId, setInvalidSubspaceId   ] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [ invalidSubspaceClient, setInvalidSubspaceClient   ] = useState(false);
 
   const [ showLoader, setShowLoader ] = useState(true);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -103,6 +123,14 @@ const AccountForm = props => {
   const [generatingSecret, setGeneratingSecret] = useState(false);
 
   const handleMenuOpen = sid => {
+    if (menuOpen === sid) {
+      setMenuOpen(null);
+    } else {
+      setMenuOpen(sid);
+    }
+  };
+
+  const handleSubspaceMenuOpen = sid => {
     if (menuOpen === sid) {
       setMenuOpen(null);
     } else {
@@ -164,6 +192,96 @@ const AccountForm = props => {
     }
   };
 
+  const toggleSubspaceTeleport = (enable, e) => {
+    e.preventDefault();
+    setMenuOpen(null);
+    setSubspaceEnable(enable);
+    setShowSubspaceModal(true);
+  };
+
+  const resetSubspaceState = () => {
+    setMenuOpen(null);
+    setShowSubspaceModal(false);
+    setSubspaceSipRealmOtherValue('');
+    setGeneratingSubspace(false);
+    setSubspaceEnable(false);
+    setSubspaceSipRealm('');
+  };
+
+  const handleSubspaceEnable = async () => {
+    try {
+      setGeneratingSubspace(true);
+
+      const destination = subspaceSipRealm === 'other'
+        ? subspaceSipRealmOtherValue
+        : subspaceSipRealm;
+      const response = await axios({
+        method: 'post',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: `/Accounts/${accountSid}/SubspaceTeleport`,
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+        data: { destination },
+      });
+
+      if (response.status === 200) {
+        setSubspaceSipTeleportId(response.data.subspace_sip_teleport_id || '');
+        setSubspaceSipTeleportEntryPoints(response.data.subspace_sip_teleport_destinations || []);
+
+        dispatch({
+          type: 'ADD',
+          level: 'success',
+          message: 'Successfully enabled subspace teleport.',
+        });
+      }
+
+      resetSubspaceState();
+    } catch (err) {
+      resetSubspaceState();
+      if (err.response.status === 500 && err.response.data.msg === 'Too Many Requests') {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You have already created the maximum number of SIP Teleports allowed for your Subspace account.',
+        });
+      } else {
+        handleErrors({ err, history, dispatch });
+      }
+    }
+  };
+
+  const handleSubspaceDisable = async () => {
+    try {
+      setGeneratingSubspace(true);
+
+      const response = await axios({
+        method: 'delete',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: `/Accounts/${accountSid}/SubspaceTeleport`,
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+
+      if (response.status === 204) {
+        setSubspaceSipTeleportId('');
+        setSubspaceSipTeleportEntryPoints([]);
+
+        dispatch({
+          type: 'ADD',
+          level: 'success',
+          message: `Successfully disabled subspace teleport.`,
+        });
+      }
+
+      resetSubspaceState();
+    } catch (err) {
+      resetSubspaceState();
+      handleErrors({ err, history, dispatch });
+    }
+  };
+
   useEffect(() => {
     const getAccounts = async () => {
       try {
@@ -200,6 +318,16 @@ const AccountForm = props => {
           promiseList.push(applicationsPromise);
         }
 
+        const sbcsPromise = await axios({
+          method: 'get',
+          baseURL: process.env.REACT_APP_API_BASE_URL,
+          url: '/Sbcs',
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+        promiseList.push(sbcsPromise);
+
         const promiseAllValues = await Promise.all(promiseList);
 
         const accountsData = (promiseAllValues[0] && promiseAllValues[0].data) || [];
@@ -212,6 +340,8 @@ const AccountForm = props => {
           });
           setAccountApplications(accountApplicationsData);
         }
+
+        setSbcs(promiseAllValues[2].data); 
 
         if (props.type === 'setup' && accountsData.length > 1) {
           history.push('/internal/accounts');
@@ -254,7 +384,11 @@ const AccountForm = props => {
                 setQueueUser((acc.queue_event_hook && acc.queue_event_hook.username) || '');
             setQueuePassword((acc.queue_event_hook && acc.queue_event_hook.password) || '');
             setWebhookSecret(acc.webhook_secret || '');
-
+            setSubspaceId(acc.subspace_client_id || '');
+            setSubspaceSecret(acc.subspace_client_secret || '');
+            setSubspaceSipTeleportId(acc.subspace_sip_teleport_id || '');
+            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_destinations ? JSON.parse(acc.subspace_sip_teleport_destinations) : []);
+            setHasSubspace(acc.subspace_client_id ? true : false);
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
             (acc.registration_hook && acc.registration_hook.password)
@@ -404,6 +538,8 @@ const AccountForm = props => {
           password: queuePassword || null,
         },
         webhook_secret: webhookSecret || null,
+        subspace_client_id: subspaceId || null,
+        subspace_client_secret: subspaceSecret || null,
       };
 
       if (props.type === 'add') {
@@ -477,6 +613,19 @@ const AccountForm = props => {
       type: 'button',
       name: 'Generate new secret',
       action: generateWebhookSecret,
+    },
+  ];
+
+  const subspaceMenuItems = [
+    {
+      type: 'button',
+      name: 'Enable',
+      action: toggleSubspaceTeleport.bind(toggleSubspaceTeleport, true),
+    },
+    {
+      type: 'button',
+      name: 'Disable',
+      action: toggleSubspaceTeleport.bind(toggleSubspaceTeleport, false),
     },
   ];
 
@@ -596,7 +745,7 @@ const AccountForm = props => {
           <Select
             large={props.type === 'setup'}
             name="method"
-            id="method"
+            id="regMethod"
             value={regMethod}
             onChange={e => setRegMethod(e.target.value)}
           >
@@ -665,7 +814,7 @@ const AccountForm = props => {
           <Select
             large={props.type === 'setup'}
             name="method"
-            id="method"
+            id="queueMethod"
             value={queueMethod}
             onChange={e => setQueueMethod(e.target.value)}
           >
@@ -710,6 +859,137 @@ const AccountForm = props => {
             Use HTTP Basic Authentication
           </Button>
         )}
+
+        { process.env.REACT_APP_ENABLE_SUBSPACE ? (
+          <>
+            <Label htmlFor="subspaceId">Subspace</Label>
+            <InputGroup>
+              <Input
+                large={props.type === 'setup'}
+                name="subspaceId"
+                id="subspaceId"
+                value={subspaceId}
+                onChange={e => setSubspaceId(e.target.value)}
+                placeholder="Client Id for Subspace"
+                ref={refSubspaceId}
+                style={{ margin: '0 4px' }}
+              />
+
+              <PasswordInput
+                large={props.type === 'setup'}
+                allowShowPassword
+                name="subspaceSecret"
+                id="subspaceSecret"
+                password={subspaceSecret}
+                setPassword={setSubspaceSecret}
+                setErrorMessage={setErrorMessage}
+                placeholder="Client Secret for Subspace"
+                ref={refSubspaceSecret}
+                style={{ margin: '0 4px' }}
+              />
+
+              <StyledInputGroup>
+                <TableMenu
+                  disabled={!hasSubspace}
+                  sid="subspace"
+                  open={menuOpen === "subspace"}
+                  handleMenuOpen={handleSubspaceMenuOpen}
+                  menuItems={subspaceSipTeleportId ? [subspaceMenuItems[1]] : [subspaceMenuItems[0]]}
+                />
+              </StyledInputGroup>
+            </InputGroup>
+            {subspaceSipTeleportId ? (
+              <div style={{ gridColumn: 2, textAlign: 'left' }}>
+                <div>Subspace is now enabled. To send your traffic through Subspace:</div>
+                {subspaceSipTeleportEntryPoints.map(entrypoint => (
+                  <div key={entrypoint.transport_type}>
+                    <Span>send {entrypoint.transport_type.split('_').join(' and ')} traffic to&nbsp;</Span>
+                    <CopyableText text={entrypoint.address} textType="Address" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {showSubspaceModal && (
+              <Modal
+                title={subspaceEnable ? 'Have Subspace send SIP to:' : 'Are you sure you want to delete your Subspace SIP Teleport?'}
+                loader={generatingSubspace}
+                hideButtons={generatingSubspace}
+                maskClosable={!generatingSubspace}
+                actionText={subspaceEnable ? 'Save' : 'Disable'}
+                content={
+                  <ModalContainer>
+                    {subspaceEnable ? (
+                      <>
+                        {sipRealm && (
+                          <Radio
+                            noLeftMargin
+                            name="subspaceSipRealm"
+                            id="sipRealmAccount"
+                            label={sipRealm}
+                            checked={subspaceSipRealm === sipRealm}
+                            onChange={() => {
+                              setSubspaceSipRealm(sipRealm);
+                              setSubspaceSipRealmOtherValue('');
+                            }}
+                          />
+                        )}
+                        {sbcs.map((sbc) => {
+                          return (
+                            <Radio
+                              key={sbc.ipv4}
+                              noLeftMargin
+                              name="subspaceSipRealm"
+                              id={sbc.sbc_address_sid}
+                              label={`${sbc.ipv4}:${sbc.port}`}
+                              checked={subspaceSipRealm === `${sbc.ipv4}:${sbc.port}`}
+                              onChange={() => {
+                                setSubspaceSipRealm(`${sbc.ipv4}:${sbc.port}`);
+                                setSubspaceSipRealmOtherValue('');
+                              }}
+                            />
+                          );
+                        })}
+                        <Radio
+                          noLeftMargin
+                          name="subspaceSipRealm"
+                          id="sipRealmOther"
+                          label="Other"
+                          checked={subspaceSipRealm === 'other'}
+                          onChange={() => {
+                            setSubspaceSipRealm('other');
+                            setTimeout(() => refSubspaceOtherSip.current.focus(), 0);
+                          }}
+                        />
+                        {subspaceSipRealm === 'other' && (
+                          <Input
+                            ref={refSubspaceOtherSip}
+                            name="subspaceSipRealm"
+                            id="sipRealmOtherValue"
+                            value={subspaceSipRealmOtherValue}
+                            onChange={e => setSubspaceSipRealmOtherValue(e.target.value)}
+                            placeholder="IP address or DNS name"
+                            style={{ marginTop: '8px' }}
+                          />
+                        )}
+                      </>
+                    ) : null}
+                  </ModalContainer>
+                }
+                handleCancel={() => {
+                  setShowSubspaceModal(false);
+                  resetSubspaceState();
+                }}
+                handleSubmit={() => {
+                  if (subspaceEnable) {
+                    handleSubspaceEnable();
+                  } else {
+                    handleSubspaceDisable();
+                  }
+                }}
+              />
+            )}
+          </>
+        ) : null }
 
         {errorMessage && (
           <FormError grid message={errorMessage} />

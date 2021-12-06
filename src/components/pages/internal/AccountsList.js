@@ -43,6 +43,7 @@ const AccountsList = () => {
         sip_realm:   a.sip_realm,
         url_reg:     a.registration_hook && a.registration_hook.url,
         url_queue:   a.queue_event_hook && a.queue_event_hook.url,
+        subspace_enabled: a.subspace_sip_teleport_id ? 'Enabled' : ''
       }));
       return(simplifiedAccounts);
     } catch (err) {
@@ -220,7 +221,7 @@ const AccountsList = () => {
           { header: 'AccountSid',           key: 'sid'       },
           { header: 'SIP Realm',            key: 'sip_realm' },
           { header: 'Registration Webhook', key: 'url_reg'       },
-          { header: 'Queue Event Webhook',  key: 'url_queue'       },
+          { header: 'Queue Event Webhook',  key: 'url_queue'       }
         ]}
         formatContentToDelete={formatAccountToDelete}
         deleteContent={deleteAccount}
