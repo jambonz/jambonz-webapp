@@ -80,6 +80,7 @@ const AccountForm = props => {
   const [ queueMethod,   setQueueMethod     ] = useState('POST');
   const [ queueUser,     setQueueUser       ] = useState('');
   const [ queuePassword, setQueuePassword   ] = useState('');
+  const [ hasSubspace,    setHasSubspace      ] = useState(false);
   const [ subspaceId,    setSubspaceId      ] = useState('');
   const [ subspaceSecret, setSubspaceSecret ] = useState('');
   const [ subspaceSipTeleportId, setSubspaceSipTeleportId ] = useState('');
@@ -214,7 +215,7 @@ const AccountForm = props => {
       const destination = subspaceSipRealm === 'other'
         ? subspaceSipRealmOtherValue
         : subspaceSipRealm;
-      const apiKeyResponse = await axios({
+      const response = await axios({
         method: 'post',
         baseURL: process.env.REACT_APP_API_BASE_URL,
         url: `/Accounts/${accountSid}/SubspaceTeleport`,
@@ -224,21 +225,29 @@ const AccountForm = props => {
         data: { destination },
       });
 
-      if (apiKeyResponse.status === 200) {
-        setSubspaceSipTeleportId(apiKeyResponse.data.subspace_sip_teleport_id || '');
-        setSubspaceSipTeleportEntryPoints(apiKeyResponse.data.subspace_sip_teleport_destinations || []);
+      if (response.status === 200) {
+        setSubspaceSipTeleportId(response.data.subspace_sip_teleport_id || '');
+        setSubspaceSipTeleportEntryPoints(response.data.subspace_sip_teleport_destinations || []);
 
         dispatch({
           type: 'ADD',
           level: 'success',
-          message: `Successfully enabled subspace teleport.`,
+          message: 'Successfully enabled subspace teleport.',
         });
       }
 
       resetSubspaceState();
     } catch (err) {
       resetSubspaceState();
-      handleErrors({ err, history, dispatch });
+      if (err.response.status === 500 && err.response.data.msg === 'Too Many Requests') {
+        dispatch({
+          type: 'ADD',
+          level: 'error',
+          message: 'You have already created the maximum number of SIP Teleports allowed for your Subspace account.',
+        });
+      } else {
+        handleErrors({ err, history, dispatch });
+      }
     }
   };
 
@@ -255,7 +264,7 @@ const AccountForm = props => {
         },
       });
 
-      if (response.status === 200) {
+      if (response.status === 204) {
         setSubspaceSipTeleportId('');
         setSubspaceSipTeleportEntryPoints([]);
 
@@ -379,7 +388,7 @@ const AccountForm = props => {
             setSubspaceSecret(acc.subspace_client_secret || '');
             setSubspaceSipTeleportId(acc.subspace_sip_teleport_id || '');
             setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_destinations ? JSON.parse(acc.subspace_sip_teleport_destinations) : []);
-
+            setHasSubspace(acc.subspace_client_id ? true : false);
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
             (acc.registration_hook && acc.registration_hook.password)
@@ -881,7 +890,7 @@ const AccountForm = props => {
 
               <StyledInputGroup>
                 <TableMenu
-                  disabled={!subspaceSecret || !subspaceId}
+                  disabled={!hasSubspace}
                   sid="subspace"
                   open={menuOpen === "subspace"}
                   handleMenuOpen={handleSubspaceMenuOpen}
@@ -889,16 +898,16 @@ const AccountForm = props => {
                 />
               </StyledInputGroup>
             </InputGroup>
-            {subspaceSipTeleportId && subspaceSipTeleportEntryPoints ? (
-              <>
-                <InputGroup>Subspace is now enabled. To send your traffic through Subspace:</InputGroup>
+            {subspaceSipTeleportId ? (
+              <div style={{ gridColumn: 2, textAlign: 'left' }}>
+                <div>Subspace is now enabled. To send your traffic through Subspace:</div>
                 {subspaceSipTeleportEntryPoints.map(entrypoint => (
-                  <InputGroup key={entrypoint.transport_type}>
+                  <div key={entrypoint.transport_type}>
                     <Span>send {entrypoint.transport_type.split('_').join(' and ')} traffic to&nbsp;</Span>
                     <CopyableText text={entrypoint.address} textType="Address" />
-                  </InputGroup>
+                  </div>
                 ))}
-              </>
+              </div>
             ) : null}
             {showSubspaceModal && (
               <Modal
