@@ -65,6 +65,7 @@ const AccountForm = props => {
   const refQueuePassword = useRef(null);
   const refSubspaceId = useRef(null);
   const refSubspaceSecret = useRef(null);
+  const refSubspaceOtherSip = useRef(null);
 
   // Form inputs
   const [ name,          setName       ] = useState('');
@@ -214,7 +215,7 @@ const AccountForm = props => {
         ? subspaceSipRealmOtherValue
         : subspaceSipRealm;
       const apiKeyResponse = await axios({
-        method: subspaceEnable ? 'post' : 'delete',
+        method: 'post',
         baseURL: process.env.REACT_APP_API_BASE_URL,
         url: `/Accounts/${accountSid}/SubspaceTeleport`,
         headers: {
@@ -225,12 +226,43 @@ const AccountForm = props => {
 
       if (apiKeyResponse.status === 200) {
         setSubspaceSipTeleportId(apiKeyResponse.data.subspace_sip_teleport_id || '');
-        setSubspaceSipTeleportEntryPoints(subspaceEnable ? JSON.parse(apiKeyResponse.data.subspace_sip_teleport_destinations) : []);
+        setSubspaceSipTeleportEntryPoints(apiKeyResponse.data.subspace_sip_teleport_destinations || []);
 
         dispatch({
           type: 'ADD',
           level: 'success',
-          message: `Successfully ${subspaceEnable ? 'enabled' : 'disabled'} subspace teleport.`,
+          message: `Successfully enabled subspace teleport.`,
+        });
+      }
+
+      resetSubspaceState();
+    } catch (err) {
+      resetSubspaceState();
+      handleErrors({ err, history, dispatch });
+    }
+  };
+
+  const handleSubspaceDisable = async () => {
+    try {
+      setGeneratingSubspace(true);
+
+      const response = await axios({
+        method: 'delete',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
+        url: `/Accounts/${accountSid}/SubspaceTeleport`,
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setSubspaceSipTeleportId('');
+        setSubspaceSipTeleportEntryPoints([]);
+
+        dispatch({
+          type: 'ADD',
+          level: 'success',
+          message: `Successfully disabled subspace teleport.`,
         });
       }
 
@@ -346,7 +378,7 @@ const AccountForm = props => {
             setSubspaceId(acc.subspace_client_id || '');
             setSubspaceSecret(acc.subspace_client_secret || '');
             setSubspaceSipTeleportId(acc.subspace_sip_teleport_id || '');
-            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_destinations ? JSON.parse(acc.subspace_sip_teleport_destinations) : '');
+            setSubspaceSipTeleportEntryPoints(acc.subspace_sip_teleport_destinations ? JSON.parse(acc.subspace_sip_teleport_destinations) : []);
 
           if (
             (acc.registration_hook && acc.registration_hook.username) ||
@@ -858,74 +890,93 @@ const AccountForm = props => {
               </StyledInputGroup>
             </InputGroup>
             {subspaceSipTeleportId && subspaceSipTeleportEntryPoints ? (
-              subspaceSipTeleportEntryPoints.map(entrypoint => (
-                <InputGroup key={entrypoint.transport_type}>
-                  <Span>({entrypoint.transport_type})</Span><CopyableText text={entrypoint.address} textType="Address" />
-                </InputGroup>
-              ))
+              <>
+                <InputGroup>Subspace is now enabled. To send your traffic through Subspace:</InputGroup>
+                {subspaceSipTeleportEntryPoints.map(entrypoint => (
+                  <InputGroup key={entrypoint.transport_type}>
+                    <Span>send {entrypoint.transport_type.split('_').join(' and ')} traffic to&nbsp;</Span>
+                    <CopyableText text={entrypoint.address} textType="Address" />
+                  </InputGroup>
+                ))}
+              </>
             ) : null}
             {showSubspaceModal && (
               <Modal
-                title="Have Subspace send SIP to:"
+                title={subspaceEnable ? 'Have Subspace send SIP to:' : 'Are you sure you want to delete your Subspace SIP Teleport?'}
                 loader={generatingSubspace}
                 hideButtons={generatingSubspace}
                 maskClosable={!generatingSubspace}
-                actionText="Save"
+                actionText={subspaceEnable ? 'Save' : 'Disable'}
                 content={
                   <ModalContainer>
-                    {sipRealm && (
-                      <Radio
-                        noLeftMargin
-                        name="subspaceSipRealm"
-                        id="sipRealmAccount"
-                        label={sipRealm}
-                        checked={subspaceSipRealm === sipRealm}
-                        onChange={() => {
-                          setSubspaceSipRealm(sipRealm);
-                          setSubspaceSipRealmOtherValue('');
-                        }}
-                      />
-                    )}
-                    {sbcs.map((sbc) => {
-                      return (
+                    {subspaceEnable ? (
+                      <>
+                        {sipRealm && (
+                          <Radio
+                            noLeftMargin
+                            name="subspaceSipRealm"
+                            id="sipRealmAccount"
+                            label={sipRealm}
+                            checked={subspaceSipRealm === sipRealm}
+                            onChange={() => {
+                              setSubspaceSipRealm(sipRealm);
+                              setSubspaceSipRealmOtherValue('');
+                            }}
+                          />
+                        )}
+                        {sbcs.map((sbc) => {
+                          return (
+                            <Radio
+                              key={sbc.ipv4}
+                              noLeftMargin
+                              name="subspaceSipRealm"
+                              id={sbc.sbc_address_sid}
+                              label={`${sbc.ipv4}:${sbc.port}`}
+                              checked={subspaceSipRealm === `${sbc.ipv4}:${sbc.port}`}
+                              onChange={() => {
+                                setSubspaceSipRealm(`${sbc.ipv4}:${sbc.port}`);
+                                setSubspaceSipRealmOtherValue('');
+                              }}
+                            />
+                          );
+                        })}
                         <Radio
-                          key={sbc.ipv4}
                           noLeftMargin
                           name="subspaceSipRealm"
-                          id={sbc.sbc_address_sid}
-                          label={`${sbc.ipv4}:${sbc.port}`}
-                          checked={subspaceSipRealm === `${sbc.ipv4}:${sbc.port}`}
+                          id="sipRealmOther"
+                          label="Other"
+                          checked={subspaceSipRealm === 'other'}
                           onChange={() => {
-                            setSubspaceSipRealm(`${sbc.ipv4}:${sbc.port}`);
-                            setSubspaceSipRealmOtherValue('');
+                            setSubspaceSipRealm('other');
+                            setTimeout(() => refSubspaceOtherSip.current.focus(), 0);
                           }}
                         />
-                      );
-                    })}
-                    <Radio
-                      noLeftMargin
-                      name="subspaceSipRealm"
-                      id="sipRealmOther"
-                      label="Other"
-                      checked={subspaceSipRealm === 'other'}
-                      onChange={() => setSubspaceSipRealm('other')}
-                    />
-                    {subspaceSipRealm === 'other' && (
-                      <Input
-                        name="subspaceSipRealm"
-                        id="sipRealmOtherValue"
-                        value={subspaceSipRealmOtherValue}
-                        onChange={e => setSubspaceSipRealmOtherValue(e.target.value)}
-                        placeholder="IP address or DNS name"
-                      />
-                    )}
+                        {subspaceSipRealm === 'other' && (
+                          <Input
+                            ref={refSubspaceOtherSip}
+                            name="subspaceSipRealm"
+                            id="sipRealmOtherValue"
+                            value={subspaceSipRealmOtherValue}
+                            onChange={e => setSubspaceSipRealmOtherValue(e.target.value)}
+                            placeholder="IP address or DNS name"
+                            style={{ marginTop: '8px' }}
+                          />
+                        )}
+                      </>
+                    ) : null}
                   </ModalContainer>
                 }
                 handleCancel={() => {
                   setShowSubspaceModal(false);
                   resetSubspaceState();
                 }}
-                handleSubmit={() => handleSubspaceEnable()}
+                handleSubmit={() => {
+                  if (subspaceEnable) {
+                    handleSubspaceEnable();
+                  } else {
+                    handleSubspaceDisable();
+                  }
+                }}
               />
             )}
           </>
