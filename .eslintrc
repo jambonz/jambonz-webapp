@@ -2,15 +2,12 @@
   "extends": "react-app",
   "rules": {
     "linebreak-style": [
-        "error",
-        "unix"
+      "error",
+      "unix"
     ],
     "semi": [
-        "error",
-        "always"
-    ],
-    "no-trailing-spaces": [
-      "error"
+      "error",
+      "always"
     ]
   }
 }

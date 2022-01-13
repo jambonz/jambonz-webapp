@@ -2,8 +2,8 @@
   "name": "jambonz-webapp",
   "version": "v0.7.1",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.15.4",
     "axios": "^0.21.1",
@@ -12,8 +12,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
-    "serve": "^11.3.0",
+    "react-scripts": "^5.0.0",
+    "serve": "^13.0.2",
     "styled-components": "^5.0.1"
   },
   "scripts": {
