@@ -357,7 +357,7 @@ const CarrierForm = (props) => {
         promises.push(applicationPromise); // 0
         promises.push(accountsPromise); // 1
         promises.push(smppsPromise); // 2
-        promises.push(sbcsPromise) // 3
+        promises.push(sbcsPromise); // 3
 
         if (type === 'edit') {
           const carrierPromise = axios({

@@ -18,7 +18,7 @@ import Code from '../elements/Code';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
-import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext'
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
 import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
 
