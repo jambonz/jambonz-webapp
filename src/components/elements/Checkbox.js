@@ -111,6 +111,7 @@ const Checkbox = (props, ref) => {
         name={props.id}
         type="checkbox"
         checked={props.checked}
+        disabled={props.disabled}
         onChange={props.onChange}
         value={props.value}
         ref={inputRef}

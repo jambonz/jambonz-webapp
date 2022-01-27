@@ -655,6 +655,7 @@ const SpeechServicesAddEdit = (props) => {
               name="useForStt"
               id="useForStt"
               label="Use for speech-to-text"
+              disabled={'wellsaid' === vendor}
               checked={useForStt}
               onChange={e => setUseForStt(e.target.checked)}
               invalid={invalidUseForStt}
