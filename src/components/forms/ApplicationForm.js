@@ -17,6 +17,7 @@ import SpeechRecognizerLanguageGoogle from '../../data/SpeechRecognizerLanguageG
 import SpeechRecognizerLanguageAws from '../../data/SpeechRecognizerLanguageAws';
 import SpeechRecognizerLanguageMicrosoft from '../../data/SpeechRecognizerLanguageMicrosoft';
 import SpeechSynthesisLanguageMicrosoft from '../../data/SpeechSynthesisLanguageMicrosoft';
+import SpeechSynthesisLanguageWellSaid from '../../data/SpeechSynthesisLanguageWellSaid';
 import Loader from '../blocks/Loader';
 import CopyableText from '../elements/CopyableText';
 
@@ -751,6 +752,10 @@ const ApplicationForm = props => {
                   ? SpeechSynthesisLanguageMicrosoft.find(l => (
                       l.code === speechSynthesisLanguage
                     ))
+                  : e.target.value === 'wellsaid'
+                  ? SpeechSynthesisLanguageWellSaid.find(l => (
+                      l.code === speechSynthesisLanguage
+                    ))
                   : SpeechSynthesisLanguageAws.find(l => (
                       l.code === speechSynthesisLanguage
                     ));
@@ -780,6 +785,7 @@ const ApplicationForm = props => {
               <option value="google">Google</option>
               <option value="aws">AWS</option>
               <option value="microsoft">Microsoft</option>
+              <option value="wellsaid">WellSaid</option>
             </Select>
             <Label middle htmlFor="speechSynthesisLanguage">Language</Label>
             <Select
@@ -807,6 +813,10 @@ const ApplicationForm = props => {
                   ? SpeechSynthesisLanguageMicrosoft.find(l => (
                       l.code === e.target.value
                     ))
+                    : speechSynthesisVendor === 'wellsaid'
+                  ? SpeechSynthesisLanguageWellSaid.find(l => (
+                      l.code === e.target.value
+                    ))
                   : SpeechSynthesisLanguageAws.find(l => (
                       l.code === e.target.value
                     ));
@@ -821,6 +831,10 @@ const ApplicationForm = props => {
                 ))
               ) : speechSynthesisVendor === 'microsoft' ? (
                 SpeechSynthesisLanguageMicrosoft.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))
+              ) : speechSynthesisVendor === 'wellsaid' ? (
+                SpeechSynthesisLanguageWellSaid.map(l => (
                   <option key={l.code} value={l.code}>{l.name}</option>
                 ))
               ) : (
@@ -845,6 +859,12 @@ const ApplicationForm = props => {
                   )))
               ) : speechSynthesisVendor === 'microsoft' ? (
                 SpeechSynthesisLanguageMicrosoft
+                  .filter(l => l.code === speechSynthesisLanguage)
+                  .map(m => m.voices.map(v => (
+                    <option key={v.value} value={v.value}>{v.name}</option>
+                  )))
+              ) : speechSynthesisVendor === 'wellsaid' ? (
+                SpeechSynthesisLanguageWellSaid
                   .filter(l => l.code === speechSynthesisLanguage)
                   .map(m => m.voices.map(v => (
                     <option key={v.value} value={v.value}>{v.name}</option>
