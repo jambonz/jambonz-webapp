@@ -18,7 +18,7 @@ import Code from '../elements/Code';
 import FormError from '../blocks/FormError';
 import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
-import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext'
+import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
 import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
 
@@ -70,6 +70,7 @@ const SpeechServicesAddEdit = (props) => {
   const refVendorGoogle = useRef(null);
   const refVendorAws = useRef(null);
   const refVendorMs = useRef(null);
+  const refVendorWellSaid = useRef(null);
   const refAccessKeyId = useRef(null);
   const refSecretAccessKey = useRef(null);
   const refUseForTts = useRef(null);
@@ -93,7 +94,8 @@ const SpeechServicesAddEdit = (props) => {
   // Invalid form inputs
   const [ invalidVendorGoogle,    setInvalidVendorGoogle    ] = useState(false);
   const [ invalidVendorAws,       setInvalidVendorAws       ] = useState(false);
-  const [ invalidVendorMs,        setInvalidVendorMs       ] = useState(false);
+  const [ invalidVendorMs,        setInvalidVendorMs        ] = useState(false);
+  const [ invalidVendorWellSaid,  setInvalidVendorWellSaid  ] = useState(false);
   const [ invalidAccessKeyId,     setInvalidAccessKeyId     ] = useState(false);
   const [ invalidSecretAccessKey, setInvalidSecretAccessKey ] = useState(false);
   const [ invalidUseForTts,       setInvalidUseForTts       ] = useState(false);
@@ -219,6 +221,7 @@ const SpeechServicesAddEdit = (props) => {
       setInvalidVendorGoogle(false);
       setInvalidVendorAws(false);
       setInvalidVendorMs(false);
+      setInvalidVendorWellSaid(false);
       setInvalidAccessKeyId(false);
       setInvalidSecretAccessKey(false);
       setInvalidUseForTts(false);
@@ -232,6 +235,7 @@ const SpeechServicesAddEdit = (props) => {
         setInvalidVendorGoogle(true);
         setInvalidVendorAws(true);
         setInvalidVendorMs(true);
+        setInvalidVendorWellSaid(true);
         if (!focusHasBeenSet) {
           refVendorGoogle.current.focus();
           focusHasBeenSet = true;
@@ -278,6 +282,15 @@ const SpeechServicesAddEdit = (props) => {
         }
       }
 
+      if (vendor === 'wellsaid' && !apiKey) {
+        errorMessages.push('Please provide an API key.');
+        setInvalidApiKey(true);
+        if (!focusHasBeenSet) {
+          refApiKey.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
       if (errorMessages.length > 1) {
         setErrorMessage(errorMessages);
         return;
@@ -309,7 +322,7 @@ const SpeechServicesAddEdit = (props) => {
           service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
           access_key_id: vendor === 'aws' ? accessKeyId : null,
           secret_access_key: vendor === 'aws' ? secretAccessKey : null,
-          api_key: vendor === 'microsoft' ? apiKey : null,
+          api_key: ['microsoft', 'wellsaid'].includes(vendor) ? apiKey : null,
           region: vendor === 'microsoft' ? region : null,
           use_for_tts: useForTts,
           use_for_stt: useForStt,
@@ -490,6 +503,17 @@ const SpeechServicesAddEdit = (props) => {
             ref={refVendorMs}
             disabled={type === 'edit'}
           />
+
+          <Radio
+            name="vendor"
+            id="wellsaid"
+            label="WellSaid"
+            checked={vendor === 'wellsaid'}
+            onChange={() => setVendor('wellsaid')}
+            invalid={invalidVendorWellSaid}
+            ref={refVendorWellSaid}
+            disabled={type === 'edit'}
+          />
         </InputGroup>
 
         <Label htmlFor="account">Used by</Label>
@@ -594,11 +618,25 @@ const SpeechServicesAddEdit = (props) => {
               ))}
             </Select>
           </>
+        ) :  vendor === 'wellsaid' ? (
+          <>
+            <Label htmlFor="apiKey">API Key</Label>
+            <Input
+              name="apiKey"
+              id="apiKey"
+              value={apiKey}
+              onChange={e => setApiKey(e.target.value)}
+              placeholder=""
+              invalid={invalidApiKey}
+              ref={refApiKey}
+              disabled={type === 'edit'}
+            />
+          </>
         ) : (
           null
         )}
 
-        {vendor === 'google' || vendor === 'aws' || vendor === 'microsoft' ? (
+        {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
           <>
             <div/>
             <Checkbox
@@ -623,7 +661,8 @@ const SpeechServicesAddEdit = (props) => {
               ref={refUseForStt}
             />
           </>
-        ) : (
+        ) :
+        (
           null
         )}
 
