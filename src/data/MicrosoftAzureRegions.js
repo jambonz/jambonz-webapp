@@ -32,8 +32,16 @@ export default [
     value: 'francecentral'
   },
   {
+    name: 'Switzerland (North)',
+    value: 'switzerlandnorth'
+  },
+  {
     name: 'India (Central)',
     value: 'centralindia'
+  },
+  {
+    name: 'Japan (West)',
+    value: 'japanwest'
   },
   {
     name: 'Japan (East)',
@@ -50,6 +58,10 @@ export default [
   {
     name: 'UK (South)',
     value: 'uksouth'
+  },
+  {
+    name: 'US (Cental)',
+    value: 'centralus'
   },
   {
     name: 'US (West Central)',
