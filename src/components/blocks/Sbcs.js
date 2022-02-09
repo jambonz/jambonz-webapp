@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -37,7 +38,7 @@ const Sbcs = props => {
         }
         const sbcResults = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           // url: `/Sbcs?service_provider_sid=${currentServiceProvider}`,
           url: '/Sbcs',
           headers: {

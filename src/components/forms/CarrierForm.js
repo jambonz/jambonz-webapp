@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -324,7 +325,7 @@ const CarrierForm = (props) => {
         // Get Application Data
         const applicationPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Applications',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -332,7 +333,7 @@ const CarrierForm = (props) => {
         });
         const accountsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -340,7 +341,7 @@ const CarrierForm = (props) => {
         });
         const smppsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Smpps',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -348,7 +349,7 @@ const CarrierForm = (props) => {
         });
         const sbcsPromise = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Sbcs',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -362,7 +363,7 @@ const CarrierForm = (props) => {
         if (type === 'edit') {
           const carrierPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/VoipCarriers/${voip_carrier_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -371,7 +372,7 @@ const CarrierForm = (props) => {
 
           const sipGatewaysPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/SipGateways?voip_carrier_sid=${voip_carrier_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -380,7 +381,7 @@ const CarrierForm = (props) => {
 
           const smppGatewaysPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/SmppGateways?voip_carrier_sid=${voip_carrier_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -474,7 +475,7 @@ const CarrierForm = (props) => {
         } else {
           const result = await axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/PredefinedCarriers`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -1012,7 +1013,7 @@ const CarrierForm = (props) => {
       // Create or update carrier
       const voipCarrier = await axios({
         method,
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -1043,7 +1044,7 @@ const CarrierForm = (props) => {
       if (!creatingNewCarrier) {
         let results = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/SipGateways?voip_carrier_sid=${carrierSid}`,
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -1053,7 +1054,7 @@ const CarrierForm = (props) => {
         if(smpps && smpps.length > 0) {
           results = await axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/SmppGateways?voip_carrier_sid=${voip_carrier_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -1096,7 +1097,7 @@ const CarrierForm = (props) => {
 
           const result = await axios({
             method,
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -1135,7 +1136,7 @@ const CarrierForm = (props) => {
 
             const result = await axios({
               method,
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url,
               headers: {
                 Authorization: `Bearer ${jwt}`,
@@ -1152,7 +1153,7 @@ const CarrierForm = (props) => {
           for (const sid of completedSipGateways) {
             await axios({
               method: 'delete',
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url: `/SipGateways/${sid}`,
               headers: {
                 Authorization: `Bearer ${jwt}`,
@@ -1164,7 +1165,7 @@ const CarrierForm = (props) => {
           for (const sid of completedSmppGateways) {
             await axios({
               method: 'delete',
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url: `/SmppGateways/${sid}`,
               headers: {
                 Authorization: `Bearer ${jwt}`,
@@ -1175,7 +1176,7 @@ const CarrierForm = (props) => {
         if (voip_carrier_sid) {
           await axios({
             method: 'delete',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/VoipCarriers/${voip_carrier_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -1192,7 +1193,7 @@ const CarrierForm = (props) => {
           if (!match.length) {
             await axios({
               method: 'delete',
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url: `/SipGateways/${remote.sip_gateway_sid}`,
               headers: {
                 Authorization: `Bearer ${jwt}`,
@@ -1206,7 +1207,7 @@ const CarrierForm = (props) => {
             if (!match.length) {
               await axios({
                 method: 'delete',
-                baseURL: process.env.REACT_APP_API_BASE_URL,
+                baseURL: APP_API_BASE_URL,
                 url: `/SmppGateways/${remote.smpp_gateway_sid}`,
                 headers: {
                   Authorization: `Bearer ${jwt}`,
@@ -1262,7 +1263,7 @@ const CarrierForm = (props) => {
 
       const result = await axios({
         method: 'post',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/PredefinedCarriers/${value}`,
         headers: {
           Authorization: `Bearer ${jwt}`,

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -74,7 +75,7 @@ const SettingsForm = () => {
 
         const serviceProvidersResponse = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/ServiceProviders`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -119,7 +120,7 @@ const SettingsForm = () => {
 
     axios({
       method: 'delete',
-      baseURL: process.env.REACT_APP_API_BASE_URL,
+      baseURL: APP_API_BASE_URL,
       url: `/ServiceProviders/${serviceProviderSid}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -208,7 +209,7 @@ const SettingsForm = () => {
 
       await axios({
         method: 'put',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${serviceProviderSid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

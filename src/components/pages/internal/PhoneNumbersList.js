@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -33,7 +34,7 @@ const PhoneNumbersList = () => {
       if(!currentServiceProvider) return [];
       const phoneNumbersPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/PhoneNumbers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -41,7 +42,7 @@ const PhoneNumbersList = () => {
       });
       const accountsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -49,7 +50,7 @@ const PhoneNumbersList = () => {
       });
       const applicationsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/Applications`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -57,7 +58,7 @@ const PhoneNumbersList = () => {
       });
       const sipTrunksPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/VoipCarriers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -150,7 +151,7 @@ const PhoneNumbersList = () => {
       }
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/PhoneNumbers/${phoneNumber.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -192,7 +193,7 @@ const PhoneNumbersList = () => {
       for (const sid of phoneNumberSids) {
         await axios({
           method: 'put',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/PhoneNumbers/${sid}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

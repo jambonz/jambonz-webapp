@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -169,7 +170,7 @@ const AccountForm = props => {
       setGeneratingSecret(true);
       const apiKeyResponse = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${accountSid}/WebhookSecret?regenerate=true`,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -217,7 +218,7 @@ const AccountForm = props => {
         : subspaceSipRealm;
       const response = await axios({
         method: 'post',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${accountSid}/SubspaceTeleport`,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -257,7 +258,7 @@ const AccountForm = props => {
 
       const response = await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${accountSid}/SubspaceTeleport`,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -298,7 +299,7 @@ const AccountForm = props => {
         const promiseList = [];
         const accountsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -309,7 +310,7 @@ const AccountForm = props => {
         if (props.type === 'edit') {
           const applicationsPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/Applications',
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -320,7 +321,7 @@ const AccountForm = props => {
 
         const sbcsPromise = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Sbcs',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -555,7 +556,7 @@ const AccountForm = props => {
 
       await axios({
         method: props.type === 'add' ? 'post' : 'put',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url,
         headers: {
           Authorization: `Bearer ${jwt}`,

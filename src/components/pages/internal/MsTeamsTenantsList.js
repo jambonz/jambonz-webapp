@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -28,7 +29,7 @@ const MsTeamsTenantsList = () => {
       }
       const msTeamsTenantsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/MicrosoftTeamsTenants',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -36,7 +37,7 @@ const MsTeamsTenantsList = () => {
       });
       const accountsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Accounts',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -44,7 +45,7 @@ const MsTeamsTenantsList = () => {
       });
       const applicationsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Applications',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -114,7 +115,7 @@ const MsTeamsTenantsList = () => {
       }
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/MicrosoftTeamsTenants/${tenant.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

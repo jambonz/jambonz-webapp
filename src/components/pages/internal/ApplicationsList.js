@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useEffect, useContext, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -57,7 +58,7 @@ const ApplicationsList = () => {
         try {
           const accountResponse = await axios({
             method: "get",
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -100,7 +101,7 @@ const ApplicationsList = () => {
       }
       const applicationsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${account}/Applications`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -173,7 +174,7 @@ const ApplicationsList = () => {
       // check if any account or Microsoft Teams Tenant uses this application
       const accountsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Accounts',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -181,7 +182,7 @@ const ApplicationsList = () => {
       });
       const msTeamsTenantsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/MicrosoftTeamsTenants',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -226,7 +227,7 @@ const ApplicationsList = () => {
       // Delete application
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Applications/${applicationToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

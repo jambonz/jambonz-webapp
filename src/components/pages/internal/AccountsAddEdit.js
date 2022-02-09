@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -31,7 +32,7 @@ const AccountsAddEdit = () => {
       }
       const results = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${account_sid}/ApiKeys`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -112,7 +113,7 @@ const AccountsAddEdit = () => {
       }
       const result = await axios({
         method: 'post',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Apikeys',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -167,7 +168,7 @@ const AccountsAddEdit = () => {
       }
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Apikeys/${apiKeyToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

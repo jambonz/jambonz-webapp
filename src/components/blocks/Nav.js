@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -106,7 +107,7 @@ const Nav = () => {
     if (history.location.pathname !== '' && jwt) {
       const serviceProvidersResponse = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/ServiceProviders',
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -137,7 +138,7 @@ const Nav = () => {
 
         const serviceProviderResponse = await axios({
           method: 'post',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/ServiceProviders`,
           headers: {
             Authorization: `Bearer ${jwt}`,

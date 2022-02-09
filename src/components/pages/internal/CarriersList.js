@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -64,7 +65,7 @@ const CarriersList = () => {
         try {
           const accountResponse = await axios({
             method: "get",
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -106,7 +107,7 @@ const CarriersList = () => {
       // Get all SIP trunks
       const trunkResults = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/VoipCarriers`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -122,7 +123,7 @@ const CarriersList = () => {
       for (const t of trunkResultsFiltered) {
         const gws = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/SipGateways?voip_carrier_sid=${t.voip_carrier_sid}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -203,7 +204,7 @@ const CarriersList = () => {
       for (const sid of carrierToDelete.gatewaysSid) {
         await axios({
           method: 'delete',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/SipGateways/${sid}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -213,7 +214,7 @@ const CarriersList = () => {
       // delete sip trunk
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/VoipCarriers/${carrierToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

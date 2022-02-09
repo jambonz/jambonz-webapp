@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -54,7 +55,7 @@ const MsTeamsTenantForm = props => {
 
         const tenantsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/MicrosoftTeamsTenants',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -62,7 +63,7 @@ const MsTeamsTenantForm = props => {
         });
         const accountsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -70,7 +71,7 @@ const MsTeamsTenantForm = props => {
         });
         const applicationsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Applications',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -86,7 +87,7 @@ const MsTeamsTenantForm = props => {
         if (props.type === 'add') {
           promises.push(axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/ServiceProviders',
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -247,7 +248,7 @@ const MsTeamsTenantForm = props => {
 
       await axios({
         method,
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

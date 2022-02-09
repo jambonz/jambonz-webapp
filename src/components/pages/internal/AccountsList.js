@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -31,7 +32,7 @@ const AccountsList = () => {
       if(!currentServiceProvider) return [];
       const results = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -94,7 +95,7 @@ const AccountsList = () => {
       // or if the account has any API keys
       const applicationsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Applications',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -102,7 +103,7 @@ const AccountsList = () => {
       });
       const phoneNumbersPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/PhoneNumbers',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -110,7 +111,7 @@ const AccountsList = () => {
       });
       const msTeamsTenantsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/MicrosoftTeamsTenants',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -118,7 +119,7 @@ const AccountsList = () => {
       });
       const apiKeysPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${accountToDelete.sid}/ApiKeys`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -179,7 +180,7 @@ const AccountsList = () => {
       // Delete account
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${accountToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -60,7 +61,7 @@ const PhoneNumberForm = props => {
 
         const sipTrunksPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/VoipCarriers',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -68,7 +69,7 @@ const PhoneNumberForm = props => {
         });
         const accountsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -76,7 +77,7 @@ const PhoneNumberForm = props => {
         });
         const applicationsPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Applications',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -84,7 +85,7 @@ const PhoneNumberForm = props => {
         });
         const phoneNumbersPromise = axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/PhoneNumbers',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -276,7 +277,7 @@ const PhoneNumberForm = props => {
 
       await axios({
         method,
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

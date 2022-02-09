@@ -12,6 +12,7 @@ RUN apk add curl
 WORKDIR /opt/app
 COPY . /opt/app
 COPY --from=builder /opt/app/node_modules ./node_modules
+COPY --from=builder /opt/app/build ./build
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
