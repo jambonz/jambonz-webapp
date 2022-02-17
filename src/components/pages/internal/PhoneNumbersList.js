@@ -7,6 +7,7 @@ import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
 import phoneNumberFormat from '../../../helpers/phoneNumberFormat';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const PhoneNumbersList = () => {
   let history = useHistory();

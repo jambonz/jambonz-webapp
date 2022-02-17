@@ -21,6 +21,7 @@ import SpeechSynthesisLanguageMicrosoft from '../../data/SpeechSynthesisLanguage
 import SpeechSynthesisLanguageWellSaid from '../../data/SpeechSynthesisLanguageWellSaid';
 import Loader from '../blocks/Loader';
 import CopyableText from '../elements/CopyableText';
+import { APP_API_BASE_URL } from "../../constants";
 
 const ApplicationForm = props => {
   let history = useHistory();

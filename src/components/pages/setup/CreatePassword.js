@@ -9,6 +9,7 @@ import Button from '../../elements/Button';
 import Input from '../../elements/Input';
 import FormError from '../../blocks/FormError';
 import Loader from '../../blocks/Loader';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const CreatePassword = () => {
   let history = useHistory();

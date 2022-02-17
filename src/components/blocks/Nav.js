@@ -17,6 +17,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import { ServiceProviderValueContext, ServiceProviderMethodContext } from '../../contexts/ServiceProviderContext';
 import LogoJambong from "../../images/LogoJambong.svg";
 import AddModalButton from '../elements/AddModalButton';
+import { APP_API_BASE_URL } from "../../constants";
 
 const StyledNav = styled.nav`
   position: relative;

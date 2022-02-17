@@ -21,6 +21,7 @@ import sortSipGateways from '../../helpers/sortSipGateways';
 import Select from '../elements/Select';
 import handleErrors from "../../helpers/handleErrors";
 import { LinkWithTooltip } from '../elements/Tooltip';
+import { APP_API_BASE_URL } from "../../constants";
 
 const { TabPane } = Tabs;
 

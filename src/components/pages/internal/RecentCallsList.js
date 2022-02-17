@@ -16,6 +16,7 @@ import InputGroup from "../../../components/elements/InputGroup";
 import Select from "../../../components/elements/Select";
 import handleErrors from "../../../helpers/handleErrors";
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const FilterLabel = styled.span`
   color: #231f20;

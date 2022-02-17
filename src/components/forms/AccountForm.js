@@ -22,6 +22,7 @@ import CopyableText from '../elements/CopyableText';
 import Span from '../elements/Span';
 import handleErrors from "../../helpers/handleErrors";
 import styled from 'styled-components/macro';
+import { APP_API_BASE_URL } from "../../constants";
 
 const StyledInputGroup = styled(InputGroup)`
   position: relative;

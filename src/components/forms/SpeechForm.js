@@ -22,7 +22,7 @@ import Loader from '../blocks/Loader';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
 import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
-
+import { APP_API_BASE_URL } from "../../constants";
 
 const StyledButtonGroup = styled(InputGroup)`
   @media (max-width: 576.98px) {

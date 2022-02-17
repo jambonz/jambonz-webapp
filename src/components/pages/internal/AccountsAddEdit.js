@@ -6,6 +6,7 @@ import { NotificationDispatchContext } from '../../../contexts/NotificationConte
 import InternalTemplate from '../../templates/InternalTemplate';
 import AccountForm from '../../forms/AccountForm';
 import TableContent from '../../blocks/TableContent.js';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const AccountsAddEdit = () => {
   let history = useHistory();

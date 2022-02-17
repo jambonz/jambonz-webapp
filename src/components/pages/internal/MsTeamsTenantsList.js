@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { NotificationDispatchContext } from '../../../contexts/NotificationContext';
 import InternalTemplate from '../../templates/InternalTemplate';
 import TableContent from '../../blocks/TableContent.js';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const MsTeamsTenantsList = () => {
   let history = useHistory();

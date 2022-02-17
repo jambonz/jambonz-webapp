@@ -16,6 +16,7 @@ import Loader from '../blocks/Loader';
 import Modal from '../blocks/Modal';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import handleErrors from "../../helpers/handleErrors";
+import { APP_API_BASE_URL } from "../../constants";
 
 const Td = styled.td`
   padding: 0.5rem 0;

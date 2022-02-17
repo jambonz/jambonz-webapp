@@ -15,6 +15,7 @@ import Select from "../../../components/elements/Select";
 import AntdTable from "../../../components/blocks/AntdTable";
 import handleErrors from "../../../helpers/handleErrors";
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const StyledButton = styled(Button)`
   & > span {
