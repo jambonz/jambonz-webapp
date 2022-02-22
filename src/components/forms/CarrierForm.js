@@ -645,7 +645,7 @@ const CarrierForm = (props) => {
       let errorMessages = [];
       let focusHasBeenSet = false;
       const regIp = /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/;
-      const regFqdn = /^([a-zA-Z][^.]*)(\.[^.]+){2,}$/;
+      const regFqdn = /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/;
       const regFqdnTopLevel = /^([a-zA-Z][^.]*)(\.[^.]+)$/;
       const regPort = /^[0-9]+$/;
 
