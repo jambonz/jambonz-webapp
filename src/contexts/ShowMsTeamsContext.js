@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useState, createContext, useContext } from 'react';
 import axios from 'axios';
 import { NotificationDispatchContext } from './NotificationContext';
