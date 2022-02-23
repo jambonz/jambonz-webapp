@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +12,7 @@ import TableContent from '../../../components/blocks/TableContent';
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
 import InputGroup from '../../../components/elements/InputGroup';
 import Select from '../../../components/elements/Select';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const FilterLabel = styled.span`
   color: #231f20;
@@ -60,7 +62,7 @@ const SpeechServicesList = () => {
         try {
           const accountResponse = await axios({
             method: "get",
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -105,7 +107,7 @@ const SpeechServicesList = () => {
         `/ServiceProviders/${currentServiceProvider}/SpeechCredentials`;
       const speechServices = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: speechApiUrl,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -116,7 +118,7 @@ const SpeechServicesList = () => {
         if (s.use_for_stt || s.use_for_tts) {
           return axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials/${s.speech_credential_sid}/test`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -236,7 +238,7 @@ const SpeechServicesList = () => {
       // Delete speech service
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials/${speechServiceToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${jwt}`,

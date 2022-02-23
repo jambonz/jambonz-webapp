@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -21,7 +22,7 @@ import Loader from '../blocks/Loader';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
 import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
-
+import { APP_API_BASE_URL } from "../../constants";
 
 const StyledButtonGroup = styled(InputGroup)`
   @media (max-width: 576.98px) {
@@ -117,7 +118,7 @@ const SpeechServicesAddEdit = (props) => {
       try {
         const accountsResponse = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: '/Accounts',
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -129,7 +130,7 @@ const SpeechServicesAddEdit = (props) => {
         if (type === 'edit') {
           const speechCredential = await axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials/${speech_service_sid}`,
             headers: {
               Authorization: `Bearer ${jwt}`,
@@ -312,7 +313,7 @@ const SpeechServicesAddEdit = (props) => {
 
       const postResults = await axios({
         method,
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -345,7 +346,7 @@ const SpeechServicesAddEdit = (props) => {
       if (useForTts || useForStt) {
         const testResults = await axios({
           method: 'get',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials/${speech_service_sid}/test`,
           headers: {
             Authorization: `Bearer ${jwt}`,
@@ -390,7 +391,7 @@ const SpeechServicesAddEdit = (props) => {
           if (type === 'add') {
             await axios({
               method: 'delete',
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url: `/ServiceProviders/${currentServiceProvider}/SpeechCredentials/${speech_service_sid}`,
               headers: {
                 Authorization: `Bearer ${jwt}`,
@@ -401,7 +402,7 @@ const SpeechServicesAddEdit = (props) => {
           if (type === 'edit') {
             await axios({
               method,
-              baseURL: process.env.REACT_APP_API_BASE_URL,
+              baseURL: APP_API_BASE_URL,
               url,
               headers: {
                 Authorization: `Bearer ${jwt}`,

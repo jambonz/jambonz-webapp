@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -7,6 +8,7 @@ import Button from '../elements/Button';
 import Input from '../elements/Input';
 import PasswordInput from '../elements/PasswordInput';
 import FormError from '../blocks/FormError';
+import { APP_API_BASE_URL } from "../../constants";
 
 const Login = props => {
   let history = useHistory();
@@ -58,7 +60,7 @@ const Login = props => {
       // Log in
       const response = await axios({
         method: 'post',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/login',
         data: { username, password },
       });
@@ -84,7 +86,7 @@ const Login = props => {
       //-----------------------------------------------------------------------------
       const serviceProvidersPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/serviceProviders',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -93,7 +95,7 @@ const Login = props => {
 
       const accountsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Accounts',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -102,7 +104,7 @@ const Login = props => {
 
       const applicationsPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/applications',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -111,7 +113,7 @@ const Login = props => {
 
       const voipCarriersPromise = axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/voipCarriers',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

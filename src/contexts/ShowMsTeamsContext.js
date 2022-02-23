@@ -1,6 +1,7 @@
 import React, { useState, createContext, useContext } from 'react';
 import axios from 'axios';
 import { NotificationDispatchContext } from './NotificationContext';
+import { APP_API_BASE_URL } from "../constants";
 
 export const ShowMsTeamsStateContext = createContext();
 export const ShowMsTeamsDispatchContext = createContext();
@@ -13,7 +14,7 @@ export function ShowMsTeamsProvider(props) {
     try {
       const serviceProvidersResponse = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/ServiceProviders',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

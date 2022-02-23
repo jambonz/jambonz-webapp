@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -5,6 +6,7 @@ import { NotificationDispatchContext } from '../../../contexts/NotificationConte
 import InternalTemplate from '../../templates/InternalTemplate';
 import AccountForm from '../../forms/AccountForm';
 import TableContent from '../../blocks/TableContent.js';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const AccountsAddEdit = () => {
   let history = useHistory();
@@ -31,7 +33,7 @@ const AccountsAddEdit = () => {
       }
       const results = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${account_sid}/ApiKeys`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -112,7 +114,7 @@ const AccountsAddEdit = () => {
       }
       const result = await axios({
         method: 'post',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/Apikeys',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -167,7 +169,7 @@ const AccountsAddEdit = () => {
       }
       await axios({
         method: 'delete',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Apikeys/${apiKeyToDelete.sid}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

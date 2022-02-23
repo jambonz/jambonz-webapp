@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable no-undef */
 import React, { useContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -14,6 +15,7 @@ import Select from "../../../components/elements/Select";
 import AntdTable from "../../../components/blocks/AntdTable";
 import handleErrors from "../../../helpers/handleErrors";
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const StyledButton = styled(Button)`
   & > span {
@@ -115,7 +117,7 @@ const AlertsIndex = () => {
 
       const alerts = await axios({
         method: "get",
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${account}/Alerts`,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -171,7 +173,7 @@ const AlertsIndex = () => {
           setLoading(true);
           const accountResponse = await axios({
             method: "get",
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${jwt}`,

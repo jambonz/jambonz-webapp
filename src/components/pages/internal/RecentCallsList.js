@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -15,6 +16,7 @@ import InputGroup from "../../../components/elements/InputGroup";
 import Select from "../../../components/elements/Select";
 import handleErrors from "../../../helpers/handleErrors";
 import { ServiceProviderValueContext } from '../../../contexts/ServiceProviderContext';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const FilterLabel = styled.span`
   color: #231f20;
@@ -83,7 +85,7 @@ const PcapButton = ({call_data, account_sid, jwt_token}) => {
   useEffect(() => {
     axios({
       method: "get",
-      baseURL: process.env.REACT_APP_API_BASE_URL,
+      baseURL: APP_API_BASE_URL,
       url: `/Accounts/${account_sid}/RecentCalls/${call_data.sip_callid}`,
       headers: {
         Authorization: `Bearer ${jwt_token}`,
@@ -92,7 +94,7 @@ const PcapButton = ({call_data, account_sid, jwt_token}) => {
       if (result_1.status === 200 && result_1.data.total > 0) {
         axios({
           method: "get",
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/Accounts/${account_sid}/RecentCalls/${call_data.sip_callid}/pcap`,
           headers: {
             Authorization: `Bearer ${jwt_token}`,
@@ -242,7 +244,7 @@ const RecentCallsIndex = () => {
       setLoading(true);
       const result = await axios({
         method: "get",
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Accounts/${account}/RecentCalls`,
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -376,7 +378,7 @@ const RecentCallsIndex = () => {
           setLoading(true);
           const accountResponse = await axios({
             method: "get",
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: `/ServiceProviders/${currentServiceProvider}/Accounts`,
             headers: {
               Authorization: `Bearer ${jwt}`,

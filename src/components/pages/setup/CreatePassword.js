@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -8,6 +9,7 @@ import Button from '../../elements/Button';
 import Input from '../../elements/Input';
 import FormError from '../../blocks/FormError';
 import Loader from '../../blocks/Loader';
+import { APP_API_BASE_URL } from "../../../constants";
 
 const CreatePassword = () => {
   let history = useHistory();
@@ -63,7 +65,7 @@ const CreatePassword = () => {
           //-----------------------------------------------------------------------------
           const serviceProvidersPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/serviceProviders',
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -72,7 +74,7 @@ const CreatePassword = () => {
 
           const accountsPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/Accounts',
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -81,7 +83,7 @@ const CreatePassword = () => {
 
           const applicationsPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/applications',
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -90,7 +92,7 @@ const CreatePassword = () => {
 
           const voipCarriersPromise = axios({
             method: 'get',
-            baseURL: process.env.REACT_APP_API_BASE_URL,
+            baseURL: APP_API_BASE_URL,
             url: '/voipCarriers',
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -235,7 +237,7 @@ const CreatePassword = () => {
 
       const response = await axios({
         method: 'put',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: `/Users/${user_sid}`,
         data: {
           old_password,

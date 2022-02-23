@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -16,6 +17,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import { ServiceProviderValueContext, ServiceProviderMethodContext } from '../../contexts/ServiceProviderContext';
 import LogoJambong from "../../images/LogoJambong.svg";
 import AddModalButton from '../elements/AddModalButton';
+import { APP_API_BASE_URL } from "../../constants";
 
 const StyledNav = styled.nav`
   position: relative;
@@ -106,7 +108,7 @@ const Nav = () => {
     if (history.location.pathname !== '' && jwt) {
       const serviceProvidersResponse = await axios({
         method: 'get',
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: APP_API_BASE_URL,
         url: '/ServiceProviders',
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -137,7 +139,7 @@ const Nav = () => {
 
         const serviceProviderResponse = await axios({
           method: 'post',
-          baseURL: process.env.REACT_APP_API_BASE_URL,
+          baseURL: APP_API_BASE_URL,
           url: `/ServiceProviders`,
           headers: {
             Authorization: `Bearer ${jwt}`,
