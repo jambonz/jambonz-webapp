@@ -269,6 +269,7 @@ const RecentCallsIndex = () => {
           to: phoneNumberFormat(item.to),
           status: item.answered ? "answered" : item.termination_reason,
           duration: timeFormat(item.duration),
+          trace_id: item.trace_id
         }));
 
         setRecentCallsData(recentCalls);
@@ -301,6 +302,7 @@ const RecentCallsIndex = () => {
       "remote_host",
       "sip_status",
       "trunk",
+      "trace_id"
     ];
 
     return (
