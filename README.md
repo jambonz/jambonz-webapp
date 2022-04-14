@@ -25,7 +25,11 @@ If there is an update to this code base, you can update the code without re-depl
 
 ## Development
 
-Like production, you must specify the IP:port of the Jambonz API you will be hitting.
+### Local server
+See [howto-setup-test-environment](./howto-setup-test-environment.md) for details on how to set up a complete local test environment on your laptop.
+
+### Remote server
+If you want to test against a remote server, you must specify the IP:port of the Jambonz API you will be hitting.
 
   1. Copy `.env` to `.env.local`
   2. In `.env.local`, replace `[ip]:[port]` with the API's IP and port
