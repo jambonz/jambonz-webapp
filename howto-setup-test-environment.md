@@ -2,18 +2,18 @@
 This document describes how to set up a local development and test environment on your laptop.  Testing the jambonz-webapp requires a back-end system to run against, and we use docker-compose to run these back-end components, allowing you to develop and test the react UI locally.
 
 ## Prerequisites
-- You will need to have docker an docker-compose installed on your laptop.
-- You need to have checkout the [jambonz-api-server](https://github.com/jambonz/jambonz-api-server) project to a folder on your laptop.
+- You will need to have docker and docker-compose installed on your laptop.
+- You need to have cloned the [jambonz-api-server](https://github.com/jambonz/jambonz-api-server) repo to a folder on your laptop.
 
 ## Running the back-end services
-Make sure the docker daemon is running on your laptop.  Open a terminal window and cd into the folder containing the jambonz-api-server project that you cloned from github, then run the following command to start the back-end processes.
+Make sure the docker daemon is running on your laptop.  Open a terminal window and cd into the project folder for jambonz-api-server, then run the following command to start the back-end processes.
 
 ```bash
 cd jambonz-api-server
 npm run integration-test
 ```
 
-This will take a few minutes to start, but a successfull startup will eventually look like this:
+This will take a few minutes to start, but eventually a successfull startup will eventually look something like this:
 ```bash
 $ npm run integration-test
 
@@ -37,7 +37,7 @@ ready for testing!
 {"level":20, "time": "2022-04-14T18:07:49.345Z","pid":5292,"hostname":"MacBook-Pro-2.local","args":[],"msg":"redis event ready","v":1}
 ```
 
-This will start the a docker-compose network with the following containers:
+This starts the a docker-compose network running the following containers:
 - mysql
 - redis
 - influxdb
@@ -45,7 +45,7 @@ This will start the a docker-compose network with the following containers:
 - drachtio
 - homer-webapp
 
-Leaving jambonz-api-server running, open another terminal window, cd into the folder where you have checked out this project, and start it as shown below:
+Leaving the jambonz-api-server process running, open another terminal window, cd into the folder where you have checked out this project, and start it as shown below:
 
 ```
 cd jambonz-webapp
@@ -53,6 +53,7 @@ npm start
 ```
 This will start the react UI and open a browser page to http://localhost:3001.
 
-You will now see the login page to the jambonz webapp and can log in with username admin and password admin.  You will be forced to change the password, and then you should see the main page of the application.
+You should now see the login page to the jambonz webapp and can log in with username admin and password admin.  You will be forced to change the password, and then you should see the main page of the application.
 
 From here you can make and test changes locally.
+
