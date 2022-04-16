@@ -6,7 +6,7 @@ import { ShowMsTeamsProvider } from './contexts/ShowMsTeamsContext';
 import { ServiceProvider } from './contexts/ServiceProviderContext';
 import App from './App';
 
-import "antd/dist/antd.css";
+import "antd/dist/antd.min.css";
 import './index.css';
 
 ReactDOM.render(
