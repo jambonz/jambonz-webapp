@@ -1,3 +1,4 @@
+/* eslint import/no-anonymous-default-export: [2, {"allowArray": true}] */
 export default [
   { name: 'Afrikaans (South Africa)',                    code: 'af-ZA',       },
   { name: 'Albanian (Albania)',                          code: 'sq-AL',       },

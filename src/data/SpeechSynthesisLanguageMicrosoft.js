@@ -1,3 +1,4 @@
+/* eslint import/no-anonymous-default-export: [2, {"allowArray": true}] */
 const rawData = [
   {
     Name: 'Microsoft Server Speech Text to Speech Voice (af-ZA, AdriNeural)',
