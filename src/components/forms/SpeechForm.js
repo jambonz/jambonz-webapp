@@ -324,6 +324,7 @@ const SpeechServicesAddEdit = (props) => {
           service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
           access_key_id: vendor === 'aws' ? accessKeyId : null,
           secret_access_key: vendor === 'aws' ? secretAccessKey : null,
+          aws_region: vendor === 'aws' ? region : null,
           api_key: ['microsoft', 'wellsaid'].includes(vendor) ? apiKey : null,
           region: vendor === 'microsoft' ? region : null,
           use_for_tts: useForTts,
