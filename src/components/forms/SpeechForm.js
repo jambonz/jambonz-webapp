@@ -21,6 +21,7 @@ import Button from '../elements/Button';
 import Loader from '../blocks/Loader';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 
+import AwsRegions from '../../data/AwsRegions';
 import MicrosoftAzureRegions from '../../data/MicrosoftAzureRegions';
 import { APP_API_BASE_URL } from "../../constants";
 
@@ -80,37 +81,37 @@ const SpeechServicesAddEdit = (props) => {
   const refRegion = useRef(null);
 
   // Form inputs
-  const [ vendor,              setVendor              ] = useState('');
-  const [ serviceKey,          setServiceKey          ] = useState('');
-  const [ displayedServiceKey, setDisplayedServiceKey ] = useState('');
-  const [ accessKeyId,         setAccessKeyId         ] = useState('');
-  const [ secretAccessKey,     setSecretAccessKey     ] = useState('');
-  const [ useForTts,           setUseForTts           ] = useState(false);
-  const [ useForStt,           setUseForStt           ] = useState(false);
-  const [ accounts,            setAccounts            ] = useState([]);
-  const [ accountSid,          setAccountSid          ] = useState('');
-  const [ apiKey,              setApiKey              ] = useState('');
-  const [ region,              setRegion              ] = useState('');
+  const [vendor, setVendor] = useState('');
+  const [serviceKey, setServiceKey] = useState('');
+  const [displayedServiceKey, setDisplayedServiceKey] = useState('');
+  const [accessKeyId, setAccessKeyId] = useState('');
+  const [secretAccessKey, setSecretAccessKey] = useState('');
+  const [useForTts, setUseForTts] = useState(false);
+  const [useForStt, setUseForStt] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [accountSid, setAccountSid] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [region, setRegion] = useState('');
 
   // Invalid form inputs
-  const [ invalidVendorGoogle,    setInvalidVendorGoogle    ] = useState(false);
-  const [ invalidVendorAws,       setInvalidVendorAws       ] = useState(false);
-  const [ invalidVendorMs,        setInvalidVendorMs        ] = useState(false);
-  const [ invalidVendorWellSaid,  setInvalidVendorWellSaid  ] = useState(false);
-  const [ invalidAccessKeyId,     setInvalidAccessKeyId     ] = useState(false);
-  const [ invalidSecretAccessKey, setInvalidSecretAccessKey ] = useState(false);
-  const [ invalidUseForTts,       setInvalidUseForTts       ] = useState(false);
-  const [ invalidUseForStt,       setInvalidUseForStt       ] = useState(false);
-  const [ invalidApiKey,          setInvalidApiKey          ] = useState(false);
-  const [ invalidRegion,          setInvalidRegion          ] = useState(false);
+  const [invalidVendorGoogle, setInvalidVendorGoogle] = useState(false);
+  const [invalidVendorAws, setInvalidVendorAws] = useState(false);
+  const [invalidVendorMs, setInvalidVendorMs] = useState(false);
+  const [invalidVendorWellSaid, setInvalidVendorWellSaid] = useState(false);
+  const [invalidAccessKeyId, setInvalidAccessKeyId] = useState(false);
+  const [invalidSecretAccessKey, setInvalidSecretAccessKey] = useState(false);
+  const [invalidUseForTts, setInvalidUseForTts] = useState(false);
+  const [invalidUseForStt, setInvalidUseForStt] = useState(false);
+  const [invalidApiKey, setInvalidApiKey] = useState(false);
+  const [invalidRegion, setInvalidRegion] = useState(false);
 
-  const [ originalTtsValue,       setOriginalTtsValue       ] = useState(null);
-  const [ originalSttValue,       setOriginalSttValue       ] = useState(null);
+  const [originalTtsValue, setOriginalTtsValue] = useState(null);
+  const [originalSttValue, setOriginalSttValue] = useState(null);
 
-  const [ validServiceKey,        setValidServiceKey        ] = useState(false);
+  const [validServiceKey, setValidServiceKey] = useState(false);
 
-  const [ showLoader, setShowLoader ] = useState(true);
-  const [ errorMessage, setErrorMessage ] = useState('');
+  const [showLoader, setShowLoader] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const getAPIData = async () => {
@@ -146,18 +147,18 @@ const SpeechServicesAddEdit = (props) => {
           } catch (err) {
           }
 
-          setAccountSid(          speechCredential.data.account_sid       || '');
-          setVendor(              speechCredential.data.vendor            || undefined);
-          setServiceKey(          serviceKeyJson                          || '');
-          setDisplayedServiceKey( displayedServiceKeyJson                 || '');
-          setAccessKeyId(         speechCredential.data.access_key_id     || '');
-          setSecretAccessKey(     speechCredential.data.secret_access_key || '');
-          setApiKey(              speechCredential.data.api_key           || '');
-          setRegion(              speechCredential.data.region            || '');
-          setUseForTts(           speechCredential.data.use_for_tts       || false);
-          setUseForStt(           speechCredential.data.use_for_stt       || false);
-          setOriginalTtsValue(    speechCredential.data.use_for_tts       || false);
-          setOriginalSttValue(    speechCredential.data.use_for_stt       || false);
+          setAccountSid(speechCredential.data.account_sid || '');
+          setVendor(speechCredential.data.vendor || undefined);
+          setServiceKey(serviceKeyJson || '');
+          setDisplayedServiceKey(displayedServiceKeyJson || '');
+          setAccessKeyId(speechCredential.data.access_key_id || '');
+          setSecretAccessKey(speechCredential.data.secret_access_key || '');
+          setApiKey(speechCredential.data.api_key || '');
+          setRegion(speechCredential.data.region || '');
+          setUseForTts(speechCredential.data.use_for_tts || false);
+          setUseForStt(speechCredential.data.use_for_stt || false);
+          setOriginalTtsValue(speechCredential.data.use_for_tts || false);
+          setOriginalSttValue(speechCredential.data.use_for_stt || false);
         }
         setShowLoader(false);
       } catch (err) {
@@ -463,7 +464,7 @@ const SpeechServicesAddEdit = (props) => {
 
   return (
     showLoader ? (
-      <Loader height={props.type === 'add' ? '424px' : '376px'}/>
+      <Loader height={props.type === 'add' ? '424px' : '376px'} />
     ) : (
       <Form
         large
@@ -582,6 +583,25 @@ const SpeechServicesAddEdit = (props) => {
               ref={refSecretAccessKey}
               disabled={type === 'edit'}
             />
+
+            <Label htmlFor="regions">Region</Label>
+            <Select
+              name="regions"
+              id="regions"
+              value={region}
+              onChange={e => setRegion(e.target.value)}
+              ref={refRegion}
+              invalid={invalidRegion}
+            >
+              {AwsRegions.map(r => (
+                <option
+                  key={r.value}
+                  value={r.value}
+                >
+                  {r.name}
+                </option>
+              ))}
+            </Select>
           </>
         ) : vendor === 'microsoft' ? (
           <>
@@ -619,7 +639,7 @@ const SpeechServicesAddEdit = (props) => {
               ))}
             </Select>
           </>
-        ) :  vendor === 'wellsaid' ? (
+        ) : vendor === 'wellsaid' ? (
           <>
             <Label htmlFor="apiKey">API Key</Label>
             <Input
@@ -639,7 +659,7 @@ const SpeechServicesAddEdit = (props) => {
 
         {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
           <>
-            <div/>
+            <div />
             <Checkbox
               noLeftMargin
               name="useForTts"
@@ -650,7 +670,7 @@ const SpeechServicesAddEdit = (props) => {
               invalid={invalidUseForTts}
               ref={refUseForTts}
             />
-            <div/>
+            <div />
             <Checkbox
               noLeftMargin
               name="useForStt"
@@ -664,9 +684,9 @@ const SpeechServicesAddEdit = (props) => {
             />
           </>
         ) :
-        (
-          null
-        )}
+          (
+            null
+          )}
 
         {errorMessage && (
           <FormError grid message={errorMessage} />
@@ -682,7 +702,7 @@ const SpeechServicesAddEdit = (props) => {
               dispatch({
                 type: 'ADD',
                 level: 'info',
-                message: type === 'add' ? 'New speech service canceled' :'Changes canceled',
+                message: type === 'add' ? 'New speech service canceled' : 'Changes canceled',
               });
             }}
           >
