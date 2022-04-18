@@ -1,4 +1,4 @@
-export default [
+const languages = [
   { name: 'Australian English', 'code': 'en-AU' },
   { name: 'British English',    'code': 'en-GB' },
   { name: 'US English',         'code': 'en-US' },
@@ -8,3 +8,5 @@ export default [
   { name: 'Italian',            'code': 'it-IT' },
   { name: 'US Spanish',         'code': 'es-US' },
 ];
+
+export default languages;

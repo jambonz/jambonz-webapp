@@ -1,4 +1,4 @@
-export default [
+const regions = [
   {
     name: 'Asia (East)',
     value: 'eastasia'
@@ -92,3 +92,5 @@ export default [
     value: 'westus2'
   },
 ];
+
+export default regions;

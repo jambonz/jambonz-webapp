@@ -1,4 +1,4 @@
-export default [
+const languages = [
   {
     code: 'en-US',
     name: 'English (US)',
@@ -37,3 +37,5 @@ export default [
     ],
   }
 ];
+
+export default languages;

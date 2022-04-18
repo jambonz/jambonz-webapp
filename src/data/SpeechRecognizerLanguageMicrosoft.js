@@ -1,4 +1,4 @@
-export default [
+const languages = [
   {
     name: 'Arabic (Algeria)',
     code: 'ar-DZ'
@@ -420,3 +420,5 @@ export default [
     code: 'vi-VN'
   },
 ];
+
+export default languages;

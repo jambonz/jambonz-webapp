@@ -1,4 +1,4 @@
-export default [
+const languages = [
   { name: 'Afrikaans (South Africa)',                    code: 'af-ZA',       },
   { name: 'Albanian (Albania)',                          code: 'sq-AL',       },
   { name: 'Amharic (Ethiopia)',                          code: 'am-ET',       },
@@ -128,3 +128,5 @@ export default [
   { name: 'Vietnamese (Vietnam)',                        code: 'vi-VN',       },
   { name: 'Zulu (South Africa)',                         code: 'zu-ZA',       },
 ];
+
+export default languages;
