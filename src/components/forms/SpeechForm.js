@@ -594,6 +594,9 @@ const SpeechServicesAddEdit = (props) => {
               ref={refRegion}
               invalid={invalidRegion}
             >
+            <option value="">
+                Select a region
+              </option>
               {AwsRegions.map(r => (
                 <option
                   key={r.value}
