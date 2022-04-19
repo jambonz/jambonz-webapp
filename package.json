@@ -17,7 +17,7 @@
     "styled-components": "^5.0.1"
   },
   "scripts": {
-    "start": "PORT=${HTTP_PORT:-3001} react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false PORT=${HTTP_PORT:-3001} react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
