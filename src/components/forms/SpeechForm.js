@@ -266,6 +266,15 @@ const SpeechServicesAddEdit = (props) => {
         }
       }
 
+      if (vendor === 'aws' && !region) {
+        errorMessages.push('Please select a region.');
+        setInvalidRegion(true);
+        if (!focusHasBeenSet) {
+          refRegion.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
       if (vendor === 'microsoft' && !apiKey) {
         errorMessages.push('Please provide an API key.');
         setInvalidApiKey(true);
