@@ -79,6 +79,7 @@ const SpeechServicesAddEdit = (props) => {
   const refUseForStt = useRef(null);
   const refApiKey = useRef(null);
   const refRegion = useRef(null);
+  const refAwsRegion = useRef(null);
 
   // Form inputs
   const [vendor, setVendor] = useState('');
@@ -92,6 +93,7 @@ const SpeechServicesAddEdit = (props) => {
   const [accountSid, setAccountSid] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [region, setRegion] = useState('');
+  const [awsregion, setAwsRegion] = useState('');
 
   // Invalid form inputs
   const [invalidVendorGoogle, setInvalidVendorGoogle] = useState(false);
@@ -104,6 +106,7 @@ const SpeechServicesAddEdit = (props) => {
   const [invalidUseForStt, setInvalidUseForStt] = useState(false);
   const [invalidApiKey, setInvalidApiKey] = useState(false);
   const [invalidRegion, setInvalidRegion] = useState(false);
+  const [invalidAwsRegion, setInvalidAwsRegion] = useState(false);
 
   const [originalTtsValue, setOriginalTtsValue] = useState(null);
   const [originalSttValue, setOriginalSttValue] = useState(null);
@@ -155,6 +158,7 @@ const SpeechServicesAddEdit = (props) => {
           setSecretAccessKey(speechCredential.data.secret_access_key || '');
           setApiKey(speechCredential.data.api_key || '');
           setRegion(speechCredential.data.region || '');
+          setAwsRegion(speechCredential.data.aws_region || '');
           setUseForTts(speechCredential.data.use_for_tts || false);
           setUseForStt(speechCredential.data.use_for_stt || false);
           setOriginalTtsValue(speechCredential.data.use_for_tts || false);
@@ -266,11 +270,11 @@ const SpeechServicesAddEdit = (props) => {
         }
       }
 
-      if (vendor === 'aws' && !region) {
+      if (vendor === 'aws' && !awsregion) {
         errorMessages.push('Please select a region.');
-        setInvalidRegion(true);
+        setInvalidAwsRegion(true);
         if (!focusHasBeenSet) {
-          refRegion.current.focus();
+          refAwsRegion.current.focus();
           focusHasBeenSet = true;
         }
       }
@@ -333,7 +337,7 @@ const SpeechServicesAddEdit = (props) => {
           service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
           access_key_id: vendor === 'aws' ? accessKeyId : null,
           secret_access_key: vendor === 'aws' ? secretAccessKey : null,
-          aws_region: vendor === 'aws' ? region : null,
+          aws_region: vendor === 'aws' ? awsregion : null,
           api_key: ['microsoft', 'wellsaid'].includes(vendor) ? apiKey : null,
           region: vendor === 'microsoft' ? region : null,
           use_for_tts: useForTts,
@@ -598,10 +602,10 @@ const SpeechServicesAddEdit = (props) => {
             <Select
               name="regions"
               id="regions"
-              value={region}
-              onChange={e => setRegion(e.target.value)}
-              ref={refRegion}
-              invalid={invalidRegion}
+              value={awsregion}
+              onChange={e => setAwsRegion(e.target.value)}
+              ref={refAwsRegion}
+              invalid={invalidAwsRegion}
             >
             <option value="">
                 Select a region
