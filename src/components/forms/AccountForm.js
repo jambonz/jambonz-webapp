@@ -342,7 +342,7 @@ const AccountForm = props => {
           });
           setAccountApplications(accountApplicationsData);
         }
-        setSbcs(promiseAllValues[2].data); 
+        setSbcs(promiseAllValues[2]?.data); 
 
         if (props.type === 'setup' && accountsData.length > 1) {
           history.push('/internal/accounts');
