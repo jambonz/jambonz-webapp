@@ -12,7 +12,6 @@ import Label from '../elements/Label';
 import Select from '../elements/Select';
 import InputGroup from '../elements/InputGroup';
 import PasswordInput from '../elements/PasswordInput';
-import Radio from '../elements/Radio';
 import Checkbox from '../elements/Checkbox';
 import FileUpload from '../elements/FileUpload';
 import Code from '../elements/Code';
@@ -484,10 +483,10 @@ const SpeechServicesAddEdit = (props) => {
         large
         onSubmit={handleSubmit}
       >
-        <Label htmlFor="name">Vendor</Label>
+        <Label htmlFor="vendor">Vendor</Label>
         <Select
-          name="vendors"
-          id="vendors"
+          name="vendor"
+          id="vendor"
           value={vendor}
           onChange={e => setVendor(e.target.value)}
           ref={[refVendorGoogle, refVendorAws, refVendorMs, refVendorWellSaid]}
@@ -521,6 +520,37 @@ const SpeechServicesAddEdit = (props) => {
             </option>
           ))}
         </Select>
+
+        {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
+          <>
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useForTts"
+              id="useForTts"
+              label="Use for text-to-speech"
+              checked={useForTts}
+              onChange={e => setUseForTts(e.target.checked)}
+              invalid={invalidUseForTts}
+              ref={refUseForTts}
+            />
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useForStt"
+              id="useForStt"
+              label="Use for speech-to-text"
+              disabled={'wellsaid' === vendor}
+              checked={useForStt}
+              onChange={e => setUseForStt(e.target.checked)}
+              invalid={invalidUseForStt}
+              ref={refUseForStt}
+            />
+          </>
+        ) :
+          (
+            null
+          )}
 
         {vendor === 'google' ? (
           <>
@@ -644,37 +674,6 @@ const SpeechServicesAddEdit = (props) => {
           null
         )}
 
-        {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
-          <>
-            <div />
-            <Checkbox
-              noLeftMargin
-              name="useForTts"
-              id="useForTts"
-              label="Use for text-to-speech"
-              checked={useForTts}
-              onChange={e => setUseForTts(e.target.checked)}
-              invalid={invalidUseForTts}
-              ref={refUseForTts}
-            />
-            <div />
-            <Checkbox
-              noLeftMargin
-              name="useForStt"
-              id="useForStt"
-              label="Use for speech-to-text"
-              disabled={'wellsaid' === vendor}
-              checked={useForStt}
-              onChange={e => setUseForStt(e.target.checked)}
-              invalid={invalidUseForStt}
-              ref={refUseForStt}
-            />
-          </>
-        ) :
-          (
-            null
-          )}
-
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}
@@ -696,7 +695,7 @@ const SpeechServicesAddEdit = (props) => {
             Cancel
           </Button>
 
-          <Button rounded="true">
+          <Button rounded="true" disabled={!vendor}>
             {type === 'add'
               ? 'Add Speech Service'
               : 'Save'
