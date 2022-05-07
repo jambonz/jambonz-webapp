@@ -12,7 +12,6 @@ import Label from '../elements/Label';
 import Select from '../elements/Select';
 import InputGroup from '../elements/InputGroup';
 import PasswordInput from '../elements/PasswordInput';
-import Radio from '../elements/Radio';
 import Checkbox from '../elements/Checkbox';
 import FileUpload from '../elements/FileUpload';
 import Code from '../elements/Code';
@@ -484,53 +483,23 @@ const SpeechServicesAddEdit = (props) => {
         large
         onSubmit={handleSubmit}
       >
-        <Label htmlFor="name">Vendor</Label>
-        <InputGroup>
-          <Radio
-            noLeftMargin
-            name="vendor"
-            id="google"
-            label="Google"
-            checked={vendor === 'google'}
-            onChange={() => setVendor('google')}
-            invalid={invalidVendorGoogle}
-            ref={refVendorGoogle}
-            disabled={type === 'edit'}
-          />
-
-          <Radio
-            name="vendor"
-            id="aws"
-            label="Amazon Web Services"
-            checked={vendor === 'aws'}
-            onChange={() => setVendor('aws')}
-            invalid={invalidVendorAws}
-            ref={refVendorAws}
-            disabled={type === 'edit'}
-          />
-
-          <Radio
-            name="vendor"
-            id="microsoft"
-            label="Microsoft"
-            checked={vendor === 'microsoft'}
-            onChange={() => setVendor('microsoft')}
-            invalid={invalidVendorMs}
-            ref={refVendorMs}
-            disabled={type === 'edit'}
-          />
-
-          <Radio
-            name="vendor"
-            id="wellsaid"
-            label="WellSaid"
-            checked={vendor === 'wellsaid'}
-            onChange={() => setVendor('wellsaid')}
-            invalid={invalidVendorWellSaid}
-            ref={refVendorWellSaid}
-            disabled={type === 'edit'}
-          />
-        </InputGroup>
+        <Label htmlFor="vendor">Vendor</Label>
+        <Select
+          name="vendor"
+          id="vendor"
+          value={vendor}
+          onChange={e => setVendor(e.target.value)}
+          ref={[refVendorGoogle, refVendorAws, refVendorMs, refVendorWellSaid]}
+          invalid={[invalidVendorGoogle, invalidVendorAws, invalidVendorMs, invalidVendorWellSaid].includes(true)}
+        >
+          <option value="">
+            Select a Vendor
+          </option>
+          <option value="google">Google</option>
+          <option value="aws">AWS</option>
+          <option value="microsoft">Microsoft</option>
+          <option value="wellsaid">WellSaid</option>
+        </Select>
 
         <Label htmlFor="account">Used by</Label>
         <Select
@@ -551,6 +520,37 @@ const SpeechServicesAddEdit = (props) => {
             </option>
           ))}
         </Select>
+
+        {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
+          <>
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useForTts"
+              id="useForTts"
+              label="Use for text-to-speech"
+              checked={useForTts}
+              onChange={e => setUseForTts(e.target.checked)}
+              invalid={invalidUseForTts}
+              ref={refUseForTts}
+            />
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useForStt"
+              id="useForStt"
+              label="Use for speech-to-text"
+              disabled={'wellsaid' === vendor}
+              checked={useForStt}
+              onChange={e => setUseForStt(e.target.checked)}
+              invalid={invalidUseForStt}
+              ref={refUseForStt}
+            />
+          </>
+        ) :
+          (
+            null
+          )}
 
         {vendor === 'google' ? (
           <>
@@ -607,7 +607,7 @@ const SpeechServicesAddEdit = (props) => {
               ref={refAwsRegion}
               invalid={invalidAwsRegion}
             >
-            <option value="">
+              <option value="">
                 Select a region
               </option>
               {AwsRegions.map(r => (
@@ -674,37 +674,6 @@ const SpeechServicesAddEdit = (props) => {
           null
         )}
 
-        {['google', 'aws', 'microsoft', 'wellsaid'].includes(vendor) ? (
-          <>
-            <div />
-            <Checkbox
-              noLeftMargin
-              name="useForTts"
-              id="useForTts"
-              label="Use for text-to-speech"
-              checked={useForTts}
-              onChange={e => setUseForTts(e.target.checked)}
-              invalid={invalidUseForTts}
-              ref={refUseForTts}
-            />
-            <div />
-            <Checkbox
-              noLeftMargin
-              name="useForStt"
-              id="useForStt"
-              label="Use for speech-to-text"
-              disabled={'wellsaid' === vendor}
-              checked={useForStt}
-              onChange={e => setUseForStt(e.target.checked)}
-              invalid={invalidUseForStt}
-              ref={refUseForStt}
-            />
-          </>
-        ) :
-          (
-            null
-          )}
-
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}
@@ -726,7 +695,7 @@ const SpeechServicesAddEdit = (props) => {
             Cancel
           </Button>
 
-          <Button rounded="true">
+          <Button rounded="true" disabled={!vendor}>
             {type === 'add'
               ? 'Add Speech Service'
               : 'Save'
