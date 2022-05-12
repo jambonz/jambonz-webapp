@@ -1,5 +1,13 @@
 const languages = [
   {
+    name: 'Afrikaans (South Africa)',
+    code: 'af-ZA'
+  },
+  {
+    name: 'Amharic (Ethiopia)',
+    code: 'am-ET'
+  },
+  {
     name: 'Arabic (Algeria)',
     code: 'ar-DZ'
   },
@@ -76,6 +84,10 @@ const languages = [
     code: 'bg-BG'
   },
   {
+    name: 'Bengali (India)',
+    code: 'bn-IN'
+  },
+  {
     name: 'Catalan (Spain)',
     code: 'ca-ES'
   },
@@ -106,6 +118,10 @@ const languages = [
   {
     name: 'Dutch (Netherlands)',
     code: 'nl-NL'
+  },
+  {
+    name: 'Dutch (Belgium)',
+    code: 'nl-BE'
   },
   {
     name: 'English (Australia)',
@@ -180,6 +196,10 @@ const languages = [
     code: 'fi-FI'
   },
   {
+    name: 'French (Belgium)',
+    code: 'fr-BE'
+  },
+  {
     name: 'French (Canada)',
     code: 'fr-CA'
   },
@@ -228,6 +248,10 @@ const languages = [
     code: 'id-ID'
   },
   {
+    name: 'Icelandic (Iceland)',
+    code: 'is-IS'
+  },
+  {
     name: 'Irish (Ireland)',
     code: 'ga-IE'
   },
@@ -240,8 +264,16 @@ const languages = [
     code: 'ja-JP'
   },
   {
+    name: 'Javanese (Indonesia)',
+    code: 'jv-ID'
+  },
+  {
     name: 'Kannada (India)',
     code: 'kn-IN'
+  },
+  {
+    name: 'Khmer (Cambodia)',
+    code: 'km-KH'
   },
   {
     name: 'Korean (Korea)',
@@ -252,6 +284,10 @@ const languages = [
     code: 'lv-LV'
   },
   {
+    name: 'Lao (Laos)',
+    code: 'lo-LA'
+  },
+  {
     name: 'Lithuanian (Lithuania)',
     code: 'lt-LT'
   },
@@ -260,12 +296,20 @@ const languages = [
     code: 'ms-MY'
   },
   {
+    name: 'Macedonian (North Macedonia)',
+    code: 'mk-MK'
+  },
+  {
     name: 'Maltese (Malta)',
     code: 'mt-MT'
   },
   {
     name: 'Marathi (India)',
     code: 'mr-IN'
+  },
+  {
+    name: 'Burmese (Myanmar)',
+    code: 'my-MM'
   },
   {
     name: 'Norwegian (Bokmål, Norway)',
@@ -396,8 +440,20 @@ const languages = [
     code: 'sw-KE'
   },
   {
+    name: 'Swahili (Tanzania)',
+    code: 'sw-TZ'
+  },
+  {
+    name: 'Sinhala (Sri Lanka)',
+    code: 'si-LK'
+  },
+  {
     name: 'Swedish (Sweden)',
     code: 'sv-SE'
+  },
+  {
+    name: 'Serbian (Serbia)',
+    code: 'sr-RS'
   },
   {
     name: 'Tamil (India)',
@@ -414,6 +470,18 @@ const languages = [
   {
     name: 'Turkish (Turkey)',
     code: 'tr-TR'
+  },
+  {
+    name: 'Ukrainian (Ukraine)',
+    code: 'uk-UA'
+  },
+  {
+    name: 'Uzbek (Uzbekistan)',
+    code: 'uz-UZ'
+  },
+  {
+    name: 'Zulu (South Africa)',
+    code: 'zu-ZA'
   },
   {
     name: 'Vietnamese (Vietnam)',
