@@ -43,23 +43,23 @@ const SettingsForm = () => {
   const refServiceProviderName = useRef(null);
 
   // Form inputs
-  const [ enableMsTeams, setEnableMsTeams ] = useState(false);
-  const [ sbcDomainName, setSbcDomainName ] = useState('');
+  const [enableMsTeams, setEnableMsTeams] = useState(false);
+  const [sbcDomainName, setSbcDomainName] = useState('');
   const [serviceProviderName, setServiceProviderName] = useState('');
 
   // For when user has data in sbcDomainName and then taps the checkbox to disable MsTeams
-  const [ savedSbcDomainName, setSavedSbcDomainName ] = useState('');
+  const [savedSbcDomainName, setSavedSbcDomainName] = useState('');
 
   // Invalid form inputs
-  const [ invalidEnableMsTeams, setInvalidEnableMsTeams ] = useState(false);
-  const [ invalidSbcDomainName, setInvalidSbcDomainName ] = useState(false);
+  const [invalidEnableMsTeams, setInvalidEnableMsTeams] = useState(false);
+  const [invalidSbcDomainName, setInvalidSbcDomainName] = useState(false);
   const [invalidServiceProviderName, setInvalidServiceProviderName] = useState(false);
 
-  const [ showLoader, setShowLoader ] = useState(true);
-  const [ errorMessage, setErrorMessage ] = useState('');
-  const [ serviceProviderSid, setServiceProviderSid ] = useState('');
-  const [ serviceProviders, setServiceProviders ] = useState([]);
-  const [ confirmDelete, setConfirmDelete ] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [serviceProviderSid, setServiceProviderSid] = useState('');
+  const [serviceProviders, setServiceProviders] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     const getSettingsData = async () => {
@@ -127,19 +127,19 @@ const SettingsForm = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     })
-    .then(() => {
-      setConfirmDelete(false);
-      setErrorMessage('');
-      history.push('/internal/accounts');
-      dispatch({
-        type: 'ADD',
-        level: 'success',
-        message: 'Service Provider Deleted'
+      .then(() => {
+        setConfirmDelete(false);
+        setErrorMessage('');
+        history.push('/internal/accounts');
+        dispatch({
+          type: 'ADD',
+          level: 'success',
+          message: 'Service Provider Deleted'
+        });
+      })
+      .catch((error) => {
+        setErrorMessage(error.response.data.msg);
       });
-    })
-    .catch((error) => {
-      setErrorMessage(error.response.data.msg);
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -255,115 +255,115 @@ const SettingsForm = () => {
 
   return (
     showLoader
-    ? <Loader height="365px" />
-    : (
-      <>
-        <Form
-          large
-          wideLabel
-          onSubmit={handleSubmit}
-        >
-          <Label htmlFor="serviceProviderName">Service Provider Name</Label>
-          <Input
-            name="serviceProviderName"
-            id="serviceProviderName"
-            value={serviceProviderName}
-            onChange={e => setServiceProviderName(e.target.value)}
-            invalid={invalidServiceProviderName}
-            ref={refServiceProviderName}
-          />
-          <div>{/* needed for CSS grid layout */}</div>
-          <Checkbox
-            noLeftMargin
-            id="enableMsTeams"
-            label="Enable Microsoft Teams Direct Routing"
-            checked={enableMsTeams}
-            onChange={toggleMsTeams}
-            invalid={invalidEnableMsTeams}
-            ref={refEnableMsTeams}
-          />
+      ? <Loader height="365px" />
+      : (
+        <>
+          <Form
+            large
+            wideLabel
+            onSubmit={handleSubmit}
+          >
+            <Label htmlFor="serviceProviderName">Service Provider Name</Label>
+            <Input
+              name="serviceProviderName"
+              id="serviceProviderName"
+              value={serviceProviderName}
+              onChange={e => setServiceProviderName(e.target.value)}
+              invalid={invalidServiceProviderName}
+              ref={refServiceProviderName}
+            />
+            <div>{/* needed for CSS grid layout */}</div>
+            <Checkbox
+              noLeftMargin
+              id="enableMsTeams"
+              label="Enable Microsoft Teams Direct Routing"
+              checked={enableMsTeams}
+              onChange={toggleMsTeams}
+              invalid={invalidEnableMsTeams}
+              ref={refEnableMsTeams}
+            />
 
-          <Label htmlFor="sbcDomainName">SBC Domain Name</Label>
-          <Input
-            name="sbcDomainName"
-            id="sbcDomainName"
-            value={sbcDomainName}
-            onChange={e => setSbcDomainName(e.target.value)}
-            placeholder="Fully qualified domain name used for Microsoft Teams"
-            invalid={invalidSbcDomainName}
-            autoFocus={enableMsTeams}
-            ref={refSbcDomainName}
-            disabled={!enableMsTeams}
-            title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
-          />
+            <Label htmlFor="sbcDomainName">SBC Domain Name</Label>
+            <Input
+              name="sbcDomainName"
+              id="sbcDomainName"
+              value={sbcDomainName}
+              onChange={e => setSbcDomainName(e.target.value)}
+              placeholder="Fully qualified domain name used for Microsoft Teams"
+              invalid={invalidSbcDomainName}
+              autoFocus={enableMsTeams}
+              ref={refSbcDomainName}
+              disabled={!enableMsTeams}
+              title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
+            />
 
-          {errorMessage && !confirmDelete && (
-            <FormError grid message={errorMessage} />
-          )}
+            {errorMessage && !confirmDelete && (
+              <FormError grid message={errorMessage} />
+            )}
 
-          <InputGroup flexEnd spaced>
-            <Button
-              grid
-              gray
-              type="button"
-              onClick={() => {
-                history.push('/internal/accounts');
-                dispatch({
-                  type: 'ADD',
-                  level: 'info',
-                  message: 'Changes canceled',
-                });
-              }}
-            >
-              Cancel
-            </Button>
-            {serviceProviders.length > 1 && (
+            <InputGroup flexEnd spaced>
               <Button
                 grid
                 gray
                 type="button"
-                onClick={() => setConfirmDelete(true)}
+                onClick={() => {
+                  history.push('/internal/accounts');
+                  dispatch({
+                    type: 'ADD',
+                    level: 'info',
+                    message: 'Changes canceled',
+                  });
+                }}
               >
-                Delete
+                Cancel
               </Button>
-            )}
-            <Button grid>Save</Button>
-          </InputGroup>
-        </Form>
+              {serviceProviders.length > 1 && (
+                <Button
+                  grid
+                  gray
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  Delete
+                </Button>
+              )}
+              <Button grid>Save</Button>
+            </InputGroup>
+          </Form>
 
-        {confirmDelete && serviceProviders.length > 1 && (
-          <Modal
-            title="Are you sure you want to delete the Service Provider?"
-            loader={false}
-            content={
-              <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <Td>Service Provider Name:</Td>
-                      <Td>{serviceProviderName}</Td>
-                    </tr>
-                    <tr>
-                      <Td>SBC Domain Name:</Td>
-                      <Td>{sbcDomainName || '[none]'}</Td>
-                    </tr>
-                  </tbody>
-                </table>
-                {errorMessage && (
-                  <FormError message={errorMessage} />
-                )}
-              </div>
-            }
-            handleCancel={() => {
-              setConfirmDelete(false);
-              setErrorMessage('');
-            }}
-            handleSubmit={handleDelete}
-            actionText="Delete"
-          />
-        )}
-      </>
-    )
+          {confirmDelete && serviceProviders.length > 1 && (
+            <Modal
+              title="Are you sure you want to delete the Service Provider?"
+              loader={false}
+              content={
+                <div>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <Td>Service Provider Name:</Td>
+                        <Td>{serviceProviderName}</Td>
+                      </tr>
+                      <tr>
+                        <Td>SBC Domain Name:</Td>
+                        <Td>{sbcDomainName || '[none]'}</Td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  {errorMessage && (
+                    <FormError message={errorMessage} />
+                  )}
+                </div>
+              }
+              handleCancel={() => {
+                setConfirmDelete(false);
+                setErrorMessage('');
+              }}
+              handleSubmit={handleDelete}
+              actionText="Delete"
+            />
+          )}
+        </>
+      )
   );
 };
 

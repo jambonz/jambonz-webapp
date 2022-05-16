@@ -209,7 +209,7 @@ const AccountsAddEdit = () => {
           name="API key"
           getContent={getApiKeys}
           columns={[
-            { header: 'API Key',   key: 'token',     width: '27rem', fontWeight: 'normal' },
+            { header: 'Account API Keys',   key: 'token',     width: '27rem', fontWeight: 'normal' },
             { header: 'Last Used', key: 'last_used', width: '10rem' },
           ]}
           addContent={createApiKey}
