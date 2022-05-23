@@ -103,7 +103,7 @@ const PhoneNumberForm = props => {
         const promiseAllValues = await Promise.all(promises);
 
         const sipTrunks       = promiseAllValues[0].data;
-        const accounts        = promiseAllValues[1].data;
+        const accounts        = promiseAllValues[1].data.filter(s => s.service_provider_sid === currentServiceProvider);
         const applications    = promiseAllValues[2].data;
         const phoneNumbers    = promiseAllValues[3].data;
 
