@@ -104,7 +104,6 @@ const CarriersList = () => {
         return;
       }
       if(!currentServiceProvider) return [];
-      if (!accountList.length) return [];
       // Get all SIP trunks
       const trunkResults = await axios({
         method: 'get',
