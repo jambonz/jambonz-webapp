@@ -63,7 +63,7 @@ const PhoneNumberForm = props => {
         const sipTrunksPromise = axios({
           method: 'get',
           baseURL: APP_API_BASE_URL,
-          url: '/VoipCarriers',
+          url: `ServiceProviders/${currentServiceProvider}/VoipCarriers`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -71,7 +71,7 @@ const PhoneNumberForm = props => {
         const accountsPromise = axios({
           method: 'get',
           baseURL: APP_API_BASE_URL,
-          url: '/Accounts',
+          url: `ServiceProviders/${currentServiceProvider}/Accounts`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -79,7 +79,7 @@ const PhoneNumberForm = props => {
         const applicationsPromise = axios({
           method: 'get',
           baseURL: APP_API_BASE_URL,
-          url: '/Applications',
+          url: `ServiceProviders/${currentServiceProvider}/Applications`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -87,7 +87,7 @@ const PhoneNumberForm = props => {
         const phoneNumbersPromise = axios({
           method: 'get',
           baseURL: APP_API_BASE_URL,
-          url: '/PhoneNumbers',
+          url: `ServiceProviders/${currentServiceProvider}/PhoneNumbers`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
