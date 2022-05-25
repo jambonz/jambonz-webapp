@@ -1,9 +1,5 @@
 const regions = [
   { 
-    name: 'Africa - North (southafricanorth)', 
-    value: 'southafricanorth' 
-  },
-  { 
     name: 'Australia - East (australiaeast)', 
     value: 'australiaeast' 
   },
@@ -54,6 +50,10 @@ const regions = [
   { 
     name: 'Norway - East (norwayeast)', 
     value: 'norwayeast' 
+  },
+  { 
+    name: 'South Africa - North (southafricanorth)', 
+    value: 'southafricanorth' 
   },
   { 
     name: 'Southeast Asia (southeastasia)', 
