@@ -1,94 +1,124 @@
 const regions = [
   { 
     name: 'Africa North', 
-    value: 'southafricanorth' },
+    value: 'southafricanorth' 
+  },
   { 
     name: 'East Asia', 
-    value: 'eastasia' },
+    value: 'eastasia' 
+  },
   { 
     name: 'Southeast Asia', 
-    value: 'southeastasia' },
+    value: 'southeastasia' 
+  },
   { 
     name: 'Australia East', 
-    value: 'australiaeast' },
+    value: 'australiaeast' 
+  },
   { 
     name: 'Central India', 
-    value: 'centralindia' },
+    value: 'centralindia' 
+  },
   { 
     name: 'Japan East', 
-    value: 'japaneast' },
+    value: 'japaneast' 
+  },
   { 
     name: 'Japan West', 
-    value: 'japanwest' },
+    value: 'japanwest' 
+  },
   { 
     name: 'Korea Central', 
-    value: 'koreacentral' },
+    value: 'koreacentral' 
+  },
   { 
     name: 'Canada Central', 
-    value: 'canadacentral' },
+    value: 'canadacentral' 
+  },
   { 
     name: 'North Europe', 
-    value: 'northeurope' },
+    value: 'northeurope' 
+  },
   { 
     name: 'West Europe', 
-    value: 'westeurope' },
+    value: 'westeurope' 
+  },
   { 
     name: 'France Central', 
-    value: 'francecentral' },
+    value: 'francecentral' 
+  },
   { 
     name: 'Germany West Central', 
-    value: 'germanywestcentral' },
+    value: 'germanywestcentral' 
+  },
   { 
     name: 'Norway East', 
-    value: 'norwayeast' },
+    value: 'norwayeast' 
+  },
   { 
     name: 'Switzerland North', 
-    value: 'switzerlandnorth' },
+    value: 'switzerlandnorth' 
+  },
   { 
     name: 'Switzerland West', 
-    value: 'switzerlandwest' },
+    value: 'switzerlandwest' 
+  },
   { 
     name: 'UK South', 
-    value: 'uksouth' },
+    value: 'uksouth' 
+  },
   { 
     name: 'UAE North', 
-    value: 'uaenorth' },
+    value: 'uaenorth' 
+  },
   { 
     name: 'Brazil South', 
-    value: 'brazilsouth' },
+    value: 'brazilsouth' 
+  },
   { 
     name: 'Central US', 
-    value: 'centralus' },
+    value: 'centralus' 
+  },
   { 
     name: 'East US', 
-    value: 'eastus' },
+    value: 'eastus' 
+  },
   { 
     name: 'East US 2', 
-    value: 'eastus2' },
+    value: 'eastus2' 
+  },
   { 
     name: 'North Central US', 
-    value: 'northcentralus' },
+    value: 'northcentralus' 
+  },
   { 
     name: 'South Central US', 
-    value: 'southcentralus' },
+    value: 'southcentralus' 
+  },
   { 
     name: 'US Gov Arizona', 
-    value: 'usgovarizona' },
+    value: 'usgovarizona' 
+  },
   { 
     name: 'US Gov Virginia', 
-    value: 'usgovvirginia' },
+    value: 'usgovvirginia' 
+  },
   { 
     name: 'West Central US', 
-    value: 'westcentralus' },
+    value: 'westcentralus' 
+  },
   { 
     name: 'West US', 
-    value: 'westus' },
+    value: 'westus' 
+  },
   { 
     name: 'West US 2', 
-    value: 'westus2' },
+    value: 'westus2' 
+  },
   { 
     name: 'West US 3', 
-    value: 'westus3' }
+    value: 'westus3' 
+  }
 ];
 
 export default regions;
