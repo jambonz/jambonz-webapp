@@ -1,96 +1,124 @@
 const regions = [
-  {
-    name: 'Asia (East)',
-    value: 'eastasia'
+  { 
+    name: 'Australia - East (australiaeast)', 
+    value: 'australiaeast' 
   },
-  {
-    name: 'Asia (Southeast)',
-    value: 'southeastasia'
+  { 
+    name: 'Brazil - South (brazilsouth)', 
+    value: 'brazilsouth' 
   },
-  {
-    name: 'Australia (East)',
-    value: 'australiaeast'
+  { 
+    name: 'Canada - Central (canadacentral)', 
+    value: 'canadacentral' 
   },
-  {
-    name: 'Brazil (South)',
-    value: 'brazilsouth'
+  { 
+    name: 'East Asia (eastasia)', 
+    value: 'eastasia' 
   },
-  {
-    name: 'Canada (Central)',
-    value: 'canadacentral'
+  { 
+    name: 'Europe - North (northeurope)', 
+    value: 'northeurope' 
   },
-  {
-    name: 'Europe (North)',
-    value: 'northeurope'
+  { 
+    name: 'Europe - West (westeurope)', 
+    value: 'westeurope' 
   },
-  {
-    name: 'Europe (West)',
-    value: 'westeurope'
+  { 
+    name: 'France - Central (francecentral)', 
+    value: 'francecentral' 
   },
-  {
-    name: 'France (Central)',
-    value: 'francecentral'
+  { 
+    name: 'Germany - West Central (germanywestcentral)', 
+    value: 'germanywestcentral' 
   },
-  {
-    name: 'Switzerland (North)',
-    value: 'switzerlandnorth'
+  { 
+    name: 'India - Central (centralindia)', 
+    value: 'centralindia' 
   },
-  {
-    name: 'India (Central)',
-    value: 'centralindia'
+  { 
+    name: 'Japan - East (japaneast)', 
+    value: 'japaneast' 
   },
-  {
-    name: 'Japan (West)',
-    value: 'japanwest'
+  { 
+    name: 'Japan - West (japanwest)', 
+    value: 'japanwest' 
   },
-  {
-    name: 'Japan (East)',
-    value: 'japaneast'
+  { 
+    name: 'Korea - Central (koreacentral)', 
+    value: 'koreacentral' 
   },
-  {
-    name: 'Korea (Central)',
-    value: 'koreacentral'
+  { 
+    name: 'Norway - East (norwayeast)', 
+    value: 'norwayeast' 
   },
-  {
-    name: 'South Africa (North)',
-    value: 'southafricanorth'
+  { 
+    name: 'South Africa - North (southafricanorth)', 
+    value: 'southafricanorth' 
   },
-  {
-    name: 'UK (South)',
-    value: 'uksouth'
+  { 
+    name: 'Southeast Asia (southeastasia)', 
+    value: 'southeastasia' 
   },
-  {
-    name: 'US (Cental)',
-    value: 'centralus'
+  { 
+    name: 'Switzerland - North (switzerlandnorth)', 
+    value: 'switzerlandnorth' 
   },
-  {
-    name: 'US (West Central)',
-    value: 'westcentralus'
+  { 
+    name: 'Switzerland - West (switzerlandwest)', 
+    value: 'switzerlandwest' 
   },
-  {
-    name: 'US (East)',
-    value: 'eastus'
+  { 
+    name: 'UAE - North (uaenorth)', 
+    value: 'uaenorth' 
   },
-  {
-    name: 'US (East 2)',
-    value: 'eastus2'
+  { 
+    name: 'UK - South (uksouth)', 
+    value: 'uksouth' 
   },
-  {
-    name: 'US (North Central)',
-    value: 'northcentralus'
+  { 
+    name: 'US - Central (centralus)', 
+    value: 'centralus' 
   },
-  {
-    name: 'US (South Central)',
-    value: 'southcentralus'
+  { 
+    name: 'US - East (eastus)', 
+    value: 'eastus' 
   },
-  {
-    name: 'US (West)',
-    value: 'westus'
+  { 
+    name: 'US - East 2 (eastus2)', 
+    value: 'eastus2' 
   },
-  {
-    name: 'US (West 2)',
-    value: 'westus2'
+  { 
+    name: 'US - Gov Arizona (usgovarizona)', 
+    value: 'usgovarizona' 
   },
+  { 
+    name: 'US - Gov Virginia (usgovvirginia)', 
+    value: 'usgovvirginia' 
+  },
+  { 
+    name: 'US - North Central (northcentralus)', 
+    value: 'northcentralus' 
+  },
+  { 
+    name: 'US - South Central (southcentralus)', 
+    value: 'southcentralus' 
+  },
+  { 
+    name: 'US - West Central (westcentralus)', 
+    value: 'westcentralus' 
+  },
+  { 
+    name: 'US - West (westus)', 
+    value: 'westus' 
+  },
+  { 
+    name: 'US - West 2 (westus2)', 
+    value: 'westus2' 
+  },
+  { 
+    name: 'US - West 3 (westus3)', 
+    value: 'westus3' 
+  }
 ];
 
 export default regions;
