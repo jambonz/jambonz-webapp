@@ -16,7 +16,7 @@ const regions = [
     value: 'australiaeast' 
   },
   { 
-    name: 'Central India', 
+    name: 'India Central', 
     value: 'centralindia' 
   },
   { 
@@ -36,11 +36,11 @@ const regions = [
     value: 'canadacentral' 
   },
   { 
-    name: 'North Europe', 
+    name: 'Europe North', 
     value: 'northeurope' 
   },
   { 
-    name: 'West Europe', 
+    name: 'Europe West', 
     value: 'westeurope' 
   },
   { 
@@ -76,23 +76,23 @@ const regions = [
     value: 'brazilsouth' 
   },
   { 
-    name: 'Central US', 
+    name: 'US Central', 
     value: 'centralus' 
   },
   { 
-    name: 'East US', 
+    name: 'US East', 
     value: 'eastus' 
   },
   { 
-    name: 'East US 2', 
+    name: 'US East 2', 
     value: 'eastus2' 
   },
   { 
-    name: 'North Central US', 
+    name: 'US North Central', 
     value: 'northcentralus' 
   },
   { 
-    name: 'South Central US', 
+    name: 'US South Central', 
     value: 'southcentralus' 
   },
   { 
@@ -104,19 +104,19 @@ const regions = [
     value: 'usgovvirginia' 
   },
   { 
-    name: 'West Central US', 
+    name: 'US West Central', 
     value: 'westcentralus' 
   },
   { 
-    name: 'West US', 
+    name: 'US West', 
     value: 'westus' 
   },
   { 
-    name: 'West US 2', 
+    name: 'US West 2', 
     value: 'westus2' 
   },
   { 
-    name: 'West US 3', 
+    name: 'US West 3', 
     value: 'westus3' 
   }
 ];
