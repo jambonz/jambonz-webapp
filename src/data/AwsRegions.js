@@ -54,6 +54,38 @@ const regions = [
   {
     name: 'Canada (Central)',
     value: 'ca-central-1'
+  },
+  {
+    name: 'Europe (Frankfurt)',
+    value: 'eu-central-1'
+  },
+  {
+    name: 'Europe (Ireland)',
+    value: 'eu-west-1'
+  },
+  {
+    name: 'Europe (London)',
+    value: 'eu-west-2'
+  },
+  {
+    name: 'Europe (Milan)',
+    value: 'eu-south-1'
+  },
+  {
+    name: 'Europe (Paris)',
+    value: 'eu-west-3'
+  },
+  {
+    name: 'Europe (Stockholm)',
+    value: 'eu-north-1'
+  },
+  {
+    name: 'Middle East (Bahrain)',
+    value: 'me-south-1'
+  },
+  {
+    name: 'South America (São Paulo)',
+    value: 'sa-east-1'
   }
 ];
 
