@@ -21,6 +21,7 @@ const StyledLink = styled(FilteredLink)`
   border-radius: 50%;
   text-decoration: none;
   color: #565656;
+  z-index: 1;
 
   & > span:first-child {
     display: flex;
