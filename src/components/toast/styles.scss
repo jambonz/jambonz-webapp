@@ -1,0 +1,58 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+.toast {
+  padding-left: ui-vars.$px02;
+  padding-right: ui-vars.$px02;
+  padding-top: ui-vars.$px03;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: vars.$zindex01;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  pointer-events: none;
+
+  &__box {
+    padding: ui-vars.$px02 ui-vars.$px03 ui-vars.$px02 56px;
+    background-color: ui-vars.$white;
+    text-align: left;
+    border-radius: ui-vars.$px01;
+    box-shadow: 0px ui-vars.$px00 ui-vars.$px00 rgba(0, 0, 0, 0.25);
+    position: relative;
+    pointer-events: auto;
+  }
+
+  &--error {
+    color: ui-vars.$jambonz;
+
+    .toast__box {
+      border: 2px solid ui-vars.$jambonz;
+    }
+  }
+
+  &--success {
+    color: ui-vars.$teal;
+
+    .toast__box {
+      border: 2px solid ui-vars.$teal;
+    }
+  }
+
+  svg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  svg:first-child {
+    left: ui-vars.$px02;
+  }
+
+  svg:last-child {
+    right: ui-vars.$px02;
+  }
+}

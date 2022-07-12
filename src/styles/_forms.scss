@@ -1,0 +1,205 @@
+@use "./vars";
+@use "./mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+input[type="text"],
+input[type="number"],
+input[type="password"] {
+  @include ui-mixins.m();
+  padding: ui-vars.$px01 ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  background-color: ui-vars.$white;
+  color: inherit;
+
+  &:focus {
+    border-color: ui-vars.$dark;
+    outline: 0;
+  }
+
+  &::placeholder {
+    color: vars.$jeangrey;
+  }
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  height: ui-vars.$px02;
+  width: ui-vars.$px02;
+  margin: 0;
+}
+
+fieldset {
+  > input[disabled] {
+    @include mixins.disabled();
+  }
+}
+
+.form {
+  &--internal {
+    > * + * {
+      @include mixins.formline();
+    }
+
+    fieldset {
+      padding: ui-vars.$px03;
+    }
+
+    /** Third-party -- e.g. jambonz-ui */
+    .tabs__nav {
+      padding: ui-vars.$px01 ui-vars.$px03;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .tabs__tabs__item > * + * {
+      @include mixins.formline();
+    }
+
+    .btnty > .ico {
+      @include mixins.icosize();
+    }
+  }
+
+  label {
+    @include ui-mixins.m();
+    @include ui-mixins.font-medium();
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    span {
+      color: ui-vars.$jambonz;
+    }
+
+    input[type="radio"] {
+      margin: 0 ui-vars.$px01 0 0;
+    }
+
+    button[type="button"] {
+      margin-left: ui-vars.$px01;
+      cursor: pointer;
+    }
+
+    svg {
+      stroke: ui-vars.$teal;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  fieldset {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    min-inline-size: auto;
+
+    label {
+      max-width: fit-content;
+    }
+
+    label + * {
+      margin-top: ui-vars.$px01;
+    }
+
+    * + label {
+      margin-top: ui-vars.$px02;
+    }
+
+    > div + div,
+    > div + details {
+      margin-top: ui-vars.$px02;
+    }
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="password"] {
+    width: 100%;
+    max-width: vars.$widthinput;
+  }
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+
+  input {
+    margin: 0 ui-vars.$px01 0 0;
+  }
+}
+
+.multi {
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 1090px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inp {
+    width: 100%;
+    max-width: vars.$widthinput;
+  }
+
+  .sel {
+    width: 100%;
+    max-width: 130px;
+    margin-left: ui-vars.$px01;
+
+    &--preset {
+      max-width: 220px;
+    }
+
+    @media (max-width: 1090px) {
+      margin-left: 0;
+      margin-top: ui-vars.$px01;
+      max-width: vars.$widthinput;
+    }
+  }
+}
+
+.gateway {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  max-width: vars.$widthinput;
+  position: relative;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 25% [col] 25%;
+    }
+
+    &:nth-child(2) {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: ui-vars.$px02;
+
+      > div:last-child {
+        text-align: right;
+      }
+    }
+  }
+
+  > button {
+    position: absolute;
+    right: 0;
+    bottom: 50%;
+    transform: translate3d(50%, 50%, 0);
+  }
+
+  &--sip {
+    > button {
+      bottom: 25%;
+    }
+  }
+}

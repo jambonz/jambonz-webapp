@@ -1,0 +1,159 @@
+@use "./forms";
+// @use "./cards";
+@use "./lists";
+@use "./smsel";
+@use "./inpbtn";
+@use "jambonz-ui/src/styles/index";
+
+@use "./vars";
+@use "./mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+/** Root custom vars */
+
+:root {
+  --mobile-media: #{vars.$widthbreak};
+}
+
+/** Global things */
+
+pre,
+code {
+  @include mixins.code();
+}
+
+pre {
+  padding: ui-vars.$px03;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px01;
+  overflow: auto;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  tab-size: 2;
+  hyphens: none;
+}
+
+p > code {
+  padding: ui-vars.$px00;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px00;
+}
+
+details {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$dark;
+  max-width: vars.$widthinput;
+
+  /** Used on the speech credentials form */
+  &.fail {
+    color: ui-vars.$jambonz;
+    border: 2px solid ui-vars.$jambonz;
+    background-color: ui-vars.$pink;
+  }
+
+  &.ok {
+    color: ui-vars.$teal;
+    border: 2px solid ui-vars.$teal;
+    background-color: mix(ui-vars.$white, ui-vars.$teal, 95%);
+  }
+
+  &.not-tested {
+    color: vars.$jeangrey;
+    border: 2px solid vars.$jeangrey;
+
+    summary {
+      .txt--grey {
+        color: vars.$jeangrey;
+      }
+    }
+  }
+
+  summary {
+    @include ui-mixins.m();
+    cursor: pointer;
+
+    + * {
+      margin-top: ui-vars.$px02;
+    }
+
+    > div {
+      display: inline-block;
+      padding-left: ui-vars.$px00;
+    }
+  }
+}
+
+/** The idea is this is like [type="button"] generically */
+/** We need to prohibit some jambonz-ui buttons from submitting forms */
+/** Otherwise this selector would just be `button[type="button"] {...}` */
+/** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
+.btnty {
+  background-color: transparent;
+  width: auto;
+  height: auto;
+  border: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+/** 404 page (login & internal) */
+.notfound {
+  .btn {
+    margin-top: ui-vars.$px03;
+  }
+
+  &--login {
+    text-align: center;
+  }
+}
+
+.ispin {
+  display: flex;
+  align-items: center;
+
+  > * + * {
+    margin-left: ui-vars.$px01;
+  }
+}
+
+.mast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .ico {
+    @include mixins.icosize();
+  }
+}
+
+.mass-edit {
+  padding: ui-vars.$px00 0;
+
+  label {
+    @include ui-mixins.ms();
+  }
+}
+
+.filters {
+  display: flex;
+  padding-top: ui-vars.$px04;
+  padding-bottom: ui-vars.$px03;
+
+  &--ender {
+    justify-content: flex-end;
+  }
+
+  + * {
+    margin-top: 0;
+  }
+}
+
+.txt--dark {
+  color: ui-vars.$dark;
+}

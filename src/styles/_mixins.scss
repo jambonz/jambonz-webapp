@@ -1,0 +1,45 @@
+@use "./vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+@mixin mobile {
+  @media (max-width: vars.$widthbreak) {
+    @content;
+  }
+}
+
+@mixin pluscircle {
+  stroke: ui-vars.$teal;
+  stroke-width: vars.$stroke00;
+  pointer-events: none;
+}
+
+@mixin icosize {
+  height: ui-vars.$h3-size;
+  width: ui-vars.$h3-size;
+  margin-right: auto;
+  cursor: pointer;
+
+  svg {
+    width: vars.$ico00;
+    height: vars.$ico00;
+  }
+}
+
+@mixin code {
+  font-family: ui-vars.$font-mono;
+  font-size: ui-vars.$ms-size;
+  line-height: 1.9;
+
+  @media (max-width: ui-vars.$width-tablet-2) {
+    font-size: ui-vars.$mxs-size;
+  }
+}
+
+@mixin disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@mixin formline {
+  border-top: 1px solid ui-vars.$grey;
+}

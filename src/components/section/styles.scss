@@ -1,0 +1,24 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/index";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.sec {
+  margin-top: ui-vars.$px04;
+  width: 100%;
+  max-width: ui-vars.$width-laptop;
+  padding: ui-vars.$px03;
+  border-radius: ui-vars.$px01;
+  box-shadow: 0 0 ui-vars.$px01 rgba(0, 0, 0, 0.25);
+
+  &--slim {
+    padding: 0;
+  }
+
+  &--clean {
+    box-shadow: none;
+    margin-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

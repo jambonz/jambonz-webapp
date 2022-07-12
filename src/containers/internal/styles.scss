@@ -1,0 +1,42 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.internal {
+  display: flex;
+
+  header {
+    /** Inheriting from jambonz-ui .wrap */
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    @include mixins.mobile() {
+      padding-bottom: ui-vars.$px04;
+    }
+
+    .ico {
+      display: none;
+      @include mixins.icosize();
+
+      @include mixins.mobile() {
+        display: flex;
+      }
+    }
+  }
+
+  main {
+    width: calc(100% - #{vars.$widthnavi});
+
+    @include mixins.mobile() {
+      width: 100%;
+    }
+
+    article {
+      padding: 0 ui-vars.$width-padding ui-vars.$px04;
+    }
+  }
+}
