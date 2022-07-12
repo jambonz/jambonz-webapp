@@ -1,0 +1,139 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.navi {
+  width: 100%;
+  max-width: vars.$widthnavi;
+  height: 100vh;
+  background-color: ui-vars.$dark;
+  padding-left: ui-vars.$px03;
+  padding-right: ui-vars.$px03;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+
+  > * + * {
+    border-top: 1px solid vars.$darkgrey;
+  }
+
+  @include mixins.mobile() {
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+  }
+
+  @include mixins.small() {
+    padding-left: ui-vars.$px02;
+    padding-right: ui-vars.$px02;
+  }
+
+  &.active {
+    @include mixins.mobile() {
+      pointer-events: auto;
+      opacity: 1;
+      z-index: 999;
+    }
+  }
+
+  &__top {
+    display: none;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
+
+    @include mixins.mobile() {
+      display: flex;
+    }
+
+    .ico {
+      @include mixins.icosize();
+    }
+  }
+
+  &__sps {
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
+    display: flex;
+    grid-gap: ui-vars.$px01;
+
+    button[type="button"] {
+      cursor: pointer;
+
+      svg {
+        @include mixins.pluscircle();
+      }
+    }
+  }
+
+  &__user {
+    padding-top: ui-vars.$px02;
+    padding-bottom: ui-vars.$px02;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .avatar {
+      border-radius: vars.$ico03;
+    }
+
+    .adduser {
+      cursor: pointer;
+
+      svg {
+        @include mixins.pluscircle();
+      }
+    }
+  }
+
+  &__routes {
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
+
+    ul li + li {
+      margin-top: ui-vars.$px02;
+    }
+  }
+
+  &__link {
+    @include ui-mixins.ms();
+    display: flex;
+    align-items: center;
+    padding: ui-vars.$px00 ui-vars.$px01;
+    width: 100%;
+    border-radius: ui-vars.$px01;
+
+    &.active {
+      background-color: #333;
+      color: ui-vars.$pink;
+    }
+
+    svg {
+      width: vars.$ico0N;
+      height: vars.$ico0N;
+      stroke-width: vars.$stroke00;
+      margin-right: ui-vars.$px02;
+    }
+  }
+
+  &__byo {
+    margin-top: auto;
+    color: ui-vars.$grey;
+    border-top: 0;
+    padding-bottom: ui-vars.$px02;
+  }
+
+  &__logo {
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
+  }
+}

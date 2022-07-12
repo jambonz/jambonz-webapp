@@ -1,0 +1,45 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.file-upload {
+  &__wrap {
+    position: relative;
+    width: 100%;
+
+    .form & {
+      max-width: vars.$widthinput;
+    }
+  }
+
+  &.focused {
+    input[type="text"],
+    input[type="number"] {
+      border-color: ui-vars.$dark;
+      color: ui-vars.$dark;
+    }
+  }
+
+  &.disabled {
+    input[type="text"],
+    input[type="number"] {
+      @include mixins.disabled();
+    }
+  }
+
+  input[type="file"] {
+    cursor: pointer;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
+  }
+}
