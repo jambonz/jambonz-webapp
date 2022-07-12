@@ -1,0 +1,95 @@
+@use "./vars";
+@use "./mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.list {
+  > * + * {
+    border-top: 1px solid ui-vars.$grey;
+  }
+}
+
+.item {
+  padding: ui-vars.$px03;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @include mixins.small() {
+    padding: ui-vars.$px02;
+  }
+
+  &__title {
+    @include ui-mixins.p();
+    display: flex;
+    align-items: center;
+    grid-gap: ui-vars.$px02;
+
+    + .item__meta {
+      @include mixins.small() {
+        margin-top: ui-vars.$px01;
+      }
+    }
+
+    > a svg {
+      transform: translate3d(0, 0, 0);
+      transition: transform ui-vars.$base-dur ui-vars.$base-ease;
+    }
+
+    &:hover > a svg {
+      transform: translate3d(ui-vars.$px01, 0, 0);
+    }
+
+    > span {
+      @include ui-mixins.ms();
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  &__sid {
+    @include ui-mixins.ms();
+  }
+
+  &__meta {
+    @include ui-mixins.ms();
+    display: flex;
+    align-items: center;
+    grid-gap: ui-vars.$px02;
+
+    @include mixins.small() {
+      flex-direction: column;
+      align-items: flex-start;
+      grid-gap: 0;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+
+    > * + * {
+      margin-top: ui-vars.$px01;
+    }
+
+    svg {
+      stroke: ui-vars.$jambonz;
+    }
+
+    a {
+      display: inline-block;
+    }
+
+    button[type="button"] {
+      cursor: pointer;
+    }
+  }
+}

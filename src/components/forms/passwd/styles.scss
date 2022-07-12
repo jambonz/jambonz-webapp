@@ -1,0 +1,32 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+.passwd {
+  position: relative;
+
+  .form & {
+    max-width: vars.$widthinput;
+  }
+
+  > input {
+    width: 100%;
+
+    &[disabled] {
+      @include mixins.disabled();
+    }
+  }
+
+  > button[type="button"] {
+    position: absolute;
+    right: ui-vars.$px02;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+
+    svg {
+      stroke: ui-vars.$jambonz;
+      pointer-events: none;
+    }
+  }
+}

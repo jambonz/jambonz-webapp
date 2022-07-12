@@ -1,0 +1,41 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: vars.$zindex00;
+  padding-left: ui-vars.$px02;
+  padding-right: ui-vars.$px02;
+
+  &__stuff {
+    > * + * {
+      margin-top: ui-vars.$px02;
+    }
+  }
+
+  &__box {
+    padding: ui-vars.$px03;
+    width: 100%;
+    max-width: vars.$widthinput;
+    border-radius: ui-vars.$px02;
+    box-shadow: 0px ui-vars.$px00 ui-vars.$px00 rgba(0, 0, 0, 0.25);
+    background-color: ui-vars.$white;
+
+    @include mixins.small() {
+      padding: ui-vars.$px02;
+    }
+
+    > * + * {
+      margin-top: ui-vars.$px03;
+    }
+  }
+}

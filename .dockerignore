@@ -1,0 +1,17 @@
+# Node / env / dist
+node_modules
+dist
+dist-ssr
+
+# Jambonz
+.dockerignore
+.git*
+.husky
+.vscode
+docs
+/public/fonts
+server
+CODEOWNERS
+Dockerfile
+LICENSE
+README.md
