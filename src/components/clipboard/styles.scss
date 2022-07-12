@@ -1,0 +1,38 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.clipboard {
+  display: flex;
+  align-items: center;
+
+  input[type="text"] {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    width: 100%;
+    height: vars.$clipheight;
+
+    .form & {
+      max-width: calc(#{vars.$widthinput} - #{vars.$clipheight});
+    }
+
+    &:focus-visible {
+      outline: 0;
+    }
+  }
+
+  button[type="button"] {
+    cursor: pointer;
+    height: vars.$clipheight;
+    width: vars.$clipheight;
+    border-bottom-right-radius: vars.$px01;
+    border-top-right-radius: vars.$px01;
+    border: 2px solid ui-vars.$grey;
+    border-left: 0;
+    background-color: ui-vars.$pink;
+
+    svg {
+      stroke: ui-vars.$jambonz;
+    }
+  }
+}

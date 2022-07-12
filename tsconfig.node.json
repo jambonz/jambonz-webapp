@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "types": ["@types/node", "@types/express", "@types/cors"],
+    "composite": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts", "dev.server.ts"]
+}

@@ -1,0 +1,63 @@
+@use "./vars";
+@use "./cards";
+@use "./lists";
+@use "./forms";
+@use "jambonz-ui/src/styles/index";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+/** Root level style integration */
+
+:root {
+  --mobile-media: #{vars.$widthbreak};
+}
+
+/** Global things to consider adding to `jambonz-ui` */
+
+.mast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/** The idea is this is like [type="button"] generically */
+/** We need to prohibit some jambonz-ui buttons from submitting forms */
+/** Otherwise this selector would just be `button[type="button"]` */
+/** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
+.btn--type {
+  background-color: transparent;
+  width: auto;
+  height: auto;
+  border: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+input[type="text"],
+input[type="password"] {
+  @include ui-mixins.m();
+  padding: vars.$px01 vars.$px02;
+  border-radius: vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  background-color: ui-vars.$white;
+  color: inherit;
+
+  &:focus {
+    border-color: ui-vars.$dark;
+    outline: 0;
+  }
+
+  &::placeholder {
+    color: #888;
+  }
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  height: vars.$px02;
+  width: vars.$px02;
+}
+
+code {
+  font-family: ui-vars.$font-mono;
+}

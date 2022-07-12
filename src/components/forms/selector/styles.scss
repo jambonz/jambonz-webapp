@@ -1,0 +1,50 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/index";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.selector {
+  position: relative;
+  width: 100%;
+  max-width: vars.$widthinput;
+
+  select {
+    @include ui-mixins.m();
+    appearance: none;
+    padding: vars.$px01 vars.$px02;
+    border-radius: vars.$px01;
+    border: 2px solid ui-vars.$grey;
+    background-color: ui-vars.$white;
+    width: 100%;
+    max-width: vars.$widthinput;
+  }
+
+  span {
+    height: 100%;
+    width: 50px;
+    background-color: ui-vars.$grey;
+    border-radius: vars.$px01;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+
+    svg {
+      stroke: ui-vars.$white;
+
+      &:first-child {
+        transform: translateY(5px);
+      }
+
+      &:last-child {
+        transform: translateY(-5px);
+      }
+    }
+  }
+}

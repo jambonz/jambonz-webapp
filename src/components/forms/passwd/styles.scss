@@ -1,0 +1,23 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+.passwd {
+  position: relative;
+
+  > input {
+    width: 100%;
+  }
+
+  > button[type="button"] {
+    position: absolute;
+    right: vars.$px02;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+
+    svg {
+      stroke: ui-vars.$jambonz;
+      pointer-events: none;
+    }
+  }
+}

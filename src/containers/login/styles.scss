@@ -1,0 +1,77 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: vars.$px02;
+  padding-right: vars.$px02;
+
+  .notfound {
+    text-align: center;
+  }
+
+  header {
+    position: fixed;
+    padding: vars.$px03;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  footer {
+    color: ui-vars.$grey;
+    position: fixed;
+    padding: vars.$px03;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    a {
+      span {
+        border-bottom: 1px solid ui-vars.$jambonz;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  form {
+    margin-top: vars.$px04;
+    width: 100%;
+    max-width: ui-vars.$width-small;
+    background-color: ui-vars.$white;
+    padding: vars.$px03;
+    border-radius: vars.$px02;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    color: ui-vars.$dark;
+
+    > * + * {
+      margin-top: vars.$px02;
+    }
+
+    > input,
+    > button {
+      width: 100%;
+    }
+  }
+}

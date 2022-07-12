@@ -1,0 +1,28 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.msg {
+  @include ui-mixins.ms();
+  padding: vars.$px01 vars.$px02 vars.$px01 56px;
+  border-radius: vars.$px01;
+  border: 2px solid ui-vars.$jambonz;
+  background-color: ui-vars.$pink;
+  color: ui-vars.$jambonz;
+  text-align: center;
+  position: relative;
+
+  > svg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  > svg:first-child {
+    left: vars.$px02;
+  }
+
+  > svg:last-child {
+    right: vars.$px02;
+  }
+}

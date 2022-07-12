@@ -1,0 +1,26 @@
+@use "./vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+
+@mixin mobile {
+  @media (max-width: vars.$widthbreak) {
+    @content;
+  }
+}
+
+@mixin pluscircle {
+  stroke: ui-vars.$teal;
+  stroke-width: vars.$stroke00;
+  pointer-events: none;
+}
+
+@mixin icosize {
+  height: ui-vars.$h3-size;
+  width: ui-vars.$h3-size;
+  margin-right: auto;
+  cursor: pointer;
+
+  svg {
+    width: vars.$ico00;
+    height: vars.$ico00;
+  }
+}

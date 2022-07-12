@@ -1,0 +1,29 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.obscure {
+  @include ui-mixins.ms();
+  display: flex;
+  align-items: center;
+  font-family: ui-vars.$font-mono;
+
+  > span {
+    /** CSS magic number goes with api keys grid... */
+    @media (max-width: 940px) {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  > button[type="button"] {
+    cursor: pointer;
+    margin-left: vars.$px02;
+
+    svg {
+      stroke: ui-vars.$jambonz;
+      pointer-events: none;
+    }
+  }
+}
