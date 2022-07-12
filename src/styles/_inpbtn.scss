@@ -1,0 +1,44 @@
+@use "./vars";
+@use "./mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.inpbtn {
+  display: flex;
+  align-items: center;
+
+  input[type="text"],
+  input[type="number"] {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    width: 100%;
+    height: vars.$clipheight;
+
+    .internal form & {
+      max-width: calc(#{vars.$widthinput} - #{vars.$clipheight});
+    }
+
+    &:focus-visible {
+      outline: 0;
+    }
+  }
+
+  button[type="button"] {
+    cursor: pointer;
+    height: vars.$clipheight;
+    width: vars.$clipheight;
+    border-bottom-right-radius: ui-vars.$px01;
+    border-top-right-radius: ui-vars.$px01;
+    border: 2px solid ui-vars.$grey;
+    border-left: 0;
+    background-color: ui-vars.$pink;
+
+    &[disabled] {
+      @include mixins.disabled();
+    }
+
+    svg {
+      stroke: ui-vars.$jambonz;
+    }
+  }
+}

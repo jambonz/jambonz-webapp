@@ -1,0 +1,44 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.tooltip {
+  cursor: help;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-left: ui-vars.$px01;
+  }
+
+  &:hover {
+    .tooltip__reveal {
+      opacity: 1;
+    }
+  }
+
+  &__reveal {
+    @include ui-mixins.ms();
+    border: 2px solid ui-vars.$teal;
+    padding: ui-vars.$px02;
+    background-color: ui-vars.$white;
+    text-align: left;
+    border-radius: ui-vars.$px01;
+    box-shadow: 0px ui-vars.$px00 ui-vars.$px00 rgba(0, 0, 0, 0.25);
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    top: 0;
+    left: 50%;
+    width: 480px;
+    transform: translate3d(-50%, -100%, 0);
+    transition: opacity ui-vars.$base-dur ui-vars.$base-ease;
+
+    @include mixins.mobile() {
+      @include ui-mixins.mxs();
+      width: 320px;
+    }
+  }
+}
