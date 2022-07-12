@@ -1,0 +1,24 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: ui-vars.$px01;
+
+  button {
+    background-color: transparent;
+    width: auto;
+    height: auto;
+    border: 0;
+    padding: 0;
+  }
+
+  .ico {
+    color: ui-vars.$white;
+    @include mixins.icosize();
+  }
+}

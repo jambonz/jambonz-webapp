@@ -1,0 +1,33 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.msg {
+  @include ui-mixins.ms();
+  padding: ui-vars.$px01 ui-vars.$px02 ui-vars.$px01 56px;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$jambonz;
+  background-color: ui-vars.$pink;
+  color: ui-vars.$jambonz;
+  text-align: center;
+  position: relative;
+
+  @include mixins.mobile() {
+    text-align: left;
+  }
+
+  > svg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  > svg:first-child {
+    left: ui-vars.$px02;
+  }
+
+  > svg:last-child {
+    right: ui-vars.$px02;
+  }
+}

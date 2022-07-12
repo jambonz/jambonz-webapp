@@ -1,0 +1,117 @@
+@use "./vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.smsel {
+  label {
+    display: inline-block;
+    margin-right: ui-vars.$px01;
+    @include ui-mixins.ms();
+  }
+
+  div {
+    position: relative;
+    display: inline-block;
+  }
+
+  select {
+    @include ui-mixins.mxs();
+    font-family: inherit;
+    appearance: none;
+    background-color: transparent;
+    width: auto;
+
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  span {
+    height: vars.$ico01;
+    width: vars.$ico01;
+    border-radius: ui-vars.$px00;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+
+    svg {
+      &:first-child {
+        transform: translateY(2px);
+      }
+
+      &:last-child {
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  &--navi {
+    width: 100%;
+
+    div {
+      width: 100%;
+    }
+
+    select {
+      border: 1px solid vars.$darkgrey;
+      border-radius: ui-vars.$px01;
+      padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
+      border-color: vars.$darkgrey;
+      color: ui-vars.$pink;
+      width: 100%;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      background-color: #333;
+      right: ui-vars.$px01;
+    }
+
+    svg {
+      stroke: ui-vars.$grey;
+    }
+  }
+
+  &--filter {
+    select {
+      border: 1px solid ui-vars.$grey;
+      border-radius: ui-vars.$px01;
+      padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
+      max-width: 230px;
+
+      &:focus {
+        border-color: ui-vars.$dark;
+        outline: 0;
+      }
+    }
+
+    span {
+      background-color: ui-vars.$grey;
+      right: ui-vars.$px01;
+    }
+
+    svg {
+      stroke: ui-vars.$white;
+    }
+
+    &.focused {
+      select {
+        border-color: ui-vars.$dark;
+        outline: 0;
+      }
+
+      span {
+        background-color: ui-vars.$dark;
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+@use "src/styles/vars";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.checkzone {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid vars.$jeangrey;
+  width: 100%;
+  max-width: vars.$widthinput;
+
+  > label {
+    display: flex;
+    align-items: center;
+
+    input {
+      margin-right: ui-vars.$px02;
+    }
+  }
+
+  &__managed {
+    margin-top: ui-vars.$px02;
+    cursor: not-allowed;
+    opacity: 0.25;
+
+    > * {
+      pointer-events: none;
+    }
+
+    > * + * {
+      margin-top: ui-vars.$px02;
+    }
+
+    > label + * {
+      margin-top: ui-vars.$px01;
+    }
+
+    &.active {
+      cursor: auto;
+      opacity: 1;
+
+      > * {
+        pointer-events: auto;
+      }
+    }
+  }
+
+  &--hidden {
+    .checkzone__managed {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+}
