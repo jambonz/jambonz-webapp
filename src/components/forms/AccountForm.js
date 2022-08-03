@@ -73,6 +73,7 @@ const AccountForm = props => {
   const [ name,          setName       ] = useState('');
   const [ sipRealm,      setSipRealm   ] = useState('');
   const [ deviceCallingApplication, setDeviceCallingApplication ] = useState('');
+  const [ siprecCallingApplication, setSiprecCallingApplication ] = useState('');
   const [ regWebhook,    setRegWebhook ] = useState('');
   const [ regMethod,     setRegMethod     ] = useState('POST');
   const [ regUser,       setRegUser       ] = useState('');
@@ -376,6 +377,7 @@ const AccountForm = props => {
                 setName(acc.name        || '');
             setSipRealm(acc.sip_realm   || '');
           setDeviceCallingApplication(acc.device_calling_application_sid || '');
+          setSiprecCallingApplication(acc.siprec_hook_sid || '');
           setRegWebhook((acc.registration_hook && acc.registration_hook.url     ) || '');
               setRegMethod((acc.registration_hook && acc.registration_hook.method  ) || 'post');
                 setRegUser((acc.registration_hook && acc.registration_hook.username) || '');
@@ -549,6 +551,7 @@ const AccountForm = props => {
 
       if (props.type === 'edit') {
         axiosData.device_calling_application_sid = deviceCallingApplication || null;
+        axiosData.siprec_hook_sid = siprecCallingApplication || null;
       }
 
       const url = props.type === 'add'
@@ -695,33 +698,64 @@ const AccountForm = props => {
         </StyledInputGroup>
 
         {props.type === 'edit' && (
-          <React.Fragment>
-            <Label tooltip htmlFor="deviceCallingApplication">
-              <span style={{ position: 'relative' }}>
-                Application for SIP Device Calls
-                <Tooltip large>
-                  This application is used to handle incoming calls from SIP users who have registered to the Account’s SIP Realm.
-                </Tooltip>
-              </span>
-            </Label>
-            <Select
-              large={props.type === 'setup'}
-              name="deviceCallingApplication"
-              id="deviceCallingApplication"
-              value={deviceCallingApplication}
-              onChange={e => setDeviceCallingApplication(e.target.value)}
-            >
-              <option value="">-- NONE --</option>
-              {accountApplications && accountApplications.map(app => (
-                <option
-                  key={app.application_sid}
-                  value={app.application_sid}
-                >
-                  {app.name}
-                </option>
-              ))}
-            </Select>
-          </React.Fragment>
+          <>
+            <React.Fragment>
+              <Label tooltip htmlFor="deviceCallingApplication">
+                <span style={{ position: 'relative' }}>
+                  Application for SIP Device Calls
+                  <Tooltip large>
+                    This application is used to handle incoming calls from SIP users who have registered to the Account’s SIP Realm.
+                  </Tooltip>
+                </span>
+              </Label>
+              <Select
+                large={props.type === 'setup'}
+                name="deviceCallingApplication"
+                id="deviceCallingApplication"
+                value={deviceCallingApplication}
+                onChange={e => setDeviceCallingApplication(e.target.value)}
+              >
+                <option value="">-- NONE --</option>
+                {accountApplications && accountApplications.map(app => (
+                  <option
+                    key={app.application_sid}
+                    value={app.application_sid}
+                  >
+                    {app.name}
+                  </option>
+                ))}
+              </Select>
+            </React.Fragment>
+            
+            <React.Fragment>
+              <Label tooltip htmlFor="siprecCallingApplication">
+                <span style={{ position: 'relative' }}>
+                  Application for SIPREC Calls
+                  <Tooltip large>
+                    This is a really long sample text to let it show up something
+                  </Tooltip>
+                </span>
+              </Label>
+              <Select
+                large={props.type === 'setup'}
+                name="siprecCallingApplication"
+                id="siprecCallingApplication"
+                value={siprecCallingApplication}
+                onChange={e => setSiprecCallingApplication(e.target.value)}
+                right
+              >
+                <option value="">-- NONE --</option>
+                {accountApplications && accountApplications.map(app => (
+                  <option
+                    key={app.application_sid}
+                    value={app.application_sid}
+                  >
+                    {app.name}
+                  </option>
+                ))}
+              </Select>
+            </React.Fragment>
+          </>
         )}
 
         <Label htmlFor="regWebhook">Registration Webhook</Label>
