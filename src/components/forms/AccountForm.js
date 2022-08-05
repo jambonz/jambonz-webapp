@@ -731,9 +731,6 @@ const AccountForm = props => {
               <Label tooltip htmlFor="siprecCallingApplication">
                 <span style={{ position: 'relative' }}>
                   Application for SIPREC Calls
-                  <Tooltip large>
-                    This is a really long sample text to let it show up something
-                  </Tooltip>
                 </span>
               </Label>
               <Select
