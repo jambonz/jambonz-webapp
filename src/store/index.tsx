@@ -127,10 +127,17 @@ export const toastSuccess = (msg: IMessage) => {
   });
 };
 
+/** Wrapper hook for state context */
+export const useStateContext = () => {
+  const { state } = useContext(StateContext);
+
+  return state;
+};
+
 /** Wrapper hook for generic state selector */
 /** Usage: const serviceProviders = useSelectState("serviceProviders") */
 export const useSelectState = <Key extends keyof State>(key: Key) => {
-  const { state } = useContext(StateContext);
+  const state = useStateContext();
 
   return state[key];
 };
@@ -147,22 +154,4 @@ export const useAccessControl = <Acl extends keyof ACL>(acl: Acl) => {
   const accessControl = useSelectState("accessControl");
 
   return accessControl[acl];
-};
-
-/** HOC for mapping state to props -- use with default exports and React.lazy */
-export const withSelectState = <Key extends keyof State>(keys: Key[]) => {
-  return function WithSelectState(Component: React.ElementType) {
-    return function ComponentWithSelectState(props: {
-      [key: string]: unknown;
-    }) {
-      const { state } = useContext(StateContext);
-      const stateProps: { [key: string]: unknown } = {};
-
-      keys.forEach((key) => {
-        stateProps[key] = state[key];
-      });
-
-      return <Component {...props} {...stateProps} />;
-    };
-  };
 };

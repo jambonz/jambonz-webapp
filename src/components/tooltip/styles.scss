@@ -10,7 +10,7 @@
   align-items: center;
 
   svg {
-    margin-left: vars.$px01;
+    margin-left: ui-vars.$px01;
   }
 
   &:hover {
@@ -22,11 +22,11 @@
   &__reveal {
     @include ui-mixins.ms();
     border: 2px solid ui-vars.$teal;
-    padding: vars.$px02;
+    padding: ui-vars.$px02;
     background-color: ui-vars.$white;
     text-align: left;
-    border-radius: vars.$px01;
-    box-shadow: 0px vars.$px00 vars.$px00 rgba(0, 0, 0, 0.25);
+    border-radius: ui-vars.$px01;
+    box-shadow: 0px ui-vars.$px00 ui-vars.$px00 rgba(0, 0, 0, 0.25);
     position: absolute;
     pointer-events: none;
     opacity: 0;

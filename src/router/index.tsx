@@ -1,8 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import { RequireAuth } from "./auth";
-import { Toast } from "src/components";
+import { RequireAuth, Toast } from "src/components";
 import { withSuspense } from "src/utils";
 import { useSelectState } from "src/store";
 import { Login, Layout as LoginLayout } from "src/containers/login";

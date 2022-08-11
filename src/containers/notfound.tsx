@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "src/router/auth";
 import { ROUTE_LOGIN } from "src/router/routes";
 
-import "./styles.scss";
-
 export const NotFound = () => {
   const { authorized } = useAuth();
 

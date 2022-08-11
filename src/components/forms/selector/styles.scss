@@ -11,8 +11,8 @@
   select {
     @include ui-mixins.m();
     appearance: none;
-    padding: vars.$px01 vars.$px02;
-    border-radius: vars.$px01;
+    padding: ui-vars.$px01 ui-vars.$px02;
+    border-radius: ui-vars.$px01;
     border: 2px solid ui-vars.$grey;
     background-color: ui-vars.$white;
     width: 100%;
@@ -23,7 +23,7 @@
     height: 100%;
     width: 50px;
     background-color: ui-vars.$grey;
-    border-radius: vars.$px01;
+    border-radius: ui-vars.$px01;
     position: absolute;
     right: 0;
     top: 0;

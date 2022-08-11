@@ -4,8 +4,8 @@
 
 .msg {
   @include ui-mixins.ms();
-  padding: vars.$px01 vars.$px02 vars.$px01 56px;
-  border-radius: vars.$px01;
+  padding: ui-vars.$px01 ui-vars.$px02 ui-vars.$px01 56px;
+  border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$jambonz;
   background-color: ui-vars.$pink;
   color: ui-vars.$jambonz;
@@ -19,10 +19,10 @@
   }
 
   > svg:first-child {
-    left: vars.$px02;
+    left: ui-vars.$px02;
   }
 
   > svg:last-child {
-    right: vars.$px02;
+    right: ui-vars.$px02;
   }
 }

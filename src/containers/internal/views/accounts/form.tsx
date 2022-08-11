@@ -277,7 +277,7 @@ export const AccountForm = ({
   return (
     <>
       <Section>
-        <form className="form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           {account && account.data && (
             <fieldset>
               <label htmlFor="account_sid">Account SID</label>

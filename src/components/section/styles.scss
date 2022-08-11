@@ -4,12 +4,12 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 .sec {
-  margin-top: vars.$px04;
+  margin-top: ui-vars.$px04;
   width: 100%;
   max-width: ui-vars.$width-laptop;
-  padding: vars.$px03;
-  border-radius: vars.$px01;
-  box-shadow: 0 0 vars.$px01 rgba(0, 0, 0, 0.25);
+  padding: ui-vars.$px03;
+  border-radius: ui-vars.$px01;
+  box-shadow: 0 0 ui-vars.$px01 rgba(0, 0, 0, 0.25);
 
   &--slim {
     padding: 0;

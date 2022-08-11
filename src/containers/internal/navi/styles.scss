@@ -8,8 +8,8 @@
   max-width: vars.$widthnavi;
   height: 100vh;
   background-color: ui-vars.$dark;
-  padding-left: vars.$px03;
-  padding-right: vars.$px03;
+  padding-left: ui-vars.$px03;
+  padding-right: ui-vars.$px03;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -45,8 +45,8 @@
 
   &__top {
     display: none;
-    padding-top: vars.$px03;
-    padding-bottom: vars.$px03;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
 
     @include mixins.mobile() {
       display: flex;
@@ -58,8 +58,8 @@
   }
 
   &__sps {
-    padding-top: vars.$px03;
-    padding-bottom: vars.$px03;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
     position: relative;
 
     select {
@@ -70,7 +70,7 @@
       border: 0;
       color: ui-vars.$white;
       width: 100%;
-      padding-right: vars.$px04;
+      padding-right: ui-vars.$px04;
 
       &:focus {
         outline: 0;
@@ -81,9 +81,9 @@
       height: vars.$ico01;
       width: vars.$ico01;
       background-color: #333;
-      border-radius: vars.$px00;
+      border-radius: ui-vars.$px00;
       position: absolute;
-      right: calc(#{vars.$ico01} + #{vars.$px01});
+      right: calc(#{vars.$ico01} + #{ui-vars.$px01});
       top: 50%;
       transform: translateY(-50%);
       display: flex;
@@ -119,8 +119,8 @@
   }
 
   &__user {
-    padding-top: vars.$px02;
-    padding-bottom: vars.$px02;
+    padding-top: ui-vars.$px02;
+    padding-bottom: ui-vars.$px02;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -139,11 +139,11 @@
   }
 
   &__routes {
-    padding-top: vars.$px03;
-    padding-bottom: vars.$px03;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
 
     ul li + li {
-      margin-top: vars.$px02;
+      margin-top: ui-vars.$px02;
     }
   }
 
@@ -152,9 +152,9 @@
     color: #888;
     display: flex;
     align-items: center;
-    padding: vars.$px00 vars.$px01;
+    padding: ui-vars.$px00 ui-vars.$px01;
     width: 100%;
-    border-radius: vars.$px01;
+    border-radius: ui-vars.$px01;
 
     &.active {
       background-color: #333;
@@ -165,7 +165,7 @@
       width: vars.$ico0N;
       height: vars.$ico0N;
       stroke-width: vars.$stroke00;
-      margin-right: vars.$px02;
+      margin-right: ui-vars.$px02;
     }
   }
 
@@ -173,11 +173,11 @@
     margin-top: auto;
     color: ui-vars.$grey;
     border-top: 0;
-    padding-bottom: vars.$px02;
+    padding-bottom: ui-vars.$px02;
   }
 
   &__logo {
-    padding-top: vars.$px03;
-    padding-bottom: vars.$px03;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
   }
 }

@@ -3,11 +3,11 @@ import { classNames } from "jambonz-ui";
 
 import { Icons } from "src/components";
 
-import type { Toast as ToastType } from "src/store/types";
+import type { Toast as ToastProps } from "src/store/types";
 
 import "./styles.scss";
 
-export const Toast = ({ type, message }: ToastType) => {
+export const Toast = ({ type, message }: ToastProps) => {
   const classes = classNames({
     toast: true,
     [`toast--${type}`]: true,

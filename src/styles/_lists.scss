@@ -9,7 +9,7 @@
 }
 
 .item {
-  padding: vars.$px03;
+  padding: ui-vars.$px03;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -27,7 +27,7 @@
     flex-direction: column;
 
     > * + * {
-      margin-top: vars.$px01;
+      margin-top: ui-vars.$px01;
     }
 
     svg {

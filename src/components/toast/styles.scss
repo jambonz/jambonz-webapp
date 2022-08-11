@@ -2,9 +2,9 @@
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 
 .toast {
-  padding-left: vars.$px02;
-  padding-right: vars.$px02;
-  padding-top: vars.$px03;
+  padding-left: ui-vars.$px02;
+  padding-right: ui-vars.$px02;
+  padding-top: ui-vars.$px03;
   position: fixed;
   left: 0;
   width: 100%;
@@ -16,11 +16,11 @@
   pointer-events: none;
 
   &__box {
-    padding: vars.$px02 vars.$px03 vars.$px02 56px;
+    padding: ui-vars.$px02 ui-vars.$px03 ui-vars.$px02 56px;
     background-color: ui-vars.$white;
     text-align: left;
-    border-radius: vars.$px01;
-    box-shadow: 0px vars.$px00 vars.$px00 rgba(0, 0, 0, 0.25);
+    border-radius: ui-vars.$px01;
+    box-shadow: 0px ui-vars.$px00 ui-vars.$px00 rgba(0, 0, 0, 0.25);
     position: relative;
     pointer-events: auto;
   }
@@ -48,10 +48,10 @@
   }
 
   svg:first-child {
-    left: vars.$px02;
+    left: ui-vars.$px02;
   }
 
   svg:last-child {
-    right: vars.$px02;
+    right: ui-vars.$px02;
   }
 }

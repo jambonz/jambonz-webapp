@@ -10,7 +10,7 @@
 
   > button[type="button"] {
     position: absolute;
-    right: vars.$px02;
+    right: ui-vars.$px02;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;

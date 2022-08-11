@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "jambonz-ui";
+import { Button, ButtonGroup } from "jambonz-ui";
 
 import "./styles.scss";
 
@@ -25,7 +25,7 @@ export const Modal = ({
     <div className="modal">
       <div className="modal__box">
         <div className="modal__stuff">{children}</div>
-        <div className="modal__btns">
+        <ButtonGroup right>
           <Button
             type="button"
             small
@@ -43,7 +43,7 @@ export const Modal = ({
           >
             Confirm
           </Button>
-        </div>
+        </ButtonGroup>
       </div>
     </div>
   );
@@ -58,14 +58,14 @@ export const ModalForm = ({
   return (
     <div className="modal">
       <form
-        className="modal__box form"
+        className="modal__box"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit(e);
         }}
       >
         <div className="modal__stuff">{children}</div>
-        <div className="modal__btns">
+        <ButtonGroup right>
           <Button
             small
             subStyle="grey"
@@ -77,7 +77,7 @@ export const ModalForm = ({
           <Button type="submit" small disabled={disabled}>
             Save
           </Button>
-        </div>
+        </ButtonGroup>
       </form>
     </div>
   );
@@ -88,11 +88,11 @@ export const ModalClose = ({ children, handleClose }: CloseProps) => {
     <div className="modal">
       <div className="modal__box">
         <div className="modal__stuff">{children}</div>
-        <div className="modal__btns">
+        <ButtonGroup right>
           <Button type="button" small subStyle="grey" onClick={handleClose}>
             Close
           </Button>
-        </div>
+        </ButtonGroup>
       </div>
     </div>
   );

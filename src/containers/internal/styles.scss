@@ -10,14 +10,14 @@
 
   /** Inheriting from jambonz-ui .wrap */
   header {
-    padding-top: vars.$px03;
-    padding-bottom: vars.$px03;
+    padding-top: ui-vars.$px03;
+    padding-bottom: ui-vars.$px03;
     display: flex;
     justify-content: flex-end;
     align-items: center;
 
     @include mixins.mobile() {
-      padding-bottom: vars.$px04;
+      padding-bottom: ui-vars.$px04;
     }
 
     .ico {
@@ -34,7 +34,57 @@
     width: 100%;
 
     article {
-      padding: 0 ui-vars.$width-padding vars.$px04;
+      padding: 0 ui-vars.$width-padding ui-vars.$px04;
+    }
+  }
+
+  /** forms */
+  form {
+    > * + * {
+      margin-top: ui-vars.$px02;
+    }
+
+    label {
+      @include ui-mixins.m();
+      @include ui-mixins.font-medium();
+      display: flex;
+      align-items: center;
+
+      input[type="radio"] {
+        margin: 0 ui-vars.$px01 0 0;
+      }
+
+      button[type="button"] {
+        margin-left: ui-vars.$px01;
+        cursor: pointer;
+      }
+
+      svg {
+        stroke: ui-vars.$teal;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    fieldset {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+
+      label {
+        max-width: fit-content;
+      }
+
+      > * + * {
+        margin-top: ui-vars.$px01;
+      }
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      max-width: vars.$widthinput;
     }
   }
 }

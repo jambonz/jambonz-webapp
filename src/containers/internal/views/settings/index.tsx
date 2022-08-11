@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { H1, P, Button, ButtonGroup } from "jambonz-ui";
 
-import {
-  useDispatch,
-  withSelectState,
-  toastSuccess,
-  toastError,
-} from "src/store";
+import { useDispatch, toastSuccess, toastError } from "src/store";
+import { withSelectState } from "src/utils";
 import { putServiceProvider, deleteServiceProvider } from "src/api";
 import { Modal, Section } from "src/components";
 import { Checkzone } from "src/components/forms";
@@ -106,7 +102,7 @@ export const Settings = ({
     <>
       <H1>Settings</H1>
       <Section>
-        <form className="form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <fieldset>
             <label htmlFor="name">Service provider name</label>
             <input

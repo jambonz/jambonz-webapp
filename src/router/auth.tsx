@@ -2,7 +2,7 @@
  * Based on https://usehooks.com/useAuth/
  */
 import React, { useContext } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { postLogin } from "src/api";
 import { StatusCodes } from "src/api/types";
@@ -11,14 +11,12 @@ import {
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
 } from "./routes";
-import { toastError } from "src/store";
 import {
   SESS_OLD_PASSWORD,
   SESS_USER_SID,
   MSG_INCORRECT_CREDS,
   MSG_SOMETHING_WRONG,
   MSG_SERVER_DOWN,
-  MSG_MUST_LOGIN,
 } from "src/constants";
 
 import type { UserLogin } from "src/api/types";
@@ -127,21 +125,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useProvideAuth();
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
-};
-
-/**
- * Wrapper component that enforces valid authorization to the app
- */
-export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  const { authorized } = useAuth();
-  const location = useLocation();
-
-  // Simply not authorized -- e.g. no token
-  if (!authorized) {
-    toastError(MSG_MUST_LOGIN);
-
-    return <Navigate to={ROUTE_LOGIN} state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
 };

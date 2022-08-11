@@ -38,7 +38,7 @@ export const SpeechServices = () => {
     <>
       <H1>Speech Services</H1>
       <Section>
-        <form className="form">
+        <form>
           <P>Example of lazy loading region data files for add/edit form.</P>
           <P>
             This also shows how to implement the region selector logic for

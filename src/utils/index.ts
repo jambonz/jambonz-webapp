@@ -1,6 +1,7 @@
 import { withSuspense } from "./with-suspense";
 import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
+import { withSelectState } from "./with-select-state";
 
 export const isValidPasswd = (password: string) => {
   return (
@@ -34,4 +35,4 @@ export const getHumanDateTime = (date: string, fallbackText = "Never used") => {
     : fallbackText;
 };
 
-export { withSuspense, useMobileMedia, withAccessControl };
+export { withSuspense, useMobileMedia, withAccessControl, withSelectState };

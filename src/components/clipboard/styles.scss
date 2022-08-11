@@ -25,8 +25,8 @@
     cursor: pointer;
     height: vars.$clipheight;
     width: vars.$clipheight;
-    border-bottom-right-radius: vars.$px01;
-    border-top-right-radius: vars.$px01;
+    border-bottom-right-radius: ui-vars.$px01;
+    border-top-right-radius: ui-vars.$px01;
     border: 2px solid ui-vars.$grey;
     border-left: 0;
     background-color: ui-vars.$pink;

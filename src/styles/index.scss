@@ -1,7 +1,6 @@
 @use "./vars";
 @use "./cards";
 @use "./lists";
-@use "./forms";
 @use "jambonz-ui/src/styles/index";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
@@ -12,7 +11,7 @@
   --mobile-media: #{vars.$widthbreak};
 }
 
-/** Global things to consider adding to `jambonz-ui` */
+/** Global things too small for partials... */
 
 .mast {
   display: flex;
@@ -20,7 +19,13 @@
   justify-content: space-between;
 }
 
-/** The idea is this is like [type="button"] generically */
+.notfound {
+  .btn {
+    margin-top: ui-vars.$px03;
+  }
+}
+
+/**The idea is this is like [type="button"] generically */
 /** We need to prohibit some jambonz-ui buttons from submitting forms */
 /** Otherwise this selector would just be `button[type="button"]` */
 /** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
@@ -36,8 +41,8 @@
 input[type="text"],
 input[type="password"] {
   @include ui-mixins.m();
-  padding: vars.$px01 vars.$px02;
-  border-radius: vars.$px01;
+  padding: ui-vars.$px01 ui-vars.$px02;
+  border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$grey;
   background-color: ui-vars.$white;
   color: inherit;
@@ -54,8 +59,8 @@ input[type="password"] {
 
 input[type="radio"],
 input[type="checkbox"] {
-  height: vars.$px02;
-  width: vars.$px02;
+  height: ui-vars.$px02;
+  width: ui-vars.$px02;
 }
 
 code {

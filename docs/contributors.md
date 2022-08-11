@@ -59,6 +59,7 @@ Because of this limited scope for local state we're **not using a third-party st
 custom store implementation using vanilla React `useReducer` and `useContext` to provide the state to our
 application. There are many useful functions and hooks for working with state which include the following:
 
+- `useStateContext()`: returns the entire state object
 - `useSelectState(key)`: returns just the piece of state desired
 - `useDispatch()`: returns global `dispatch({ type, payload })` method
 - `useAccessControl(acl)`: returns true/false for select ACL permissions

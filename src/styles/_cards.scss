@@ -5,8 +5,8 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: vars.$px02;
-  margin-top: vars.$px04;
+  grid-gap: ui-vars.$px02;
+  margin-top: ui-vars.$px04;
   width: 100%;
   max-width: ui-vars.$width-laptop;
 
@@ -20,9 +20,9 @@
 }
 
 .card {
-  border-radius: vars.$px01;
-  box-shadow: 0 0 vars.$px01 rgba(0, 0, 0, 0.25);
-  padding: vars.$px02;
+  border-radius: ui-vars.$px01;
+  box-shadow: 0 0 ui-vars.$px01 rgba(0, 0, 0, 0.25);
+  padding: ui-vars.$px02;
   overflow: hidden;
 
   &__title {
@@ -34,13 +34,13 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding-bottom: vars.$px00;
+    padding-bottom: ui-vars.$px00;
   }
 
   &__sid {
     @include ui-mixins.ms();
-    margin-top: vars.$px02;
-    margin-bottom: vars.$px02;
+    margin-top: ui-vars.$px02;
+    margin-bottom: ui-vars.$px02;
   }
 
   &__meta {
@@ -53,10 +53,10 @@
   }
 
   &__actions {
-    margin-top: vars.$px04;
+    margin-top: ui-vars.$px04;
 
     > * + * {
-      margin-left: vars.$px01;
+      margin-left: ui-vars.$px01;
     }
 
     svg {

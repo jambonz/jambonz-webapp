@@ -78,7 +78,7 @@ export const Applications = () => {
     <>
       <H1>Applications</H1>
       <Section>
-        <form className="form">
+        <form>
           <P>Example of lazy loading speech data files for add/edit form.</P>
           <P>
             This also shows how to implement the speech selector logic for
