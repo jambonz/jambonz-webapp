@@ -63,6 +63,14 @@ input[type="checkbox"] {
   width: ui-vars.$px02;
 }
 
+pre,
 code {
   font-family: ui-vars.$font-mono;
+}
+
+pre {
+  padding: ui-vars.$px03;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px01;
 }

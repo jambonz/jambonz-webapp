@@ -2,9 +2,17 @@
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
-.clipboard {
-  display: flex;
-  align-items: center;
+.file-upload {
+  &__wrap {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+
+    .internal form & {
+      max-width: vars.$widthinput;
+    }
+  }
 
   input[type="text"] {
     border-bottom-right-radius: 0;
@@ -19,6 +27,16 @@
     &:focus-visible {
       outline: 0;
     }
+  }
+
+  input[type="file"] {
+    cursor: pointer;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
   }
 
   button[type="button"] {

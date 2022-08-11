@@ -86,14 +86,14 @@ export const Applications = () => {
           </P>
           <P>
             Selected synthesis vendor:{" "}
-            <strong>{vendorSynth || "undefined"}</strong>.
+            <strong>{vendorSynth || "undefined"}</strong>
           </P>
           <P>
             Selected synthesis language:{" "}
-            <strong>{langSynth || "undefined"}</strong>.
+            <strong>{langSynth || "undefined"}</strong>
           </P>
           <P>
-            Selected synthesis voice: <strong>{voice || "undefined"}</strong>.
+            Selected synthesis voice: <strong>{voice || "undefined"}</strong>
           </P>
           {synthesis && (
             <>
