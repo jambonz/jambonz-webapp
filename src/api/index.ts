@@ -10,6 +10,7 @@ import {
   API_SERVICE_PROVIDERS,
   API_API_KEYS,
   API_ACCOUNTS,
+  API_APPLICATIONS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -32,6 +33,7 @@ import type {
   EmptyResponse,
   SecretResponse,
   UseApiData,
+  Application,
 } from "./types";
 
 /** Wrap all requests to normalize response handling */
@@ -180,6 +182,14 @@ export const postSubspace = (sid: string, payload: Payload) => {
   );
 };
 
+export const postApplication = (payload: Payload) => {
+  return fetchTransport<SidResponse>(API_APPLICATIONS, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: getAuthHeaders(),
+  });
+};
+
 export const putUser = (sid: string, payload: Payload) => {
   return fetchTransport<EmptyResponse>(`${API_USERS}/${sid}`, {
     method: "PUT",
@@ -235,6 +245,13 @@ export const deleteSubspace = (sid: string) => {
   );
 };
 
+export const deleteApplication = (sid: string) => {
+  return fetchTransport<EmptyResponse>(`${API_APPLICATIONS}/${sid}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+};
+
 /** Simple wrapper for :GET fetchTransport calls to any API */
 
 export const getFetch = <Type>(url: string) => {
@@ -257,6 +274,10 @@ export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
     `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
   );
+};
+
+export const getApplications = () => {
+  return getFetch<Application[]>(API_APPLICATIONS);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */

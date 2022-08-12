@@ -21,7 +21,7 @@ export const Selector = forwardRef<SelectorRef, SelectorProps>(
     return (
       <div className="selector">
         <select ref={ref} id={id} name={name} value={value} {...restProps}>
-          {options.map((option) => (
+          {options?.map((option) => (
             <option key={option.value} value={option.value}>
               {option.name}
             </option>
