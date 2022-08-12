@@ -389,7 +389,7 @@ export const AccountForm = ({
 
             return (
               <fieldset key={webhook.prefix}>
-                <label htmlFor="registration_hook_url">
+                <label htmlFor={`${webhook.prefix}_url`}>
                   {webhook.label} webhook
                 </label>
                 <input

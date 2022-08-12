@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react";
+import React, { useState, forwardRef } from "react";
+import { classNames } from "jambonz-ui";
 
 import { Icons } from "src/components/icons";
 
@@ -18,9 +19,23 @@ type SelectorRef = HTMLSelectElement;
 /** The forwarded ref is so forms can still focus() this select menu if necessary... */
 export const Selector = forwardRef<SelectorRef, SelectorProps>(
   ({ id, name, value, options, ...restProps }: SelectorProps, ref) => {
+    const [focus, setFocus] = useState(false);
+    const classes = {
+      selector: true,
+      focused: focus,
+    };
+
     return (
-      <div className="selector">
-        <select ref={ref} id={id} name={name} value={value} {...restProps}>
+      <div className={classNames(classes)}>
+        <select
+          ref={ref}
+          id={id}
+          name={name}
+          value={value}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
+          {...restProps}
+        >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.name}

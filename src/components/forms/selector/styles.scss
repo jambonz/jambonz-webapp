@@ -8,6 +8,17 @@
   width: 100%;
   max-width: vars.$widthinput;
 
+  &.focused {
+    select {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
+
+    span {
+      background-color: ui-vars.$dark;
+    }
+  }
+
   select {
     @include ui-mixins.m();
     appearance: none;

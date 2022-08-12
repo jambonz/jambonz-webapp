@@ -6,13 +6,15 @@ import { toastError, useSelectState, useAccessControl } from "src/store";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 
 import type { ACL, IMessage } from "src/store/types";
-import { ServiceProvider } from "src/api/types";
+import type { ServiceProvider } from "src/api/types";
 
 type PassthroughProps = {
   [key: string]: unknown;
 };
 
-export type ACLGetIMessage = (sp: ServiceProvider) => IMessage;
+export interface ACLGetIMessage {
+  (sp: ServiceProvider): IMessage;
+}
 
 export const withAccessControl = (
   acl: keyof ACL,

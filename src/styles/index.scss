@@ -1,6 +1,7 @@
 @use "./vars";
 @use "./cards";
 @use "./lists";
+@use "./inpbtn";
 @use "jambonz-ui/src/styles/index";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
@@ -12,31 +13,6 @@
 }
 
 /** Global things too small for partials... */
-
-.mast {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.notfound {
-  .btn {
-    margin-top: ui-vars.$px03;
-  }
-}
-
-/**The idea is this is like [type="button"] generically */
-/** We need to prohibit some jambonz-ui buttons from submitting forms */
-/** Otherwise this selector would just be `button[type="button"]` */
-/** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
-.btn--type {
-  background-color: transparent;
-  width: auto;
-  height: auto;
-  border: 0;
-  padding: 0;
-  font-size: 0;
-}
 
 input[type="text"],
 input[type="password"] {
@@ -63,6 +39,40 @@ input[type="checkbox"] {
   width: ui-vars.$px02;
 }
 
+pre,
 code {
   font-family: ui-vars.$font-mono;
+}
+
+pre {
+  padding: ui-vars.$px03;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px01;
+  font-size: ui-vars.$m-size;
+}
+
+/** The idea is this is like [type="button"] generically */
+/** We need to prohibit some jambonz-ui buttons from submitting forms */
+/** Otherwise this selector would just be `button[type="button"]` */
+/** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
+.btn--type {
+  background-color: transparent;
+  width: auto;
+  height: auto;
+  border: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+.mast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notfound {
+  .btn {
+    margin-top: ui-vars.$px03;
+  }
 }

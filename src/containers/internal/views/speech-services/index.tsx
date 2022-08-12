@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import { H1, P } from "jambonz-ui";
 
 import { Section } from "src/components";
-import { Selector } from "src/components/forms";
-import { vendors, VENDOR_AWS } from "src/vendor";
+import { FileUpload, Selector } from "src/components/forms";
+import { vendors, VENDOR_AWS, VENDOR_GOOGLE } from "src/vendor";
 
-import type { RegionVendors } from "src/vendor/types";
+import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
+import { toastError } from "src/store";
 
 export const SpeechServices = () => {
   const [regions, setRegions] = useState<RegionVendors | null>(null);
   const [vendor, setVendor] = useState("");
   const [region, setRegion] = useState("");
+  const [serviceKey, setServiceKey] = useState<GoogleServiceKey | null>(null);
 
   /** Lazy-load large data schemas -- e.g. code-splitting */
   /** This code should be moved into the add/edit form handling */
@@ -42,14 +44,22 @@ export const SpeechServices = () => {
           <P>Example of lazy loading region data files for add/edit form.</P>
           <P>
             This also shows how to implement the region selector logic for
-            aws/microsoft.
+            aws/microsoft as well as service key file upload for google.
           </P>
           <P>
-            Selected vendor: <strong>{vendor || "undefined"}</strong>.
+            Selected vendor: <strong>{vendor || "undefined"}</strong>
           </P>
           <P>
-            Selected region: <strong>{region || "undefined"}</strong>.
+            Selected region: <strong>{region || "undefined"}</strong>
           </P>
+          <div className="p">
+            Selected service key:{" "}
+            {serviceKey ? (
+              <pre>{JSON.stringify(serviceKey, null, 2)}</pre>
+            ) : (
+              <strong>undefined</strong>
+            )}
+          </div>
           <fieldset>
             <label htmlFor="vendor">Vendor</label>
             <Selector
@@ -65,6 +75,7 @@ export const SpeechServices = () => {
               onChange={(e) => {
                 setVendor(e.target.value);
                 setRegion("");
+                setServiceKey(null);
               }}
             />
           </fieldset>
@@ -83,6 +94,43 @@ export const SpeechServices = () => {
                   },
                 ].concat(regions[vendor as keyof RegionVendors])}
                 onChange={(e) => setRegion(e.target.value)}
+              />
+            </fieldset>
+          )}
+          {vendor && vendor === VENDOR_GOOGLE && (
+            <fieldset>
+              <label htmlFor="google_service_key">Service key</label>
+              <FileUpload
+                id="google_service_key"
+                name="google_service_key"
+                handleFile={(file) => {
+                  const handleError = () => {
+                    setServiceKey(null);
+                    toastError(
+                      "Invalid service key file, could not parse as JSON."
+                    );
+                  };
+
+                  file
+                    .text()
+                    .then((text) => {
+                      try {
+                        const json: GoogleServiceKey = JSON.parse(text);
+
+                        if (json.private_key && json.client_email) {
+                          setServiceKey(json);
+                        } else {
+                          setServiceKey(null);
+                          toastError("Invalid service key file, missing data.");
+                        }
+                      } catch (error) {
+                        handleError();
+                      }
+                    })
+                    .catch(() => {
+                      handleError();
+                    });
+                }}
               />
             </fieldset>
           )}
