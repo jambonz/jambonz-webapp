@@ -8,7 +8,7 @@ on:
   pull_request:
     branches:
       # switch to "**" when we're ready
-      - "refresh/**"
+      - "refresh*"
 
 jobs:
   pr-checks:
