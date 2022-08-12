@@ -127,6 +127,7 @@ export interface Application {
   call_status_hook: null | WebHook;
   speech_synthesis_voice: null | string;
   speech_synthesis_vendor: null | string;
+  speech_synthesis_language: null | string;
   speech_recognizer_vendor: null | string;
   speech_recognizer_language: null | string;
 }

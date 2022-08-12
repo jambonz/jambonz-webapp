@@ -29,6 +29,12 @@ const LazyAccountEdit = withSuspense(
 const LazyApplications = withSuspense(
   React.lazy(() => import("src/containers/internal/views/applications"))
 );
+const LazyApplicationsAdd = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/applications/add"))
+);
+const LazyApplicationsEdit = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/applications/edit"))
+);
 const LazyRecentCalls = withSuspense(
   React.lazy(() => import("src/containers/internal/views/recent-calls"))
 );
@@ -89,6 +95,15 @@ export const Router = () => {
                     element={<LazyAccountEdit />}
                   />
                   <Route path="applications" element={<LazyApplications />} />
+                  <Route
+                    path="applications/add"
+                    element={<LazyApplicationsAdd />}
+                  />
+                  <Route
+                    path="applications/:application_sid/edit"
+                    element={<LazyApplicationsEdit />}
+                  />
+
                   <Route path="recent-calls" element={<LazyRecentCalls />} />
                   <Route path="alerts" element={<LazyAlerts />} />
 
