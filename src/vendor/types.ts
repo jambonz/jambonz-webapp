@@ -17,6 +17,11 @@ export interface VoiceLanguage extends Language {
   voices: Voice[];
 }
 
+export interface GoogleServiceKey {
+  private_key: string;
+  client_email: string;
+}
+
 export interface Vendor {
   name: "Google" | "AWS" | "Microsoft" | "WellSaid";
   value: "google" | "aws" | "microsoft" | "wellsaid";

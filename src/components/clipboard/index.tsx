@@ -3,8 +3,6 @@ import React from "react";
 import { Icons } from "src/components/icons";
 import { toastError, toastSuccess } from "src/store";
 
-import "./styles.scss";
-
 type ClipBoardProps = {
   id?: string;
   name?: string;
@@ -34,7 +32,7 @@ export const ClipBoard = ({ text, id = "", name = "" }: ClipBoardProps) => {
   };
 
   return (
-    <div className="clipboard">
+    <div className="clipboard inpbtn">
       <input id={id} name={name} type="text" readOnly value={text} />
       {hasClipboard && (
         <button
