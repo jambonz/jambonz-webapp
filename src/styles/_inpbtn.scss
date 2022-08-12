@@ -1,8 +1,8 @@
-@use "src/styles/vars";
+@use "./vars";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
-.clipboard {
+.inpbtn {
   display: flex;
   align-items: center;
 

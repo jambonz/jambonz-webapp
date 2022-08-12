@@ -28,7 +28,7 @@ export const FileUpload = ({
 
   return (
     <div className="file-upload">
-      <div className="file-upload__wrap">
+      <div className="file-upload__wrap inpbtn">
         <input
           id={id}
           name={name}
