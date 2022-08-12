@@ -133,6 +133,37 @@ const handleUnreachable = () => {
   handleBadRequest(MSG_SERVER_DOWN);
 };
 
+/** Simple wrappers for fetchTransport calls to any API, :GET, :POST, :PUT, :DELETE */
+
+export const getFetch = <Type>(url: string) => {
+  return fetchTransport<Type>(url, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const postFetch = <Type>(url: string, payload: Payload) => {
+  return fetchTransport<Type>(url, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: getAuthHeaders(),
+  });
+};
+
+export const putFetch = <Type>(url: string, payload: Payload) => {
+  return fetchTransport<Type>(url, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+    headers: getAuthHeaders(),
+  });
+};
+
+export const deleteFetch = <Type>(url: string) => {
+  return fetchTransport<Type>(url, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+};
+
 /** All APIs need a wrapper utility that uses the FetchTransport */
 
 export const postLogin = (payload: Payload) => {
@@ -145,105 +176,60 @@ export const postLogin = (payload: Payload) => {
   });
 };
 
+/** Named wrappers for `postFetch` */
+
 export const postServiceProviders = (payload: Payload) => {
-  return fetchTransport<SidResponse>(API_SERVICE_PROVIDERS, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return postFetch<SidResponse>(API_SERVICE_PROVIDERS, payload);
 };
 
 export const postApiKey = (payload: Payload) => {
-  return fetchTransport<TokenResponse>(API_API_KEYS, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return postFetch<TokenResponse>(API_API_KEYS, payload);
 };
 
 export const postAccount = (payload: Payload) => {
-  return fetchTransport<SidResponse>(API_ACCOUNTS, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return postFetch<SidResponse>(API_ACCOUNTS, payload);
 };
 
 export const postSubspace = (sid: string, payload: Payload) => {
-  return fetchTransport<SidResponse>(
+  return postFetch<SidResponse>(
     `${API_ACCOUNTS}/${sid}/SubspaceTeleport`,
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: getAuthHeaders(),
-    }
+    payload
   );
 };
 
+/** Named wrappers for `putFetch` */
+
 export const putUser = (sid: string, payload: Payload) => {
-  return fetchTransport<EmptyResponse>(`${API_USERS}/${sid}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return putFetch<EmptyResponse>(`${API_USERS}/${sid}`, payload);
 };
 
 export const putServiceProvider = (sid: string, payload: Payload) => {
-  return fetchTransport<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return putFetch<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`, payload);
 };
 
 export const putAccount = (sid: string, payload: Payload) => {
-  return fetchTransport<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-    headers: getAuthHeaders(),
-  });
+  return putFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, payload);
 };
 
+/** Named wrappers for `deleteFetch` */
+
 export const deleteServiceProvider = (sid: string) => {
-  return fetchTransport<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+  return deleteFetch<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`);
 };
 
 export const deleteApiKey = (sid: string) => {
-  return fetchTransport<EmptyResponse>(`${API_API_KEYS}/${sid}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+  return deleteFetch<EmptyResponse>(`${API_API_KEYS}/${sid}`);
 };
 
 export const deleteAccount = (sid: string) => {
-  return fetchTransport<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+  return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`);
 };
 
 export const deleteSubspace = (sid: string) => {
-  return fetchTransport<EmptyResponse>(
-    `${API_ACCOUNTS}/${sid}/SubspaceTeleport`,
-    {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    }
-  );
+  return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}/SubspaceTeleport`);
 };
 
-/** Simple wrapper for :GET fetchTransport calls to any API */
-
-export const getFetch = <Type>(url: string) => {
-  return fetchTransport<Type>(url, {
-    headers: getAuthHeaders(),
-  });
-};
-
-/** Specific use cases for wrapping `getFetch` */
+/** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {
   return getFetch<User>(`${API_USERS}/${sid}`);
