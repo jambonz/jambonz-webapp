@@ -241,6 +241,10 @@ export const putAccount = (sid: string, payload: Payload) => {
   return putFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, payload);
 };
 
+export const putApplication = (sid: string, payload: Payload) => {
+  return putFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`, payload);
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteServiceProvider = (sid: string) => {
@@ -277,10 +281,6 @@ export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
     `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
   );
-};
-
-export const getApplications = () => {
-  return getFetch<Application[]>(API_APPLICATIONS);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */

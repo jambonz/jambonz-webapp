@@ -11,8 +11,14 @@ import {
   VENDOR_GOOGLE,
   LANG_EN_US_STANDARD_C,
   VENDOR_AWS,
+  VENDOR_WELLSAID,
 } from "src/vendor";
-import { useServiceProviderData, useApiData, postApplication } from "src/api";
+import {
+  useServiceProviderData,
+  useApiData,
+  postApplication,
+  putApplication,
+} from "src/api";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
 import { DEFAULT_WEBHOOK } from "src/api/constants";
 
@@ -27,7 +33,8 @@ import type {
 import type { Account, WebHook, Application, FetchError } from "src/api/types";
 
 export type UseApplicationData = {
-  data: Application | null;
+  // data fed from ./edit
+  data: Application[] | null; // data returned is an array but there is only 1 (0) that matters
   error: FetchError | null;
   refetch: () => void;
 };
@@ -41,7 +48,7 @@ export const ApplicationForm = ({
 }: ApplicationFormProps) => {
   // const [application, setApplication] = useState<Application | null>(null);
   const navigate = useNavigate();
-  const [applicationName, setApplicationName] = useState<string>();
+  const [applicationName, setApplicationName] = useState<string>("");
   const [applications] = useApiData<Application[]>("Applications");
 
   const [accountSid, setAccountSid] = useState<string>("");
@@ -159,13 +166,13 @@ export const ApplicationForm = ({
         );
         !webhook.stateVal.username && webhook.refUser.current?.focus();
         !webhook.stateVal.password && webhook.refPass.current?.focus();
+        return;
       }
     });
 
-    if (applications) {
-      const filtered = applications.filter((a) => applicationName !== a.name);
-
-      if (filtered.find((a) => a.name === applicationName)) {
+    if (applications && !application) {
+      // update can still have the same name
+      if (applications.find((a) => a.name === applicationName)) {
         setMessage(
           "The name you have entered is already in use on another one of your applications."
         );
@@ -173,65 +180,88 @@ export const ApplicationForm = ({
       }
     }
 
-    postApplication({
-      name: applicationName,
-      call_hook: callWebhook || null,
-      account_sid: accountSid || null,
-      messaging_hook: messageWebhook || null,
-      call_status_hook: statusWebhook || null,
-      application_sid: null,
-      speech_synthesis_vendor: synthVendor || null,
-      speech_synthesis_language: synthLang || null,
-      speech_synthesis_voice: synthVoice || null,
-      speech_recognizer_vendor: recogVendor || null,
-      speech_recognizer_language: recogLang || null,
-    })
-      .then(() => {
-        toastSuccess("Application created successfully");
-        navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
+    if (application && application.data) {
+      putApplication(application.data[0].application_sid, {
+        name: applicationName,
+        call_hook: callWebhook || null,
+        account_sid: accountSid || null,
+        messaging_hook: messageWebhook || null,
+        call_status_hook: statusWebhook || null,
+        speech_synthesis_vendor: synthVendor || null,
+        speech_synthesis_language: synthLang || null,
+        speech_synthesis_voice: synthVoice || null,
+        speech_recognizer_vendor: recogVendor || null,
+        speech_recognizer_language: recogLang || null,
       })
-      .catch((error) => {
-        toastError(error.msg);
-      });
+        .then(() => {
+          application.refetch();
+          toastSuccess("Application updated successfully");
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    } else {
+      postApplication({
+        name: applicationName,
+        call_hook: callWebhook || null,
+        account_sid: accountSid || null,
+        messaging_hook: messageWebhook || null,
+        call_status_hook: statusWebhook || null,
+        application_sid: null,
+        speech_synthesis_vendor: synthVendor || null,
+        speech_synthesis_language: synthLang || null,
+        speech_synthesis_voice: synthVoice || null,
+        speech_recognizer_vendor: recogVendor || null,
+        speech_recognizer_language: recogLang || null,
+      })
+        .then(() => {
+          toastSuccess("Application created successfully");
+          navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
   };
 
-  /** Lazy-load large data schemas -- e.g. code-splitting */
-  /** This code should be moved into the add/edit form handling */
+  // console.log(application && application);
   useEffect(() => {
     let ignore = false;
 
     if (application && application.data) {
-      setApplicationName(application.data.name);
+      setApplicationName(application.data[0].name);
 
-      if (application.data.call_hook)
-        setCallWebhook(application.data.call_hook);
+      if (application.data[0].call_hook)
+        setCallWebhook(application.data[0].call_hook);
 
-      if (application.data.account_sid)
-        setAccountSid(application.data.account_sid);
+      if (application.data[0].account_sid)
+        setAccountSid(application.data[0].account_sid);
 
-      if (application.data.messaging_hook)
-        setMessageWebhook(application.data.messaging_hook);
+      if (application.data[0].messaging_hook)
+        setMessageWebhook(application.data[0].messaging_hook);
 
-      if (application.data.speech_synthesis_vendor)
+      if (application.data[0].speech_synthesis_vendor)
         setSynthVendor(
-          application.data.speech_synthesis_vendor as keyof SynthesisVendors
+          application.data[0].speech_synthesis_vendor as keyof SynthesisVendors
         );
 
-      if (application.data.speech_synthesis_language)
+      if (application.data[0].speech_synthesis_language)
         setSynthLang(
-          application.data.speech_synthesis_language as keyof RecognizerVendors
+          application.data[0]
+            .speech_synthesis_language as keyof RecognizerVendors
         );
 
-      if (application.data.speech_synthesis_voice)
-        setSynthVoice(application.data.speech_synthesis_voice);
+      if (application.data[0].speech_synthesis_voice)
+        setSynthVoice(application.data[0].speech_synthesis_voice);
 
-      if (application.data.speech_recognizer_vendor)
+      if (application.data[0].speech_recognizer_vendor)
         setRecogVendor(
-          application.data.speech_recognizer_vendor as keyof RecognizerVendors
+          application.data[0]
+            .speech_recognizer_vendor as keyof RecognizerVendors
         );
 
-      if (application.data.speech_recognizer_language)
-        setRecogLang(application.data.speech_recognizer_language);
+      if (application.data[0].speech_recognizer_language)
+        setRecogLang(application.data[0].speech_recognizer_language);
     }
 
     Promise.all([
@@ -271,7 +301,7 @@ export const ApplicationForm = ({
     return function cleanup() {
       ignore = true;
     };
-  }, []);
+  }, [application]); // i think this one makes sure there is one less lazy
 
   return (
     <>
@@ -289,28 +319,30 @@ export const ApplicationForm = ({
               onChange={(e) => setApplicationName(e.target.value)}
             />
           </fieldset>
-          <fieldset>
-            <label htmlFor="account_name">Account</label>
-            <Selector
-              id="account_name"
-              name="account_name"
-              value={accountSid}
-              placeholder="Select an account"
-              // options={[{ // TODO: correctly concating these twos so the select an account option is up there
-              //   name: "Select an account",
-              //   value: ""
-              //   }].concat(accounts.map((account) => ({
-              //     name: account.name,
-              //     value: account.account_sid
-              //   })))
-              options={accounts!.map((account) => ({
-                //TODO: some promise stuff?
-                name: account.name,
-                value: account.account_sid,
-              }))}
-              onChange={(e) => setAccountSid(e.target.value)}
-            />
-          </fieldset>
+          {accounts && (
+            <fieldset>
+              <label htmlFor="account_name">Account</label>
+              <Selector
+                id="account_name"
+                name="account_name"
+                value={accountSid}
+                placeholder="Select an account"
+                options={[
+                  {
+                    // TODO: correctly concating these twos so the select an account option is up there
+                    name: "-- Select an account --",
+                    value: "",
+                  },
+                ].concat(
+                  accounts.map((account) => ({
+                    name: account.name,
+                    value: account.account_sid,
+                  }))
+                )}
+                onChange={(e) => setAccountSid(e.target.value)}
+              />
+            </fieldset>
+          )}
           {webhooks.map((webhook) => {
             return (
               <fieldset key={webhook.prefix}>
@@ -493,7 +525,9 @@ export const ApplicationForm = ({
                   id="recognizer_vendor"
                   name="recognizer_vendor"
                   value={recogVendor}
-                  options={vendors.slice(0, vendors.length - 1)}
+                  options={vendors.filter(
+                    (vendor) => vendor.value != VENDOR_WELLSAID
+                  )}
                   onChange={(e) => {
                     const vendor = e.target.value as keyof RecognizerVendors;
                     setRecogVendor(vendor);

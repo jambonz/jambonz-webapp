@@ -57,7 +57,7 @@ export const Applications = () => {
                     <div className="item__info">
                       <div className="item__title">
                         <Link
-                          to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.account_sid}/edit`}
+                          to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
                           title="Edit application"
                           className="i"
                         >
@@ -73,7 +73,7 @@ export const Applications = () => {
                     <div className="item__actions">
                       <Link
                         to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
-                        title="Edit account"
+                        title="Edit application"
                         className=""
                       >
                         <Icons.Edit3 />
