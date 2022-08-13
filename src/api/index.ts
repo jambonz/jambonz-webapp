@@ -18,7 +18,7 @@ import {
   MSG_SERVER_DOWN,
   MSG_SOMETHING_WRONG,
 } from "src/constants";
-import { PagedResponse, RecentCall, StatusCodes } from "./types";
+import { StatusCodes } from "./types";
 
 import type {
   FetchError,
@@ -32,6 +32,9 @@ import type {
   EmptyResponse,
   SecretResponse,
   UseApiData,
+  Alert,
+  PagedResponse,
+  RecentCall,
 } from "./types";
 
 /** Wrap all requests to normalize response handling */
@@ -42,7 +45,7 @@ const fetchTransport = <Type>(
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch(url, options);
-      const transport = {
+      const transport: FetchTransport<Type> = {
         status: response.status,
         json: <Type>{},
       };
@@ -80,9 +83,19 @@ const fetchTransport = <Type>(
         response.status === StatusCodes.OK ||
         response.status === StatusCodes.CREATED
       ) {
-        const json: Type = await response.json();
+        // Handle blobs -- e.g. pcap file API for RecentCalls
+        if (
+          options.headers!["Content-Type" as keyof HeadersInit] ===
+          "application/octet-stream"
+        ) {
+          const blob: Blob = await response.blob();
 
-        transport.json = json;
+          transport.blob = blob;
+        } else {
+          const json: Type = await response.json();
+
+          transport.json = json;
+        }
       }
 
       resolve(transport);
@@ -131,6 +144,17 @@ const handleUnauthorized = () => {
 
 const handleUnreachable = () => {
   handleBadRequest(MSG_SERVER_DOWN);
+};
+
+/** Wrapper for fetching Blobs -- API use case is RecentCalls pcap files */
+
+export const getBlob = (url: string) => {
+  return fetchTransport(url, {
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/octet-stream",
+    },
+  });
 };
 
 /** Simple wrappers for fetchTransport calls to any API, :GET, :POST, :PUT, :DELETE */
@@ -252,6 +276,22 @@ export const getRecentCalls = (sid: string) => {
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls`
       : `${API_ACCOUNTS}/${sid}/RecentCalls`
+  );
+};
+
+export const getPcap = (sid: string, callSid: string) => {
+  return getBlob(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${callSid}/pcap`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${callSid}/pcap`
+  );
+};
+
+export const getAlerts = (sid: string) => {
+  return getFetch<PagedResponse<Alert>>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts`
+      : `${API_ACCOUNTS}/${sid}/Alerts`
   );
 };
 

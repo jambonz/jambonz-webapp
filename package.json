@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=14"
+    "node": ">=14.18"
   },
   "contributors": [
     {
@@ -16,10 +16,10 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "postinstall": "rm -rf public/fonts && cp -R ./node_modules/jambonz-ui/public/fonts ./public/fonts",
+    "postinstall": "rm -rf public/fonts && cp -R node_modules/jambonz-ui/public/fonts public/fonts",
     "start": "npm run dev",
     "dev": "vite --port 3001",
-    "dev:server": "ts-node --esm ./dev.server.ts",
+    "dev:server": "ts-node --esm server/dev.server.ts",
     "prebuild": "rm -rf ./dist",
     "build": "tsc && vite build",
     "preview": "vite preview",

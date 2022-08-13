@@ -1,18 +1,23 @@
-import React, { useEffect } from "react";
-import { H1, P } from "jambonz-ui";
-import { getRecentCalls } from "src/api";
-import { toastError } from "src/store";
+import React, { useEffect, useState } from "react";
+import { Button, H1, P } from "jambonz-ui";
 
+import { getRecentCalls, getPcap } from "src/api";
+import { toastError } from "src/store";
 import { Section } from "src/components";
 
+import type { Pcap, RecentCall } from "src/api/types";
+
 export const RecentCalls = () => {
+  const [pcap, setPcap] = useState<Pcap | null>(null);
+  const [calls, setCalls] = useState<RecentCall[] | null>(null);
+
   useEffect(() => {
     let ignore = false;
 
-    getRecentCalls("foo-sid")
+    getRecentCalls("account-sid")
       .then(({ json }) => {
         if (!ignore) {
-          console.log(json);
+          setCalls(json.data);
         }
       })
       .catch((error) => {
@@ -32,12 +37,48 @@ export const RecentCalls = () => {
         <P>
           To run the dev mock api server run <code>npm run dev:server</code>.
         </P>
-        <P>
-          You can see the dev server implementation in{" "}
-          <code>dev.server.ts</code>
-        </P>
         <P>If the dev server is not running you will get an error toast.</P>
         <P>Otherwise check the browser console to see the data logged...</P>
+        <P>&nbsp;</P>
+        <P>
+          Also this page shows how to fetch a <span>pcap</span> file from the
+          API:
+        </P>
+        <div className="p">
+          Selected pcap state object:{" "}
+          {pcap ? (
+            <>
+              <pre>{JSON.stringify(pcap, null, 2)}</pre>
+              <a href={pcap.data_url} download={pcap.file_name}>
+                Download pcap file
+              </a>
+            </>
+          ) : (
+            <strong>undefined</strong>
+          )}
+        </div>
+        <P>&nbsp;</P>
+        {calls && (
+          <Button
+            small
+            onClick={() => {
+              getPcap(calls[0].account_sid, calls[0].call_sid)
+                .then(({ blob }) => {
+                  if (blob) {
+                    setPcap({
+                      data_url: URL.createObjectURL(blob),
+                      file_name: `callid-${calls[0].sip_call_id}.pcap`,
+                    });
+                  }
+                })
+                .catch((error) => {
+                  toastError(error.msg);
+                });
+            }}
+          >
+            Fetch pcap
+          </Button>
+        )}
       </Section>
     </>
   );

@@ -12,6 +12,13 @@
     }
   }
 
+  &.focused {
+    input[type="text"] {
+      border-color: ui-vars.$dark;
+      color: ui-vars.$dark;
+    }
+  }
+
   input[type="file"] {
     cursor: pointer;
     height: 100%;
