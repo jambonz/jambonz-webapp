@@ -46,7 +46,6 @@ type ApplicationFormProps = {
 export const ApplicationForm = ({
   application = null,
 }: ApplicationFormProps) => {
-  // const [application, setApplication] = useState<Application | null>(null);
   const navigate = useNavigate();
   const [applicationName, setApplicationName] = useState<string>("");
   const [applications] = useApiData<Application[]>("Applications");
@@ -127,7 +126,6 @@ export const ApplicationForm = ({
     },
   ];
 
-  /** Copy pasted from ../accounts/form.tsx */
   const handleSetHook = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     hook: WebHook,
@@ -232,7 +230,6 @@ export const ApplicationForm = ({
     }
   };
 
-  // console.log(application && application);
   useEffect(() => {
     let ignore = false;
 
@@ -309,7 +306,7 @@ export const ApplicationForm = ({
     return function cleanup() {
       ignore = true;
     };
-  }, [application]); // i think this one makes sure there is one less lazy
+  }, [application]); // makes application loaded
 
   return (
     <>
@@ -337,7 +334,6 @@ export const ApplicationForm = ({
                 placeholder="Select an account"
                 options={[
                   {
-                    // TODO: correctly concating these twos so the select an account option is up there
                     name: "-- Select an account --",
                     value: "",
                   },
