@@ -170,9 +170,17 @@ export const ApplicationForm = ({
       }
     });
 
-    if (applications && !application) {
+    if (applications) {
       // update can still have the same name
-      if (applications.find((a) => a.name === applicationName)) {
+      if (
+        applications.find(
+          (a) =>
+            a.name === applicationName &&
+            (!application ||
+              !application.data ||
+              a.application_sid !== application.data[0].application_sid)
+        )
+      ) {
         setMessage(
           "The name you have entered is already in use on another one of your applications."
         );
