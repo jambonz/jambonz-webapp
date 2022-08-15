@@ -2,6 +2,8 @@ export type Payload = Record<string, unknown>;
 
 export type EmptyResponse = Payload;
 
+export type WebhookMethod = "POST" | "GET";
+
 /** Status codes with JSON responses */
 /** Code 400,403 can be an empty response sometimes... */
 /** FYI: Code 480 is SMPP temporarily unavailable */
@@ -30,6 +32,7 @@ export enum StatusCodes {
 export interface FetchTransport<Type> {
   status: StatusCodes;
   json: Type;
+  blob?: Blob;
 }
 
 export interface FetchError {
@@ -68,10 +71,15 @@ export interface ApiKey {
 
 export interface WebHook {
   url: string;
-  method: string;
+  method: WebhookMethod;
   username: null | string;
   password: null | string;
   webhook_sid?: null | string;
+}
+
+export interface WebhookOption {
+  name: WebhookMethod;
+  value: WebhookMethod;
 }
 
 export interface Sbc {
@@ -155,6 +163,19 @@ export interface RecentCall {
   remote_host: string;
   direction: string;
   trunk: string;
+}
+
+export interface Pcap {
+  data_url: string;
+  file_name: string;
+}
+
+export interface Alert {
+  time: string;
+  account_sid: string;
+  alert_type: string;
+  message: string;
+  detail: string;
 }
 
 export interface PagedResponse<Type> {

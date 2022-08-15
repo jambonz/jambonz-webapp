@@ -20,7 +20,13 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { DEFAULT_WEBHOOK } from "src/api/constants";
 import { Subspace } from "./subspace";
 
-import type { WebHook, Account, FetchError, Application } from "src/api/types";
+import type {
+  WebHook,
+  Account,
+  FetchError,
+  Application,
+  WebhookMethod,
+} from "src/api/types";
 
 export type UseAccountData = {
   data: Account | null;
@@ -117,20 +123,6 @@ export const AccountForm = ({
         .catch((error) => {
           toastError(error.msg);
         });
-    }
-  };
-
-  /** Real generic way of managing form state for both hooks */
-  const handleSetHook = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    hook: WebHook,
-    setHook: (h: WebHook) => void
-  ) => {
-    if (hook) {
-      setHook({
-        ...hook,
-        [e.target.name]: e.target.value,
-      });
     }
   };
 
@@ -276,7 +268,7 @@ export const AccountForm = ({
 
   return (
     <>
-      <Section>
+      <Section slim>
         <form onSubmit={handleSubmit}>
           {account && account.data && (
             <fieldset>
@@ -389,59 +381,83 @@ export const AccountForm = ({
 
             return (
               <fieldset key={webhook.prefix}>
-                <label htmlFor={`${webhook.prefix}_url`}>
-                  {webhook.label} webhook
-                </label>
-                <input
-                  id={`${webhook.prefix}_url`}
-                  type="text"
-                  name="url"
-                  placeholder={`${webhook.label} webhook`}
-                  value={webhook.stateVal?.url}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                />
-                <label htmlFor={`${webhook.prefix}_method`}>Method</label>
-                <Selector
-                  id={`${webhook.prefix}_method`}
-                  name="method"
-                  value={webhook.stateVal?.method}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                  options={selectOptions}
-                />
-                <Checkzone
-                  hidden
-                  name={webhook.prefix}
-                  label="Use HTTP Basic Authentication"
-                  initialCheck={webhook.initialCheck}
-                >
-                  <label htmlFor={`${webhook.prefix}_username`}>Username</label>
-                  <input
-                    ref={webhook.refUser}
-                    id={`${webhook.prefix}_username`}
-                    type="text"
-                    name="username"
-                    placeholder="Optional"
-                    value={webhook.stateVal?.username || ""}
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
-                  />
-                  <label htmlFor={`${webhook.prefix}_password`}>Password</label>
-                  <Passwd
-                    ref={webhook.refPass}
-                    id={`${webhook.prefix}_password`}
-                    name="password"
-                    value={webhook.stateVal?.password || ""}
-                    placeholder="Optional"
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
-                  />
-                </Checkzone>
+                <div className="multi">
+                  <div className="inp">
+                    <label htmlFor={`${webhook.prefix}_url`}>
+                      {webhook.label} webhook
+                    </label>
+                    <input
+                      id={`${webhook.prefix}_url`}
+                      type="text"
+                      name={`${webhook.prefix}_url`}
+                      placeholder={`${webhook.label} webhook`}
+                      value={webhook.stateVal?.url}
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          url: e.target.value,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="sel">
+                    <label htmlFor={`${webhook.prefix}_method`}>Method</label>
+                    <Selector
+                      id={`${webhook.prefix}_method`}
+                      name={`${webhook.prefix}_method`}
+                      value={webhook.stateVal?.method}
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          method: e.target.value as WebhookMethod,
+                        });
+                      }}
+                      options={selectOptions}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Checkzone
+                    hidden
+                    name={webhook.prefix}
+                    label="Use HTTP Basic Authentication"
+                    initialCheck={webhook.initialCheck}
+                  >
+                    <label htmlFor={`${webhook.prefix}_username`}>
+                      Username
+                    </label>
+                    <input
+                      ref={webhook.refUser}
+                      id={`${webhook.prefix}_username`}
+                      type="text"
+                      name={`${webhook.prefix}_username`}
+                      placeholder="Optional"
+                      value={webhook.stateVal?.username || ""}
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          username: e.target.value,
+                        });
+                      }}
+                    />
+                    <label htmlFor={`${webhook.prefix}_password`}>
+                      Password
+                    </label>
+                    <Passwd
+                      ref={webhook.refPass}
+                      id={`${webhook.prefix}_password`}
+                      name={`${webhook.prefix}_password`}
+                      value={webhook.stateVal?.password || ""}
+                      placeholder="Optional"
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          password: e.target.value,
+                        });
+                      }}
+                    />
+                  </Checkzone>
+                </div>
               </fieldset>
             );
           })}
@@ -453,20 +469,26 @@ export const AccountForm = ({
               sipRealm={realm}
             />
           )}
-          {message && <Message message={message} />}
-          <ButtonGroup left>
-            <Button
-              small
-              subStyle="grey"
-              as={Link}
-              to={ROUTE_INTERNAL_ACCOUNTS}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" small>
-              Save
-            </Button>
-          </ButtonGroup>
+          {message && (
+            <fieldset>
+              <Message message={message} />
+            </fieldset>
+          )}
+          <fieldset>
+            <ButtonGroup left>
+              <Button
+                small
+                subStyle="grey"
+                as={Link}
+                to={ROUTE_INTERNAL_ACCOUNTS}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" small>
+                Save
+              </Button>
+            </ButtonGroup>
+          </fieldset>
         </form>
       </Section>
       {modal && (

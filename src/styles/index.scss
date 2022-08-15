@@ -1,8 +1,10 @@
-@use "./vars";
 @use "./cards";
 @use "./lists";
 @use "./inpbtn";
 @use "jambonz-ui/src/styles/index";
+
+@use "./vars";
+@use "./mixins";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
@@ -41,7 +43,7 @@ input[type="checkbox"] {
 
 pre,
 code {
-  font-family: ui-vars.$font-mono;
+  @include mixins.pre();
 }
 
 pre {
@@ -49,7 +51,13 @@ pre {
   color: ui-vars.$pink;
   background-color: ui-vars.$dark;
   border-radius: ui-vars.$px01;
-  font-size: ui-vars.$m-size;
+}
+
+p > code {
+  padding: ui-vars.$px00;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px00;
 }
 
 /** The idea is this is like [type="button"] generically */

@@ -1,4 +1,4 @@
-import type { WebHook } from "./types";
+import type { WebHook, WebhookOption } from "./types";
 
 /** This window object is serialized and injected at docker runtime */
 /** The API url is constructed with the docker containers `ip:port` */
@@ -26,6 +26,18 @@ export const DEFAULT_WEBHOOK: WebHook = {
   username: "",
   password: "",
 };
+
+/** Available webhook methods */
+export const WEBHOOK_METHODS: WebhookOption[] = [
+  {
+    name: "POST",
+    value: "POST",
+  },
+  {
+    name: "GET",
+    value: "GET",
+  },
+];
 
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;
@@ -69,7 +81,7 @@ export const API_SERVICE_PROVIDERS = `${API_BASE_URL}/ServiceProviders`;
   :GET /Accounts/:account_sid/ApiKeys
   :GET /Accounts/WebhookSecret?regenerate=true
   :PUT /Accounts/:account_sid
-  
+
 
 /internal/applications
   :GET /ServiceProviders
