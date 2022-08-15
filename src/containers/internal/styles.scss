@@ -48,10 +48,6 @@
       border-top: 1px solid ui-vars.$grey;
     }
 
-    > .btns {
-      padding: ui-vars.$px03;
-    }
-
     label {
       @include ui-mixins.m();
       @include ui-mixins.font-medium();

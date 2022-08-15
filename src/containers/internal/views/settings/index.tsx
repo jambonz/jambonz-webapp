@@ -133,16 +133,18 @@ export const Settings = ({
               />
             </Checkzone>
           </fieldset>
-          <ButtonGroup left>
-            <Button type="submit" small>
-              Save
-            </Button>
-            {serviceProviders.length > 1 && (
-              <Button small subStyle="grey" onClick={handleConfirm}>
-                Delete
+          <fieldset>
+            <ButtonGroup left>
+              <Button type="submit" small>
+                Save
               </Button>
-            )}
-          </ButtonGroup>
+              {serviceProviders.length > 1 && (
+                <Button small subStyle="grey" onClick={handleConfirm}>
+                  Delete
+                </Button>
+              )}
+            </ButtonGroup>
+          </fieldset>
         </form>
       </Section>
       {currentServiceProvider && (

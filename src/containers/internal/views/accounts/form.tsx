@@ -20,7 +20,13 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { DEFAULT_WEBHOOK } from "src/api/constants";
 import { Subspace } from "./subspace";
 
-import type { WebHook, Account, FetchError, Application } from "src/api/types";
+import type {
+  WebHook,
+  Account,
+  FetchError,
+  Application,
+  WebhookMethod,
+} from "src/api/types";
 
 export type UseAccountData = {
   data: Account | null;
@@ -117,20 +123,6 @@ export const AccountForm = ({
         .catch((error) => {
           toastError(error.msg);
         });
-    }
-  };
-
-  /** Real generic way of managing form state for both hooks */
-  const handleSetHook = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    hook: WebHook,
-    setHook: (h: WebHook) => void
-  ) => {
-    if (hook) {
-      setHook({
-        ...hook,
-        [e.target.name]: e.target.value,
-      });
     }
   };
 
@@ -397,28 +389,34 @@ export const AccountForm = ({
                     <input
                       id={`${webhook.prefix}_url`}
                       type="text"
-                      name="url"
+                      name={`${webhook.prefix}_url`}
                       placeholder={`${webhook.label} webhook`}
                       value={webhook.stateVal?.url}
-                      onChange={(e) =>
-                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                      }
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          url: e.target.value,
+                        });
+                      }}
                     />
                   </div>
                   <div className="sel">
                     <label htmlFor={`${webhook.prefix}_method`}>Method</label>
                     <Selector
                       id={`${webhook.prefix}_method`}
-                      name="method"
+                      name={`${webhook.prefix}_method`}
                       value={webhook.stateVal?.method}
-                      onChange={(e) =>
-                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                      }
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          method: e.target.value as WebhookMethod,
+                        });
+                      }}
                       options={selectOptions}
                     />
                   </div>
                 </div>
-                <div className="full">
+                <div>
                   <Checkzone
                     hidden
                     name={webhook.prefix}
@@ -435,9 +433,12 @@ export const AccountForm = ({
                       name={`${webhook.prefix}_username`}
                       placeholder="Optional"
                       value={webhook.stateVal?.username || ""}
-                      onChange={(e) =>
-                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                      }
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          username: e.target.value,
+                        });
+                      }}
                     />
                     <label htmlFor={`${webhook.prefix}_password`}>
                       Password
@@ -448,9 +449,12 @@ export const AccountForm = ({
                       name={`${webhook.prefix}_password`}
                       value={webhook.stateVal?.password || ""}
                       placeholder="Optional"
-                      onChange={(e) =>
-                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                      }
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          password: e.target.value,
+                        });
+                      }}
                     />
                   </Checkzone>
                 </div>
@@ -465,20 +469,26 @@ export const AccountForm = ({
               sipRealm={realm}
             />
           )}
-          {message && <Message message={message} />}
-          <ButtonGroup left>
-            <Button
-              small
-              subStyle="grey"
-              as={Link}
-              to={ROUTE_INTERNAL_ACCOUNTS}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" small>
-              Save
-            </Button>
-          </ButtonGroup>
+          {message && (
+            <fieldset>
+              <Message message={message} />
+            </fieldset>
+          )}
+          <fieldset>
+            <ButtonGroup left>
+              <Button
+                small
+                subStyle="grey"
+                as={Link}
+                to={ROUTE_INTERNAL_ACCOUNTS}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" small>
+                Save
+              </Button>
+            </ButtonGroup>
+          </fieldset>
         </form>
       </Section>
       {modal && (
