@@ -77,24 +77,26 @@ export const Applications = () => {
   return (
     <>
       <H1>Applications</H1>
-      <Section>
+      <Section slim>
         <form>
-          <P>Example of lazy loading speech data files for add/edit form.</P>
-          <P>
-            This also shows how to implement the speech selector logic for
-            vendors.
-          </P>
-          <P>
-            Selected synthesis vendor:{" "}
-            <strong>{vendorSynth || "undefined"}</strong>.
-          </P>
-          <P>
-            Selected synthesis language:{" "}
-            <strong>{langSynth || "undefined"}</strong>.
-          </P>
-          <P>
-            Selected synthesis voice: <strong>{voice || "undefined"}</strong>.
-          </P>
+          <fieldset>
+            <P>Example of lazy loading speech data files for add/edit form.</P>
+            <P>
+              This also shows how to implement the speech selector logic for
+              vendors.
+            </P>
+            <P>
+              Selected synthesis vendor:{" "}
+              <strong>{vendorSynth || "undefined"}</strong>.
+            </P>
+            <P>
+              Selected synthesis language:{" "}
+              <strong>{langSynth || "undefined"}</strong>.
+            </P>
+            <P>
+              Selected synthesis voice: <strong>{voice || "undefined"}</strong>.
+            </P>
+          </fieldset>
           {synthesis && (
             <>
               <fieldset>
@@ -196,14 +198,16 @@ export const Applications = () => {
               )}
             </>
           )}
-          <P>
-            Selected recognizer vendor:{" "}
-            <strong>{vendorRecog || "undefined"}</strong>.
-          </P>
-          <P>
-            Selected recognizer language:{" "}
-            <strong>{langRecog || "undefined"}</strong>.
-          </P>
+          <fieldset>
+            <P>
+              Selected recognizer vendor:{" "}
+              <strong>{vendorRecog || "undefined"}</strong>.
+            </P>
+            <P>
+              Selected recognizer language:{" "}
+              <strong>{langRecog || "undefined"}</strong>.
+            </P>
+          </fieldset>
           {recognizers && (
             <>
               <fieldset>

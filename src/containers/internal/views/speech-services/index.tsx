@@ -39,27 +39,29 @@ export const SpeechServices = () => {
   return (
     <>
       <H1>Speech Services</H1>
-      <Section>
+      <Section slim>
         <form>
-          <P>Example of lazy loading region data files for add/edit form.</P>
-          <P>
-            This also shows how to implement the region selector logic for
-            aws/microsoft as well as service key file upload for google.
-          </P>
-          <P>
-            Selected vendor: <strong>{vendor || "undefined"}</strong>
-          </P>
-          <P>
-            Selected region: <strong>{region || "undefined"}</strong>
-          </P>
-          <div className="p">
-            Selected service key:{" "}
-            {serviceKey ? (
-              <pre>{JSON.stringify(serviceKey, null, 2)}</pre>
-            ) : (
-              <strong>undefined</strong>
-            )}
-          </div>
+          <fieldset>
+            <P>Example of lazy loading region data files for add/edit form.</P>
+            <P>
+              This also shows how to implement the region selector logic for
+              aws/microsoft as well as service key file upload for google.
+            </P>
+            <P>
+              Selected vendor: <strong>{vendor || "undefined"}</strong>
+            </P>
+            <P>
+              Selected region: <strong>{region || "undefined"}</strong>
+            </P>
+            <div className="p">
+              Selected service key:{" "}
+              {serviceKey ? (
+                <pre>{JSON.stringify(serviceKey, null, 2)}</pre>
+              ) : (
+                <strong>undefined</strong>
+              )}
+            </div>
+          </fieldset>
           <fieldset>
             <label htmlFor="vendor">Vendor</label>
             <Selector
