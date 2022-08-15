@@ -276,7 +276,7 @@ export const AccountForm = ({
 
   return (
     <>
-      <Section>
+      <Section slim>
         <form onSubmit={handleSubmit}>
           {account && account.data && (
             <fieldset>
@@ -389,59 +389,71 @@ export const AccountForm = ({
 
             return (
               <fieldset key={webhook.prefix}>
-                <label htmlFor={`${webhook.prefix}_url`}>
-                  {webhook.label} webhook
-                </label>
-                <input
-                  id={`${webhook.prefix}_url`}
-                  type="text"
-                  name="url"
-                  placeholder={`${webhook.label} webhook`}
-                  value={webhook.stateVal?.url}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                />
-                <label htmlFor={`${webhook.prefix}_method`}>Method</label>
-                <Selector
-                  id={`${webhook.prefix}_method`}
-                  name="method"
-                  value={webhook.stateVal?.method}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                  options={selectOptions}
-                />
-                <Checkzone
-                  hidden
-                  name={webhook.prefix}
-                  label="Use HTTP Basic Authentication"
-                  initialCheck={webhook.initialCheck}
-                >
-                  <label htmlFor={`${webhook.prefix}_username`}>Username</label>
-                  <input
-                    ref={webhook.refUser}
-                    id={`${webhook.prefix}_username`}
-                    type="text"
-                    name="username"
-                    placeholder="Optional"
-                    value={webhook.stateVal?.username || ""}
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
-                  />
-                  <label htmlFor={`${webhook.prefix}_password`}>Password</label>
-                  <Passwd
-                    ref={webhook.refPass}
-                    id={`${webhook.prefix}_password`}
-                    name="password"
-                    value={webhook.stateVal?.password || ""}
-                    placeholder="Optional"
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
-                  />
-                </Checkzone>
+                <div className="multi">
+                  <div className="inp">
+                    <label htmlFor={`${webhook.prefix}_url`}>
+                      {webhook.label} webhook
+                    </label>
+                    <input
+                      id={`${webhook.prefix}_url`}
+                      type="text"
+                      name="url"
+                      placeholder={`${webhook.label} webhook`}
+                      value={webhook.stateVal?.url}
+                      onChange={(e) =>
+                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
+                      }
+                    />
+                  </div>
+                  <div className="sel">
+                    <label htmlFor={`${webhook.prefix}_method`}>Method</label>
+                    <Selector
+                      id={`${webhook.prefix}_method`}
+                      name="method"
+                      value={webhook.stateVal?.method}
+                      onChange={(e) =>
+                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
+                      }
+                      options={selectOptions}
+                    />
+                  </div>
+                </div>
+                <div className="full">
+                  <Checkzone
+                    hidden
+                    name={webhook.prefix}
+                    label="Use HTTP Basic Authentication"
+                    initialCheck={webhook.initialCheck}
+                  >
+                    <label htmlFor={`${webhook.prefix}_username`}>
+                      Username
+                    </label>
+                    <input
+                      ref={webhook.refUser}
+                      id={`${webhook.prefix}_username`}
+                      type="text"
+                      name={`${webhook.prefix}_username`}
+                      placeholder="Optional"
+                      value={webhook.stateVal?.username || ""}
+                      onChange={(e) =>
+                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
+                      }
+                    />
+                    <label htmlFor={`${webhook.prefix}_password`}>
+                      Password
+                    </label>
+                    <Passwd
+                      ref={webhook.refPass}
+                      id={`${webhook.prefix}_password`}
+                      name={`${webhook.prefix}_password`}
+                      value={webhook.stateVal?.password || ""}
+                      placeholder="Optional"
+                      onChange={(e) =>
+                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
+                      }
+                    />
+                  </Checkzone>
+                </div>
               </fieldset>
             );
           })}

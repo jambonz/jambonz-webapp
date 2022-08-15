@@ -45,7 +45,11 @@
   /** forms */
   form {
     > * + * {
-      margin-top: ui-vars.$px02;
+      border-top: 1px solid ui-vars.$grey;
+    }
+
+    > .btns {
+      padding: ui-vars.$px03;
     }
 
     label {
@@ -75,13 +79,45 @@
       display: flex;
       justify-content: flex-start;
       flex-direction: column;
+      padding: ui-vars.$px03;
 
       label {
         max-width: fit-content;
       }
 
-      > * + * {
+      label + * {
         margin-top: ui-vars.$px01;
+      }
+
+      > div + div {
+        margin-top: ui-vars.$px02;
+      }
+
+      .multi {
+        display: flex;
+        align-items: center;
+
+        @media (max-width: 1090px) {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        > .inp {
+          width: 100%;
+          max-width: vars.$widthinput;
+        }
+
+        > .sel {
+          width: 100%;
+          max-width: 130px;
+          margin-left: ui-vars.$px01;
+
+          @media (max-width: 1090px) {
+            margin-left: 0;
+            margin-top: ui-vars.$px01;
+            max-width: vars.$widthinput;
+          }
+        }
       }
     }
 

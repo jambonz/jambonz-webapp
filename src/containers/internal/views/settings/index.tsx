@@ -101,7 +101,7 @@ export const Settings = ({
   return (
     <>
       <H1>Settings</H1>
-      <Section>
+      <Section slim>
         <form onSubmit={handleSubmit}>
           <fieldset>
             <label htmlFor="name">Service provider name</label>
@@ -115,13 +115,13 @@ export const Settings = ({
               onChange={(e) => setName(e.target.value)}
             />
           </fieldset>
-          <Checkzone
-            name="teams"
-            label="Enable MS Teams Direct Routing"
-            initialCheck={initialCheck}
-            handleChecked={handleChecked}
-          >
-            <fieldset>
+          <fieldset>
+            <Checkzone
+              name="teams"
+              label="Enable MS Teams Direct Routing"
+              initialCheck={initialCheck}
+              handleChecked={handleChecked}
+            >
               <label htmlFor="ms_teams_fqdn">SBC domain name</label>
               <input
                 id="ms_teams_fqdn"
@@ -131,8 +131,8 @@ export const Settings = ({
                 value={teams}
                 onChange={(e) => setTeams(e.target.value)}
               />
-            </fieldset>
-          </Checkzone>
+            </Checkzone>
+          </fieldset>
           <ButtonGroup left>
             <Button type="submit" small>
               Save
