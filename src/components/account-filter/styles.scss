@@ -17,8 +17,7 @@
     }
   }
 
-  &:before {
-    content: "Account:";
+  label {
     display: inline-block;
     margin-right: ui-vars.$px01;
     @include ui-mixins.ms();
@@ -33,7 +32,7 @@
     border-radius: ui-vars.$px01;
     padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
     max-width: 230px;
-    min-width: 115px;
+    min-width: 185px;
 
     &:focus {
       outline: 0;

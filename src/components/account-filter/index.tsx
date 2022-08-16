@@ -10,12 +10,17 @@ import type { Account } from "src/api/types";
 import "./styles.scss";
 
 type AccountFilterProps = {
+  label?: string;
   account: [string, Dispatch<SetStateAction<string>>];
+  defaultOption?: boolean;
 };
 
 /** This will apply the selected account SID so you can filter local data */
+/** Currently used by: Applications, Recent Calls, Alerts, Carriers and Speech index views */
 export const AccountFilter = ({
+  label = "Account",
   account: [accountSid, setAccountSid],
+  defaultOption,
 }: AccountFilterProps) => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [focus, setFocus] = useState(false);
@@ -25,13 +30,14 @@ export const AccountFilter = ({
   };
 
   useEffect(() => {
-    if (accounts) {
+    if (accounts && !defaultOption) {
       setAccountSid(accounts[0].account_sid);
     }
-  }, [accounts, setAccountSid]);
+  }, [accounts, defaultOption, setAccountSid]);
 
   return (
     <div className={classNames(classes)}>
+      <label htmlFor="account_filter">{label}:</label>
       <select
         name="account_filter"
         value={accountSid}
@@ -39,6 +45,7 @@ export const AccountFilter = ({
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
       >
+        {defaultOption && <option value="">All accounts</option>}
         {accounts &&
           accounts
             .sort((a, b) => a.name.localeCompare(b.name))

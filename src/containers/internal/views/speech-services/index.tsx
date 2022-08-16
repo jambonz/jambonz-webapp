@@ -41,7 +41,11 @@ export const SpeechServices = () => {
     <>
       <H1>Speech Services</H1>
       <section className="filters">
-        <AccountFilter account={[accountSid, setAccountSid]} />
+        <AccountFilter
+          label="Used by"
+          account={[accountSid, setAccountSid]}
+          defaultOption
+        />
       </section>
       <Section slim>
         <form>
