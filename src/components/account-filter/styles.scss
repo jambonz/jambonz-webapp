@@ -6,6 +6,17 @@
 .account-filter {
   position: relative;
 
+  &.focused {
+    select {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
+
+    span {
+      background-color: ui-vars.$dark;
+    }
+  }
+
   &:before {
     content: "Account:";
     display: inline-block;
