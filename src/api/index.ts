@@ -283,6 +283,10 @@ export const getAccountWebhook = (sid: string) => {
   );
 };
 
+export const getApplications = (sid: string) => {
+  return getFetch<Application[]>(`${API_ACCOUNTS}/${sid}/Applications`);
+};
+
 /** Wrappers for APIs that can have a mock dev server response */
 
 export const getRecentCalls = (sid: string) => {

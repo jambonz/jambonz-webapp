@@ -1,24 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { H1, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { useApiData, deleteApplication } from "src/api";
+import { deleteApplication, getApplications, getFetch } from "src/api";
+import { API_APPLICATIONS } from "src/api/constants";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
-import { Icons, Section, Spinner } from "src/components";
+import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess } from "src/store";
 
 import type { Application } from "src/api/types";
 
 export const Applications = () => {
-  const [applications, refetch] = useApiData<Application[]>("Applications");
+  const [accountSid, setAccountSid] = useState("");
+  const [applications, setApplications] = useState<Application[] | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
+
+  const [refetch, setRefetch] = useState(0);
 
   const handleDelete = () => {
     if (application) {
       deleteApplication(application.application_sid)
         .then(() => {
-          refetch();
+          setRefetch(refetch + 1);
           setApplication(null);
           toastSuccess(
             <>
@@ -32,6 +36,23 @@ export const Applications = () => {
     }
   };
 
+  useEffect(() => {
+    if (accountSid) {
+      getApplications(accountSid)
+        .then(({ json }) => setApplications(json))
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    } else {
+      // accountSid is null is "All accounts"
+      getFetch<Application[]>(API_APPLICATIONS)
+        .then(({ json }) => setApplications(json))
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  }, [accountSid, refetch]);
+
   return (
     <>
       <section className="mast">
@@ -44,6 +65,13 @@ export const Applications = () => {
             <Icons.Plus />
           </Icon>
         </Link>
+      </section>
+      <section className="filters">
+        <AccountFilter
+          label="Used by"
+          account={[accountSid, setAccountSid]}
+          defaultOption
+        />
       </section>
       <Section
         {...(applications && applications.length > 0 ? { slim: true } : {})}

@@ -13,32 +13,19 @@ type DeleteProps = {
   handleSubmit: () => void;
 };
 
-type DeleteInfoParameter = {
-  item: Application | Account;
-  key1: string;
-  key2?: string;
+const DeleteInfo = ({
+  label,
+  text,
+}: {
   label: string;
-};
-
-const DeleteInfo = ({ item, key1, key2, label }: DeleteInfoParameter) => {
+  text: string | null | undefined;
+}) => {
   return (
     <ul className="m">
       <li>
         <strong>{label}:</strong>
       </li>
-      <li className="txt--teal">
-        {
-          // this is getting out of hand
-          (item &&
-            ((item[key1 as keyof typeof item] &&
-              key2 &&
-              item[key1 as keyof typeof item]![
-                key2 as keyof typeof item[keyof typeof item]
-              ]) ||
-              item[key1 as keyof typeof item])) ||
-            "[None]"
-        }
-      </li>
+      <li className="txt--teal">{text}</li>
     </ul>
   );
 };
@@ -65,25 +52,23 @@ export const DeleteApplication = ({
           Are you sure you want to delete the application{" "}
           <strong>{application.name}</strong>?
         </P>
-        {account && <DeleteInfo item={account} key1="name" label="Account" />}
-        <DeleteInfo
-          item={application}
-          key1="call_hook"
-          key2="webhook_sid"
-          label="Calling Webhook"
-        />
-        <DeleteInfo
-          item={application}
-          key1="call_status_hook"
-          key2="webhook_sid"
-          label="Call Status Webhook"
-        />
-        <DeleteInfo
-          item={application}
-          key1="messaging_hook"
-          key2="webhook_sid"
-          label="Messaging Webhook"
-        />
+        {account && <DeleteInfo label="Account" text={account.name} />}
+        {application && (
+          <>
+            <DeleteInfo
+              label="Calling Webhook"
+              text={application.call_hook?.webhook_sid || "[None]"}
+            />
+            <DeleteInfo
+              label="Call Status Webhook"
+              text={application.call_status_hook?.webhook_sid || "[None]"}
+            />
+            <DeleteInfo
+              label="Messaging Webhook"
+              text={application.messaging_hook?.webhook_sid || "[None]"}
+            />
+          </>
+        )}
       </Modal>
     </>
   );
