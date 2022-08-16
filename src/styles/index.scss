@@ -79,6 +79,17 @@ p > code {
   justify-content: space-between;
 }
 
+.filters {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: ui-vars.$px04;
+  padding-bottom: ui-vars.$px03;
+
+  + * {
+    margin-top: 0;
+  }
+}
+
 .notfound {
   .btn {
     margin-top: ui-vars.$px03;

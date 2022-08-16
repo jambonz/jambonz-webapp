@@ -9,6 +9,7 @@ import { Section } from "./section";
 import { Grid, GridRow } from "./grid";
 import { Tooltip } from "./tooltip";
 import { Spinner } from "./spinner";
+import { AccountFilter } from "./account-filter";
 
 export {
   Icons,
@@ -25,4 +26,5 @@ export {
   GridRow,
   Tooltip,
   Spinner,
+  AccountFilter,
 };

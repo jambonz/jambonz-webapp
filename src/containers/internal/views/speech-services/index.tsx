@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { H1, P } from "jambonz-ui";
 
-import { Section } from "src/components";
+import { AccountFilter, Section } from "src/components";
 import { FileUpload, Selector } from "src/components/forms";
 import { vendors, VENDOR_AWS, VENDOR_GOOGLE } from "src/vendor";
+import { toastError } from "src/store";
 
 import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
-import { toastError } from "src/store";
 
 export const SpeechServices = () => {
   const [regions, setRegions] = useState<RegionVendors | null>(null);
   const [vendor, setVendor] = useState("");
   const [region, setRegion] = useState("");
   const [serviceKey, setServiceKey] = useState<GoogleServiceKey | null>(null);
+  const [accountSid, setAccountSid] = useState("");
 
   /** Lazy-load large data schemas -- e.g. code-splitting */
   /** This code should be moved into the add/edit form handling */
@@ -39,6 +40,9 @@ export const SpeechServices = () => {
   return (
     <>
       <H1>Speech Services</H1>
+      <section className="filters">
+        <AccountFilter account={[accountSid, setAccountSid]} />
+      </section>
       <Section slim>
         <form>
           <fieldset>
@@ -46,6 +50,9 @@ export const SpeechServices = () => {
             <P>
               This also shows how to implement the region selector logic for
               aws/microsoft as well as service key file upload for google.
+            </P>
+            <P>
+              Selected account SID: <strong>{accountSid || "undefined"}</strong>
             </P>
             <P>
               Selected vendor: <strong>{vendor || "undefined"}</strong>
