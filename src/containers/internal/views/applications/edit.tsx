@@ -10,7 +10,7 @@ import type { Application } from "src/api/types";
 
 export const EditApplication = () => {
   const params = useParams();
-  const [data, refetch, error] = useApiData<Application[]>(
+  const [data, refetch, error] = useApiData<Application>(
     `Applications/${params.application_sid}`
   );
 

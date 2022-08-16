@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { P, Button, ButtonGroup } from "jambonz-ui";
+import { Button, ButtonGroup } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
@@ -30,11 +30,16 @@ import type {
   Language,
 } from "src/vendor/types";
 
-import type { Account, WebHook, Application, FetchError } from "src/api/types";
+import type {
+  Account,
+  WebHook,
+  Application,
+  FetchError,
+  WebhookMethod,
+} from "src/api/types";
 
 export type UseApplicationData = {
-  // data fed from ./edit
-  data: Application[] | null; // data returned is an array but there is only 1 (0) that matters
+  data: Application | null;
   error: FetchError | null;
   refetch: () => void;
 };
@@ -47,36 +52,38 @@ export const ApplicationForm = ({
   application = null,
 }: ApplicationFormProps) => {
   const navigate = useNavigate();
-  const [applicationName, setApplicationName] = useState<string>("");
+  const [applicationName, setApplicationName] = useState("");
   const [applications] = useApiData<Application[]>("Applications");
 
-  const [accountSid, setAccountSid] = useState<string>("");
+  const [accountSid, setAccountSid] = useState("");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const refCallWebhookUser = useRef<HTMLInputElement>(null);
   const refCallWebhookPass = useRef<HTMLInputElement>(null);
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialCallWebhook] = useState<boolean>(false);
+  const [initialCallWebhook, setInitialCallWebhook] = useState(false);
 
   const refStatusWebhookUser = useRef<HTMLInputElement>(null);
   const refStatusWebhookPass = useRef<HTMLInputElement>(null);
   const [statusWebhook, setStatusWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialStatusWebhook] = useState<boolean>(false);
+  const [initialStatusWebhook, setInitialStatusWebhook] =
+    useState<boolean>(false);
 
   const refMessageWebhookUser = useRef<HTMLInputElement>(null);
   const refMessageWebhookPass = useRef<HTMLInputElement>(null);
   const [messageWebhook, setMessageWebhook] =
     useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialMessageWebhook] = useState<boolean>(false);
+  const [initialMessageWebhook, setInitialMessageWebhook] =
+    useState<boolean>(false);
 
   const [synthVendor, setSynthVendor] =
     useState<keyof SynthesisVendors>(VENDOR_GOOGLE);
-  const [synthLang, setSynthLang] = useState<string>(LANG_EN_US);
-  const [synthVoice, setSynthVoice] = useState<string>(LANG_EN_US_STANDARD_C);
+  const [synthLang, setSynthLang] = useState(LANG_EN_US);
+  const [synthVoice, setSynthVoice] = useState(LANG_EN_US_STANDARD_C);
 
   const [recogVendor, setRecogVendor] =
     useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
-  const [recogLang, setRecogLang] = useState<string>(LANG_EN_US);
+  const [recogLang, setRecogLang] = useState(LANG_EN_US);
 
   const [synthesis, setSynthesis] = useState<SynthesisVendors | null>(null);
   const [recognizers, setRecognizers] = useState<RecognizerVendors | null>(
@@ -98,31 +105,34 @@ export const ApplicationForm = ({
 
   const webhooks = [
     {
-      label: "Call",
+      label: "Calling",
       prefix: "call_webhook",
       stateVal: callWebhook,
       stateSet: setCallWebhook,
       initialCheck: initialCallWebhook,
       refUser: refCallWebhookUser,
       refPass: refCallWebhookPass,
+      required: true,
     },
     {
-      label: "Status",
+      label: "Call Status",
       prefix: "status_webhook",
       stateVal: statusWebhook,
       stateSet: setStatusWebhook,
       initialCheck: initialStatusWebhook,
       refUser: refStatusWebhookUser,
       refPass: refStatusWebhookPass,
+      required: true,
     },
     {
-      label: "Message",
+      label: "Messaging",
       prefix: "message_webhook",
       stateVal: messageWebhook,
       stateSet: setMessageWebhook,
       initialCheck: initialMessageWebhook,
       refUser: refMessageWebhookUser,
       refPass: refMessageWebhookPass,
+      required: false,
     },
   ];
 
@@ -144,16 +154,6 @@ export const ApplicationForm = ({
 
     setMessage("");
 
-    if (!applicationName) {
-      setMessage("Application name must not be empty");
-      return;
-    }
-
-    if (!accountSid) {
-      setMessage("Account must be selected");
-      return;
-    }
-
     webhooks.map((webhook) => {
       if (
         (webhook.stateVal?.username && !webhook.stateVal?.password) ||
@@ -169,14 +169,13 @@ export const ApplicationForm = ({
     });
 
     if (applications) {
-      // update can still have the same name
       if (
         applications.find(
           (a) =>
             a.name === applicationName &&
             (!application ||
               !application.data ||
-              a.application_sid !== application.data[0].application_sid)
+              a.application_sid !== application.data.application_sid)
         )
       ) {
         setMessage(
@@ -186,19 +185,21 @@ export const ApplicationForm = ({
       }
     }
 
+    const payload = {
+      name: applicationName,
+      call_hook: callWebhook || null,
+      account_sid: accountSid || null,
+      messaging_hook: messageWebhook || null,
+      call_status_hook: statusWebhook || null,
+      speech_synthesis_vendor: synthVendor || null,
+      speech_synthesis_language: synthLang || null,
+      speech_synthesis_voice: synthVoice || null,
+      speech_recognizer_vendor: recogVendor || null,
+      speech_recognizer_language: recogLang || null,
+    };
+
     if (application && application.data) {
-      putApplication(application.data[0].application_sid, {
-        name: applicationName,
-        call_hook: callWebhook || null,
-        account_sid: accountSid || null,
-        messaging_hook: messageWebhook || null,
-        call_status_hook: statusWebhook || null,
-        speech_synthesis_vendor: synthVendor || null,
-        speech_synthesis_language: synthLang || null,
-        speech_synthesis_voice: synthVoice || null,
-        speech_recognizer_vendor: recogVendor || null,
-        speech_recognizer_language: recogLang || null,
-      })
+      putApplication(application.data.application_sid, payload)
         .then(() => {
           application.refetch();
           toastSuccess("Application updated successfully");
@@ -207,19 +208,7 @@ export const ApplicationForm = ({
           toastError(error.msg);
         });
     } else {
-      postApplication({
-        name: applicationName,
-        call_hook: callWebhook || null,
-        account_sid: accountSid || null,
-        messaging_hook: messageWebhook || null,
-        call_status_hook: statusWebhook || null,
-        application_sid: null,
-        speech_synthesis_vendor: synthVendor || null,
-        speech_synthesis_language: synthLang || null,
-        speech_synthesis_voice: synthVoice || null,
-        speech_recognizer_vendor: recogVendor || null,
-        speech_recognizer_language: recogLang || null,
-      })
+      postApplication(payload)
         .then(() => {
           toastSuccess("Application created successfully");
           navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
@@ -234,39 +223,67 @@ export const ApplicationForm = ({
     let ignore = false;
 
     if (application && application.data) {
-      setApplicationName(application.data[0].name);
+      setApplicationName(application.data.name);
 
-      if (application.data[0].call_hook)
-        setCallWebhook(application.data[0].call_hook);
+      if (application.data.call_hook) {
+        setCallWebhook(application.data.call_hook);
 
-      if (application.data[0].account_sid)
-        setAccountSid(application.data[0].account_sid);
+        if (
+          application.data.call_hook.username ||
+          application.data.call_hook.password
+        )
+          setInitialCallWebhook(true);
+        else setInitialCallWebhook(false);
+      }
 
-      if (application.data[0].messaging_hook)
-        setMessageWebhook(application.data[0].messaging_hook);
+      if (application.data.call_status_hook) {
+        setStatusWebhook(application.data.call_status_hook);
 
-      if (application.data[0].speech_synthesis_vendor)
+        if (
+          application.data.call_status_hook.username ||
+          application.data.call_status_hook.password
+        )
+          setInitialStatusWebhook(true);
+        else setInitialStatusWebhook(false);
+      }
+
+      if (application.data.messaging_hook) {
+        setMessageWebhook(application.data.messaging_hook);
+
+        if (
+          application.data.messaging_hook.username ||
+          application.data.messaging_hook.password
+        )
+          setInitialMessageWebhook(true);
+        else setInitialMessageWebhook(false);
+      }
+
+      if (application.data.account_sid)
+        setAccountSid(application.data.account_sid);
+
+      if (application.data.messaging_hook)
+        setMessageWebhook(application.data.messaging_hook);
+
+      if (application.data.speech_synthesis_vendor)
         setSynthVendor(
-          application.data[0].speech_synthesis_vendor as keyof SynthesisVendors
+          application.data.speech_synthesis_vendor as keyof SynthesisVendors
         );
 
-      if (application.data[0].speech_synthesis_language)
+      if (application.data.speech_synthesis_language)
         setSynthLang(
-          application.data[0]
-            .speech_synthesis_language as keyof RecognizerVendors
+          application.data.speech_synthesis_language as keyof RecognizerVendors
         );
 
-      if (application.data[0].speech_synthesis_voice)
-        setSynthVoice(application.data[0].speech_synthesis_voice);
+      if (application.data.speech_synthesis_voice)
+        setSynthVoice(application.data.speech_synthesis_voice);
 
-      if (application.data[0].speech_recognizer_vendor)
+      if (application.data.speech_recognizer_vendor)
         setRecogVendor(
-          application.data[0]
-            .speech_recognizer_vendor as keyof RecognizerVendors
+          application.data.speech_recognizer_vendor as keyof RecognizerVendors
         );
 
-      if (application.data[0].speech_recognizer_language)
-        setRecogLang(application.data[0].speech_recognizer_language);
+      if (application.data.speech_recognizer_language)
+        setRecogLang(application.data.speech_recognizer_language);
     }
 
     Promise.all([
@@ -306,7 +323,7 @@ export const ApplicationForm = ({
     return function cleanup() {
       ignore = true;
     };
-  }, [application]); // makes application loaded
+  }, [application, accounts]);
 
   return (
     <>
@@ -330,6 +347,7 @@ export const ApplicationForm = ({
               <Selector
                 id="account_name"
                 name="account_name"
+                required
                 value={accountSid}
                 placeholder="Select an account"
                 options={[
@@ -350,29 +368,39 @@ export const ApplicationForm = ({
           {webhooks.map((webhook) => {
             return (
               <fieldset key={webhook.prefix}>
-                <label htmlFor="registration_hook_url">
-                  {webhook.label} Webhook
-                </label>
-                <input
-                  id={`${webhook.prefix}_url`}
-                  type="text"
-                  name="url"
-                  placeholder={`${webhook.label} Webhook`}
-                  value={webhook.stateVal?.url || ""}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                />
-                <label htmlFor={`${webhook.prefix}_method`}>Method</label>
-                <Selector
-                  id={`${webhook.prefix}_method`}
-                  name="method"
-                  value={webhook.stateVal?.method || ""}
-                  onChange={(e) =>
-                    handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                  }
-                  options={webhook_method}
-                />
+                <div className="multi">
+                  <div className="inp">
+                    <label htmlFor="registration_hook_url">
+                      {webhook.label} Webhook
+                    </label>
+                    <input
+                      id={`${webhook.prefix}_url`}
+                      type="text"
+                      name="url"
+                      required={webhook.required}
+                      placeholder={`${webhook.label} Webhook`}
+                      value={webhook.stateVal?.url || ""}
+                      onChange={(e) =>
+                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
+                      }
+                    />
+                  </div>
+                  <div className="sel">
+                    <label htmlFor={`${webhook.prefix}_method`}>Method</label>
+                    <Selector
+                      id={`${webhook.prefix}_method`}
+                      name={`${webhook.prefix}_method`}
+                      value={webhook.stateVal?.method || ""}
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          method: e.target.value as WebhookMethod,
+                        });
+                      }}
+                      options={webhook_method}
+                    />
+                  </div>
+                </div>
                 <Checkzone
                   hidden
                   name={webhook.prefix}
@@ -384,7 +412,7 @@ export const ApplicationForm = ({
                     ref={webhook.refUser}
                     id={`${webhook.prefix}_username`}
                     type="text"
-                    name="username"
+                    name={`${webhook.prefix}_username`}
                     placeholder="Optional"
                     value={webhook.stateVal?.username || ""}
                     onChange={(e) =>
@@ -395,7 +423,7 @@ export const ApplicationForm = ({
                   <Passwd
                     ref={webhook.refPass}
                     id={`${webhook.prefix}_password`}
-                    name="password"
+                    name={`${webhook.prefix}_password`}
                     value={webhook.stateVal?.password || ""}
                     placeholder="Optional"
                     onChange={(e) =>
@@ -511,14 +539,6 @@ export const ApplicationForm = ({
               )}
             </>
           )}
-          <P>
-            Selected recognizer vendor:{" "}
-            <strong>{recogVendor || "undefined"}</strong>.
-          </P>
-          <P>
-            Selected recognizer language:{" "}
-            <strong>{recogLang || "undefined"}</strong>.
-          </P>
           {recognizers && (
             <>
               <fieldset>
@@ -573,19 +593,21 @@ export const ApplicationForm = ({
             </>
           )}
           {message && <Message message={message} />}
-          <ButtonGroup left>
-            <Button
-              small
-              subStyle="grey"
-              as={Link}
-              to={ROUTE_INTERNAL_APPLICATIONS}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" small>
-              Save
-            </Button>
-          </ButtonGroup>
+          <fieldset>
+            <ButtonGroup left>
+              <Button
+                small
+                subStyle="grey"
+                as={Link}
+                to={ROUTE_INTERNAL_APPLICATIONS}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" small>
+                Save
+              </Button>
+            </ButtonGroup>
+          </fieldset>
         </form>
       </Section>
     </>
