@@ -203,18 +203,16 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
       </nav>
       {modal && (
         <ModalForm handleSubmit={handleSubmit} handleCancel={handleCancel}>
-          <fieldset>
-            <label htmlFor="name">Add new service provider</label>
-            <input
-              id="name"
-              required
-              type="text"
-              name="name"
-              placeholder="service provider name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </fieldset>
+          <label htmlFor="name">Add new service provider</label>
+          <input
+            id="name"
+            required
+            type="text"
+            name="name"
+            placeholder="service provider name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </ModalForm>
       )}
     </>

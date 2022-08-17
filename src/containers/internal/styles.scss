@@ -44,7 +44,7 @@
 
   /** forms */
   form {
-    > * + * {
+    > fieldset + fieldset {
       border-top: 1px solid ui-vars.$grey;
     }
 
