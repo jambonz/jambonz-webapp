@@ -47,6 +47,7 @@
     position: absolute;
     right: ui-vars.$px01;
     top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
     flex-direction: column;

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { classNames } from "jambonz-ui";
 
+import { Icons } from "src/components/icons";
 import { useServiceProviderData } from "src/api";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { Account } from "src/api/types";
 
 import "./styles.scss";
-import { Selector } from "../forms";
 
 type AccountFilterProps = {
   label?: string;
@@ -38,28 +38,29 @@ export const AccountFilter = ({
   return (
     <div className={classNames(classes)}>
       <label htmlFor="account_filter">{label}:</label>
-      {accounts && (
-        <Selector
-          name="account_filter"
-          value={accountSid}
-          onChange={(e) => setAccountSid(e.target.value)}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-          options={[
-            {
-              name: "All accounts",
-              value: "",
-            },
-          ].concat(
-            accounts
-              .map((account) => ({
-                name: account.name,
-                value: account.account_sid,
-              }))
-              .sort((a, b) => a.name.localeCompare(b.name))
-          )}
-        />
-      )}
+      <select
+        name="account_filter"
+        value={accountSid}
+        onChange={(e) => setAccountSid(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
+      >
+        {defaultOption && <option value="">All accounts</option>}
+        {accounts &&
+          accounts
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((acct) => {
+              return (
+                <option key={acct.account_sid} value={acct.account_sid}>
+                  {acct.name}
+                </option>
+              );
+            })}
+      </select>
+      <span>
+        <Icons.ChevronUp />
+        <Icons.ChevronDown />
+      </span>
     </div>
   );
 };
