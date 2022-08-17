@@ -36,7 +36,6 @@ import type {
   Alert,
   PagedResponse,
   RecentCall,
-  Application,
 } from "./types";
 
 /** Wrap all requests to normalize response handling */
@@ -281,10 +280,6 @@ export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
     `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
   );
-};
-
-export const getApplications = (sid: string) => {
-  return getFetch<Application[]>(`${API_ACCOUNTS}/${sid}/Applications`);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */
