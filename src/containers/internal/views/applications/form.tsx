@@ -3,7 +3,7 @@ import { Button, ButtonGroup } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
-import { Section } from "src/components";
+import { ClipBoard, Section } from "src/components";
 import { Selector, Checkzone, Passwd, Message } from "src/components/forms";
 import {
   vendors,
@@ -329,6 +329,16 @@ export const ApplicationForm = ({
     <>
       <Section>
         <form onSubmit={handleSubmit}>
+          {application && application.data && (
+            <fieldset>
+              <label htmlFor="application_sid">Application SID</label>
+              <ClipBoard
+                id="application_sid"
+                name="application_sid"
+                text={application.data.application_sid}
+              />
+            </fieldset>
+          )}
           <fieldset>
             <label htmlFor="application_name">Name</label>
             <input

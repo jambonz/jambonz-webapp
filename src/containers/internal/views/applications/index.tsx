@@ -13,6 +13,7 @@ import type { Application } from "src/api/types";
 
 export const Applications = () => {
   const [accountSid, setAccountSid] = useState("");
+  const [accountName] = useState("");
   const [applications, setApplications] = useState<Application[] | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
 
@@ -70,6 +71,7 @@ export const Applications = () => {
         <AccountFilter
           label="Used by"
           account={[accountSid, setAccountSid]}
+          // accountName={[setAccountName]}
           defaultOption
         />
       </section>
@@ -96,6 +98,19 @@ export const Applications = () => {
                       <div className="item__sid">
                         <strong>SID:</strong>{" "}
                         <code>{application.application_sid}</code>
+                      </div>
+                      {!accountSid && accountName && (
+                        <div className="item_account">
+                          <strong>Account:</strong> <code>{accountName}</code>
+                        </div>
+                      )}
+                      <div className="item__calling">
+                        <strong>Calling Webhook:</strong>{" "}
+                        <code>{application.call_hook?.url}</code>
+                      </div>
+                      <div className="item__callstatus">
+                        <strong>Call Status Webhook:</strong>{" "}
+                        <code>{application.call_status_hook?.url}</code>
                       </div>
                     </div>
                     <div className="item__actions">
