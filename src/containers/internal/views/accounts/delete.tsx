@@ -123,16 +123,10 @@ export const DeleteAccount = ({
         <ModalClose handleClose={handleCancel}>
           <P>
             In order to delete the account it cannot be in use by any{" "}
-            <span className="txt-jam">Applications ({inUse.apps.length})</span>,{" "}
-            <span className="txt-jam">
-              Phone Numbers ({inUse.phones.length})
-            </span>
-            , or{" "}
-            <span className="txt-jam">
-              MS Teams Tenants ({inUse.teams.length})
-            </span>{" "}
-            or have any{" "}
-            <span className="txt-jam">Api Keys ({inUse.apiKeys.length})</span>.
+            <span>Applications ({inUse.apps.length})</span>,{" "}
+            <span>Phone Numbers ({inUse.phones.length})</span>, or{" "}
+            <span>MS Teams Tenants ({inUse.teams.length})</span> or have any{" "}
+            <span>Api Keys ({inUse.apiKeys.length})</span>.
           </P>
           {inUse.apps.length > 0 && (
             <InUseItems

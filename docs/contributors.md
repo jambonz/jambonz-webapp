@@ -15,8 +15,8 @@
 
 ## :rocket: Getting started
 
-In order to run the web app you'll need to complete your local environment setup
-which you can do following instructions in our [environment readme](./environment.md).
+In order to run the web app you'll need your local environment setup which you can do
+following instructions in our [environment readme](./environment.md).
 
 Once your environment is setup you can fork or clone this repo. To start the web app
 just run `npm install` and then `npm start`.
@@ -34,30 +34,31 @@ and [lint-staged](https://www.npmjs.com/package/lint-staged).
 ## :lock: Auth middleware
 
 We have auth middleware that was initially based on this [useAuth](https://usehooks.com/useAuth/)
-example but has been typed as well as modified to include a RequireAuth component for wrapping internal Routes.
-The main hook you'll use here is simply `useAuth`. This hook provides the `AuthStateContext` which has the
+example but has been typed and modified to include a `RequireAuth` component for wrapping internal Routes.
+The main hook you'll use here is `useAuth`. This hook provides the `AuthStateContext` which has the
 following:
 
-- `token`: current auth bearer token
-- `signin(user, pass)`: function to log the user in
-- `signout()`: function to log the user out
-- `authorized`: boolean dictating authorized status, e.g. valid token
+- `token`
+- `signin(user, pass)`
+- `signout()`
+- `authorized`
 
 ### A note on our ACL implementation
 
 We have some simple ACL utilities for managing access to UI/routes based on conditions.
-There is a basic AccessControl component and a handy `withAccessControl`
+There is a basic `AccessControl` component and a handy `withAccessControl`
 HOC for route containers with redirect. There is also a `useAccessControl` hook for
 use at the component-level.
 
 ## :joystick: Application state
 
-We're following the model `ui = fn(state)`. The state for the application has two parts:
-the local state and the remote server state. The server state is the source of truth. We
-keep only the minimal amount of local state necessary: the current logged in user, the
-list of service providers and the actively selected current service provider. We also use
-local state for a basic permissions matrix and for the global toast notifications.
-That's it! Local state is easy.
+`ui = fn(state)`
+
+The state for the application has two parts: the local state and the remote server state.
+The server state is the source of truth. We keep only the minimal amount of local state
+necessary: the current logged in user, the list of service providers and the actively selected
+current service provider. We also use local state for a basic permissions matrix and for the
+global toast notifications. That's it! Local state is easy.
 
 Because of this limited scope for local state we're **not using a third-party state manager**.
 We have a custom store implementation using vanilla React `useReducer` and context to provide
@@ -66,7 +67,7 @@ which include the following:
 
 - `useStateContext()`: returns the entire state object
 - `useSelectState(key)`: returns just the piece of state desired
-- `useDispatch()`: returns global `dispatch({ type, payload })` method
+- `useDispatch()`: returns global dispatch method
 - `useAccessControl(acl)`: returns true/false for select ACL permissions
 - `useFeatureFlag(flag)`: returns true/false for available feature flags
 - `withSelectState([...keys])(Component)`: like redux connect it maps state to props
@@ -76,8 +77,8 @@ which include the following:
 ### A note on feature flags
 
 Feature flags are enabled via [Vite's environment variables](https://vitejs.dev/guide/env-and-mode.html#env-files).
-They should be implemented as `VITE_FEATURE_{THING}`. They then need to be added to
-the FeatureFlag store interface and their implementation should be added to the initial
+They are implemented as `VITE_FEATURE_{THING}`. They then need to be added to
+the `FeatureFlag` store interface and their implementation should be added to the initial
 state object.
 
 ### A note here on type-safety
@@ -90,27 +91,26 @@ type of payload maps to the type parameter received.
 
 ## :wales: API implementation
 
-We have a normalized API implementation the app adheres to at all times, always
-using the API helpers that call `fetchTransport` under the hood and making use of
-our generic `use` hooks for most general fetch, e.g. `GET`, requests.
+We have a centralized API implementation that uses our normalized `fetchTransport` method
+under the hood. We have `use` hooks for general `GET` fetching that return the `data` fetched,
+a `refetcher` function that, when called, will update the data in the hook and therefore your
+component will render the new data, and a possible `error` if the fetch failed. The general
+consensus on when to use the hooks vs using a `getFetch` directly are dictated by whether the
+API response data needs to be refetched locally based on some user action, such as deleting
+an item from a list. In that case use the hooks, otherwise a `getFetch` pattern should work.
 
-Our `use` hooks for general `GET` fetching return the `data` fetched, a `refetcher`
-function that, when called, will update the data in the hook and therefore your component
-will render the new data and a possible `error` if the fetch failed. The hooks are:
+The hooks are:
 
 - `useApiData(path)`: returns `[data, refetcher, error]`
 - `useServiceProviderData(path)`: returns `[data, refetcher, error]`
 
 ### A note here on type-safety
 
-All API requests are piped through the `fetchTransport` method. Most `GET` requests
-can be done with our normalized `use` hooks. Any `POST`, `PUT` or `DELETE` calls should
-have a helper method that calls more generic methods under the hood. The `fetchTransport`
-function receives a generic type and returns it as the type of response data. This ensures
-type-safety when using API data at the component level.
-
-We do have four generic helper methods that most named API methods are simply wrappers for
-as well as a method for fetching blob data. All methods resolve a FetchTransport.
+All API requests are piped through the `fetchTransport` method which receives a generic type
+and returns it as the type of response data resolved. This ensures type-safety when using API
+data at the component level as well as provides property hinting based on interface implementations.
+Any `POST`, `PUT` or `DELETE` calls should have a wrapper method that calls our more generic methods
+under the hood, which are:
 
 - `getFetch(url)`
 - `postFetch(url, payload)`
@@ -118,8 +118,7 @@ as well as a method for fetching blob data. All methods resolve a FetchTransport
 - `deleteFetch(url)`
 - `getBlob(url)`
 
-But you should create a named helper for use within components such as this example
-so that API usage at the component level is really streamlined as much as possible.
+Example of a wrapper API method to `:POST` a new `Account`:
 
 ```ts
 export const postAccount = (payload: Payload) => {
@@ -130,42 +129,13 @@ export const postAccount = (payload: Payload) => {
 ## :file_folder: Vendor data modules
 
 Large data modules are used for menu options on the Applications and Speech Services
-forms. These modules should be loaded lazily and set to local state in the context in which
-they are used. This pattern should be followed for any new data modules implemented in the
-application. You can find the data modules and their type definitions in the `src/vendor`
-directory. A basic example of how this is done on the speech form:
-
-```tsx
-/** Assume setup code for a component... */
-
-/** Lazy-load large data schemas -- e.g. code-splitting */
-useEffect(() => {
-  let ignore = false;
-
-  Promise.all([
-    import("src/vendor/regions/aws-regions"),
-    import("src/vendor/regions/ms-azure-regions"),
-  ]).then(([{ default: awsRegions }, { default: msRegions }]) => {
-    if (!ignore) {
-      setRegions({
-        ms: msRegions,
-        aws: awsRegions,
-      });
-    }
-  });
-
-  return function cleanup() {
-    ignore = true;
-  };
-}, []);
-```
+forms. These modules are loaded lazily and set to local state in the context in which
+they are used. You can find the data modules and their type definitions in the `src/vendor`
+directory.
 
 ## :sunrise: Component composition
 
 All components that are used as Route elements are considered `containers`.
-You'll notice that all containers are lazy loaded at the router level, other
-than the root Login container, and this practice should always be followed.
-
 Containers are organized by `login` and `internal`, the latter of which requires
 the user to be authorized via our auth middleware layer. Reusable components are
 small with specific pieces of functionality and their own local state. We have
