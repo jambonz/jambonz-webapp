@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { H1, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, getApplications, getFetch } from "src/api";
-import { API_APPLICATIONS } from "src/api/constants";
+import { deleteApplication, getFetch } from "src/api";
+import { API_ACCOUNTS } from "src/api/constants";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
 import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
@@ -13,17 +13,22 @@ import type { Application } from "src/api/types";
 
 export const Applications = () => {
   const [accountSid, setAccountSid] = useState("");
-  const [accountName] = useState("");
   const [applications, setApplications] = useState<Application[] | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
 
-  const [refetch, setRefetch] = useState(0);
+  const getApplications = () => {
+    getFetch<Application[]>(`${API_ACCOUNTS}/${accountSid}/Applications`)
+      .then(({ json }) => setApplications(json))
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleDelete = () => {
     if (application) {
       deleteApplication(application.application_sid)
         .then(() => {
-          setRefetch(refetch + 1);
+          getApplications();
           setApplication(null);
           toastSuccess(
             <>
@@ -39,20 +44,9 @@ export const Applications = () => {
 
   useEffect(() => {
     if (accountSid) {
-      getApplications(accountSid)
-        .then(({ json }) => setApplications(json))
-        .catch((error) => {
-          toastError(error.msg);
-        });
-    } else {
-      // accountSid is null is "All accounts"
-      getFetch<Application[]>(API_APPLICATIONS)
-        .then(({ json }) => setApplications(json))
-        .catch((error) => {
-          toastError(error.msg);
-        });
+      getApplications();
     }
-  }, [accountSid, refetch]);
+  }, [accountSid]);
 
   return (
     <>
@@ -68,12 +62,7 @@ export const Applications = () => {
         </Link>
       </section>
       <section className="filters">
-        <AccountFilter
-          label="Used by"
-          account={[accountSid, setAccountSid]}
-          // accountName={[setAccountName]}
-          defaultOption
-        />
+        <AccountFilter account={[accountSid, setAccountSid]} />
       </section>
       <Section
         {...(applications && applications.length > 0 ? { slim: true } : {})}
@@ -98,19 +87,6 @@ export const Applications = () => {
                       <div className="item__sid">
                         <strong>SID:</strong>{" "}
                         <code>{application.application_sid}</code>
-                      </div>
-                      {!accountSid && accountName && (
-                        <div className="item_account">
-                          <strong>Account:</strong> <code>{accountName}</code>
-                        </div>
-                      )}
-                      <div className="item__calling">
-                        <strong>Calling Webhook:</strong>{" "}
-                        <code>{application.call_hook?.url}</code>
-                      </div>
-                      <div className="item__callstatus">
-                        <strong>Call Status Webhook:</strong>{" "}
-                        <code>{application.call_status_hook?.url}</code>
                       </div>
                     </div>
                     <div className="item__actions">
