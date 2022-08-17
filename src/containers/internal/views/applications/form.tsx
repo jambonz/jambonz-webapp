@@ -20,7 +20,7 @@ import {
   putApplication,
 } from "src/api";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
-import { DEFAULT_WEBHOOK } from "src/api/constants";
+import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
 
 import type {
   RecognizerVendors,
@@ -66,15 +66,13 @@ export const ApplicationForm = ({
   const refStatusWebhookUser = useRef<HTMLInputElement>(null);
   const refStatusWebhookPass = useRef<HTMLInputElement>(null);
   const [statusWebhook, setStatusWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialStatusWebhook, setInitialStatusWebhook] =
-    useState<boolean>(false);
+  const [initialStatusWebhook, setInitialStatusWebhook] = useState(false);
 
   const refMessageWebhookUser = useRef<HTMLInputElement>(null);
   const refMessageWebhookPass = useRef<HTMLInputElement>(null);
   const [messageWebhook, setMessageWebhook] =
     useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialMessageWebhook, setInitialMessageWebhook] =
-    useState<boolean>(false);
+  const [initialMessageWebhook, setInitialMessageWebhook] = useState(false);
 
   const [synthVendor, setSynthVendor] =
     useState<keyof SynthesisVendors>(VENDOR_GOOGLE);
@@ -91,17 +89,6 @@ export const ApplicationForm = ({
   );
 
   const [message, setMessage] = useState("");
-
-  const webhook_method = [
-    {
-      name: "POST",
-      value: "POST",
-    },
-    {
-      name: "GET",
-      value: "GET",
-    },
-  ];
 
   const webhooks = [
     {
@@ -135,19 +122,6 @@ export const ApplicationForm = ({
       required: false,
     },
   ];
-
-  const handleSetHook = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    hook: WebHook,
-    setHook: (h: WebHook) => void
-  ) => {
-    if (hook) {
-      setHook({
-        ...hook,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,6 +195,8 @@ export const ApplicationForm = ({
 
   useEffect(() => {
     let ignore = false;
+
+    if (accounts && !accountSid) setAccountSid(accounts[0].account_sid);
 
     if (application && application.data) {
       setApplicationName(application.data.name);
@@ -323,11 +299,11 @@ export const ApplicationForm = ({
     return function cleanup() {
       ignore = true;
     };
-  }, [application, accounts]);
+  }, [application, accounts, accountSid]);
 
   return (
     <>
-      <Section>
+      <Section slim>
         <form onSubmit={handleSubmit}>
           {application && application.data && (
             <fieldset>
@@ -359,18 +335,10 @@ export const ApplicationForm = ({
                 name="account_name"
                 required
                 value={accountSid}
-                placeholder="Select an account"
-                options={[
-                  {
-                    name: "-- Select an account --",
-                    value: "",
-                  },
-                ].concat(
-                  accounts.map((account) => ({
-                    name: account.name,
-                    value: account.account_sid,
-                  }))
-                )}
+                options={accounts.map((account) => ({
+                  name: account.name,
+                  value: account.account_sid,
+                }))}
                 onChange={(e) => setAccountSid(e.target.value)}
               />
             </fieldset>
@@ -380,19 +348,22 @@ export const ApplicationForm = ({
               <fieldset key={webhook.prefix}>
                 <div className="multi">
                   <div className="inp">
-                    <label htmlFor="registration_hook_url">
+                    <label htmlFor={`${webhook.prefix}_url`}>
                       {webhook.label} Webhook
                     </label>
                     <input
                       id={`${webhook.prefix}_url`}
                       type="text"
-                      name="url"
+                      name={`${webhook.prefix}_url`}
                       required={webhook.required}
                       placeholder={`${webhook.label} Webhook`}
                       value={webhook.stateVal?.url || ""}
-                      onChange={(e) =>
-                        handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                      }
+                      onChange={(e) => {
+                        webhook.stateSet({
+                          ...webhook.stateVal,
+                          url: e.target.value,
+                        });
+                      }}
                     />
                   </div>
                   <div className="sel">
@@ -407,7 +378,7 @@ export const ApplicationForm = ({
                           method: e.target.value as WebhookMethod,
                         });
                       }}
-                      options={webhook_method}
+                      options={WEBHOOK_METHODS}
                     />
                   </div>
                 </div>
@@ -425,9 +396,12 @@ export const ApplicationForm = ({
                     name={`${webhook.prefix}_username`}
                     placeholder="Optional"
                     value={webhook.stateVal?.username || ""}
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
+                    onChange={(e) => {
+                      webhook.stateSet({
+                        ...webhook.stateVal,
+                        username: e.target.value,
+                      });
+                    }}
                   />
                   <label htmlFor={`${webhook.prefix}_password`}>Password</label>
                   <Passwd
@@ -436,9 +410,12 @@ export const ApplicationForm = ({
                     name={`${webhook.prefix}_password`}
                     value={webhook.stateVal?.password || ""}
                     placeholder="Optional"
-                    onChange={(e) =>
-                      handleSetHook(e, webhook.stateVal, webhook.stateSet)
-                    }
+                    onChange={(e) => {
+                      webhook.stateSet({
+                        ...webhook.stateVal,
+                        password: e.target.value,
+                      });
+                    }}
                   />
                 </Checkzone>
               </fieldset>
@@ -602,7 +579,7 @@ export const ApplicationForm = ({
               )}
             </>
           )}
-          {message && <Message message={message} />}
+          <fieldset>{message && <Message message={message} />}</fieldset>
           <fieldset>
             <ButtonGroup left>
               <Button

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { P } from "jambonz-ui";
 
 import { Modal, ModalClose } from "src/components";
-import { useApiData, getFetch } from "src/api";
-import { toastError } from "src/store";
+import { getFetch } from "src/api";
 
 import type { Application, Account, MSTeamsTenant } from "src/api/types";
 import { API_ACCOUNTS, API_MS_TEAMS_TENANTS } from "src/api/constants";
@@ -26,32 +25,18 @@ interface InUse {
   teams: MSTeamsTenant[];
 }
 
-const DeleteInfo = ({
-  label,
-  text,
-}: {
-  label: string;
-  text: string | null | undefined;
-}) => {
-  return (
-    <ul className="m">
-      <li>
-        <strong>{label}:</strong>
-      </li>
-      <li className="txt--teal">{text}</li>
-    </ul>
-  );
-};
-
 const InUseItems = ({ items, itemsLabel, sidKey, labelKey }: InUseProps) => {
   return (
     <ul className="m">
       <li>
         <strong>{itemsLabel}:</strong>
       </li>
-      {items.map((item) => {
+      {items.map((item, index) => {
         return (
-          <li className="txt--teal" key={item[sidKey as keyof typeof item]}>
+          <li
+            className="txt--teal"
+            key={`${item[sidKey as keyof typeof item]}_${index}`}
+          >
             {item[labelKey as keyof typeof item]}
           </li>
         );
@@ -65,10 +50,6 @@ export const DeleteApplication = ({
   handleCancel,
   handleSubmit,
 }: DeleteProps) => {
-  const [account, , error] = useApiData<Account>(
-    `Accounts/${application.account_sid}`
-  );
-
   const [inUse, setInUse] = useState<InUse | null>(null);
   const [isDeletable, setIsDeletable] = useState(false);
 
@@ -78,14 +59,14 @@ export const DeleteApplication = ({
     Promise.all([
       getFetch<Account[]>(API_ACCOUNTS),
       getFetch<MSTeamsTenant[]>(API_MS_TEAMS_TENANTS),
-      ,
     ]).then(([accountRes, msteamRes]) => {
       if (!ignore) {
         const used = {
           accounts: accountRes.json.filter(
             (account) =>
               account.device_calling_application_sid ===
-              application.application_sid
+                application.application_sid ||
+              account.siprec_hook_sid === application.application_sid
           ),
           teams: msteamRes.json.filter(
             (team) => team.application_sid === application.application_sid
@@ -104,14 +85,10 @@ export const DeleteApplication = ({
       }
     });
 
-    if (error) {
-      toastError(error.msg);
-    }
-
     return function cleanup() {
       ignore = true;
     };
-  }, [error]);
+  });
 
   return (
     <>
@@ -121,34 +98,14 @@ export const DeleteApplication = ({
             Are you sure you want to delete the application{" "}
             <strong>{application.name}</strong>?
           </P>
-          {account && <DeleteInfo label="Account" text={account.name} />}
-          {application && (
-            <>
-              <DeleteInfo
-                label="Calling Webhook"
-                text={application.call_hook?.webhook_sid || "[None]"}
-              />
-              <DeleteInfo
-                label="Call Status Webhook"
-                text={application.call_status_hook?.webhook_sid || "[None]"}
-              />
-              <DeleteInfo
-                label="Messaging Webhook"
-                text={application.messaging_hook?.webhook_sid || "[None]"}
-              />
-            </>
-          )}
         </Modal>
       )}
       {inUse && (
         <ModalClose handleClose={handleCancel}>
           <P>
             In order to delete the account it cannot be in use by any{" "}
-            <span className="txt-jam">Accounts ({inUse.accounts.length})</span>{" "}
-            , or{" "}
-            <span className="txt-jam">
-              Microsoft Teams Tenant ({inUse.teams.length})
-            </span>
+            <span>Accounts ({inUse.accounts.length})</span> , or{" "}
+            <span>Microsoft Teams Tenant ({inUse.teams.length})</span>.
           </P>
           {inUse.accounts.length > 0 && (
             <InUseItems
