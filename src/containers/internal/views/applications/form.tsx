@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Button, ButtonGroup } from "jambonz-ui";
+import React, { useEffect, useState } from "react";
+import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
@@ -55,18 +55,12 @@ export const ApplicationForm = ({
 
   const [accountSid, setAccountSid] = useState("");
 
-  const refCallWebhookUser = useRef<HTMLInputElement>(null);
-  const refCallWebhookPass = useRef<HTMLInputElement>(null);
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
 
-  const refStatusWebhookUser = useRef<HTMLInputElement>(null);
-  const refStatusWebhookPass = useRef<HTMLInputElement>(null);
   const [statusWebhook, setStatusWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialStatusWebhook, setInitialStatusWebhook] = useState(false);
 
-  const refMessageWebhookUser = useRef<HTMLInputElement>(null);
-  const refMessageWebhookPass = useRef<HTMLInputElement>(null);
   const [messageWebhook, setMessageWebhook] =
     useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialMessageWebhook, setInitialMessageWebhook] = useState(false);
@@ -94,8 +88,6 @@ export const ApplicationForm = ({
       stateVal: callWebhook,
       stateSet: setCallWebhook,
       initialCheck: initialCallWebhook,
-      refUser: refCallWebhookUser,
-      refPass: refCallWebhookPass,
       required: true,
     },
     {
@@ -104,8 +96,6 @@ export const ApplicationForm = ({
       stateVal: statusWebhook,
       stateSet: setStatusWebhook,
       initialCheck: initialStatusWebhook,
-      refUser: refStatusWebhookUser,
-      refPass: refStatusWebhookPass,
       required: true,
     },
     {
@@ -114,8 +104,6 @@ export const ApplicationForm = ({
       stateVal: messageWebhook,
       stateSet: setMessageWebhook,
       initialCheck: initialMessageWebhook,
-      refUser: refMessageWebhookUser,
-      refPass: refMessageWebhookPass,
       required: false,
     },
   ];
@@ -124,22 +112,6 @@ export const ApplicationForm = ({
     e.preventDefault();
 
     setMessage("");
-
-    const invalidHook = webhooks.find((webhook) => {
-      return (
-        (webhook.stateVal.username && !webhook.stateVal.password) ||
-        (!webhook.stateVal.username && webhook.stateVal.password)
-      );
-    });
-
-    if (invalidHook) {
-      setMessage(
-        `${invalidHook.label} webhook username and password must be either both filled out or both empty.`
-      );
-      !invalidHook.stateVal.username && invalidHook.refUser.current?.focus();
-      !invalidHook.stateVal.password && invalidHook.refPass.current?.focus();
-      return;
-    }
 
     if (applications) {
       if (
@@ -310,6 +282,11 @@ export const ApplicationForm = ({
     <>
       <Section slim>
         <form onSubmit={handleSubmit}>
+          <fieldset>
+            <MS>
+              Fields marked with an asterisk<span>*</span> are required.
+            </MS>
+          </fieldset>
           {application && application.data && (
             <fieldset>
               <label htmlFor="application_sid">Application SID</label>
@@ -321,7 +298,9 @@ export const ApplicationForm = ({
             </fieldset>
           )}
           <fieldset>
-            <label htmlFor="application_name">Name</label>
+            <label htmlFor="application_name">
+              Application name<span>*</span>
+            </label>
             <input
               id="application_name"
               required
@@ -334,7 +313,9 @@ export const ApplicationForm = ({
           </fieldset>
           {accounts && (
             <fieldset>
-              <label htmlFor="account_name">Account</label>
+              <label htmlFor="account_name">
+                Account <span>*</span>
+              </label>
               <Selector
                 id="account_name"
                 name="account_name"
@@ -354,7 +335,8 @@ export const ApplicationForm = ({
                 <div className="multi">
                   <div className="inp">
                     <label htmlFor={`${webhook.prefix}_url`}>
-                      {webhook.label} Webhook
+                      {webhook.label} Webhook{" "}
+                      {webhook.required ? <span>*</span> : ""}
                     </label>
                     <input
                       id={`${webhook.prefix}_url`}
@@ -393,9 +375,13 @@ export const ApplicationForm = ({
                   label="Use HTTP Basic Authentication"
                   initialCheck={webhook.initialCheck}
                 >
+                  <MS>
+                    When using HTTP basic authentication both the{" "}
+                    <span>username</span> and <span>password</span> fields are
+                    required.
+                  </MS>
                   <label htmlFor={`${webhook.prefix}_username`}>Username</label>
                   <input
-                    ref={webhook.refUser}
                     id={`${webhook.prefix}_username`}
                     type="text"
                     name={`${webhook.prefix}_username`}
@@ -407,10 +393,16 @@ export const ApplicationForm = ({
                         username: e.target.value,
                       });
                     }}
+                    required={
+                      webhook.required &&
+                      !webhook.stateVal.username &&
+                      webhook.stateVal.password
+                        ? true
+                        : false
+                    }
                   />
                   <label htmlFor={`${webhook.prefix}_password`}>Password</label>
                   <Passwd
-                    ref={webhook.refPass}
                     id={`${webhook.prefix}_password`}
                     name={`${webhook.prefix}_password`}
                     value={webhook.stateVal?.password || ""}
@@ -421,6 +413,13 @@ export const ApplicationForm = ({
                         password: e.target.value,
                       });
                     }}
+                    required={
+                      webhook.required &&
+                      webhook.stateVal.username &&
+                      !webhook.stateVal.password
+                        ? true
+                        : false
+                    }
                   />
                 </Checkzone>
               </fieldset>
