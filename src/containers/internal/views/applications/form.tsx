@@ -40,9 +40,9 @@ export type UseApplicationData = {
 };
 
 type ApplicationFormProps = {
-  accounts?: null | Account[];
+  accounts: null | Account[];
   application?: null | UseApplicationData;
-  applications?: null | Application[];
+  applications: null | Application[];
 };
 
 export const ApplicationForm = ({
@@ -584,9 +584,7 @@ export const ApplicationForm = ({
               )}
             </>
           )}
-          {message && (
-            <fieldset>{message && <Message message={message} />}</fieldset>
-          )}
+          {message && <fieldset>{<Message message={message} />}</fieldset>}
           <fieldset>
             <ButtonGroup left>
               <Button
