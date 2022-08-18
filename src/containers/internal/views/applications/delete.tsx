@@ -88,7 +88,7 @@ export const DeleteApplication = ({
     return function cleanup() {
       ignore = true;
     };
-  });
+  }, []);
 
   return (
     <>

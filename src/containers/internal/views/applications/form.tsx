@@ -13,12 +13,7 @@ import {
   VENDOR_AWS,
   VENDOR_WELLSAID,
 } from "src/vendor";
-import {
-  useServiceProviderData,
-  useApiData,
-  postApplication,
-  putApplication,
-} from "src/api";
+import { postApplication, putApplication } from "src/api";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
 import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
 
@@ -45,18 +40,20 @@ export type UseApplicationData = {
 };
 
 type ApplicationFormProps = {
+  accounts?: null | Account[];
   application?: null | UseApplicationData;
+  applications?: null | Application[];
 };
 
 export const ApplicationForm = ({
   application = null,
+  applications = null,
+  accounts = null,
 }: ApplicationFormProps) => {
   const navigate = useNavigate();
   const [applicationName, setApplicationName] = useState("");
-  const [applications] = useApiData<Application[]>("Applications");
 
   const [accountSid, setAccountSid] = useState("");
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const refCallWebhookUser = useRef<HTMLInputElement>(null);
   const refCallWebhookPass = useRef<HTMLInputElement>(null);
@@ -128,19 +125,21 @@ export const ApplicationForm = ({
 
     setMessage("");
 
-    webhooks.map((webhook) => {
-      if (
-        (webhook.stateVal?.username && !webhook.stateVal?.password) ||
-        (!webhook.stateVal?.username && webhook.stateVal?.password)
-      ) {
-        setMessage(
-          `${webhook.label} username and password must be either both filled out or both empty.`
-        );
-        !webhook.stateVal.username && webhook.refUser.current?.focus();
-        !webhook.stateVal.password && webhook.refPass.current?.focus();
-        return;
-      }
+    const invalidHook = webhooks.find((webhook) => {
+      return (
+        (webhook.stateVal.username && !webhook.stateVal.password) ||
+        (!webhook.stateVal.username && webhook.stateVal.password)
+      );
     });
+
+    if (invalidHook) {
+      setMessage(
+        `${invalidHook.label} webhook username and password must be either both filled out or both empty.`
+      );
+      !invalidHook.stateVal.username && invalidHook.refUser.current?.focus();
+      !invalidHook.stateVal.password && invalidHook.refPass.current?.focus();
+      return;
+    }
 
     if (applications) {
       if (
@@ -183,9 +182,9 @@ export const ApplicationForm = ({
         });
     } else {
       postApplication(payload)
-        .then(() => {
+        .then(({ json }) => {
           toastSuccess("Application created successfully");
-          navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
+          navigate(`${ROUTE_INTERNAL_APPLICATIONS}/${json.sid}/edit`);
         })
         .catch((error) => {
           toastError(error.msg);
@@ -194,10 +193,54 @@ export const ApplicationForm = ({
   };
 
   useEffect(() => {
+    if (accounts && !accountSid) {
+      setAccountSid(accounts[0].account_sid);
+    }
+  }, [accounts, accountSid]);
+
+  useEffect(() => {
     let ignore = false;
 
-    if (accounts && !accountSid) setAccountSid(accounts[0].account_sid);
+    Promise.all([
+      import("src/vendor/speech-recognizer/aws-speech-recognizer-lang"),
+      import("src/vendor/speech-recognizer/google-speech-recognizer-lang"),
+      import("src/vendor/speech-recognizer/ms-speech-recognizer-lang"),
+      import("src/vendor/speech-synthesis/aws-speech-synthesis-lang"),
+      import("src/vendor/speech-synthesis/google-speech-synthesis-lang"),
+      import("src/vendor/speech-synthesis/ms-speech-synthesis-lang"),
+      import("src/vendor/speech-synthesis/wellsaid-speech-synthesis-lang"),
+    ]).then(
+      ([
+        { default: awsRecognizer },
+        { default: googleRecognizer },
+        { default: msRecognizer },
+        { default: awsSynthesis },
+        { default: googleSynthesis },
+        { default: msSynthesis },
+        { default: wellsaidSynthesis },
+      ]) => {
+        if (!ignore) {
+          setSynthesis({
+            aws: awsSynthesis,
+            google: googleSynthesis,
+            microsoft: msSynthesis,
+            wellsaid: wellsaidSynthesis,
+          });
+          setRecognizers({
+            aws: awsRecognizer,
+            google: googleRecognizer,
+            microsoft: msRecognizer,
+          });
+        }
+      }
+    );
 
+    return function cleanup() {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (application && application.data) {
       setApplicationName(application.data.name);
 
@@ -261,45 +304,7 @@ export const ApplicationForm = ({
       if (application.data.speech_recognizer_language)
         setRecogLang(application.data.speech_recognizer_language);
     }
-
-    Promise.all([
-      import("src/vendor/speech-recognizer/aws-speech-recognizer-lang"),
-      import("src/vendor/speech-recognizer/google-speech-recognizer-lang"),
-      import("src/vendor/speech-recognizer/ms-speech-recognizer-lang"),
-      import("src/vendor/speech-synthesis/aws-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/google-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/ms-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/wellsaid-speech-synthesis-lang"),
-    ]).then(
-      ([
-        { default: awsRecognizer },
-        { default: googleRecognizer },
-        { default: msRecognizer },
-        { default: awsSynthesis },
-        { default: googleSynthesis },
-        { default: msSynthesis },
-        { default: wellsaidSynthesis },
-      ]) => {
-        if (!ignore) {
-          setSynthesis({
-            aws: awsSynthesis,
-            google: googleSynthesis,
-            microsoft: msSynthesis,
-            wellsaid: wellsaidSynthesis,
-          });
-          setRecognizers({
-            aws: awsRecognizer,
-            google: googleRecognizer,
-            microsoft: msRecognizer,
-          });
-        }
-      }
-    );
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, [application, accounts, accountSid]);
+  }, [application]);
 
   return (
     <>
@@ -579,7 +584,9 @@ export const ApplicationForm = ({
               )}
             </>
           )}
-          <fieldset>{message && <Message message={message} />}</fieldset>
+          {message && (
+            <fieldset>{message && <Message message={message} />}</fieldset>
+          )}
           <fieldset>
             <ButtonGroup left>
               <Button
