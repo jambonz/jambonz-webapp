@@ -54,6 +54,10 @@
       display: flex;
       align-items: center;
 
+      span {
+        color: ui-vars.$jambonz;
+      }
+
       input[type="radio"] {
         margin: 0 ui-vars.$px01 0 0;
       }

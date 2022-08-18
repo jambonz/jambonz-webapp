@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { P, Button, ButtonGroup } from "jambonz-ui";
+import React, { useState, useEffect } from "react";
+import { P, Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -46,10 +46,6 @@ export const AccountForm = ({
   const navigate = useNavigate();
   const subspace = useFeatureFlag("subspace");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const refRegHookUser = useRef<HTMLInputElement>(null);
-  const refRegHookPass = useRef<HTMLInputElement>(null);
-  const refQueueHookUser = useRef<HTMLInputElement>(null);
-  const refQueueHookPass = useRef<HTMLInputElement>(null);
   const [accounts] = useApiData<Account[]>("Accounts");
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
@@ -72,8 +68,6 @@ export const AccountForm = ({
       stateVal: regHook,
       stateSet: setRegHook,
       initialCheck: initialRegHook,
-      refUser: refRegHookUser,
-      refPass: refRegHookPass,
     },
     {
       label: "Queue event",
@@ -81,8 +75,6 @@ export const AccountForm = ({
       stateVal: queueHook,
       stateSet: setQueueHook,
       initialCheck: initialQueueHook,
-      refUser: refQueueHookUser,
-      refPass: refQueueHookPass,
     },
   ];
   const applications = [
@@ -131,30 +123,6 @@ export const AccountForm = ({
 
     setMessage("");
 
-    if (
-      (regHook.username && !regHook.password) ||
-      (!regHook.username && regHook.password)
-    ) {
-      setMessage(
-        "Registration webhook username and password must be either both filled out or both empty."
-      );
-      !regHook.username && refRegHookUser.current?.focus();
-      !regHook.password && refRegHookPass.current?.focus();
-      return;
-    }
-
-    if (
-      (queueHook.username && !queueHook.password) ||
-      (!queueHook.username && queueHook.password)
-    ) {
-      setMessage(
-        "Queue event webhook username and password must be either both filled out or both empty."
-      );
-      !queueHook.username && refQueueHookUser.current?.focus();
-      !queueHook.password && refQueueHookPass.current?.focus();
-      return;
-    }
-
     if (accounts) {
       const filtered =
         account && account.data
@@ -195,13 +163,13 @@ export const AccountForm = ({
         .catch((error) => {
           toastError(error.msg);
         });
-    } else {
+    } else if (currentServiceProvider) {
       postAccount({
         name,
         sip_realm: realm || null,
         queue_event_hook: queueHook || null,
         registration_hook: regHook || null,
-        service_provider_sid: currentServiceProvider?.service_provider_sid,
+        service_provider_sid: currentServiceProvider.service_provider_sid,
       })
         .then(({ json }) => {
           toastSuccess("Account created successfully");
@@ -270,6 +238,11 @@ export const AccountForm = ({
     <>
       <Section slim>
         <form onSubmit={handleSubmit}>
+          <fieldset>
+            <MS>
+              Fields marked with an asterisk<span>*</span> are required.
+            </MS>
+          </fieldset>
           {account && account.data && (
             <fieldset>
               <label htmlFor="account_sid">Account SID</label>
@@ -281,7 +254,9 @@ export const AccountForm = ({
             </fieldset>
           )}
           <fieldset>
-            <label htmlFor="name">Account name</label>
+            <label htmlFor="name">
+              Account name<span>*</span>
+            </label>
             <input
               id="name"
               required
@@ -391,7 +366,7 @@ export const AccountForm = ({
                       type="text"
                       name={`${webhook.prefix}_url`}
                       placeholder={`${webhook.label} webhook`}
-                      value={webhook.stateVal?.url}
+                      value={webhook.stateVal.url}
                       onChange={(e) => {
                         webhook.stateSet({
                           ...webhook.stateVal,
@@ -405,7 +380,7 @@ export const AccountForm = ({
                     <Selector
                       id={`${webhook.prefix}_method`}
                       name={`${webhook.prefix}_method`}
-                      value={webhook.stateVal?.method}
+                      value={webhook.stateVal.method}
                       onChange={(e) => {
                         webhook.stateSet({
                           ...webhook.stateVal,
@@ -423,31 +398,39 @@ export const AccountForm = ({
                     label="Use HTTP Basic Authentication"
                     initialCheck={webhook.initialCheck}
                   >
+                    <MS>
+                      When using HTTP basic authentication both the{" "}
+                      <span>username</span> and <span>password</span> fields are
+                      required.
+                    </MS>
                     <label htmlFor={`${webhook.prefix}_username`}>
                       Username
                     </label>
                     <input
-                      ref={webhook.refUser}
                       id={`${webhook.prefix}_username`}
                       type="text"
                       name={`${webhook.prefix}_username`}
                       placeholder="Optional"
-                      value={webhook.stateVal?.username || ""}
+                      value={webhook.stateVal.username || ""}
                       onChange={(e) => {
                         webhook.stateSet({
                           ...webhook.stateVal,
                           username: e.target.value,
                         });
                       }}
+                      required={
+                        webhook.stateVal.password && !webhook.stateVal.username
+                          ? true
+                          : false
+                      }
                     />
                     <label htmlFor={`${webhook.prefix}_password`}>
                       Password
                     </label>
                     <Passwd
-                      ref={webhook.refPass}
                       id={`${webhook.prefix}_password`}
                       name={`${webhook.prefix}_password`}
-                      value={webhook.stateVal?.password || ""}
+                      value={webhook.stateVal.password || ""}
                       placeholder="Optional"
                       onChange={(e) => {
                         webhook.stateSet({
@@ -455,6 +438,11 @@ export const AccountForm = ({
                           password: e.target.value,
                         });
                       }}
+                      required={
+                        webhook.stateVal.username && !webhook.stateVal.password
+                          ? true
+                          : false
+                      }
                     />
                   </Checkzone>
                 </div>

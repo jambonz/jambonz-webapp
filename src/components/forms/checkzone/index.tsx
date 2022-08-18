@@ -61,7 +61,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
             }}
             checked={checked}
           />
-          <span>{label}</span>
+          <div>{label}</div>
         </label>
         <div className={classesIn}>{children}</div>
       </div>

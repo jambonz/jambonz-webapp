@@ -77,6 +77,10 @@ p > code {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  .ico {
+    @include mixins.icosize();
+  }
 }
 
 .filters {

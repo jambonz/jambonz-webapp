@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { H1, P, Button, ButtonGroup } from "jambonz-ui";
+import { H1, P, Button, ButtonGroup, MS } from "jambonz-ui";
 
 import { useDispatch, toastSuccess, toastError } from "src/store";
 import { withSelectState } from "src/utils";
@@ -104,7 +104,14 @@ export const Settings = ({
       <Section slim>
         <form onSubmit={handleSubmit}>
           <fieldset>
-            <label htmlFor="name">Service provider name</label>
+            <MS>
+              Fields marked with an asterisk<span>*</span> are required.
+            </MS>
+          </fieldset>
+          <fieldset>
+            <label htmlFor="name">
+              Service provider name<span>*</span>
+            </label>
             <input
               id="name"
               required
