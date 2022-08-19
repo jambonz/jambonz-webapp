@@ -22,6 +22,6 @@ const App = () => {
   );
 };
 
-const root: HTMLElement = document.getElementById("root")!;
+const root: Element = document.getElementById("root")!;
 
 createRoot(root).render(<App />);

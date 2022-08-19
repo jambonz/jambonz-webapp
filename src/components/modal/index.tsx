@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import { Button, ButtonGroup } from "jambonz-ui";
 
 import "./styles.scss";
@@ -15,13 +16,15 @@ type CloseProps = {
   handleClose: () => void;
 };
 
+const portal: Element = document.getElementById("modal")!;
+
 export const Modal = ({
   disabled,
   children,
   handleSubmit,
   handleCancel,
 }: ModalProps) => {
-  return (
+  return ReactDOM.createPortal(
     <div className="modal">
       <div className="modal__box">
         <div className="modal__stuff">{children}</div>
@@ -45,7 +48,8 @@ export const Modal = ({
           </Button>
         </ButtonGroup>
       </div>
-    </div>
+    </div>,
+    portal
   );
 };
 
@@ -55,10 +59,10 @@ export const ModalForm = ({
   handleSubmit,
   handleCancel,
 }: ModalProps) => {
-  return (
+  return ReactDOM.createPortal(
     <div className="modal">
       <form
-        className="modal__box"
+        className="form modal__box"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit(e);
@@ -79,12 +83,13 @@ export const ModalForm = ({
           </Button>
         </ButtonGroup>
       </form>
-    </div>
+    </div>,
+    portal
   );
 };
 
 export const ModalClose = ({ children, handleClose }: CloseProps) => {
-  return (
+  return ReactDOM.createPortal(
     <div className="modal">
       <div className="modal__box">
         <div className="modal__stuff">{children}</div>
@@ -94,6 +99,7 @@ export const ModalClose = ({ children, handleClose }: CloseProps) => {
           </Button>
         </ButtonGroup>
       </div>
-    </div>
+    </div>,
+    portal
   );
 };

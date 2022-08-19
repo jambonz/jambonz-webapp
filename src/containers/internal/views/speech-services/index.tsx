@@ -48,7 +48,7 @@ export const SpeechServices = () => {
         />
       </section>
       <Section slim>
-        <form>
+        <form className="form form--internal">
           <fieldset>
             <P>Example of lazy loading region data files for add/edit form.</P>
             <P>

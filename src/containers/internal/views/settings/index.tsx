@@ -102,7 +102,7 @@ export const Settings = ({
     <>
       <H1>Settings</H1>
       <Section slim>
-        <form onSubmit={handleSubmit}>
+        <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
             <MS>
               Fields marked with an asterisk<span>*</span> are required.
