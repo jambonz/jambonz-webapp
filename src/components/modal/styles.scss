@@ -15,9 +15,6 @@
   padding-left: ui-vars.$px02;
   padding-right: ui-vars.$px02;
 
-  /** Remove this with `subspace` feature deprecation */
-  margin: 0 !important;
-
   &__stuff {
     > * + * {
       margin-top: ui-vars.$px02;

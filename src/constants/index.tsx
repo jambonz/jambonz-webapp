@@ -23,3 +23,14 @@ export const MSG_PASSWD_CRITERIA = (
     </ul>
   </>
 );
+export const MSG_REQUIRED_FIELDS = (
+  <>
+    Fields marked with an asterisk<span>*</span> are required.
+  </>
+);
+export const MSG_WEBHOOK_FIELDS = (
+  <>
+    When using HTTP basic authentication both the <span>username</span> and{" "}
+    <span>password</span> fields are required.
+  </>
+);

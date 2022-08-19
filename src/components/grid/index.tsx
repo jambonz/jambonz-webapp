@@ -34,8 +34,8 @@ export const GridRow = ({
 export const Grid = ({ children, col3 = false, col5 = false }: GridProps) => {
   const classes = classNames({
     grid: true,
-    ["grid--col3"]: col3,
-    ["grid--col5"]: col5,
+    "grid--col3": col3,
+    "grid--col5": col5,
   });
 
   return <div className={classes}>{children}</div>;

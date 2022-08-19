@@ -32,7 +32,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
     const [checked, setChecked] = useState(false);
     const classesTop = classNames({
       checkzone: true,
-      ["checkzone--hidden"]: hidden,
+      "checkzone--hidden": hidden,
     });
     const classesIn = classNames({
       checkzone__managed: true,

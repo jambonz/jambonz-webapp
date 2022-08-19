@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { H1, Button, Icon } from "jambonz-ui";
+import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { useServiceProviderData, deleteAccount } from "src/api";
@@ -85,7 +85,7 @@ export const Accounts = () => {
                 );
               })
             ) : (
-              <div>No Accounts yet.</div>
+              <M>No Accounts yet.</M>
             )
           ) : (
             <Spinner />

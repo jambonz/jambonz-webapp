@@ -28,6 +28,11 @@
     background-color: ui-vars.$white;
     width: 100%;
     max-width: vars.$widthinput;
+
+    &:focus {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
   }
 
   span {

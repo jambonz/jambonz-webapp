@@ -86,7 +86,7 @@ export const CreatePassword = () => {
           required
           name="password"
           value={password}
-          placeholder="new password"
+          placeholder="New password"
           setValue={setPassword}
           onKeyDown={handleKeydown}
         />
@@ -94,7 +94,7 @@ export const CreatePassword = () => {
           required
           name="confirmPassword"
           value={confirmPassword}
-          placeholder="confirm new password"
+          placeholder="Confirm new password"
           setValue={setConfirmPassword}
           onKeyDown={handleKeydown}
         />

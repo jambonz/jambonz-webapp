@@ -27,6 +27,7 @@ import type {
   Application,
   WebhookMethod,
 } from "src/api/types";
+import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 export type UseAccountData = {
   data: Account | null;
@@ -239,9 +240,7 @@ export const AccountForm = ({
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
-            <MS>
-              Fields marked with an asterisk<span>*</span> are required.
-            </MS>
+            <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
           {account && account.data && (
             <fieldset>
@@ -398,11 +397,7 @@ export const AccountForm = ({
                     label="Use HTTP Basic Authentication"
                     initialCheck={webhook.initialCheck}
                   >
-                    <MS>
-                      When using HTTP basic authentication both the{" "}
-                      <span>username</span> and <span>password</span> fields are
-                      required.
-                    </MS>
+                    <MS>{MSG_WEBHOOK_FIELDS}</MS>
                     <label htmlFor={`${webhook.prefix}_username`}>
                       Username
                     </label>

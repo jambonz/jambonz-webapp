@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { H1, Button, Icon } from "jambonz-ui";
+import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { deleteApplication, getFetch } from "src/api";
@@ -117,15 +117,15 @@ export const Applications = () => {
                 );
               })
             ) : accountSid ? (
-              <div>No applications yet.</div>
+              <M>No applications yet.</M>
             ) : (
-              <div>
+              <M>
                 You must{" "}
                 <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
                   create an account
                 </Link>{" "}
                 before you can create an application.
-              </div>
+              </M>
             )
           ) : (
             <Spinner />

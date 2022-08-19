@@ -16,8 +16,8 @@ export const Section = ({
 }: SectionProps) => {
   const classes = classNames({
     sec: true,
-    ["sec--slim"]: slim,
-    ["sec--clean"]: clean,
+    "sec--slim": slim,
+    "sec--clean": clean,
   });
 
   return <section className={classes}>{children}</section>;

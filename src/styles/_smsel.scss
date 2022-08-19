@@ -67,6 +67,11 @@
       padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
       max-width: 230px;
       min-width: 185px;
+
+      &:focus {
+        border-color: ui-vars.$dark;
+        outline: 0;
+      }
     }
 
     span {
@@ -78,7 +83,6 @@
       stroke: ui-vars.$white;
     }
 
-    &:focus,
     &.focused {
       select {
         border-color: ui-vars.$dark;

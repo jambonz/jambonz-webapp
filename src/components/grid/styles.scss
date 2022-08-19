@@ -2,16 +2,14 @@
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
-/** CSS magic numbers need to be normalized... */
-
 @mixin grid-break {
-  @media (max-width: 1070px) {
+  @media (max-width: vars.$gridbreak1) {
     @content;
   }
 }
 
 @mixin grid-break2 {
-  @media (max-width: 940px) {
+  @media (max-width: vars.$gridbreak2) {
     @content;
   }
 }

@@ -95,7 +95,7 @@ export const ApiKeys = ({ path, post, label }: ApiKeyProps) => {
             })
           ) : (
             <GridRow empty>
-              <div>No API keys yet. Try adding one.</div>
+              <div>No API keys yet.</div>
             </GridRow>
           )}
         </Grid>

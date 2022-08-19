@@ -105,7 +105,7 @@
 
   &__link {
     @include ui-mixins.ms();
-    color: #888;
+    color: vars.$jeangrey;
     display: flex;
     align-items: center;
     padding: ui-vars.$px00 ui-vars.$px01;

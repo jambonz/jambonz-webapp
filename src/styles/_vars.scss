@@ -1,5 +1,7 @@
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 
+$jeangrey: #888;
+
 $ico00: 18px;
 $ico01: 24px;
 $ico03: 36px;
@@ -8,6 +10,8 @@ $ico0N: 20px;
 $widthnavi: 280px;
 $widthinput: 512px;
 $widthbreak: ui-vars.$width-tablet-2;
+$gridbreak1: 1070px;
+$gridbreak2: 940px;
 
 $stroke00: 1.5px;
 

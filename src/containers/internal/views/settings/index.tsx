@@ -9,6 +9,7 @@ import { Checkzone } from "src/components/forms";
 import { ApiKeys } from "src/containers/internal/api-keys";
 
 import type { ServiceProvider } from "src/api/types";
+import { MSG_REQUIRED_FIELDS } from "src/constants";
 
 type SettingsProps = {
   serviceProviders: ServiceProvider[];
@@ -104,9 +105,7 @@ export const Settings = ({
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
-            <MS>
-              Fields marked with an asterisk<span>*</span> are required.
-            </MS>
+            <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
           <fieldset>
             <label htmlFor="name">

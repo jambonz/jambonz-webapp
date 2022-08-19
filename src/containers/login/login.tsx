@@ -66,7 +66,7 @@ export const Login = () => {
           required
           type="text"
           name="username"
-          placeholder="username"
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -74,7 +74,7 @@ export const Login = () => {
           required
           name="password"
           value={password}
-          placeholder="password"
+          placeholder="Password"
           setValue={setPassword}
         />
         {message && <Message message={message} />}

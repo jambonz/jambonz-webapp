@@ -9,8 +9,7 @@
   font-family: ui-vars.$font-mono;
 
   > span {
-    /** CSS magic number goes with api keys grid... */
-    @media (max-width: 940px) {
+    @media (max-width: vars.$gridbreak2) {
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
