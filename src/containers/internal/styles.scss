@@ -6,10 +6,10 @@
 .internal {
   display: flex;
 
-  /** <nav.navi> */
+  /** Structural layout: */
 
-  /** Inheriting from jambonz-ui .wrap */
   header {
+    /** Inheriting from jambonz-ui .wrap */
     padding-top: ui-vars.$px03;
     padding-bottom: ui-vars.$px03;
     display: flex;
@@ -42,7 +42,8 @@
     }
   }
 
-  /** forms */
+  /** Forms */
+
   form {
     > fieldset + fieldset {
       border-top: 1px solid ui-vars.$grey;
@@ -125,6 +126,29 @@
     input[type="password"] {
       width: 100%;
       max-width: vars.$widthinput;
+    }
+  }
+
+  /** List indexes */
+
+  .mast {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .ico {
+      @include mixins.icosize();
+    }
+  }
+
+  .filters {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: ui-vars.$px04;
+    padding-bottom: ui-vars.$px03;
+
+    + * {
+      margin-top: 0;
     }
   }
 }

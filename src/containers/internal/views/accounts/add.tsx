@@ -6,7 +6,7 @@ import { AccountForm } from "./form";
 export const AddAccount = () => {
   return (
     <>
-      <H1>Add account</H1>
+      <H1>Add an account</H1>
       <AccountForm />
     </>
   );
