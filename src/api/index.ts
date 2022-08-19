@@ -10,6 +10,7 @@ import {
   API_SERVICE_PROVIDERS,
   API_API_KEYS,
   API_ACCOUNTS,
+  API_APPLICATIONS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -221,6 +222,10 @@ export const postSubspace = (sid: string, payload: Payload) => {
   );
 };
 
+export const postApplication = (payload: Payload) => {
+  return postFetch<SidResponse>(API_APPLICATIONS, payload);
+};
+
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Payload) => {
@@ -233,6 +238,10 @@ export const putServiceProvider = (sid: string, payload: Payload) => {
 
 export const putAccount = (sid: string, payload: Payload) => {
   return putFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, payload);
+};
+
+export const putApplication = (sid: string, payload: Payload) => {
+  return putFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`, payload);
 };
 
 /** Named wrappers for `deleteFetch` */
@@ -251,6 +260,10 @@ export const deleteAccount = (sid: string) => {
 
 export const deleteSubspace = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}/SubspaceTeleport`);
+};
+
+export const deleteApplication = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`);
 };
 
 /** Named wrappers for `getFetch` */
