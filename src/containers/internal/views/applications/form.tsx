@@ -281,7 +281,7 @@ export const ApplicationForm = ({
   return (
     <>
       <Section slim>
-        <form onSubmit={handleSubmit}>
+        <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
             <MS>
               Fields marked with an asterisk<span>*</span> are required.
