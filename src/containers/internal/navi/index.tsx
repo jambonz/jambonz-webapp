@@ -210,7 +210,7 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
               required
               type="text"
               name="name"
-              placeholder="service provider name"
+              placeholder="Service provider name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

@@ -14,7 +14,10 @@ import {
   VENDOR_WELLSAID,
 } from "src/vendor";
 import { postApplication, putApplication } from "src/api";
-import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
+} from "src/router/routes";
 import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
 
 import type {
@@ -165,7 +168,13 @@ export const ApplicationForm = ({
   };
 
   useEffect(() => {
-    if (accounts && !accountSid) {
+    /** Accounts are required to create applications */
+    if (accounts && !accounts.length) {
+      toastError(
+        "You must create an account before you can create an application."
+      );
+      navigate(ROUTE_INTERNAL_ACCOUNTS);
+    } else if (accounts && !accountSid) {
       setAccountSid(accounts[0].account_sid);
     }
   }, [accounts, accountSid]);

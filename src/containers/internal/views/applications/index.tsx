@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 
 import { deleteApplication, getFetch } from "src/api";
 import { API_ACCOUNTS } from "src/api/constants";
-import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_APPLICATIONS,
+  ROUTE_INTERNAL_ACCOUNTS,
+} from "src/router/routes";
 import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess } from "src/store";
@@ -45,6 +48,8 @@ export const Applications = () => {
   useEffect(() => {
     if (accountSid) {
       getApplications();
+    } else {
+      setApplications([]);
     }
   }, [accountSid]);
 
@@ -52,14 +57,16 @@ export const Applications = () => {
     <>
       <section className="mast">
         <H1>Applications</H1>
-        <Link
-          to={`${ROUTE_INTERNAL_APPLICATIONS}/add`}
-          title="Add an application"
-        >
-          <Icon>
-            <Icons.Plus />
-          </Icon>
-        </Link>
+        {accountSid && (
+          <Link
+            to={`${ROUTE_INTERNAL_APPLICATIONS}/add`}
+            title="Add an application"
+          >
+            <Icon>
+              <Icons.Plus />
+            </Icon>
+          </Link>
+        )}
       </section>
       <section className="filters">
         <AccountFilter account={[accountSid, setAccountSid]} />
@@ -109,19 +116,29 @@ export const Applications = () => {
                   </div>
                 );
               })
-            ) : (
+            ) : accountSid ? (
               <div>No applications yet.</div>
+            ) : (
+              <div>
+                You must{" "}
+                <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
+                  create an account
+                </Link>{" "}
+                before you can create an application.
+              </div>
             )
           ) : (
             <Spinner />
           )}
         </div>
       </Section>
-      <Section clean>
-        <Button small as={Link} to={`${ROUTE_INTERNAL_APPLICATIONS}/add`}>
-          Add application
-        </Button>
-      </Section>
+      {accountSid && (
+        <Section clean>
+          <Button small as={Link} to={`${ROUTE_INTERNAL_APPLICATIONS}/add`}>
+            Add application
+          </Button>
+        </Section>
+      )}
       {application && (
         <DeleteApplication
           application={application}

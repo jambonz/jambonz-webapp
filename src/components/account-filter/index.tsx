@@ -32,7 +32,7 @@ export const AccountFilter = ({
   };
 
   useEffect(() => {
-    if (accounts && !defaultOption) {
+    if (accounts && accounts.length > 0 && !defaultOption) {
       setAccountSid(accounts[0].account_sid);
     }
   }, [accounts, defaultOption, setAccountSid]);
@@ -47,7 +47,11 @@ export const AccountFilter = ({
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
       >
-        {defaultOption && <option value="">All accounts</option>}
+        {defaultOption ? (
+          <option value="">All accounts</option>
+        ) : (
+          accounts && !accounts.length && <option value="">No accounts</option>
+        )}
         {accounts &&
           accounts
             .sort((a, b) => a.name.localeCompare(b.name))
