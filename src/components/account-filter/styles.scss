@@ -4,66 +4,9 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 .account-filter {
-  position: relative;
-
-  &.focused {
-    select {
-      border-color: ui-vars.$dark;
-      outline: 0;
-    }
-
-    span {
-      background-color: ui-vars.$dark;
-    }
-  }
-
   label {
     display: inline-block;
     margin-right: ui-vars.$px01;
     @include ui-mixins.ms();
-  }
-
-  select {
-    @include ui-mixins.mxs();
-    font-family: inherit;
-    appearance: none;
-    background-color: transparent;
-    border: 1px solid ui-vars.$grey;
-    border-radius: ui-vars.$px01;
-    padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
-    max-width: 230px;
-    min-width: 185px;
-
-    &:focus {
-      outline: 0;
-    }
-  }
-
-  span {
-    height: vars.$ico01;
-    width: vars.$ico01;
-    background-color: ui-vars.$grey;
-    border-radius: ui-vars.$px00;
-    position: absolute;
-    right: ui-vars.$px01;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    pointer-events: none;
-
-    svg {
-      stroke: ui-vars.$white;
-
-      &:first-child {
-        transform: translateY(2px);
-      }
-
-      &:last-child {
-        transform: translateY(-2px);
-      }
-    }
   }
 }

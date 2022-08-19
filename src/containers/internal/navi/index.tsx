@@ -121,7 +121,7 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
             </Icon>
           </div>
         )}
-        <div className="navi__sps">
+        <div className="navi__sps smsel smsel--navi">
           <select
             value={currentServiceProvider?.service_provider_sid}
             onChange={(e) => setSid(e.target.value)}

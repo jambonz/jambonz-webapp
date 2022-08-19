@@ -25,6 +25,8 @@ export const AccountFilter = ({
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [focus, setFocus] = useState(false);
   const classes = {
+    smsel: true,
+    "smsel--filter": true,
     "account-filter": true,
     focused: focus,
   };

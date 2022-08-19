@@ -60,50 +60,6 @@
   &__sps {
     padding-top: ui-vars.$px03;
     padding-bottom: ui-vars.$px03;
-    position: relative;
-
-    select {
-      @include ui-mixins.mxs();
-      font-family: inherit;
-      appearance: none;
-      background-color: transparent;
-      border: 0;
-      color: ui-vars.$white;
-      width: 100%;
-      padding-right: ui-vars.$px04;
-
-      &:focus {
-        outline: 0;
-      }
-    }
-
-    span {
-      height: vars.$ico01;
-      width: vars.$ico01;
-      background-color: #333;
-      border-radius: ui-vars.$px00;
-      position: absolute;
-      right: calc(#{vars.$ico01} + #{ui-vars.$px01});
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      justify-content: center;
-      pointer-events: none;
-
-      svg {
-        stroke: ui-vars.$grey;
-
-        &:first-child {
-          transform: translateY(2px);
-        }
-
-        &:last-child {
-          transform: translateY(-2px);
-        }
-      }
-    }
 
     button[type="button"] {
       cursor: pointer;
