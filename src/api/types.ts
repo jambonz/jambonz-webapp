@@ -166,6 +166,27 @@ export interface RecentCall {
   trunk: string;
 }
 
+export interface SpeechCredential {
+  speech_credential_sid: string;
+  service_provider_sid: null | string;
+  account_sid: null | string;
+  vendor: string;
+  use_for_tts: number;
+  use_for_stt: number;
+  last_used: null | number;
+
+  region: null | string;
+  aws_region: null | string;
+
+  api_key: null | string;
+  access_key_id: null | string;
+  secret_access_key: null | string;
+  service_key: {
+    private_key: string;
+    client_email: string;
+  };
+}
+
 export interface Pcap {
   data_url: string;
   file_name: string;

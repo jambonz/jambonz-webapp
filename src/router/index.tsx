@@ -49,6 +49,12 @@ const LazyCarriers = withSuspense(
 const LazySpeechServices = withSuspense(
   React.lazy(() => import("src/containers/internal/views/speech-services"))
 );
+const LazySpeechServicesAdd = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/speech-services/add"))
+);
+const LazySpeechServicesEdit = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/speech-services/edit"))
+);
 const LazyPhoneNumbers = withSuspense(
   React.lazy(() => import("src/containers/internal/views/phone-numbers"))
 );
@@ -112,6 +118,14 @@ export const Router = () => {
                   <Route
                     path="speech-services"
                     element={<LazySpeechServices />}
+                  />
+                  <Route
+                    path="speech-services/add"
+                    element={<LazySpeechServicesAdd />}
+                  />
+                  <Route
+                    path="speech-services/:speech_credential_sid/edit"
+                    element={<LazySpeechServicesEdit />}
                   />
                   <Route path="phone-numbers" element={<LazyPhoneNumbers />} />
                   <Route path="ms-teams-tenants" element={<LazyTeams />} />

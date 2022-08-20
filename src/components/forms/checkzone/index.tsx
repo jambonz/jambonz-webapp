@@ -8,7 +8,7 @@ type CheckzoneProps = {
   name: string;
   label: string;
   hidden?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   initialCheck: boolean;
   handleChecked?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };

@@ -226,6 +226,16 @@ export const postApplication = (payload: Payload) => {
   return postFetch<SidResponse>(API_APPLICATIONS, payload);
 };
 
+export const postSpeechService = (
+  service_provider_sid: string,
+  payload: Payload
+) => {
+  return postFetch<SidResponse>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials`,
+    payload
+  );
+};
+
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Payload) => {
@@ -242,6 +252,17 @@ export const putAccount = (sid: string, payload: Payload) => {
 
 export const putApplication = (sid: string, payload: Payload) => {
   return putFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`, payload);
+};
+
+export const putSpeechService = (
+  service_provider_sid: string,
+  sid: string,
+  payload: Payload
+) => {
+  return putFetch<EmptyResponse>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`,
+    payload
+  );
 };
 
 /** Named wrappers for `deleteFetch` */
@@ -264,6 +285,15 @@ export const deleteSubspace = (sid: string) => {
 
 export const deleteApplication = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`);
+};
+
+export const deleteSpeechService = (
+  service_provider_sid: string,
+  sid: string
+) => {
+  return deleteFetch<EmptyResponse>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`
+  );
 };
 
 /** Named wrappers for `getFetch` */
