@@ -2,6 +2,7 @@ import React, { useEffect, useState, ChangeEvent } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
+import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { Section } from "src/components";
 import {
   Checkzone,
@@ -10,6 +11,14 @@ import {
   Selector,
   Message,
 } from "src/components/forms";
+import { toastError, toastSuccess, useSelectState } from "src/store";
+import {
+  postSpeechService,
+  putSpeechService,
+  getFetch,
+  deleteSpeechService,
+} from "src/api";
+import { API_SERVICE_PROVIDERS } from "src/api/constants";
 import {
   vendors,
   VENDOR_AWS,
@@ -17,17 +26,10 @@ import {
   VENDOR_MICROSOFT,
   VENDOR_WELLSAID,
 } from "src/vendor";
-import { toastError, toastSuccess } from "src/store";
-import { postSpeechService, putSpeechService } from "src/api";
+import { MSG_REQUIRED_FIELDS } from "src/constants";
 
 import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
-import type {
-  Account,
-  SpeechCredential,
-  ServiceProvider,
-  FetchError,
-} from "src/api/types";
-import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
+import type { Account, SpeechCredential, FetchError } from "src/api/types";
 
 export type UseCredentialData = {
   data: SpeechCredential | null;
@@ -38,20 +40,21 @@ export type UseCredentialData = {
 type SpeechServiceFormProps = {
   credential?: UseCredentialData;
   accounts: null | Account[];
-  currentServiceProvider: null | ServiceProvider;
 };
 
 export const SpeechServiceForm = ({
   accounts,
   credential,
-  currentServiceProvider,
 }: SpeechServiceFormProps) => {
   const navigate = useNavigate();
+  const currentServiceProvider = useSelectState("currentServiceProvider");
 
   const [accountSid, setAccountSid] = useState("");
 
   const [ttsCheck, setTtsCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
+  const [initialTtsCheck, setInitialTtsCheck] = useState(false);
+  const [initialSttCheck, setInitialSttCheck] = useState(false);
 
   const [vendor, setVendor] = useState("");
 
@@ -65,6 +68,70 @@ export const SpeechServiceForm = ({
     useState<GoogleServiceKey | null>(null);
 
   const [message, setMessage] = useState("");
+
+  const testCredential = (
+    currentServiceProvider: string,
+    sid: string,
+    callback: () => void
+  ) => {
+    getFetch<SpeechCredential["test_result"]>(
+      `${API_SERVICE_PROVIDERS}/${currentServiceProvider}/SpeechCredentials/${sid}/test`
+    )
+      .then(({ json }) => {
+        if (ttsCheck) {
+          // if (json.tts.status === "not tested") { // not sure if this is needed because i dont understand the not tested whether is is the same as unchecked box
+          //   setMessage(
+          //     `${message}. Text-to-speech was not tested, please try again.`
+          //   );
+          // }
+          if (json.tts.status === "fail") {
+            setMessage(`Text-to-speech error: ${json.tts.reason}`);
+          }
+        }
+        if (sttCheck) {
+          // if (json.stt.status === "not tested") {
+          //   setMessage(
+          //     `${message}. Speech-to-text was not tested, please try again.`
+          //   );
+          // }
+          if (json.stt.status === "fail") {
+            // stt fails less often than tts for some reasons about the service that i don't know
+            setMessage(`Speech-to-text error: ${json.stt.reason}`);
+          }
+        }
+
+        // console.log(message); // for some quirks i have yet to understand, message is not being logged here so i have to do the other way
+
+        if (json.tts.status === "fail" || json.stt.status === "fail") {
+          if (credential && credential.data) {
+            putSpeechService(currentServiceProvider, sid, {
+              use_for_tts: initialTtsCheck ? 1 : 0,
+              use_for_stt: initialSttCheck ? 1 : 0,
+            })
+              .then(() => {
+                credential.refetch();
+                toastError(<>Unable to add new speech service</>);
+              })
+              .catch((error) => {
+                toastError(error.msg);
+              });
+          } else {
+            deleteSpeechService(currentServiceProvider, sid)
+              .then(() => {
+                toastError(<>Unable to add new speech service</>);
+              })
+              .catch((error) => {
+                toastError(error.msg);
+              });
+          }
+        } else {
+          callback();
+        }
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // so far, there is no need for these
@@ -101,18 +168,32 @@ export const SpeechServiceForm = ({
           payload
         )
           .then(() => {
-            credential.refetch();
-            toastSuccess("Speech service updated successfully");
+            if (credential && credential.data) {
+              testCredential(
+                currentServiceProvider.service_provider_sid,
+                credential.data.speech_credential_sid,
+                () => {
+                  credential.refetch();
+                  toastSuccess("Speech service updated successfully");
+                }
+              );
+            }
           })
           .catch((error) => {
             toastError(error.msg);
           });
       } else {
         postSpeechService(currentServiceProvider.service_provider_sid, payload)
-          .then(({ json }) => {
-            toastSuccess("Speech service created successfully");
-            navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
-          })
+          .then(({ json }) =>
+            testCredential(
+              currentServiceProvider.service_provider_sid,
+              json.sid,
+              () => {
+                toastSuccess("Speech service created successfully");
+                navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
+              }
+            )
+          )
           .catch((error) => {
             toastError(error.msg);
           });
@@ -123,8 +204,7 @@ export const SpeechServiceForm = ({
   const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "use_stt") {
       sttCheck ? setSttCheck(false) : setSttCheck(true);
-    }
-    if (e.target.name === "use_tts") {
+    } else if (e.target.name === "use_tts") {
       ttsCheck ? setTtsCheck(false) : setTtsCheck(true);
     }
   };
@@ -137,19 +217,24 @@ export const SpeechServiceForm = ({
       if (credential.data.account_sid) {
         setAccountSid(credential.data.account_sid);
       }
+
       if (credential.data.use_for_stt) {
+        setInitialSttCheck(true);
         setSttCheck(true);
       } else {
+        setInitialSttCheck(false);
         setSttCheck(false);
       }
       if (credential.data.use_for_tts) {
+        setInitialTtsCheck(true);
         setTtsCheck(true);
       } else {
+        setInitialTtsCheck(false);
         setTtsCheck(false);
       }
 
       if (credential.data.service_key) {
-        setGoogleServiceKey(credential.data.service_key);
+        setGoogleServiceKey(JSON.parse(credential.data.service_key));
       }
 
       if (credential.data.access_key_id) {
@@ -197,9 +282,7 @@ export const SpeechServiceForm = ({
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
-            <MS>
-              Fields marked with an asterisk<span>*</span> are required.
-            </MS>
+            <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
           <fieldset>
             <label htmlFor="vendor">
@@ -249,71 +332,73 @@ export const SpeechServiceForm = ({
               <Checkzone
                 name={`use_tts`}
                 label={`Use for text-to-speech`}
-                initialCheck={ttsCheck}
-                handleChecked={handleCheck}
-              />
+                initialCheck={initialTtsCheck}
+                handleChecked={handleCheck} // the way it work, now it is pretty difficult to elegantly visually uncheck this when something wrong
+              >
+                <div />
+              </Checkzone>
               {vendor !== VENDOR_WELLSAID && (
                 <Checkzone
                   name={`use_stt`}
                   label={`Use for speech-to-text`}
-                  initialCheck={sttCheck}
+                  initialCheck={initialSttCheck}
                   handleChecked={handleCheck}
-                />
+                >
+                  <div />
+                </Checkzone>
               )}
             </fieldset>
           )}
-          {vendor &&
-            vendor === VENDOR_GOOGLE &&
-            ((!credential && (
-              <fieldset>
-                <label htmlFor="google_service_key">
-                  Service key<span>*</span>
-                </label>
-                <FileUpload
-                  id="google_service_key"
-                  name="google_service_key"
-                  handleFile={(file) => {
-                    const handleError = () => {
-                      setGoogleServiceKey(null);
-                      toastError(
-                        "Invalid service key file, could not parse as JSON."
-                      );
-                    };
+          {vendor && vendor === VENDOR_GOOGLE && !credential && (
+            <fieldset>
+              <label htmlFor="google_service_key">
+                Service key<span>*</span>
+              </label>
+              <FileUpload
+                id="google_service_key"
+                name="google_service_key"
+                handleFile={(file) => {
+                  const handleError = () => {
+                    setGoogleServiceKey(null);
+                    toastError(
+                      "Invalid service key file, could not parse as JSON."
+                    );
+                  };
 
-                    file
-                      .text()
-                      .then((text) => {
-                        try {
-                          const json: GoogleServiceKey = JSON.parse(text);
+                  file
+                    .text()
+                    .then((text) => {
+                      try {
+                        const json: GoogleServiceKey = JSON.parse(text);
 
-                          if (json.private_key && json.client_email) {
-                            setGoogleServiceKey(json);
-                          } else {
-                            setGoogleServiceKey(null);
-                          }
-                        } catch (error) {
-                          handleError();
+                        if (json.private_key && json.client_email) {
+                          setGoogleServiceKey(json);
+                        } else {
+                          setGoogleServiceKey(null);
                         }
-                      })
-                      .catch(() => {
+                      } catch (error) {
                         handleError();
-                      });
-                  }}
-                />
-              </fieldset>
-            )) || // this doesnt show yet for some reasons, maybe i am trynig to hard to make it smart, will get this dumb down later
-              (googleServiceKey && (
-                <fieldset>
-                  <div className="p">
-                    Selected service key:{" "}
-                    {googleServiceKey ? (
-                      <pre>{JSON.stringify(googleServiceKey, null, 2)}</pre> // there are escapes for yet to understandable reasons
-                    ) : (
-                      <strong>undefined</strong>
-                    )}
-                  </div>
-                </fieldset>
-              )))}
+                      }
+                    })
+                    .catch(() => {
+                      handleError();
+                    });
+                }}
+              />
+            </fieldset>
+          )}
+          {vendor && vendor === VENDOR_GOOGLE && googleServiceKey && (
+            <fieldset>
+              <div className="p">
+                Selected service key:{" "}
+                {googleServiceKey ? (
+                  <pre>{JSON.stringify(googleServiceKey, null, 2)}</pre>
+                ) : (
+                  <strong>undefined</strong>
+                )}
+              </div>
+            </fieldset>
+          )}
           {vendor && vendor === VENDOR_AWS && (
             <>
               <fieldset>
@@ -378,15 +463,17 @@ export const SpeechServiceForm = ({
           )}
           {regions && regions[vendor as keyof RegionVendors] && (
             <fieldset>
-              <label htmlFor="region">Region</label>
+              <label htmlFor="region">
+                Region<span>*</span>
+              </label>
               <Selector
                 id="region"
                 name="region"
                 value={region}
+                required
                 options={[
                   {
-                    name:
-                      vendor === VENDOR_AWS ? "Select a region" : "All regions",
+                    name: "Select a region",
                     value: "",
                   },
                 ].concat(regions[vendor as keyof RegionVendors])}
