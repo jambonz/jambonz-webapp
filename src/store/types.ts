@@ -15,7 +15,7 @@ export interface ACL {
 }
 
 export interface FeatureFlag {
-  subspace: boolean;
+  developer: boolean;
 }
 
 export interface State {

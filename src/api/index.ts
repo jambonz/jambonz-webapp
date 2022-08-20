@@ -19,12 +19,10 @@ import {
   MSG_SERVER_DOWN,
   MSG_SOMETHING_WRONG,
 } from "src/constants";
-import { StatusCodes } from "./types";
 
 import type {
   FetchError,
   FetchTransport,
-  Payload,
   User,
   UserLogin,
   ServiceProvider,
@@ -36,7 +34,13 @@ import type {
   Alert,
   PagedResponse,
   RecentCall,
+  UserLoginPayload,
+  UserUpdatePayload,
+  ApiKey,
+  Account,
+  Application,
 } from "./types";
+import { StatusCodes } from "./types";
 
 /** Wrap all requests to normalize response handling */
 const fetchTransport = <Type>(
@@ -166,7 +170,7 @@ export const getFetch = <Type>(url: string) => {
   });
 };
 
-export const postFetch = <Type>(url: string, payload: Payload) => {
+export const postFetch = <Type, Payload>(url: string, payload: Payload) => {
   return fetchTransport<Type>(url, {
     method: "POST",
     body: JSON.stringify(payload),
@@ -174,7 +178,7 @@ export const postFetch = <Type>(url: string, payload: Payload) => {
   });
 };
 
-export const putFetch = <Type>(url: string, payload: Payload) => {
+export const putFetch = <Type, Payload>(url: string, payload: Payload) => {
   return fetchTransport<Type>(url, {
     method: "PUT",
     body: JSON.stringify(payload),
@@ -191,7 +195,7 @@ export const deleteFetch = <Type>(url: string) => {
 
 /** All APIs need a wrapper utility that uses the FetchTransport */
 
-export const postLogin = (payload: Payload) => {
+export const postLogin = (payload: UserLoginPayload) => {
   return fetchTransport<UserLogin>(API_LOGIN, {
     method: "POST",
     body: JSON.stringify(payload),
@@ -203,45 +207,59 @@ export const postLogin = (payload: Payload) => {
 
 /** Named wrappers for `postFetch` */
 
-export const postServiceProviders = (payload: Payload) => {
-  return postFetch<SidResponse>(API_SERVICE_PROVIDERS, payload);
-};
-
-export const postApiKey = (payload: Payload) => {
-  return postFetch<TokenResponse>(API_API_KEYS, payload);
-};
-
-export const postAccount = (payload: Payload) => {
-  return postFetch<SidResponse>(API_ACCOUNTS, payload);
-};
-
-export const postSubspace = (sid: string, payload: Payload) => {
-  return postFetch<SidResponse>(
-    `${API_ACCOUNTS}/${sid}/SubspaceTeleport`,
+export const postServiceProviders = (payload: Partial<ServiceProvider>) => {
+  return postFetch<SidResponse, Partial<ServiceProvider>>(
+    API_SERVICE_PROVIDERS,
     payload
   );
 };
 
-export const postApplication = (payload: Payload) => {
-  return postFetch<SidResponse>(API_APPLICATIONS, payload);
+export const postApiKey = (payload: Partial<ApiKey>) => {
+  return postFetch<TokenResponse, Partial<ApiKey>>(API_API_KEYS, payload);
+};
+
+export const postAccount = (payload: Partial<Account>) => {
+  return postFetch<SidResponse, Partial<Account>>(API_ACCOUNTS, payload);
+};
+
+export const postApplication = (payload: Partial<Application>) => {
+  return postFetch<SidResponse, Partial<Application>>(
+    API_APPLICATIONS,
+    payload
+  );
 };
 
 /** Named wrappers for `putFetch` */
 
-export const putUser = (sid: string, payload: Payload) => {
-  return putFetch<EmptyResponse>(`${API_USERS}/${sid}`, payload);
+export const putUser = (sid: string, payload: UserUpdatePayload) => {
+  return putFetch<EmptyResponse, UserUpdatePayload>(
+    `${API_USERS}/${sid}`,
+    payload
+  );
 };
 
-export const putServiceProvider = (sid: string, payload: Payload) => {
-  return putFetch<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`, payload);
+export const putServiceProvider = (
+  sid: string,
+  payload: Partial<ServiceProvider>
+) => {
+  return putFetch<EmptyResponse, Partial<ServiceProvider>>(
+    `${API_SERVICE_PROVIDERS}/${sid}`,
+    payload
+  );
 };
 
-export const putAccount = (sid: string, payload: Payload) => {
-  return putFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`, payload);
+export const putAccount = (sid: string, payload: Partial<Account>) => {
+  return putFetch<EmptyResponse, Partial<Account>>(
+    `${API_ACCOUNTS}/${sid}`,
+    payload
+  );
 };
 
-export const putApplication = (sid: string, payload: Payload) => {
-  return putFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`, payload);
+export const putApplication = (sid: string, payload: Partial<Application>) => {
+  return putFetch<EmptyResponse, Partial<Application>>(
+    `${API_APPLICATIONS}/${sid}`,
+    payload
+  );
 };
 
 /** Named wrappers for `deleteFetch` */
@@ -256,10 +274,6 @@ export const deleteApiKey = (sid: string) => {
 
 export const deleteAccount = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`);
-};
-
-export const deleteSubspace = (sid: string) => {
-  return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}/SubspaceTeleport`);
 };
 
 export const deleteApplication = (sid: string) => {
