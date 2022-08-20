@@ -118,11 +118,18 @@ under the hood, which are:
 - `deleteFetch(url)`
 - `getBlob(url)`
 
-Example of a wrapper API method to `:POST` a new `Account`:
+Example of wrapper API methods to `:POST` and `:PUT` for the `Account` type:
 
 ```ts
-export const postAccount = (payload: Payload) => {
-  return postFetch<SidResponse>(API_ACCOUNTS, payload);
+export const postAccount = (payload: Partial<Account>) => {
+  return postFetch<SidResponse, Partial<Account>>(API_ACCOUNTS, payload);
+};
+
+export const putAccount = (sid: string, payload: Partial<Account>) => {
+  return putFetch<EmptyResponse, Partial<Account>>(
+    `${API_ACCOUNTS}/${sid}`,
+    payload
+  );
 };
 ```
 

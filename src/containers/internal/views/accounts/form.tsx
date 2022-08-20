@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import { P, Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  toastError,
-  toastSuccess,
-  useFeatureFlag,
-  useSelectState,
-} from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   putAccount,
   postAccount,
@@ -18,7 +13,6 @@ import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
 import { Selector, Checkzone, Passwd, Message } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { DEFAULT_WEBHOOK } from "src/api/constants";
-import { Subspace } from "./subspace";
 
 import type {
   WebHook,
@@ -45,7 +39,6 @@ export const AccountForm = ({
   account = null,
 }: AccountFormProps) => {
   const navigate = useNavigate();
-  const subspace = useFeatureFlag("subspace");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
   const [name, setName] = useState("");
@@ -54,8 +47,6 @@ export const AccountForm = ({
   const [recId, setRecId] = useState("");
   const [regHook, setRegHook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [queueHook, setQueueHook] = useState<WebHook>(DEFAULT_WEBHOOK);
-  const [subspaceId, setSubspaceId] = useState("");
-  const [subspaceSecret, setSubspaceSecret] = useState("");
   const [modal, setModal] = useState(false);
   const [message, setMessage] = useState("");
   const [initialRegHook, setInitialRegHook] = useState(false);
@@ -153,8 +144,6 @@ export const AccountForm = ({
         siprec_hook_sid: recId || null,
         queue_event_hook: queueHook || account.data.queue_event_hook,
         registration_hook: regHook || account.data.registration_hook,
-        subspace_client_id: subspaceId || null,
-        subspace_client_secret: subspaceSecret || null,
         device_calling_application_sid: appId || null,
       })
         .then(() => {
@@ -223,14 +212,6 @@ export const AccountForm = ({
         } else {
           setInitialQueueHook(false);
         }
-      }
-
-      if (account.data.subspace_client_id) {
-        setSubspaceId(account.data.subspace_client_id);
-      }
-
-      if (account.data.subspace_client_secret) {
-        setSubspaceSecret(account.data.subspace_client_secret);
       }
     }
   }, [account]);
@@ -444,14 +425,6 @@ export const AccountForm = ({
               </fieldset>
             );
           })}
-          {account && account.data && subspace && (
-            <Subspace
-              id={[subspaceId, setSubspaceId]}
-              secret={[subspaceSecret, setSubspaceSecret]}
-              account={account}
-              sipRealm={realm}
-            />
-          )}
           {message && (
             <fieldset>
               <Message message={message} />

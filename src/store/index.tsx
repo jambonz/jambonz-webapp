@@ -26,7 +26,8 @@ const initialState: State = {
   user: null,
   toast: null,
   featureFlags: {
-    subspace: import.meta.env.VITE_FEATURE_SUBSPACE ? true : false,
+    /** Sort of just a noop example of a feature flag... */
+    developer: import.meta.env.VITE_FEATURE_DEVELOPER ? true : false,
   },
   accessControl: {
     hasAdminAuth: true,

@@ -1,17 +1,8 @@
-export type Payload = Record<string, unknown>;
-
-export type EmptyResponse = Payload;
+/** Simple types */
 
 export type WebhookMethod = "POST" | "GET";
 
-/** Status codes with JSON responses */
-/** Code 400,403 can be an empty response sometimes... */
-/** FYI: Code 480 is SMPP temporarily unavailable */
-// export type StatusJSON = 200 | 201 | 400 | 403 | 422 | 480 | 500;
-
-/** Status codes with empty responses */
-/** Code 403 can have a JSON response sometimes... */
-// export type StatusEmpty = 202 | 204 | 400 | 403 | 404;
+/** Status codes */
 
 export enum StatusCodes {
   OK = 200,
@@ -24,10 +15,11 @@ export enum StatusCodes {
   NOT_FOUND = 404,
   UNPROCESSABLE_ENTITY = 422,
   INTERNAL_SERVER_ERROR = 500,
-
-  /** Code 480 is SMPP temporarily unavailable */
+  /** SMPP temporarily unavailable */
   TEMPORARILY_UNAVAILABLE = 480,
 }
+
+/** Fetch transport interfaces */
 
 export interface FetchTransport<Type> {
   status: StatusCodes;
@@ -44,6 +36,20 @@ export interface UseApiData {
   <Type>(apiPath: string): [null | Type, () => void, null | FetchError];
 }
 
+/** API related interfaces */
+
+export interface WebhookOption {
+  name: WebhookMethod;
+  value: WebhookMethod;
+}
+
+export interface Pcap {
+  data_url: string;
+  file_name: string;
+}
+
+/** API responses/payloads */
+
 export interface User {
   user_sid: string;
 }
@@ -52,6 +58,16 @@ export interface UserLogin {
   token: string;
   user_sid: string;
   force_change: boolean;
+}
+
+export interface UserLoginPayload {
+  username: string;
+  password: string;
+}
+
+export interface UserUpdatePayload {
+  old_password: string;
+  new_password: string;
 }
 
 export interface ServiceProvider {
@@ -77,26 +93,11 @@ export interface WebHook {
   webhook_sid?: null | string;
 }
 
-export interface WebhookOption {
-  name: WebhookMethod;
-  value: WebhookMethod;
-}
-
 export interface Sbc {
   ipv4: string;
   port: number | string;
   sbc_address_sid: string;
   service_provider_sid: null | string;
-}
-
-/** Subspace is behind an ENV flag `VITE_FEATURE_SUBSPACE` */
-export interface SubspaceTeleport {
-  destination: string;
-}
-
-export interface SubspaceEntryPoint {
-  address: string;
-  transport_type: string;
 }
 
 export interface Account {
@@ -109,13 +110,6 @@ export interface Account {
   registration_hook: null | WebHook;
   service_provider_sid: string;
   device_calling_application_sid: null | string;
-
-  /** Subspace is behind an ENV flag `VITE_FEATURE_SUBSPACE` */
-  subspace_client_id: null | string;
-  subspace_client_secret: null | string;
-  subspace_sip_teleport_id: null | string;
-  /** Serialized JSON parsed as an array of SubspaceEntryPoint types */
-  subspace_sip_teleport_destinations: null | string;
 }
 
 export interface Application {
@@ -225,4 +219,8 @@ export interface TokenResponse extends SidResponse {
 
 export interface SecretResponse {
   webhook_secret: string;
+}
+
+export interface EmptyResponse {
+  [key: string]: unknown;
 }
