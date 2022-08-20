@@ -144,8 +144,8 @@ export const SpeechServiceForm = ({
         account_sid: accountSid || null,
         service_provider_sid:
           currentServiceProvider.service_provider_sid || null,
-        use_for_tts: ttsCheck,
-        use_for_stt: sttCheck,
+        use_for_tts: ttsCheck ? 1 : 0,
+        use_for_stt: sttCheck ? 1 : 0,
 
         service_key:
           vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,

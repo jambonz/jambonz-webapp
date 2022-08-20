@@ -175,7 +175,7 @@ export interface SpeechCredential {
   api_key: null | string;
   access_key_id: null | string;
   secret_access_key: null | string;
-  service_key: string;
+  service_key: null | string;
 
   test_result: {
     stt: {

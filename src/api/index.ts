@@ -39,6 +39,7 @@ import type {
   ApiKey,
   Account,
   Application,
+  SpeechCredential,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -229,20 +230,15 @@ export const postApplication = (payload: Partial<Application>) => {
   );
 };
 
-export const postApplication = (payload: Payload) => {
-  return postFetch<SidResponse>(API_APPLICATIONS, payload);
-};
-
 export const postSpeechService = (
   service_provider_sid: string,
-  payload: Payload
+  payload: Partial<SpeechCredential>
 ) => {
-  return postFetch<SidResponse>(
+  return postFetch<SidResponse, Partial<SpeechCredential>>(
     `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials`,
     payload
   );
 };
-
 
 /** Named wrappers for `putFetch` */
 
@@ -280,9 +276,9 @@ export const putApplication = (sid: string, payload: Partial<Application>) => {
 export const putSpeechService = (
   service_provider_sid: string,
   sid: string,
-  payload: Payload
+  payload: Partial<SpeechCredential>
 ) => {
-  return putFetch<EmptyResponse>(
+  return putFetch<EmptyResponse, Partial<SpeechCredential>>(
     `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`,
     payload
   );
