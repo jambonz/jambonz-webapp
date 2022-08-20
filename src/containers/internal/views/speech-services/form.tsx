@@ -86,6 +86,7 @@ export const SpeechServiceForm = ({
           // }
           if (json.tts.status === "fail") {
             setMessage(`Text-to-speech error: ${json.tts.reason}`);
+            ttsCheck ? setTtsCheck(false) : setTtsCheck(true);
           }
         }
         if (sttCheck) {
@@ -97,6 +98,7 @@ export const SpeechServiceForm = ({
           if (json.stt.status === "fail") {
             // stt fails less often than tts for some reasons about the service that i don't know
             setMessage(`Speech-to-text error: ${json.stt.reason}`);
+            sttCheck ? setSttCheck(false) : setSttCheck(true);
           }
         }
 
@@ -334,6 +336,8 @@ export const SpeechServiceForm = ({
                 label={`Use for text-to-speech`}
                 initialCheck={initialTtsCheck}
                 handleChecked={handleCheck} // the way it work, now it is pretty difficult to elegantly visually uncheck this when something wrong
+                checkOverride
+                checkOverrideValue={ttsCheck}
               >
                 <div />
               </Checkzone>
@@ -343,6 +347,8 @@ export const SpeechServiceForm = ({
                   label={`Use for speech-to-text`}
                   initialCheck={initialSttCheck}
                   handleChecked={handleCheck}
+                  checkOverride
+                  checkOverrideValue={sttCheck}
                 >
                   <div />
                 </Checkzone>

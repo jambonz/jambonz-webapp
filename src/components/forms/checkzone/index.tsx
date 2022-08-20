@@ -11,6 +11,8 @@ type CheckzoneProps = {
   children: React.ReactNode;
   initialCheck: boolean;
   handleChecked?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  checkOverride?: boolean;
+  checkOverrideValue?: boolean;
 };
 
 type CheckzoneRef = HTMLInputElement;
@@ -26,6 +28,8 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
       children,
       initialCheck,
       handleChecked,
+      checkOverride,
+      checkOverrideValue,
     }: CheckzoneProps,
     ref
   ) => {
@@ -59,7 +63,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
                 handleChecked(e);
               }
             }}
-            checked={checked}
+            checked={checkOverride ? checkOverrideValue : checked}
           />
           <div>{label}</div>
         </label>
