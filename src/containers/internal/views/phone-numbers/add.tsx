@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
 import { useNavigate } from "react-router-dom";
 
-import { useServiceProviderData } from "src/api";
+import { useApiData, useServiceProviderData } from "src/api";
 import { PhoneNumberForm } from "./form";
 
-import type { Account } from "src/api/types"; // voip type also
+import type { Account, Application, PhoneNumber } from "src/api/types"; // voip type also
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_CARRIERS,
@@ -17,8 +17,15 @@ export const AddPhoneNumber = () => {
 
   const voipCarriers = 1;
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [applications] = useApiData<Application[]>("Applications");
+  // this can definitely be moved to the form because it repeats itself in the edit page as well
+  const [phoneNumbers] = useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
 
   useEffect(() => {
+    // this logic is handled in the form for application page
+    // maybe we can move here instead so add page has more things to do?
+    // not only that, it will look less buried in comparison as
+    // form inherits lots of stuff, let the higher level do the stuff?
     if (accounts) {
       if (accounts.length === 0) {
         toastError(
@@ -41,6 +48,8 @@ export const AddPhoneNumber = () => {
       <H1>Add a phone number</H1>
       <PhoneNumberForm
         accounts={accounts}
+        applications={applications}
+        phoneNumbers={phoneNumbers}
         // voipCarriers={voipCarriers}
       />
     </>

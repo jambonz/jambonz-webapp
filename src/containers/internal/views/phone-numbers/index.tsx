@@ -15,12 +15,6 @@ export const PhoneNumbers = () => {
 
   // const [voipCarriers, setVoipCarriers] = console.log("hello world");
 
-  // const getPhoneNumbers = () => {
-  //   getFetch<PhoneNumber[]>("PhoneNumbers")
-  //     .then(({ json }) => setPhoneNumbers(json))
-  //     .catch((error) => toastError(error));
-  // };
-
   const handleDelete = () => {
     if (phoneNumber) {
       deletePhoneNumber(phoneNumber.phone_number_sid)
@@ -64,7 +58,7 @@ export const PhoneNumbers = () => {
                     <div className="item__info">
                       <div className="item__title">
                         <Link
-                          to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}`}
+                          to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
                           title="Edit phone number"
                           className="i"
                         >
@@ -82,7 +76,7 @@ export const PhoneNumbers = () => {
                     </div>
                     <div className="item__actions">
                       <Link
-                        to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}`}
+                        to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
                         title="Edit phone number"
                         className="i"
                       >
