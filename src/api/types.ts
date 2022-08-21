@@ -189,11 +189,6 @@ export interface SpeechCredential {
   };
 }
 
-export interface Pcap {
-  data_url: string;
-  file_name: string;
-}
-
 export interface Alert {
   time: string;
   account_sid: string;

@@ -38,8 +38,6 @@ export const SpeechServices = () => {
       .catch((error) => toastError(error.msg));
   };
 
-  // TODO test responses
-
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
       deleteSpeechService(

@@ -136,7 +136,7 @@ export const SpeechServiceForm = ({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // so far, there is no need for these
+    e.preventDefault();
 
     setMessage("");
 
