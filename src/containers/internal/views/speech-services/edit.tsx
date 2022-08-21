@@ -24,7 +24,7 @@ export const EditSpeechService = () => {
 
   return (
     <>
-      <H1>Edit Application</H1>
+      <H1>Edit Speech Service</H1>
       <SpeechServiceForm
         accounts={accounts}
         credential={{ data, refetch, error }}

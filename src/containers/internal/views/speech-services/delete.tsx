@@ -17,16 +17,12 @@ export const DeleteSpeechService = ({
   handleSubmit,
 }: DeleteProps) => {
   return (
-    <>
-      {1 && (
-        <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
-          <P>
-            Are you sure you want to delete the speech service{" "}
-            <strong>{credential.vendor}</strong>?
-          </P>
-        </Modal>
-      )}
-    </>
+    <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
+      <P>
+        Are you sure you want to delete the speech service{" "}
+        <strong>{credential.vendor}</strong>?
+      </P>
+    </Modal>
   );
 };
 

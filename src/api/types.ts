@@ -48,6 +48,16 @@ export interface Pcap {
   file_name: string;
 }
 
+export interface CredentialTest {
+  status: "success" | "fail" | "not tested";
+  reason: string;
+}
+
+export interface CredentialTestResult {
+  stt: CredentialTest;
+  tts: CredentialTest;
+}
+
 /** API responses/payloads */
 
 export interface User {
@@ -167,26 +177,14 @@ export interface SpeechCredential {
   vendor: string;
   use_for_tts: number;
   use_for_stt: number;
-  last_used: null | number;
-
+  last_used: null | string;
   region: null | string;
   aws_region: null | string;
-
   api_key: null | string;
   access_key_id: null | string;
   secret_access_key: null | string;
   service_key: null | string;
-
-  test_result: {
-    stt: {
-      status: string;
-      reason: string;
-    };
-    tts: {
-      status: string;
-      reason: string;
-    };
-  };
+  test_result: CredentialTestResult;
 }
 
 export interface Alert {

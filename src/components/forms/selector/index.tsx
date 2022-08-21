@@ -18,11 +18,15 @@ type SelectorRef = HTMLSelectElement;
 
 /** The forwarded ref is so forms can still focus() this select menu if necessary... */
 export const Selector = forwardRef<SelectorRef, SelectorProps>(
-  ({ id, name, value, options, ...restProps }: SelectorProps, ref) => {
+  (
+    { id, name, value, options, disabled, ...restProps }: SelectorProps,
+    ref
+  ) => {
     const [focus, setFocus] = useState(false);
     const classes = {
       selector: true,
       focused: focus,
+      disabled: disabled ? true : false,
     };
 
     return (
@@ -34,6 +38,7 @@ export const Selector = forwardRef<SelectorRef, SelectorProps>(
           value={value}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
+          disabled={disabled}
           {...restProps}
         >
           {options.map((option) => (

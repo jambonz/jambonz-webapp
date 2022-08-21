@@ -25,8 +25,6 @@
   }
 }
 
-/** This should go into jambonz-ui? */
-
 @mixin pre {
   font-family: ui-vars.$font-mono;
   font-size: ui-vars.$m-size;
@@ -39,4 +37,9 @@
   @media (max-width: ui-vars.$width-mobile) {
     font-size: ui-vars.$mxs-size;
   }
+}
+
+@mixin disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

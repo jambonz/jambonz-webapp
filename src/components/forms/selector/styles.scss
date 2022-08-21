@@ -1,4 +1,5 @@
 @use "src/styles/vars";
+@use "src/styles/mixins";
 @use "jambonz-ui/src/styles/index";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
@@ -7,6 +8,10 @@
   position: relative;
   width: 100%;
   max-width: vars.$widthinput;
+
+  &.disabled {
+    @include mixins.disabled();
+  }
 
   &.focused {
     select {
@@ -32,6 +37,10 @@
     &:focus {
       border-color: ui-vars.$dark;
       outline: 0;
+    }
+
+    &[disabled] {
+      @include mixins.disabled();
     }
   }
 

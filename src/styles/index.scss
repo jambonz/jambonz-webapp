@@ -18,31 +18,6 @@
 
 /** Global things */
 
-input[type="text"],
-input[type="password"] {
-  @include ui-mixins.m();
-  padding: ui-vars.$px01 ui-vars.$px02;
-  border-radius: ui-vars.$px01;
-  border: 2px solid ui-vars.$grey;
-  background-color: ui-vars.$white;
-  color: inherit;
-
-  &:focus {
-    border-color: ui-vars.$dark;
-    outline: 0;
-  }
-
-  &::placeholder {
-    color: vars.$jeangrey;
-  }
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  height: ui-vars.$px02;
-  width: ui-vars.$px02;
-}
-
 pre,
 code {
   @include mixins.pre();
@@ -53,6 +28,9 @@ pre {
   color: ui-vars.$pink;
   background-color: ui-vars.$dark;
   border-radius: ui-vars.$px01;
+  width: 100%;
+  max-width: vars.$widthinput;
+  overflow: auto;
 }
 
 p > code {
