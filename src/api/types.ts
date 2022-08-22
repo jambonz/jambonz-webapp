@@ -49,7 +49,7 @@ export interface Pcap {
 }
 
 export interface CredentialTest {
-  status: "success" | "fail" | "not tested";
+  status: "ok" | "fail" | "not tested";
   reason: string;
 }
 
