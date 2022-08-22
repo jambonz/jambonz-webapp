@@ -38,7 +38,9 @@ export const CredentialStatus = ({
           }
         })
         .catch((error: TypeError) => {
-          setTestError(error);
+          if (!ignore) {
+            setTestError(error);
+          }
         });
     }
 
@@ -58,7 +60,7 @@ export const CredentialStatus = ({
       {testError && (
         <div className="i txt--jam" title={testError.message}>
           <Icons.XCircle />
-          <span>Status check error</span>
+          <span>Status error</span>
         </div>
       )}
       {testResult && (
