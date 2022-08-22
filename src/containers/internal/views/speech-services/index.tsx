@@ -9,6 +9,8 @@ import { getFetch, deleteSpeechService } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { getHumanDateTime } from "src/utils";
 import DeleteSpeechService from "./delete";
+import { getUsage } from "./utils";
+import { CredentialStatus } from "./status";
 
 import type { SpeechCredential } from "src/api/types";
 
@@ -28,16 +30,6 @@ export const SpeechServices = () => {
       .catch((error) => {
         toastError(error.msg);
       });
-  };
-
-  const getUsage = (cred: SpeechCredential) => {
-    return cred.use_for_tts && cred.use_for_stt
-      ? "TTS & STT"
-      : cred.use_for_tts
-      ? "TTS"
-      : cred.use_for_stt
-      ? "STT"
-      : "TTS/STT";
   };
 
   const handleDelete = () => {
@@ -153,10 +145,10 @@ export const SpeechServices = () => {
                           </div>
                         </div>
                         <div>
-                          <div className="i txt--grey">
-                            <Icons.XCircle />
-                            <span>Status test?</span>
-                          </div>
+                          <CredentialStatus
+                            cred={credential}
+                            serviceProvider={currentServiceProvider}
+                          />
                         </div>
                       </div>
                     </div>

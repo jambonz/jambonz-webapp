@@ -1,4 +1,5 @@
 @use "src/styles/vars";
+@use "src/styles/mixins";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
@@ -19,6 +20,12 @@
     }
   }
 
+  &.disabled {
+    input[type="text"] {
+      @include mixins.disabled();
+    }
+  }
+
   input[type="file"] {
     cursor: pointer;
     height: 100%;
@@ -28,5 +35,9 @@
     top: 0;
     width: 100%;
     z-index: 1;
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
   }
 }

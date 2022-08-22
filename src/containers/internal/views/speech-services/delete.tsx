@@ -19,8 +19,8 @@ export const DeleteSpeechService = ({
   return (
     <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
       <P>
-        Are you sure you want to delete the speech service{" "}
-        <strong>{credential.vendor}</strong>?
+        Are you sure you want to delete the <strong>{credential.vendor}</strong>{" "}
+        speech service?
       </P>
     </Modal>
   );

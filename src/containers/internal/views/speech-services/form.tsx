@@ -4,15 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { Section } from "src/components";
-import { FileUpload, Selector, Message } from "src/components/forms";
+import { FileUpload, Selector } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import {
-  postSpeechService,
-  putSpeechService,
-  getFetch,
-  // deleteSpeechService,
-} from "src/api";
-import { API_SERVICE_PROVIDERS } from "src/api/constants";
+import { postSpeechService, putSpeechService } from "src/api";
 import {
   vendors,
   VENDOR_AWS,
@@ -21,15 +15,12 @@ import {
   VENDOR_WELLSAID,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
+import { getObscuredSecret } from "src/utils";
+import { getObscuredGoogleServiceKey } from "./utils";
+import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
-import type {
-  Account,
-  SpeechCredential,
-  FetchError,
-  CredentialTestResult,
-} from "src/api/types";
-import { getObscuredSecret } from "src/utils";
+import type { Account, SpeechCredential, FetchError } from "src/api/types";
 
 export type UseCredentialData = {
   data: SpeechCredential | null;
@@ -59,91 +50,6 @@ export const SpeechServiceForm = ({
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
-  const [messageTts, setMessageTts] = useState("");
-  const [messageStt, setMessageStt] = useState("");
-
-  const testCredential = () => {
-    if (currentServiceProvider && credential && credential.data) {
-      getFetch<CredentialTestResult>(
-        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials/${credential.data.speech_credential_sid}/test`
-      )
-        .then(({ json }) => {
-          console.log(json);
-
-          if (json.tts.status === "fail") {
-            setMessageTts(`Text-to-speech error: ${json.tts.reason}`);
-          } else if (json.tts.status === "ok") {
-            toastSuccess(
-              `Text-to-speech test successful for ${vendor} credentials`
-            );
-          }
-
-          if (json.stt.status === "fail") {
-            setMessageStt(`Speech-to-text error: ${json.stt.reason}`);
-          } else if (json.stt.status === "ok") {
-            toastSuccess(
-              `Speech-to-text test successful for ${vendor} credentials`
-            );
-          }
-
-          // if (ttsCheck) {
-          //   if (json.tts.status === "not tested") { // not sure if this is needed because i dont understand the not tested whether is is the same as unchecked box
-          //     setMessage(
-          //       `${message}. Text-to-speech was not tested, please try again.`
-          //     );
-          //   }
-          //   if (json.tts.status === "fail") {
-          //     setMessage(`Text-to-speech error: ${json.tts.reason}`);
-          //     ttsCheck ? setTtsCheck(false) : setTtsCheck(true);
-          //   }
-          // }
-
-          // if (sttCheck) {
-          //   if (json.stt.status === "not tested") {
-          //     setMessage(
-          //       `${message}. Speech-to-text was not tested, please try again.`
-          //     );
-          //   }
-          //   if (json.stt.status === "fail") {
-          //     // stt fails less often than tts for some reasons about the service that i don't know
-          //     setMessage(`Speech-to-text error: ${json.stt.reason}`);
-          //     sttCheck ? setSttCheck(false) : setSttCheck(true);
-          //   }
-          // }
-
-          // console.log(message); // for some quirks i have yet to understand, message is not being logged here so i have to do the other way
-
-          // if (json.tts.status === "fail" || json.stt.status === "fail") {
-          //   if (credential && credential.data) {
-          //     putSpeechService(currentServiceProvider, sid, {
-          //       use_for_tts: ttsCheck ? 1 : 0,
-          //       use_for_stt: sttCheck ? 1 : 0,
-          //     })
-          //       .then(() => {
-          //         credential.refetch();
-          //         toastError(<>Unable to add new speech service</>);
-          //       })
-          //       .catch((error) => {
-          //         toastError(error.msg);
-          //       });
-          //   } else {
-          //     deleteSpeechService(currentServiceProvider, sid)
-          //       .then(() => {
-          //         toastError(<>Unable to add new speech service</>);
-          //       })
-          //       .catch((error) => {
-          //         toastError(error.msg);
-          //       });
-          //   }
-          // } else {
-          //   callback();
-          // }
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
-    }
-  };
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -169,17 +75,6 @@ export const SpeechServiceForm = ({
       .catch(() => {
         handleError();
       });
-  };
-
-  const getObscuredGoogleServiceKey = (key: GoogleServiceKey) => {
-    const keyHeader = "-----BEGIN PRIVATE KEY-----\n";
-
-    return {
-      ...key,
-      private_key: `${keyHeader}${getObscuredSecret(
-        key.private_key.slice(keyHeader.length, key.private_key.length)
-      )}`,
-    };
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -307,6 +202,15 @@ export const SpeechServiceForm = ({
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>
+        {credential && credential.data && (
+          <fieldset>
+            <div className="m med">Credential status</div>
+            <CredentialStatus
+              cred={credential.data}
+              serviceProvider={currentServiceProvider}
+            />
+          </fieldset>
+        )}
         <fieldset>
           <label htmlFor="vendor">
             Vendor<span>*</span>
@@ -385,7 +289,7 @@ export const SpeechServiceForm = ({
               <FileUpload
                 id="google_service_key"
                 name="google_service_key"
-                required
+                required={!googleServiceKey}
                 handleFile={handleFile}
               />
             </fieldset>
@@ -472,8 +376,6 @@ export const SpeechServiceForm = ({
             />
           </fieldset>
         )}
-        {messageTts && <fieldset>{<Message message={messageTts} />}</fieldset>}
-        {messageStt && <fieldset>{<Message message={messageStt} />}</fieldset>}
         <fieldset>
           <ButtonGroup left>
             <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_SPEECH}>
@@ -482,19 +384,6 @@ export const SpeechServiceForm = ({
             <Button type="submit" small>
               Save
             </Button>
-            {credential && (
-              <Button
-                type="button"
-                subStyle="teal"
-                small
-                style={{ marginLeft: "auto" }}
-                onClick={() => {
-                  testCredential();
-                }}
-              >
-                Test credential
-              </Button>
-            )}
           </ButtonGroup>
         </fieldset>
       </form>
