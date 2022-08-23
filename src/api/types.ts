@@ -156,6 +156,7 @@ export interface PhoneNumber {
 
 export interface MSTeamsTenant {
   tenant_fqdn: string;
+  ms_teams_tenant_sid: string;
   account_sid: null | string;
   application_sid: null | string;
   service_provider_sid: string;
