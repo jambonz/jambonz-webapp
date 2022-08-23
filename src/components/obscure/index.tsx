@@ -17,7 +17,7 @@ export const Obscure = ({ text }: ObscureProps) => {
     <div className="obscure">
       <span>{reveal ? text : obscured}</span>
       <button
-        className="btn--type"
+        className="btnty"
         type="button"
         onClick={() => setReveal(!reveal)}
       >

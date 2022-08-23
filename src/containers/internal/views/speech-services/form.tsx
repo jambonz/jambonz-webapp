@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { Section } from "src/components";
-import { FileUpload, Selector } from "src/components/forms";
+import { FileUpload, Selector, Passwd } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { postSpeechService, putSpeechService } from "src/api";
 import {
@@ -19,17 +19,11 @@ import { getObscuredSecret } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
-import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
-import type { Account, SpeechCredential, FetchError } from "src/api/types";
-
-export type UseCredentialData = {
-  data: SpeechCredential | null;
-  error: FetchError | null;
-  refetch: () => void;
-};
+import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
+import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 
 type SpeechServiceFormProps = {
-  credential?: UseCredentialData;
+  credential?: UseApiDataMap<SpeechCredential>;
   accounts: null | Account[];
 };
 
@@ -42,7 +36,7 @@ export const SpeechServiceForm = ({
   const [accountSid, setAccountSid] = useState("");
   const [ttsCheck, setTtsCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
-  const [vendor, setVendor] = useState("");
+  const [vendor, setVendor] = useState<Vendor>("" as Vendor);
   const [region, setRegion] = useState("");
   const [regions, setRegions] = useState<RegionVendors | null>(null);
   const [apiKey, setApiKey] = useState("");
@@ -81,26 +75,20 @@ export const SpeechServiceForm = ({
     e.preventDefault();
 
     if (currentServiceProvider) {
-      const payload = {
+      const payload: Partial<SpeechCredential> = {
         vendor,
         account_sid: accountSid || null,
         service_provider_sid:
           currentServiceProvider.service_provider_sid || null,
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
-        service_key:
-          vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
-        access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
-        secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
         aws_region: vendor === VENDOR_AWS ? region : null,
-        api_key:
-          vendor === VENDOR_MICROSOFT || vendor === VENDOR_WELLSAID
-            ? apiKey
-            : null,
         region: vendor === VENDOR_MICROSOFT ? region : null,
       };
 
       if (credential && credential.data) {
+        /** The backend API returns obscured secrets now so we need to make sure we don't send them back */
+        /** Fields not sent back via :PUT are `service_key`, `access_key_id`, `secret_access_key` and `api_key`  */
         putSpeechService(
           currentServiceProvider.service_provider_sid,
           credential.data.speech_credential_sid,
@@ -116,7 +104,17 @@ export const SpeechServiceForm = ({
             toastError(error.msg);
           });
       } else {
-        postSpeechService(currentServiceProvider.service_provider_sid, payload)
+        postSpeechService(currentServiceProvider.service_provider_sid, {
+          ...payload,
+          service_key:
+            vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
+          access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
+          secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+          api_key:
+            vendor === VENDOR_MICROSOFT || vendor === VENDOR_WELLSAID
+              ? apiKey
+              : null,
+        })
           .then(({ json }) => {
             toastSuccess("Speech credential created successfully");
             navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
@@ -208,6 +206,7 @@ export const SpeechServiceForm = ({
             <CredentialStatus
               cred={credential.data}
               serviceProvider={currentServiceProvider}
+              showSummary
             />
           </fieldset>
         )}
@@ -226,7 +225,7 @@ export const SpeechServiceForm = ({
               },
             ].concat(vendors)}
             onChange={(e) => {
-              setVendor(e.target.value);
+              setVendor(e.target.value as Vendor);
               setRegion("");
               setApiKey("");
               setGoogleServiceKey(null);
@@ -289,18 +288,20 @@ export const SpeechServiceForm = ({
               <FileUpload
                 id="google_service_key"
                 name="google_service_key"
-                required={!googleServiceKey}
                 handleFile={handleFile}
+                disabled={credential ? true : false}
               />
             </fieldset>
             {googleServiceKey && (
               <fieldset>
                 <pre>
-                  {JSON.stringify(
-                    getObscuredGoogleServiceKey(googleServiceKey),
-                    null,
-                    2
-                  )}
+                  <code>
+                    {JSON.stringify(
+                      getObscuredGoogleServiceKey(googleServiceKey),
+                      null,
+                      2
+                    )}
+                  </code>
                 </pre>
               </fieldset>
             )}
@@ -319,14 +320,14 @@ export const SpeechServiceForm = ({
               placeholder="Access Key ID"
               value={accessKeyId}
               onChange={(e) => setAccessKeyId(e.target.value)}
+              disabled={credential ? true : false}
             />
             <label htmlFor="aws_secret_key">
               Secret Access Key<span>*</span>
             </label>
-            <input
+            <Passwd
               id="aws_secret_key"
               required
-              type="text"
               name="aws_secret_key"
               placeholder="Secret Access Key"
               value={
@@ -335,6 +336,7 @@ export const SpeechServiceForm = ({
                   : secretAccessKey
               }
               onChange={(e) => setSecretAccessKey(e.target.value)}
+              disabled={credential ? true : false}
             />
           </fieldset>
         )}
@@ -344,14 +346,14 @@ export const SpeechServiceForm = ({
             <label htmlFor={`${vendor}_apikey`}>
               API Key<span>*</span>
             </label>
-            <input
+            <Passwd
               id={`${vendor}_apikey`}
               required
-              type="text"
               name={`${vendor}_apikey`}
               placeholder="API Key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
               onChange={(e) => setApiKey(e.target.value)}
+              disabled={credential ? true : false}
             />
           </fieldset>
         )}

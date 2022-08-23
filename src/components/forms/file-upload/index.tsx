@@ -63,7 +63,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
             disabled
           />
           <button
-            className="btn--type"
+            className="btnty"
             type="button"
             title={placeholder}
             disabled={disabled}

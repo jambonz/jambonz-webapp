@@ -76,6 +76,7 @@ fieldset {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+    min-inline-size: auto;
 
     label {
       max-width: fit-content;
@@ -89,7 +90,8 @@ fieldset {
       margin-top: ui-vars.$px02;
     }
 
-    > div + div {
+    > div + div,
+    > div + details {
       margin-top: ui-vars.$px02;
     }
   }

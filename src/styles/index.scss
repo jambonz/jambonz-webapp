@@ -28,9 +28,13 @@ pre {
   color: ui-vars.$pink;
   background-color: ui-vars.$dark;
   border-radius: ui-vars.$px01;
-  width: 100%;
-  max-width: vars.$widthinput;
   overflow: auto;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  tab-size: 2;
+  hyphens: none;
 }
 
 p > code {
@@ -40,11 +44,45 @@ p > code {
   border-radius: ui-vars.$px00;
 }
 
+/** Used on the speech credentials form */
+details {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+
+  &.fail {
+    color: ui-vars.$jambonz;
+    border: 2px solid ui-vars.$jambonz;
+    background-color: ui-vars.$pink;
+  }
+
+  &.ok {
+    color: ui-vars.$teal;
+    border: 2px solid ui-vars.$teal;
+    background-color: mix(ui-vars.$white, ui-vars.$teal, 90%);
+  }
+
+  summary {
+    display: list-item;
+    cursor: pointer;
+
+    > div {
+      display: inline-block;
+      padding-left: ui-vars.$px00;
+    }
+  }
+
+  &[open] {
+    summary {
+      margin-bottom: ui-vars.$px02;
+    }
+  }
+}
+
 /** The idea is this is like [type="button"] generically */
 /** We need to prohibit some jambonz-ui buttons from submitting forms */
 /** Otherwise this selector would just be `button[type="button"] {...}` */
 /** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
-.btn--type {
+.btnty {
   background-color: transparent;
   width: auto;
   height: auto;

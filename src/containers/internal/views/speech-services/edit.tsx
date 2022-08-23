@@ -10,7 +10,6 @@ import type { Account, SpeechCredential } from "src/api/types";
 
 export const EditSpeechService = () => {
   const params = useParams();
-
   const [data, refetch, error] = useServiceProviderData<SpeechCredential>(
     `SpeechCredentials/${params.speech_credential_sid}`
   );

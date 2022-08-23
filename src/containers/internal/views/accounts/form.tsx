@@ -17,27 +17,18 @@ import { DEFAULT_WEBHOOK } from "src/api/constants";
 import type {
   WebHook,
   Account,
-  FetchError,
   Application,
   WebhookMethod,
+  UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
-export type UseAccountData = {
-  data: Account | null;
-  error: FetchError | null;
-  refetch: () => void;
-};
-
 type AccountFormProps = {
   apps?: null | Application[];
-  account?: null | UseAccountData;
+  account?: UseApiDataMap<Account>;
 };
 
-export const AccountForm = ({
-  apps = null,
-  account = null,
-}: AccountFormProps) => {
+export const AccountForm = ({ apps = null, account }: AccountFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
@@ -266,7 +257,7 @@ export const AccountForm = ({
                   type="button"
                   title="Generate new secret"
                   onClick={handleConfirm}
-                  className="btn--type"
+                  className="btnty"
                 >
                   <Icons.RefreshCw />
                 </button>

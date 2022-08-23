@@ -32,25 +32,19 @@ import type {
   Account,
   WebHook,
   Application,
-  FetchError,
   WebhookMethod,
+  UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
-export type UseApplicationData = {
-  data: Application | null;
-  error: FetchError | null;
-  refetch: () => void;
-};
-
 type ApplicationFormProps = {
   accounts: null | Account[];
-  application?: null | UseApplicationData;
+  application?: UseApiDataMap<Application>;
   applications: null | Application[];
 };
 
 export const ApplicationForm = ({
-  application = null,
+  application,
   applications = null,
   accounts = null,
 }: ApplicationFormProps) => {

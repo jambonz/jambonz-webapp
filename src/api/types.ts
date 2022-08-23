@@ -1,3 +1,5 @@
+import type { Vendor } from "src/vendor/types";
+
 /** Simple types */
 
 export type WebhookMethod = "POST" | "GET";
@@ -39,6 +41,12 @@ export interface UseApiData {
 }
 
 /** API related interfaces */
+
+export interface UseApiDataMap<Type> {
+  data: Type | null;
+  error: FetchError | null;
+  refetch: () => void;
+}
 
 export interface WebhookOption {
   name: WebhookMethod;
@@ -132,9 +140,9 @@ export interface Application {
   application_sid: string;
   call_status_hook: null | WebHook;
   speech_synthesis_voice: null | string;
-  speech_synthesis_vendor: null | string;
+  speech_synthesis_vendor: null | Vendor;
   speech_synthesis_language: null | string;
-  speech_recognizer_vendor: null | string;
+  speech_recognizer_vendor: null | Vendor;
   speech_recognizer_language: null | string;
 }
 
@@ -176,7 +184,7 @@ export interface SpeechCredential {
   speech_credential_sid: string;
   service_provider_sid: null | string;
   account_sid: null | string;
-  vendor: string;
+  vendor: Vendor;
   use_for_tts: number;
   use_for_stt: number;
   last_used: null | string;

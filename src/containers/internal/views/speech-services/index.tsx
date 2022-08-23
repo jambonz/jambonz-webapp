@@ -164,7 +164,7 @@ export const SpeechServices = () => {
                         type="button"
                         title="Delete speech service"
                         onClick={() => setCredential(credential)}
-                        className="btn--type"
+                        className="btnty"
                       >
                         <Icons.Trash />
                       </button>

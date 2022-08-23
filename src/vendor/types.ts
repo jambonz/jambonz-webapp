@@ -1,3 +1,5 @@
+export type Vendor = "google" | "aws" | "microsoft" | "wellsaid";
+
 export interface Region {
   name: string;
   value: string;
@@ -22,9 +24,9 @@ export interface GoogleServiceKey {
   client_email: string;
 }
 
-export interface Vendor {
+export interface VendorOptions {
   name: "Google" | "AWS" | "Microsoft" | "WellSaid";
-  value: "google" | "aws" | "microsoft" | "wellsaid";
+  value: Vendor;
 }
 
 export interface RegionVendors {

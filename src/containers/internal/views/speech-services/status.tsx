@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { MS } from "jambonz-ui";
 
-import { API_SERVICE_PROVIDERS } from "src/api/constants";
+import { API_SERVICE_PROVIDERS, CRED_NOT_TESTED } from "src/api/constants";
 import { Icons, Spinner } from "src/components";
 import { getFetch } from "src/api";
 import { getStatus, getReason } from "./utils";
@@ -13,17 +14,41 @@ import type {
 
 type CredentialStatusProps = {
   cred: SpeechCredential;
+  showSummary?: boolean;
   serviceProvider: ServiceProvider | null;
 };
 
 export const CredentialStatus = ({
   cred,
+  showSummary = false,
   serviceProvider,
 }: CredentialStatusProps) => {
   const [testResult, setTestResult] = useState<CredentialTestResult | null>(
     null
   );
   const [testError, setTestError] = useState<TypeError | null>(null);
+
+  const renderStatus = () => {
+    return (
+      <div
+        className={`i txt--${
+          getStatus(cred, testResult!) === "ok"
+            ? "teal"
+            : getStatus(cred, testResult!) === "not tested"
+            ? "grey"
+            : "jam"
+        }`}
+        title={getReason(cred, testResult!)}
+      >
+        {getStatus(cred, testResult!) === "ok" ? (
+          <Icons.CheckCircle />
+        ) : (
+          <Icons.XCircle />
+        )}
+        <span>Status {getStatus(cred, testResult!)}</span>
+      </div>
+    );
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -63,25 +88,15 @@ export const CredentialStatus = ({
           <span>Status error</span>
         </div>
       )}
-      {testResult && (
-        <div
-          className={`i txt--${
-            getStatus(cred, testResult) === "ok"
-              ? "teal"
-              : getStatus(cred, testResult) === "not tested"
-              ? "grey"
-              : "jam"
-          }`}
-          title={getReason(cred, testResult)}
-        >
-          {getStatus(cred, testResult) === "ok" ? (
-            <Icons.CheckCircle />
-          ) : (
-            <Icons.XCircle />
-          )}
-          <span>Status {getStatus(cred, testResult)}</span>
-        </div>
-      )}
+      {testResult &&
+        (showSummary && getStatus(cred, testResult) !== CRED_NOT_TESTED ? (
+          <details className={getStatus(cred, testResult).replace(/\s/, "-")}>
+            <summary>{renderStatus()}</summary>
+            <MS>{getReason(cred, testResult)}</MS>
+          </details>
+        ) : (
+          renderStatus()
+        ))}
     </>
   );
 };

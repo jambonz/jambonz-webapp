@@ -36,7 +36,7 @@ export const ClipBoard = ({ text, id = "", name = "" }: ClipBoardProps) => {
       <input id={id} name={name} type="text" readOnly value={text} />
       {hasClipboard && (
         <button
-          className="btn--type"
+          className="btnty"
           type="button"
           title="Copy to clipboard"
           onClick={handleClick}
