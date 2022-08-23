@@ -2,7 +2,6 @@ import { getObscuredSecret } from "src/utils";
 
 import type { GoogleServiceKey } from "src/vendor/types";
 import type {
-  CredentialTest,
   CredentialStatus,
   CredentialTestResult,
   SpeechCredential,
