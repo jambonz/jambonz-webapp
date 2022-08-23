@@ -1,10 +1,20 @@
 import React from "react";
+import { classNames } from "jambonz-ui";
 
 import "./styles.scss";
 
-export const Spinner = () => {
+type SpinnerProps = {
+  small?: boolean;
+};
+
+export const Spinner = ({ small = false }: SpinnerProps) => {
+  const classes = {
+    spinner: true,
+    "spinner--small": small,
+  };
+
   return (
-    <div className="spinner">
+    <div className={classNames(classes)}>
       <div></div>
       <div></div>
       <div></div>

@@ -1,6 +1,10 @@
+import type { Vendor } from "src/vendor/types";
+
 /** Simple types */
 
 export type WebhookMethod = "POST" | "GET";
+
+export type CredentialStatus = "ok" | "fail" | "not tested";
 
 /** Status codes */
 
@@ -38,6 +42,12 @@ export interface UseApiData {
 
 /** API related interfaces */
 
+export interface UseApiDataMap<Type> {
+  data: Type | null;
+  error: FetchError | null;
+  refetch: () => void;
+}
+
 export interface WebhookOption {
   name: WebhookMethod;
   value: WebhookMethod;
@@ -46,6 +56,16 @@ export interface WebhookOption {
 export interface Pcap {
   data_url: string;
   file_name: string;
+}
+
+export interface CredentialTest {
+  status: CredentialStatus;
+  reason: string;
+}
+
+export interface CredentialTestResult {
+  stt: CredentialTest;
+  tts: CredentialTest;
 }
 
 /** API responses/payloads */
@@ -120,9 +140,9 @@ export interface Application {
   application_sid: string;
   call_status_hook: null | WebHook;
   speech_synthesis_voice: null | string;
-  speech_synthesis_vendor: null | string;
+  speech_synthesis_vendor: null | Vendor;
   speech_synthesis_language: null | string;
-  speech_recognizer_vendor: null | string;
+  speech_recognizer_vendor: null | Vendor;
   speech_recognizer_language: null | string;
 }
 
@@ -158,6 +178,22 @@ export interface RecentCall {
   remote_host: string;
   direction: string;
   trunk: string;
+}
+
+export interface SpeechCredential {
+  speech_credential_sid: string;
+  service_provider_sid: null | string;
+  account_sid: null | string;
+  vendor: Vendor;
+  use_for_tts: number;
+  use_for_stt: number;
+  last_used: null | string;
+  region: null | string;
+  aws_region: null | string;
+  api_key: null | string;
+  access_key_id: null | string;
+  secret_access_key: null | string;
+  service_key: null | string;
 }
 
 export interface Alert {

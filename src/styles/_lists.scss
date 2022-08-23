@@ -22,6 +22,21 @@
     @include ui-mixins.ms();
   }
 
+  &__meta {
+    @include ui-mixins.ms();
+    display: flex;
+    align-items: center;
+
+    > * + * {
+      margin-left: ui-vars.$px02;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   &__actions {
     display: flex;
     flex-direction: column;

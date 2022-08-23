@@ -1,6 +1,38 @@
 @use "./vars";
+@use "./mixins";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+input[type="text"],
+input[type="password"] {
+  @include ui-mixins.m();
+  padding: ui-vars.$px01 ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  background-color: ui-vars.$white;
+  color: inherit;
+
+  &:focus {
+    border-color: ui-vars.$dark;
+    outline: 0;
+  }
+
+  &::placeholder {
+    color: vars.$jeangrey;
+  }
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  height: ui-vars.$px02;
+  width: ui-vars.$px02;
+}
+
+fieldset {
+  > input[disabled] {
+    @include mixins.disabled();
+  }
+}
 
 .form {
   &--internal {
@@ -44,6 +76,7 @@
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+    min-inline-size: auto;
 
     label {
       max-width: fit-content;
@@ -53,7 +86,12 @@
       margin-top: ui-vars.$px01;
     }
 
-    > div + div {
+    input + label {
+      margin-top: ui-vars.$px02;
+    }
+
+    > div + div,
+    > div + details {
       margin-top: ui-vars.$px02;
     }
   }
@@ -62,6 +100,15 @@
   input[type="password"] {
     width: 100%;
     max-width: vars.$widthinput;
+  }
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+
+  input {
+    margin-right: ui-vars.$px02;
   }
 }
 

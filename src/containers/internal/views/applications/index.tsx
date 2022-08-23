@@ -108,7 +108,7 @@ export const Applications = () => {
                         type="button"
                         title="Delete application"
                         onClick={() => setApplication(application)}
-                        className="btn--type"
+                        className="btnty"
                       >
                         <Icons.Trash />
                       </button>

@@ -1,154 +1,197 @@
 import React, { useEffect, useState } from "react";
-import { H1, P } from "jambonz-ui";
+import { Button, H1, Icon, M } from "jambonz-ui";
+import { Link } from "react-router-dom";
 
-import { AccountFilter, Section } from "src/components";
-import { FileUpload, Selector } from "src/components/forms";
-import { vendors, VENDOR_AWS, VENDOR_GOOGLE } from "src/vendor";
-import { toastError } from "src/store";
+import { API_ACCOUNTS, API_SERVICE_PROVIDERS } from "src/api/constants";
+import { AccountFilter, Icons, Section, Spinner } from "src/components";
+import { useSelectState, toastError, toastSuccess } from "src/store";
+import { getFetch, deleteSpeechService } from "src/api";
+import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
+import { getHumanDateTime } from "src/utils";
+import DeleteSpeechService from "./delete";
+import { getUsage } from "./utils";
+import { CredentialStatus } from "./status";
 
-import type { RegionVendors, GoogleServiceKey } from "src/vendor/types";
+import type { SpeechCredential } from "src/api/types";
 
 export const SpeechServices = () => {
-  const [regions, setRegions] = useState<RegionVendors | null>(null);
-  const [vendor, setVendor] = useState("");
-  const [region, setRegion] = useState("");
-  const [serviceKey, setServiceKey] = useState<GoogleServiceKey | null>(null);
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accountSid, setAccountSid] = useState("");
+  const [credential, setCredential] = useState<SpeechCredential | null>(null);
+  const [credentials, setCredentials] = useState<SpeechCredential[] | null>(
+    null
+  );
 
-  /** Lazy-load large data schemas -- e.g. code-splitting */
-  /** This code should be moved into the add/edit form handling */
-  useEffect(() => {
-    let ignore = false;
+  const getSpeechCredentials = (url: string) => {
+    getFetch<SpeechCredential[]>(url)
+      .then(({ json }) => {
+        setCredentials(json);
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
-    Promise.all([
-      import("src/vendor/regions/aws-regions"),
-      import("src/vendor/regions/ms-azure-regions"),
-    ]).then(([{ default: awsRegions }, { default: msRegions }]) => {
-      if (!ignore) {
-        setRegions({
-          aws: awsRegions,
-          microsoft: msRegions,
+  const handleDelete = () => {
+    if (credential && currentServiceProvider) {
+      deleteSpeechService(
+        currentServiceProvider.service_provider_sid,
+        credential.speech_credential_sid
+      )
+        .then(() => {
+          if (accountSid) {
+            getSpeechCredentials(
+              `${API_ACCOUNTS}/${accountSid}/SpeechCredentials`
+            );
+          } else {
+            getSpeechCredentials(
+              `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
+            );
+          }
+          setCredential(null);
+          toastSuccess(
+            <>
+              Deleted speech service <strong>{credential.vendor}</strong>
+            </>
+          );
+        })
+        .catch((error) => {
+          toastError(error.msg);
         });
-      }
-    });
+    }
+  };
 
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
+  useEffect(() => {
+    if (accountSid) {
+      getSpeechCredentials(`${API_ACCOUNTS}/${accountSid}/SpeechCredentials`);
+    } else if (currentServiceProvider) {
+      getSpeechCredentials(
+        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
+      );
+    }
+  }, [accountSid, currentServiceProvider]);
 
   return (
     <>
-      <H1>Speech Services</H1>
-      <section className="filters">
-        <AccountFilter
-          label="Used by"
-          account={[accountSid, setAccountSid]}
-          defaultOption
-        />
+      <section className="mast">
+        <H1>Speech Services</H1>
+        <Link to={`${ROUTE_INTERNAL_SPEECH}/add`} title="Add an application">
+          <Icon>
+            <Icons.Plus />
+          </Icon>
+        </Link>
       </section>
-      <Section slim>
-        <form className="form form--internal">
-          <fieldset>
-            <P>Example of lazy loading region data files for add/edit form.</P>
-            <P>
-              This also shows how to implement the region selector logic for
-              aws/microsoft as well as service key file upload for google.
-            </P>
-            <P>
-              Selected account SID: <strong>{accountSid || "undefined"}</strong>
-            </P>
-            <P>
-              Selected vendor: <strong>{vendor || "undefined"}</strong>
-            </P>
-            <P>
-              Selected region: <strong>{region || "undefined"}</strong>
-            </P>
-            <div className="p">
-              Selected service key:{" "}
-              {serviceKey ? (
-                <pre>{JSON.stringify(serviceKey, null, 2)}</pre>
-              ) : (
-                <strong>undefined</strong>
-              )}
-            </div>
-          </fieldset>
-          <fieldset>
-            <label htmlFor="vendor">Vendor</label>
-            <Selector
-              id="vendor"
-              name="vendor"
-              value={vendor}
-              options={[
-                {
-                  name: "Select a vendor",
-                  value: "",
-                },
-              ].concat(vendors)}
-              onChange={(e) => {
-                setVendor(e.target.value);
-                setRegion("");
-                setServiceKey(null);
-              }}
-            />
-          </fieldset>
-          {regions && regions[vendor as keyof RegionVendors] && (
-            <fieldset>
-              <label htmlFor="region">Region</label>
-              <Selector
-                id="region"
-                name="region"
-                value={region}
-                options={[
-                  {
-                    name:
-                      vendor === VENDOR_AWS ? "Select a region" : "All regions",
-                    value: "",
-                  },
-                ].concat(regions[vendor as keyof RegionVendors])}
-                onChange={(e) => setRegion(e.target.value)}
-              />
-            </fieldset>
+      <section className="filters">
+        <AccountFilter account={[accountSid, setAccountSid]} defaultOption />
+      </section>
+      <Section
+        {...(credentials && credentials.length > 0 ? { slim: true } : {})}
+      >
+        <div className="list">
+          {credentials ? (
+            credentials.length > 0 ? (
+              credentials.map((credential) => {
+                return (
+                  <div className="item" key={credential.speech_credential_sid}>
+                    <div className="item__info">
+                      <div className="item__title">
+                        <Link
+                          to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
+                          title="Edit application"
+                          className="i"
+                        >
+                          <strong>Vendor: {credential.vendor}</strong>
+                          <Icons.ArrowRight />
+                        </Link>
+                      </div>
+                      <div className="item__sid">
+                        <strong>SID:</strong>{" "}
+                        <code>{credential.speech_credential_sid}</code>
+                      </div>
+                      <div className="item__meta">
+                        <div>
+                          <div
+                            className={`i txt--${
+                              credential.use_for_tts || credential.use_for_stt
+                                ? "teal"
+                                : "grey"
+                            }`}
+                          >
+                            {credential.use_for_tts ||
+                            credential.use_for_stt ? (
+                              <Icons.CheckCircle />
+                            ) : (
+                              <Icons.XCircle />
+                            )}
+                            <span>{getUsage(credential)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div
+                            className={`i txt--${
+                              credential.last_used ? "teal" : "grey"
+                            }`}
+                          >
+                            {credential.last_used ? (
+                              <Icons.CheckCircle />
+                            ) : (
+                              <Icons.XCircle />
+                            )}
+                            <span>
+                              {credential.last_used
+                                ? getHumanDateTime(credential.last_used)
+                                : "Never used"}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <CredentialStatus
+                            cred={credential}
+                            serviceProvider={currentServiceProvider}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="item__actions">
+                      <Link
+                        to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
+                        title="Edit speech service"
+                        className=""
+                      >
+                        <Icons.Edit3 />
+                      </Link>
+                      <button
+                        type="button"
+                        title="Delete speech service"
+                        onClick={() => setCredential(credential)}
+                        className="btnty"
+                      >
+                        <Icons.Trash />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <M>No speech services yet.</M>
+            )
+          ) : (
+            <Spinner />
           )}
-          {vendor && vendor === VENDOR_GOOGLE && (
-            <fieldset>
-              <label htmlFor="google_service_key">Service key</label>
-              <FileUpload
-                id="google_service_key"
-                name="google_service_key"
-                handleFile={(file) => {
-                  const handleError = () => {
-                    setServiceKey(null);
-                    toastError(
-                      "Invalid service key file, could not parse as JSON."
-                    );
-                  };
-
-                  file
-                    .text()
-                    .then((text) => {
-                      try {
-                        const json: GoogleServiceKey = JSON.parse(text);
-
-                        if (json.private_key && json.client_email) {
-                          setServiceKey(json);
-                        } else {
-                          setServiceKey(null);
-                          toastError("Invalid service key file, missing data.");
-                        }
-                      } catch (error) {
-                        handleError();
-                      }
-                    })
-                    .catch(() => {
-                      handleError();
-                    });
-                }}
-              />
-            </fieldset>
-          )}
-        </form>
+        </div>
       </Section>
+      <Section clean>
+        <Button small as={Link} to={`${ROUTE_INTERNAL_SPEECH}/add`}>
+          Add speech service
+        </Button>
+      </Section>
+      {credential && (
+        <DeleteSpeechService
+          credential={credential}
+          handleCancel={() => setCredential(null)}
+          handleSubmit={handleDelete}
+        />
+      )}
     </>
   );
 };

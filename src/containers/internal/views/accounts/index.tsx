@@ -76,7 +76,7 @@ export const Accounts = () => {
                         type="button"
                         title="Delete account"
                         onClick={() => setAccount(account)}
-                        className="btn--type"
+                        className="btnty"
                       >
                         <Icons.Trash />
                       </button>
@@ -167,7 +167,7 @@ export const Accounts = () => {
                       type="button"
                       title="Delete account"
                       onClick={() => setAccount(account)}
-                      className="btn--type"
+                      className="btnty"
                     >
                       <Icons.Trash2 />
                     </button>

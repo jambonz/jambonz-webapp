@@ -21,6 +21,15 @@
     border-color: ui-vars.$jambonz transparent transparent transparent;
   }
 
+  &--small {
+    width: ui-vars.$px02;
+    height: ui-vars.$px02;
+
+    div {
+      border-width: 2px;
+    }
+  }
+
   div:nth-child(1) {
     animation-delay: -0.45s;
   }

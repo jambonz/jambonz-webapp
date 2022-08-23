@@ -17,6 +17,17 @@ export const getObscured = (str: string, sub = 4, char = "*") => {
   return `${obscured}${revealed}`;
 };
 
+export const getObscuredSecret = (str: string, sub = 6, char = "X") => {
+  if (str.length <= sub) {
+    return str;
+  }
+
+  const obscured = char.repeat(str.length - sub);
+  const revealed = str.substring(0, sub);
+
+  return `${revealed}${obscured}`;
+};
+
 export const getHumanDateTime = (date: string, fallbackText = "Never used") => {
   const currDate = new Date();
   const argDate = new Date(date);

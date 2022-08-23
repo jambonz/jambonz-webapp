@@ -145,7 +145,7 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
             type="button"
             onClick={() => setModal(true)}
             title="Add service provider"
-            className="btn--type"
+            className="btnty"
           >
             <Icons.PlusCircle />
           </button>
@@ -166,11 +166,7 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
             className="avatar"
           />
           <AccessControl acl="hasAdminAuth">
-            <button
-              type="button"
-              className="btn--type adduser"
-              title="Add user"
-            >
+            <button type="button" className="btnty adduser" title="Add user">
               <Icons.PlusCircle />
             </button>
           </AccessControl>

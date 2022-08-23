@@ -22,6 +22,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
       name,
       handleFile,
       placeholder = "No file chosen",
+      disabled,
       ...restProps
     }: FileProps,
     ref
@@ -31,6 +32,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
     const classes = {
       "file-upload": true,
       focused: focus,
+      disabled: disabled ? true : false,
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +53,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
             onChange={handleChange}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
+            disabled={disabled}
             {...restProps}
           />
           <input
@@ -59,7 +62,12 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
             placeholder={placeholder}
             disabled
           />
-          <button className="btn--type" type="button" title={placeholder}>
+          <button
+            className="btnty"
+            type="button"
+            title={placeholder}
+            disabled={disabled}
+          >
             <Icons.FilePlus />
           </button>
         </div>

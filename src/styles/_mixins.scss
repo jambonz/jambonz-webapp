@@ -25,18 +25,17 @@
   }
 }
 
-/** This should go into jambonz-ui? */
-
 @mixin pre {
   font-family: ui-vars.$font-mono;
-  font-size: ui-vars.$m-size;
+  font-size: ui-vars.$ms-size;
   line-height: 1.9;
 
   @media (max-width: ui-vars.$width-tablet-2) {
-    font-size: ui-vars.$ms-size;
-  }
-
-  @media (max-width: ui-vars.$width-mobile) {
     font-size: ui-vars.$mxs-size;
   }
+}
+
+@mixin disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

@@ -35,7 +35,7 @@ export const Passwd = forwardRef<PasswdRef, PasswdProps>(
           {...restProps}
         />
         <button
-          className="btn--type"
+          className="btnty"
           type="button"
           onClick={() => setReveal(!reveal)}
         >

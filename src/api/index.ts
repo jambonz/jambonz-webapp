@@ -39,6 +39,7 @@ import type {
   ApiKey,
   Account,
   Application,
+  SpeechCredential,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -229,6 +230,16 @@ export const postApplication = (payload: Partial<Application>) => {
   );
 };
 
+export const postSpeechService = (
+  service_provider_sid: string,
+  payload: Partial<SpeechCredential>
+) => {
+  return postFetch<SidResponse, Partial<SpeechCredential>>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials`,
+    payload
+  );
+};
+
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: UserUpdatePayload) => {
@@ -262,6 +273,17 @@ export const putApplication = (sid: string, payload: Partial<Application>) => {
   );
 };
 
+export const putSpeechService = (
+  service_provider_sid: string,
+  sid: string,
+  payload: Partial<SpeechCredential>
+) => {
+  return putFetch<EmptyResponse, Partial<SpeechCredential>>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`,
+    payload
+  );
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteServiceProvider = (sid: string) => {
@@ -278,6 +300,15 @@ export const deleteAccount = (sid: string) => {
 
 export const deleteApplication = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`);
+};
+
+export const deleteSpeechService = (
+  service_provider_sid: string,
+  sid: string
+) => {
+  return deleteFetch<EmptyResponse>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`
+  );
 };
 
 /** Named wrappers for `getFetch` */

@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-// https://vitejs.dev/guide/env-and-mode.html#env-files
+/** https://vitejs.dev/guide/env-and-mode.html#env-files */
 export const API_BASE_URL =
   window.JAMBONZ?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL;
 
@@ -38,6 +38,11 @@ export const WEBHOOK_METHODS: WebhookOption[] = [
     value: "GET",
   },
 ];
+
+/** Speech credential test result status values */
+export const CRED_OK = "ok";
+export const CRED_FAIL = "fail";
+export const CRED_NOT_TESTED = "not tested";
 
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;

@@ -1,4 +1,5 @@
 @use "./vars";
+@use "./mixins";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
@@ -30,6 +31,10 @@
     border: 2px solid ui-vars.$grey;
     border-left: 0;
     background-color: ui-vars.$pink;
+
+    &[disabled] {
+      @include mixins.disabled();
+    }
 
     svg {
       stroke: ui-vars.$jambonz;
