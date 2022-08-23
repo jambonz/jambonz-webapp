@@ -2,6 +2,8 @@
 
 export type WebhookMethod = "POST" | "GET";
 
+export type CredentialStatus = "ok" | "fail" | "not tested";
+
 /** Status codes */
 
 export enum StatusCodes {
@@ -49,7 +51,7 @@ export interface Pcap {
 }
 
 export interface CredentialTest {
-  status: "ok" | "fail" | "not tested";
+  status: CredentialStatus;
   reason: string;
 }
 
@@ -184,7 +186,6 @@ export interface SpeechCredential {
   access_key_id: null | string;
   secret_access_key: null | string;
   service_key: null | string;
-  test_result: CredentialTestResult;
 }
 
 export interface Alert {

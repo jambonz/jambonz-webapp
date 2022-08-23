@@ -390,5 +390,3 @@ export const SpeechServiceForm = ({
     </Section>
   );
 };
-
-export default SpeechServiceForm;

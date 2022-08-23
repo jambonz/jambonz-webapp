@@ -18,6 +18,10 @@ export const getObscured = (str: string, sub = 4, char = "*") => {
 };
 
 export const getObscuredSecret = (str: string, sub = 6, char = "X") => {
+  if (str.length <= sub) {
+    return str;
+  }
+
   const obscured = char.repeat(str.length - sub);
   const revealed = str.substring(0, sub);
 
