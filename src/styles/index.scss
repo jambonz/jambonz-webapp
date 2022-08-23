@@ -48,6 +48,7 @@ p > code {
 details {
   padding: ui-vars.$px02;
   border-radius: ui-vars.$px01;
+  max-width: vars.$widthinput;
 
   &.fail {
     color: ui-vars.$jambonz;
@@ -109,4 +110,8 @@ details {
   > * + * {
     margin-left: ui-vars.$px01;
   }
+}
+
+.txt--dark {
+  color: ui-vars.$dark;
 }

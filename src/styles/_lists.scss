@@ -16,6 +16,15 @@
 
   &__title {
     @include ui-mixins.p();
+
+    svg {
+      transform: translate3d(0, 0, 0);
+      transition: transform ui-vars.$base-dur ui-vars.$base-ease;
+    }
+
+    &:hover svg {
+      transform: translate3d(ui-vars.$px01, 0, 0);
+    }
   }
 
   &__sid {

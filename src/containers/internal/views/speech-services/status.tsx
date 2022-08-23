@@ -29,25 +29,27 @@ export const CredentialStatus = ({
   const [testError, setTestError] = useState<TypeError | null>(null);
 
   const renderStatus = () => {
-    return (
-      <div
-        className={`i txt--${
-          getStatus(cred, testResult!) === "ok"
-            ? "teal"
-            : getStatus(cred, testResult!) === "not tested"
-            ? "grey"
-            : "jam"
-        }`}
-        title={getReason(cred, testResult!)}
-      >
-        {getStatus(cred, testResult!) === "ok" ? (
-          <Icons.CheckCircle />
-        ) : (
-          <Icons.XCircle />
-        )}
-        <span>Status {getStatus(cred, testResult!)}</span>
-      </div>
-    );
+    if (testResult) {
+      return (
+        <div
+          className={`i txt--${
+            getStatus(cred, testResult) === "ok"
+              ? "teal"
+              : getStatus(cred, testResult) === "not tested"
+              ? "grey"
+              : "jam"
+          }`}
+          title={getReason(cred, testResult)}
+        >
+          {getStatus(cred, testResult) === "ok" ? (
+            <Icons.CheckCircle />
+          ) : (
+            <Icons.XCircle />
+          )}
+          <span>Status {getStatus(cred, testResult)}</span>
+        </div>
+      );
+    }
   };
 
   useEffect(() => {
@@ -72,7 +74,7 @@ export const CredentialStatus = ({
     return function cleanup() {
       ignore = true;
     };
-  }, []);
+  }, [cred]);
 
   return (
     <>

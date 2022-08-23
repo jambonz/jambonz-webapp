@@ -95,6 +95,50 @@ export const Applications = () => {
                         <strong>SID:</strong>{" "}
                         <code>{application.application_sid}</code>
                       </div>
+                      {/* <div className="item__meta">
+                        <div>
+                          <div
+                            className={`i txt--${
+                              application.account_sid ? "teal" : "grey"
+                            }`}
+                          >
+                            {application.account_sid ? (
+                              <Icons.CheckCircle />
+                            ) : (
+                              <Icons.XCircle />
+                            )}
+                            <span>Account</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div
+                            className={`i txt--${
+                              application.call_hook ? "teal" : "grey"
+                            }`}
+                          >
+                            {application.call_hook ? (
+                              <Icons.CheckCircle />
+                            ) : (
+                              <Icons.XCircle />
+                            )}
+                            <span>Calling webhook</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div
+                            className={`i txt--${
+                              application.call_status_hook ? "teal" : "grey"
+                            }`}
+                          >
+                            {application.call_status_hook ? (
+                              <Icons.CheckCircle />
+                            ) : (
+                              <Icons.XCircle />
+                            )}
+                            <span>Call status webhook</span>
+                          </div>
+                        </div>
+                      </div> */}
                     </div>
                     <div className="item__actions">
                       <Link

@@ -98,16 +98,16 @@ export const SpeechServices = () => {
                         <Link
                           to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
                           title="Edit application"
-                          className="i"
+                          className="i txt--dark"
                         >
                           <strong>Vendor: {credential.vendor}</strong>
                           <Icons.ArrowRight />
                         </Link>
                       </div>
-                      <div className="item__sid">
+                      {/* <div className="item__sid">
                         <strong>SID:</strong>{" "}
                         <code>{credential.speech_credential_sid}</code>
-                      </div>
+                      </div> */}
                       <div className="item__meta">
                         <div>
                           <div

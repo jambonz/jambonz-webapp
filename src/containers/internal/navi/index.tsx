@@ -56,6 +56,7 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -154,23 +155,26 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
             <Icons.ChevronDown />
           </span>
         </div>
-        <div className="navi__user">
-          {/* Seed should be user id but that API returns 403... */}
-          <Blockies
-            seed="jambonz"
-            size={6}
-            scale={6}
-            color={getCssVar("--jambonz")}
-            bgColor={getCssVar("--pink")}
-            spotColor={getCssVar("--teal")}
-            className="avatar"
-          />
-          <AccessControl acl="hasAdminAuth">
-            <button type="button" className="btnty adduser" title="Add user">
-              <Icons.PlusCircle />
-            </button>
-          </AccessControl>
-        </div>
+        {/* Until we have the APIs this initial UI is not accessible */}
+        {user && (
+          <div className="navi__user">
+            {/* Seed should be user id when we have the APIs for it... */}
+            <Blockies
+              seed="jambonz"
+              size={6}
+              scale={6}
+              color={getCssVar("--jambonz")}
+              bgColor={getCssVar("--pink")}
+              spotColor={getCssVar("--teal")}
+              className="avatar"
+            />
+            <AccessControl acl="hasAdminAuth">
+              <button type="button" className="btnty adduser" title="Add user">
+                <Icons.PlusCircle />
+              </button>
+            </AccessControl>
+          </div>
+        )}
         <div className="navi__routes">
           <ul>
             {naviTop.filter(filterItemsAcl).map((item) => (

@@ -1,4 +1,6 @@
-export type Vendor = "google" | "aws" | "microsoft" | "wellsaid";
+export type VendorName = "Google" | "AWS" | "Microsoft" | "WellSaid";
+
+export type VendorValue = Lowercase<VendorName>;
 
 export interface Region {
   name: string;
@@ -25,8 +27,8 @@ export interface GoogleServiceKey {
 }
 
 export interface VendorOptions {
-  name: "Google" | "AWS" | "Microsoft" | "WellSaid";
-  value: Vendor;
+  name: VendorName;
+  value: VendorValue;
 }
 
 export interface RegionVendors {

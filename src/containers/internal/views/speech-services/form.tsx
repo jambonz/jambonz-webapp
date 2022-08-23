@@ -19,7 +19,11 @@ import { getObscuredSecret } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
-import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
+import type {
+  RegionVendors,
+  GoogleServiceKey,
+  VendorValue,
+} from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 
 type SpeechServiceFormProps = {
@@ -36,7 +40,7 @@ export const SpeechServiceForm = ({
   const [accountSid, setAccountSid] = useState("");
   const [ttsCheck, setTtsCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
-  const [vendor, setVendor] = useState<Vendor>("" as Vendor);
+  const [vendor, setVendor] = useState<VendorValue>("" as VendorValue);
   const [region, setRegion] = useState("");
   const [regions, setRegions] = useState<RegionVendors | null>(null);
   const [apiKey, setApiKey] = useState("");
@@ -225,7 +229,7 @@ export const SpeechServiceForm = ({
               },
             ].concat(vendors)}
             onChange={(e) => {
-              setVendor(e.target.value as Vendor);
+              setVendor(e.target.value as VendorValue);
               setRegion("");
               setApiKey("");
               setGoogleServiceKey(null);
@@ -281,17 +285,19 @@ export const SpeechServiceForm = ({
         )}
         {vendor === VENDOR_GOOGLE && (
           <>
-            <fieldset>
-              <label htmlFor="google_service_key">
-                Service key<span>*</span>
-              </label>
-              <FileUpload
-                id="google_service_key"
-                name="google_service_key"
-                handleFile={handleFile}
-                disabled={credential ? true : false}
-              />
-            </fieldset>
+            {!googleServiceKey && (
+              <fieldset>
+                <label htmlFor="google_service_key">
+                  Service key<span>*</span>
+                </label>
+                <FileUpload
+                  id="google_service_key"
+                  name="google_service_key"
+                  handleFile={handleFile}
+                  disabled={credential ? true : false}
+                />
+              </fieldset>
+            )}
             {googleServiceKey && (
               <fieldset>
                 <pre>
