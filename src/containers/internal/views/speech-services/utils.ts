@@ -3,6 +3,7 @@ import { getObscuredSecret } from "src/utils";
 import type { GoogleServiceKey } from "src/vendor/types";
 import type {
   CredentialTest,
+  CredentialStatus,
   CredentialTestResult,
   SpeechCredential,
 } from "src/api/types";
@@ -31,7 +32,7 @@ export const getUsage = (cred: SpeechCredential) => {
 export const getStatus = (
   cred: SpeechCredential,
   testResult: CredentialTestResult
-): CredentialTest["status"] => {
+): CredentialStatus => {
   if (
     (cred.use_for_tts &&
       cred.use_for_stt &&
@@ -56,7 +57,7 @@ export const getStatus = (
 export const getReason = (
   cred: SpeechCredential,
   testResult: CredentialTestResult
-): CredentialTest["reason"] => {
+) => {
   const ok = "Connection test successful";
 
   if (cred.use_for_tts && cred.use_for_stt) {
