@@ -70,7 +70,7 @@ export const MsTeamsTenantForm = ({
       }),
       tenant_fqdn: domainName,
       account_sid: accountSid,
-      application_sid: applicationSid,
+      application_sid: applicationSid || null,
     };
 
     if (msTeamsTenant && msTeamsTenant.data) {
