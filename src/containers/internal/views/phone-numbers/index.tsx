@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import {
   deletePhoneNumber,
   putPhoneNumber,
-  useApiData,
   useServiceProviderData,
 } from "src/api";
 import { toastError, toastSuccess } from "src/store";
@@ -15,43 +14,37 @@ import {
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import { Selector } from "src/components/forms";
-import DeletePhoneNumber from "./delete";
+import { hasLength } from "src/utils";
+import { DeletePhoneNumber } from "./delete";
+import { ApplicationSelect } from "./application-select";
 
 import type {
   Account,
-  Application,
   PhoneNumber,
   VoipCarrier,
+  Application,
 } from "src/api/types";
 
 export const PhoneNumbers = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
-  const [voipCarriers] = useApiData<VoipCarrier[]>("VoipCarriers");
-
+  const [applications] = useServiceProviderData<Application[]>("Applications");
+  const [voipCarriers] = useServiceProviderData<VoipCarrier[]>("VoipCarriers");
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumber | null>(null);
   const [phoneNumbers, refetch] =
     useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
-
   const [selectedPhoneNumbers, setSelectedPhoneNumbers] = useState<
-    PhoneNumber["phone_number_sid"][]
+    PhoneNumber[]
   >([]);
-  const [applications] = useApiData<Application[]>("Applications");
   const [applicationSid, setApplicationSid] = useState("");
-  const [showSelectApplication, setShowSelectApplication] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
 
   const handleMassEdit = () => {
-    // the webapp allows changing to an application of another account
-    // but during the edit, that option is unavailable
-    // so there is something with application involving with account
-    // this mass edit allows free for all, so not sure if it should be a thing
-    // the webapp will force the phone number to use that application
-    selectedPhoneNumbers.forEach((sid) => {
+    selectedPhoneNumbers.forEach((phoneNumber) => {
       const payload: Partial<PhoneNumber> = {
-        application_sid: applicationSid,
+        application_sid: applicationSid === "none" ? null : applicationSid,
       };
 
-      putPhoneNumber(sid, payload)
+      putPhoneNumber(phoneNumber.phone_number_sid, payload)
         .then(() => {
           refetch();
           toastSuccess("Number routing updated successfully");
@@ -81,57 +74,19 @@ export const PhoneNumbers = () => {
   };
 
   useEffect(() => {
-    if (applicationSid !== "") {
+    if (applicationSid) {
       handleMassEdit();
-      setSelectedPhoneNumbers([]);
+      setSelectAll(false);
       setApplicationSid("");
-      setShowSelectApplication(false);
+      setSelectedPhoneNumbers([]);
     }
   }, [applicationSid]);
-
-  useEffect(() => {
-    if (selectedPhoneNumbers.length === 0) {
-      setShowSelectApplication(false);
-    }
-  }, [selectedPhoneNumbers]);
 
   return (
     <>
       <section className="mast">
         <H1>Phone numbers</H1>
-        {selectedPhoneNumbers && selectedPhoneNumbers.length > 0 && (
-          <>
-            {!showSelectApplication ? (
-              <Button onClick={() => setShowSelectApplication(true)}>
-                Choose Application
-              </Button>
-            ) : (
-              applications && (
-                <fieldset>
-                  <label htmlFor="application_name">Application</label>
-                  <Selector
-                    id="application_name"
-                    name="application_name"
-                    value={applicationSid}
-                    options={[
-                      {
-                        name: "Choose application",
-                        value: "",
-                      },
-                    ].concat(
-                      applications.map((application) => ({
-                        name: application.name,
-                        value: application.application_sid,
-                      }))
-                    )}
-                    onChange={(e) => setApplicationSid(e.target.value)}
-                  />
-                </fieldset>
-              )
-            )}
-          </>
-        )}
-        {accounts && accounts.length > 0 && (
+        {hasLength(accounts) && hasLength(voipCarriers) && (
           <Link
             to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}
             title="Add a phone number"
@@ -142,78 +97,147 @@ export const PhoneNumbers = () => {
           </Link>
         )}
       </section>
-      <Section
-        {...(phoneNumbers && phoneNumbers.length > 0 ? { slim: true } : {})}
-      >
+      <Section {...(hasLength(phoneNumbers) ? { slim: true } : {})}>
         <div className="list">
           {phoneNumbers ? (
             phoneNumbers.length > 0 ? (
-              phoneNumbers.map((phoneNumber) => {
-                return (
-                  <div className="item" key={phoneNumber.phone_number_sid}>
-                    <div className="item__info">
-                      <div className="item__checkbox">
-                        <input
-                          id="select_item"
-                          name="select_item"
-                          type="checkbox"
-                          onChange={(e) =>
-                            e.target.checked
-                              ? setSelectedPhoneNumbers((curr) => [
+              <>
+                <div className="item">
+                  <div className="mass-edit">
+                    <label htmlFor="select_mass" className="chk">
+                      <input
+                        id="select_mass"
+                        name="select_mass"
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectAll(true);
+                            setSelectedPhoneNumbers(phoneNumbers);
+                          } else {
+                            setSelectAll(false);
+                          }
+                        }}
+                        checked={selectAll}
+                      />
+                      <div>Select all</div>
+                    </label>
+                  </div>
+                  {hasLength(selectedPhoneNumbers) && (
+                    <ApplicationSelect
+                      application={[applicationSid, setApplicationSid]}
+                      applications={applications}
+                    />
+                  )}
+                </div>
+                {phoneNumbers.map((phoneNumber) => {
+                  return (
+                    <div className="item" key={phoneNumber.phone_number_sid}>
+                      <div className="item__info">
+                        <div className="item__title">
+                          <input
+                            id="select_item"
+                            name="select_item"
+                            type="checkbox"
+                            checked={
+                              selectAll ||
+                              selectedPhoneNumbers.find(
+                                (phone) =>
+                                  phone.phone_number_sid ===
+                                  phoneNumber.phone_number_sid
+                              )
+                                ? true
+                                : false
+                            }
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedPhoneNumbers((curr) => [
                                   ...curr,
-                                  phoneNumber.phone_number_sid,
-                                ])
-                              : setSelectedPhoneNumbers((curr) =>
+                                  phoneNumber,
+                                ]);
+                              } else {
+                                setSelectedPhoneNumbers((curr) =>
                                   curr.filter(
                                     (phone) =>
-                                      phone !== phoneNumber.phone_number_sid
+                                      phone.phone_number_sid !==
+                                      phoneNumber.phone_number_sid
                                   )
-                                )
-                          }
-                          // not sure how is should uncheck itself
-                          // checked={selectedPhoneNumbers.length !== 0}
-                        />
+                                );
+                              }
+                            }}
+                          />
+                          <Link
+                            to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
+                            title="Edit phone number"
+                            className="i"
+                          >
+                            <strong>{phoneNumber.number}</strong>
+                            <Icons.ArrowRight />
+                          </Link>
+                        </div>
+                        {/* <div className="item__sid">
+                          <strong>SID:</strong>{" "}
+                          <code>{phoneNumber.phone_number_sid}</code>
+                        </div> */}
+                        <div className="item__meta">
+                          <div>
+                            <div
+                              className={`i txt--${
+                                phoneNumber.account_sid ? "teal" : "grey"
+                              }`}
+                            >
+                              <Icons.Activity />
+                              <span>
+                                {
+                                  accounts?.find(
+                                    (acct) =>
+                                      acct.account_sid ===
+                                      phoneNumber.account_sid
+                                  )?.name
+                                }
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <div
+                              className={`i txt--${
+                                phoneNumber.application_sid ? "teal" : "grey"
+                              }`}
+                            >
+                              <Icons.Grid />
+                              <span>
+                                {applications?.find(
+                                  (app) =>
+                                    app.application_sid ===
+                                    phoneNumber.application_sid
+                                )?.name || "None"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="item__title">
+                      <div className="item__actions">
                         <Link
                           to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
                           title="Edit phone number"
                           className="i"
                         >
-                          <strong>{phoneNumber.number}</strong>
-                          <Icons.ArrowRight />
+                          <Icons.Edit3 />
                         </Link>
+                        <button
+                          type="button"
+                          title="Delete phone number"
+                          onClick={() => setPhoneNumber(phoneNumber)}
+                          className="btnty"
+                        >
+                          <Icons.Trash />
+                        </button>
                       </div>
-                      <div className="item__sid">
-                        <strong>SID:</strong>{" "}
-                        <code>{phoneNumber.phone_number_sid}</code>
-                      </div>
-                      {/**Here it can print more things but that means we should move the fetch applications, etc, to the src/api/index because it seems like there are more things need it
-                       * TBD
-                       */}
                     </div>
-                    <div className="item__actions">
-                      <Link
-                        to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
-                        title="Edit phone number"
-                        className="i"
-                      >
-                        <Icons.Edit3 />
-                      </Link>
-                      <button
-                        type="button"
-                        title="Delete phone number"
-                        onClick={() => setPhoneNumber(phoneNumber)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : accounts && accounts.length > 0 ? (
-              voipCarriers && voipCarriers.length > 0 ? (
+                  );
+                })}
+              </>
+            ) : hasLength(accounts) ? (
+              hasLength(voipCarriers) ? (
                 <div>No phone numbers yet.</div>
               ) : (
                 <div>
@@ -239,14 +263,11 @@ export const PhoneNumbers = () => {
         </div>
       </Section>
       <Section clean>
-        {accounts &&
-          accounts.length > 0 &&
-          voipCarriers &&
-          voipCarriers.length > 0 && (
-            <Button small as={Link} to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}>
-              Add phone number
-            </Button>
-          )}
+        {hasLength(accounts) && hasLength(voipCarriers) && (
+          <Button small as={Link} to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}>
+            Add phone number
+          </Button>
+        )}
       </Section>
       {phoneNumber && (
         <DeletePhoneNumber

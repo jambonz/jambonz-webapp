@@ -69,7 +69,7 @@ export const Applications = () => {
           </Link>
         )}
       </section>
-      <section className="filters">
+      <section className="filters filters--ender">
         <AccountFilter account={[accountSid, setAccountSid]} />
       </section>
       <Section {...(hasLength(applications) ? { slim: true } : {})}>

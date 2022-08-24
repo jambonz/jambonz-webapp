@@ -54,11 +54,22 @@
     }
   }
 
+  .mass-edit {
+    padding: ui-vars.$px00 0;
+
+    label {
+      @include ui-mixins.ms();
+    }
+  }
+
   .filters {
     display: flex;
-    justify-content: flex-end;
     padding-top: ui-vars.$px04;
     padding-bottom: ui-vars.$px03;
+
+    &--ender {
+      justify-content: flex-end;
+    }
 
     + * {
       margin-top: 0;

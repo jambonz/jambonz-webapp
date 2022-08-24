@@ -26,6 +26,7 @@ input[type="radio"],
 input[type="checkbox"] {
   height: ui-vars.$px02;
   width: ui-vars.$px02;
+  margin: 0;
 }
 
 fieldset {
@@ -108,7 +109,7 @@ fieldset {
   align-items: center;
 
   input {
-    margin-right: ui-vars.$px02;
+    margin: 0 ui-vars.$px02 0 0;
   }
 }
 

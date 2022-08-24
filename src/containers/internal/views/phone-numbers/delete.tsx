@@ -29,5 +29,3 @@ export const DeletePhoneNumber = ({
     </>
   );
 };
-
-export default DeletePhoneNumber;

@@ -256,5 +256,3 @@ export const PhoneNumberForm = ({
     </>
   );
 };
-
-export default PhoneNumberForm;

@@ -206,7 +206,6 @@ export interface Alert {
 }
 
 export interface VoipCarrier {
-  // will be stripped when needed
   voip_carrier_sid: string;
   name: string;
   description: null | string;

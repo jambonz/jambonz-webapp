@@ -7,8 +7,6 @@ import { useServiceProviderData } from "src/api";
 import type { Dispatch, SetStateAction } from "react";
 import type { Account } from "src/api/types";
 
-import "./styles.scss";
-
 type AccountFilterProps = {
   label?: string;
   account: [string, Dispatch<SetStateAction<string>>];
