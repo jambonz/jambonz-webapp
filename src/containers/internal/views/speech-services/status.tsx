@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MS } from "jambonz-ui";
 
-import { API_SERVICE_PROVIDERS, CRED_NOT_TESTED } from "src/api/constants";
+import {
+  API_SERVICE_PROVIDERS,
+  CRED_NOT_TESTED,
+  CRED_OK,
+} from "src/api/constants";
 import { Icons, Spinner } from "src/components";
 import { getFetch } from "src/api";
 import { getStatus, getReason } from "./utils";
@@ -30,23 +34,22 @@ export const CredentialStatus = ({
 
   const renderStatus = () => {
     if (testResult) {
+      const status = getStatus(cred, testResult);
+      const reason = getReason(cred, testResult);
+
       return (
         <div
           className={`i txt--${
-            getStatus(cred, testResult) === "ok"
+            status === CRED_OK
               ? "teal"
-              : getStatus(cred, testResult) === "not tested"
+              : status === CRED_NOT_TESTED
               ? "grey"
               : "jam"
           }`}
-          title={getReason(cred, testResult)}
+          title={reason}
         >
-          {getStatus(cred, testResult) === "ok" ? (
-            <Icons.CheckCircle />
-          ) : (
-            <Icons.XCircle />
-          )}
-          <span>Status {getStatus(cred, testResult)}</span>
+          {status === CRED_OK ? <Icons.CheckCircle /> : <Icons.XCircle />}
+          <span>Status {status}</span>
         </div>
       );
     }

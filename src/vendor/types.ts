@@ -1,6 +1,9 @@
-export type VendorName = "Google" | "AWS" | "Microsoft" | "WellSaid";
+export type Vendor = "Google" | "AWS" | "Microsoft" | "WellSaid";
 
-export type VendorValue = Lowercase<VendorName>;
+export interface VendorOptions {
+  name: Vendor;
+  value: Lowercase<Vendor>;
+}
 
 export interface Region {
   name: string;
@@ -24,11 +27,6 @@ export interface VoiceLanguage extends Language {
 export interface GoogleServiceKey {
   private_key: string;
   client_email: string;
-}
-
-export interface VendorOptions {
-  name: VendorName;
-  value: VendorValue;
 }
 
 export interface RegionVendors {
