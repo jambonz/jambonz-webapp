@@ -6,7 +6,7 @@ import { postMsTeamsTentant, putMsTeamsTenant } from "src/api";
 import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
@@ -16,7 +16,6 @@ import type {
   Account,
   Application,
   MSTeamsTenant,
-  ServiceProvider,
   UseApiDataMap,
 } from "src/api/types";
 
@@ -24,7 +23,6 @@ type MsTeamsTenantFormProps = {
   accounts: null | Account[];
   applications: null | Application[];
   msTeamsTenants: null | MSTeamsTenant[];
-  currentServiceProvider: null | ServiceProvider;
   msTeamsTenant?: UseApiDataMap<MSTeamsTenant>;
 };
 
@@ -32,10 +30,11 @@ export const MsTeamsTenantForm = ({
   accounts,
   applications,
   msTeamsTenants,
-  currentServiceProvider,
   msTeamsTenant,
 }: MsTeamsTenantFormProps) => {
   const navigate = useNavigate();
+
+  const currentServiceProvider = useSelectState("currentServiceProvider");
 
   const [domainName, setDomainName] = useState("");
 
@@ -112,7 +111,7 @@ export const MsTeamsTenantForm = ({
   useEffect(() => {
     if (accounts && !accounts.length) {
       toastError(
-        "You must create an account before you can create an application."
+        "You must create an account before you can create an Microsoft Teams Tenant."
       );
       navigate(ROUTE_INTERNAL_ACCOUNTS);
     } else if (accounts && !accountSid) {
@@ -167,7 +166,7 @@ export const MsTeamsTenantForm = ({
               value={applicationSid}
               options={[
                 {
-                  name: "-- Optional --",
+                  name: "Choose application",
                   value: "",
                 },
               ].concat(
