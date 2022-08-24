@@ -155,7 +155,6 @@ export const SpeechServices = () => {
                       <Link
                         to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
                         title="Edit speech service"
-                        className=""
                       >
                         <Icons.Edit3 />
                       </Link>

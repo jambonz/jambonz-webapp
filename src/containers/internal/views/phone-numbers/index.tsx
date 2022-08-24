@@ -216,7 +216,6 @@ export const PhoneNumbers = () => {
                         <Link
                           to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
                           title="Edit phone number"
-                          className="i"
                         >
                           <Icons.Edit3 />
                         </Link>

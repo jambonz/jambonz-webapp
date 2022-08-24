@@ -118,7 +118,6 @@ export const Applications = () => {
                       <Link
                         to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
                         title="Edit application"
-                        className=""
                       >
                         <Icons.Edit3 />
                       </Link>

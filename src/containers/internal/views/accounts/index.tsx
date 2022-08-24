@@ -113,7 +113,6 @@ export const Accounts = () => {
                       <Link
                         to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
                         title="Edit account"
-                        className=""
                       >
                         <Icons.Edit3 />
                       </Link>
@@ -204,7 +203,6 @@ export const Accounts = () => {
                     <Link
                       to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
                       title="Edit account"
-                      className=""
                     >
                       <Icons.Edit />
                     </Link>
