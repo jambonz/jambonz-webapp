@@ -2,11 +2,21 @@ import { Button, ButtonGroup, MS } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { postPhoneNumber, putPhoneNumber } from "src/api";
-import { Account, Application, FetchError, PhoneNumber } from "src/api/types";
+import {
+  Account,
+  Application,
+  FetchError,
+  PhoneNumber,
+  VoipCarrier,
+} from "src/api/types";
 import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { ROUTE_INTERNAL_PHONE_NUMBERS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_CARRIERS,
+  ROUTE_INTERNAL_PHONE_NUMBERS,
+} from "src/router/routes";
 import { toastError, toastSuccess } from "src/store";
 
 type UsePhoneNumberData = {
@@ -20,7 +30,7 @@ type PhoneNumberFormProps = {
   phoneNumbers: PhoneNumber[] | null;
   accounts: Account[] | null;
   applications: Application[] | null;
-  // voipCarriers: VoipCarrier[];
+  voipCarriers: VoipCarrier[] | null;
 };
 
 export const PhoneNumberForm = ({
@@ -28,27 +38,17 @@ export const PhoneNumberForm = ({
   phoneNumbers,
   accounts,
   applications,
+  voipCarriers,
 }: PhoneNumberFormProps) => {
   const navigate = useNavigate();
 
   const [phoneNumberNum, setPhoneNumberNum] = useState("");
 
   const [accountSid, setAccountSid] = useState("");
-  const [sipTrunkSid, setSipTrunkSid] = useState(""); // TODO
+  const [sipTrunkSid, setSipTrunkSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
 
   const [message, setMessage] = useState("");
-
-  const trunkDummy = [
-    {
-      name: "hello",
-      value: "world",
-    },
-    {
-      name: "foo",
-      value: "bar",
-    },
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,23 +56,20 @@ export const PhoneNumberForm = ({
     setMessage("");
 
     if (phoneNumbers) {
-      if (
-        phoneNumbers.find(
-          (a) =>
-            a.number === phoneNumberNum &&
-            (!phoneNumber ||
-              !phoneNumber.data ||
-              a.phone_number_sid !== phoneNumber.data.phone_number_sid)
-        )
-      ) {
+      const filtered =
+        phoneNumber && phoneNumber.data
+          ? phoneNumbers.filter(
+              (a) => a.phone_number_sid !== phoneNumber.data!.phone_number_sid
+            )
+          : phoneNumbers;
+
+      if (filtered.find((a) => a.number === phoneNumberNum)) {
         setMessage("The phone number you have entered is already in use.");
         return;
       }
     }
 
     const payload = {
-      ...(!phoneNumber && { number: phoneNumberNum }),
-      // ...(!sipTrunkSid && { voip_carrier_sid: sipTrunkSid }),
       account_sid: accountSid,
       application_sid: applicationSid || null,
       // this field is in the sql but not here and it is never updated in the back end))
@@ -89,7 +86,11 @@ export const PhoneNumberForm = ({
           toastError(error.msg);
         });
     } else {
-      postPhoneNumber(payload)
+      postPhoneNumber({
+        ...payload,
+        number: phoneNumberNum,
+        voip_carrier_sid: sipTrunkSid,
+      })
         .then(({ json }) => {
           toastSuccess("Phone number created successfully");
           navigate(`${ROUTE_INTERNAL_PHONE_NUMBERS}/${json.sid}/edit`);
@@ -119,10 +120,30 @@ export const PhoneNumberForm = ({
   }, [phoneNumber]);
 
   useEffect(() => {
+    if (accounts && !accounts.length) {
+      toastError(
+        "You must create an account before you can create a phone number."
+      );
+      navigate(ROUTE_INTERNAL_ACCOUNTS);
+    }
+
+    if (voipCarriers && voipCarriers.length === 0) {
+      toastError(
+        "You must create a SIP trunk before you can create a phone number."
+      );
+      navigate(ROUTE_INTERNAL_CARRIERS);
+    }
+
     if (accounts && !accountSid) {
       setAccountSid(accounts[0].account_sid);
     }
   }, [accounts, accountSid]);
+
+  useEffect(() => {
+    if (voipCarriers && !sipTrunkSid) {
+      setSipTrunkSid(voipCarriers[0].voip_carrier_sid);
+    }
+  });
 
   return (
     <>
@@ -143,10 +164,10 @@ export const PhoneNumberForm = ({
               placeholder="Phone number that will be sending calls to this service"
               value={phoneNumberNum}
               onChange={(e) => setPhoneNumberNum(e.target.value)}
-              disabled={phoneNumber ? true : false} // no styling yet
+              disabled={phoneNumber ? true : false}
             ></input>
           </fieldset>
-          {trunkDummy && (
+          {voipCarriers && (
             <fieldset>
               <label htmlFor="sip_trunk">
                 SIP Trunk <span>*</span>
@@ -156,13 +177,15 @@ export const PhoneNumberForm = ({
                 name="sip_trunk"
                 required
                 value={sipTrunkSid}
-                // TODO do the TODO
-                options={trunkDummy.map((trunk) => ({
+                options={voipCarriers.map((trunk) => ({
                   name: trunk.name,
-                  value: trunk.value,
+                  value: trunk.voip_carrier_sid,
                 }))}
-                onChange={(e) => setSipTrunkSid(e.target.value)}
-                disabled={phoneNumber ? true : false} // this one has style
+                onChange={(e) => {
+                  setSipTrunkSid(e.target.value);
+                  console.log(e.target.value);
+                }}
+                disabled={phoneNumber ? true : false}
               />
             </fieldset>
           )}
@@ -184,7 +207,7 @@ export const PhoneNumberForm = ({
               />
             </fieldset>
           )}
-          {applications && (
+          {applications && accountSid && (
             <fieldset>
               <label htmlFor="application_name">Application</label>
               <Selector
@@ -193,14 +216,18 @@ export const PhoneNumberForm = ({
                 value={applicationSid}
                 options={[
                   {
-                    name: "-- Optional --",
+                    name: "Choose application",
                     value: "",
                   },
                 ].concat(
-                  applications.map((application) => ({
-                    name: application.name,
-                    value: application.application_sid,
-                  }))
+                  applications
+                    .filter(
+                      (application) => application.account_sid === accountSid
+                    )
+                    .map((application) => ({
+                      name: application.name,
+                      value: application.application_sid,
+                    }))
                 )}
                 onChange={(e) => setApplicationSid(e.target.value)}
               />

@@ -205,6 +205,48 @@ export interface Alert {
   detail: string;
 }
 
+export interface VoipCarrier {
+  // will be stripped when needed
+  voip_carrier_sid: string;
+  name: string;
+  description: null | string;
+  account_sid: string;
+  application_sid: string;
+  e164_leading_plus: boolean;
+  requires_register: boolean;
+  register_username: string;
+  register_sip_realm: string;
+  register_password: string;
+  tech_prefix: string;
+  inbound_auth_username: string;
+  inbound_auth_password: string;
+  diversion: string;
+  is_active: boolean;
+  smpp_system_id: string;
+  smpp_password: string;
+  smpp_inbound_system_id: string;
+  smpp_inbound_password: string;
+  smpp_enquire_link_interval: number;
+}
+
+export interface ProtocolGateway {
+  voip_carrier_sid: string;
+  ipv4: string;
+  port: number;
+  inbound: boolean;
+  outbound: boolean;
+}
+
+export interface SipGateway extends ProtocolGateway {
+  is_active: boolean;
+}
+
+export interface SmppGateway extends ProtocolGateway {
+  netmask: number;
+  is_primary: boolean;
+  use_tls: boolean;
+}
+
 export interface PagedResponse<Type> {
   total: number;
   batch: number;
