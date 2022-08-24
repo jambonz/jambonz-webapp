@@ -175,10 +175,6 @@ export const PhoneNumbers = () => {
                             <Icons.ArrowRight />
                           </Link>
                         </div>
-                        {/* <div className="item__sid">
-                          <strong>SID:</strong>{" "}
-                          <code>{phoneNumber.phone_number_sid}</code>
-                        </div> */}
                         <div className="item__meta">
                           <div>
                             <div

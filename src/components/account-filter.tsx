@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { classNames } from "jambonz-ui";
 
 import { Icons } from "src/components/icons";
-import { useServiceProviderData } from "src/api";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { Account } from "src/api/types";
@@ -10,6 +9,7 @@ import type { Account } from "src/api/types";
 type AccountFilterProps = {
   label?: string;
   account: [string, Dispatch<SetStateAction<string>>];
+  accounts: Account[] | null;
   defaultOption?: boolean;
 };
 
@@ -18,9 +18,9 @@ type AccountFilterProps = {
 export const AccountFilter = ({
   label = "Account",
   account: [accountSid, setAccountSid],
+  accounts,
   defaultOption,
 }: AccountFilterProps) => {
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [focus, setFocus] = useState(false);
   const classes = {
     smsel: true,

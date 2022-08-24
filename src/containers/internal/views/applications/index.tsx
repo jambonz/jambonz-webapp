@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, getFetch } from "src/api";
+import { deleteApplication, getFetch, useServiceProviderData } from "src/api";
 import { API_ACCOUNTS } from "src/api/constants";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
@@ -13,9 +13,10 @@ import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess } from "src/store";
 import { hasLength } from "src/utils";
 
-import type { Application } from "src/api/types";
+import type { Application, Account } from "src/api/types";
 
 export const Applications = () => {
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [applications, setApplications] = useState<Application[] | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
@@ -70,7 +71,10 @@ export const Applications = () => {
         )}
       </section>
       <section className="filters filters--ender">
-        <AccountFilter account={[accountSid, setAccountSid]} />
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+        />
       </section>
       <Section {...(hasLength(applications) ? { slim: true } : {})}>
         <div className="list">
@@ -90,54 +94,25 @@ export const Applications = () => {
                           <Icons.ArrowRight />
                         </Link>
                       </div>
-                      <div className="item__sid">
-                        <strong>SID:</strong>{" "}
-                        <code>{application.application_sid}</code>
-                      </div>
-                      {/* <div className="item__meta">
+                      <div className="item__meta">
                         <div>
                           <div
                             className={`i txt--${
                               application.account_sid ? "teal" : "grey"
                             }`}
                           >
-                            {application.account_sid ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>Account</span>
+                            <Icons.Activity />
+                            <span>
+                              {
+                                accounts?.find(
+                                  (acct) =>
+                                    acct.account_sid === application.account_sid
+                                )?.name
+                              }
+                            </span>
                           </div>
                         </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              application.call_hook ? "teal" : "grey"
-                            }`}
-                          >
-                            {application.call_hook ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>Calling webhook</span>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              application.call_status_hook ? "teal" : "grey"
-                            }`}
-                          >
-                            {application.call_status_hook ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>Call status webhook</span>
-                          </div>
-                        </div>
-                      </div> */}
+                      </div>
                     </div>
                     <div className="item__actions">
                       <Link
