@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { H1, P, Button, ButtonGroup, MS } from "jambonz-ui";
 
 import { useDispatch, toastSuccess, toastError } from "src/store";
-import { withSelectState } from "src/utils";
+import { hasLength, withSelectState } from "src/utils";
 import { putServiceProvider, deleteServiceProvider } from "src/api";
 import { Modal, Section } from "src/components";
 import { Checkzone } from "src/components/forms";
@@ -144,7 +144,7 @@ export const Settings = ({
               <Button type="submit" small>
                 Save
               </Button>
-              {serviceProviders.length > 1 && (
+              {hasLength(serviceProviders, 1) && (
                 <Button small subStyle="grey" onClick={handleConfirm}>
                   Delete
                 </Button>

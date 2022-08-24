@@ -11,6 +11,7 @@ import {
 import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess } from "src/store";
+import { hasLength } from "src/utils";
 
 import type { Application } from "src/api/types";
 
@@ -71,9 +72,7 @@ export const Applications = () => {
       <section className="filters">
         <AccountFilter account={[accountSid, setAccountSid]} />
       </section>
-      <Section
-        {...(applications && applications.length > 0 ? { slim: true } : {})}
-      >
+      <Section {...(hasLength(applications) ? { slim: true } : {})}>
         <div className="list">
           {applications ? (
             applications.length > 0 ? (

@@ -7,6 +7,7 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { Section, Icons, Spinner } from "src/components";
 import { DeleteAccount } from "./delete";
 import { toastError, toastSuccess } from "src/store";
+import { hasLength } from "src/utils";
 
 import type { Account } from "src/api/types";
 
@@ -42,7 +43,7 @@ export const Accounts = () => {
           </Icon>
         </Link>
       </section>
-      <Section {...(accounts && accounts.length > 0 ? { slim: true } : {})}>
+      <Section {...(hasLength(accounts) ? { slim: true } : {})}>
         <div className="list">
           {accounts ? (
             accounts.length > 0 ? (

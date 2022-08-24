@@ -12,7 +12,7 @@ import {
   Grid,
   GridRow,
 } from "src/components";
-import { getHumanDateTime } from "src/utils";
+import { getHumanDateTime, hasLength } from "src/utils";
 
 import type { ApiKey, TokenResponse } from "src/api/types";
 
@@ -69,7 +69,7 @@ export const ApiKeys = ({ path, post, label }: ApiKeyProps) => {
             <div>Last used</div>
             <div>&nbsp;</div>
           </GridRow>
-          {apiKeys && apiKeys.length > 0 ? (
+          {hasLength(apiKeys) ? (
             apiKeys.map((apiKey) => {
               return (
                 <GridRow key={apiKey.api_key_sid}>
