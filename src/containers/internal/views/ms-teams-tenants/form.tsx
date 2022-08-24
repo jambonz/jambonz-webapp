@@ -49,24 +49,22 @@ export const MsTeamsTenantForm = ({
     setMessage("");
 
     if (msTeamsTenants) {
-      if (
-        msTeamsTenants.find(
-          (a) =>
-            a.tenant_fqdn === domainName &&
-            (!msTeamsTenant ||
-              !msTeamsTenant.data ||
-              a.ms_teams_tenant_sid !== msTeamsTenant.data.ms_teams_tenant_sid)
-        )
-      ) {
+      const filtered =
+        msTeamsTenant && msTeamsTenant.data
+          ? msTeamsTenants.filter(
+              (a) =>
+                a.ms_teams_tenant_sid !==
+                msTeamsTenant.data!.ms_teams_tenant_sid
+            )
+          : msTeamsTenants;
+
+      if (filtered.find((a) => a.tenant_fqdn === domainName)) {
         setMessage("The domain name you have entered is already in use.");
         return;
       }
     }
 
     const payload: Partial<MSTeamsTenant> = {
-      ...(!msTeamsTenant && {
-        service_provider_sid: currentServiceProvider?.service_provider_sid,
-      }),
       tenant_fqdn: domainName,
       account_sid: accountSid,
       application_sid: applicationSid || null,
@@ -82,7 +80,10 @@ export const MsTeamsTenantForm = ({
           toastError(error.msg);
         });
     } else {
-      postMsTeamsTentant(payload)
+      postMsTeamsTentant({
+        ...payload,
+        service_provider_sid: currentServiceProvider?.service_provider_sid,
+      })
         .then(({ json }) => {
           toastSuccess("Microsoft Teams Tenant created successfully");
           navigate(`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/${json.sid}/edit`);

@@ -2,14 +2,21 @@ import React, { useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteMsTeamsTenant, useApiData } from "src/api";
+import {
+  deleteMsTeamsTenant,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
 import { withAccessControl } from "src/utils";
 import { toastError, toastSuccess } from "src/store";
 import { Icons, Section, Spinner } from "src/components";
-import { ROUTE_INTERNAL_MS_TEAMS_TENANTS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_MS_TEAMS_TENANTS,
+} from "src/router/routes";
 import { DeleteMsTeamsTenant } from "./delete";
 
-import type { MSTeamsTenant } from "src/api/types";
+import type { Account, MSTeamsTenant } from "src/api/types";
 import type { ACLGetIMessage } from "src/utils/with-access-control";
 
 export const MSTeamsTenants = () => {
@@ -19,6 +26,7 @@ export const MSTeamsTenants = () => {
   const [msTeamsTenants, refetch] = useApiData<MSTeamsTenant[]>(
     "MicrosoftTeamsTenants"
   );
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const handleDelete = () => {
     if (msTeamsTenant) {
@@ -42,15 +50,17 @@ export const MSTeamsTenants = () => {
   return (
     <>
       <section className="mast">
-        <H1>Mircosoft Teams Tenants</H1>
-        <Link
-          to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}
-          title="Add a Microsoft Teams Tenant"
-        >
-          <Icon>
-            <Icons.Plus />
-          </Icon>
-        </Link>
+        <H1>Microsoft Teams Tenants</H1>
+        {accounts && accounts.length > 0 && (
+          <Link
+            to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}
+            title="Add a Microsoft Teams Tenant"
+          >
+            <Icon>
+              <Icons.Plus />
+            </Icon>
+          </Link>
+        )}
       </section>
       <Section
         {...(msTeamsTenants && msTeamsTenants.length > 0 ? { slim: true } : {})}
@@ -105,8 +115,16 @@ export const MSTeamsTenants = () => {
                   </div>
                 );
               })
-            ) : (
+            ) : accounts && accounts.length > 0 ? (
               <M>No Microsoft Teams Tenant yet.</M>
+            ) : (
+              <div>
+                You must{" "}
+                <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
+                  create an account
+                </Link>{" "}
+                before you can create a Microsoft Teams Tenant.
+              </div>
             )
           ) : (
             <Spinner />
@@ -114,9 +132,11 @@ export const MSTeamsTenants = () => {
         </div>
       </Section>
       <Section clean>
-        <Button small as={Link} to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}>
-          Add Microsoft Teams Tenant
-        </Button>
+        {accounts && accounts.length > 0 && (
+          <Button small as={Link} to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}>
+            Add Microsoft Teams Tenant
+          </Button>
+        )}
       </Section>
       {msTeamsTenant && (
         <DeleteMsTeamsTenant
