@@ -31,6 +31,8 @@ export const CredentialStatus = ({
     null
   );
   const [testError, setTestError] = useState<TypeError | null>(null);
+  const notTestedTxt =
+    "In order to test your credentials you need to enable TTS/STT.";
 
   const renderStatus = () => {
     if (testResult) {
@@ -46,7 +48,7 @@ export const CredentialStatus = ({
               ? "grey"
               : "jam"
           }`}
-          title={reason}
+          title={status === CRED_NOT_TESTED ? notTestedTxt : reason}
         >
           {status === CRED_OK ? <Icons.CheckCircle /> : <Icons.XCircle />}
           <span>Status {status}</span>
@@ -94,10 +96,14 @@ export const CredentialStatus = ({
         </div>
       )}
       {testResult &&
-        (showSummary && getStatus(cred, testResult) !== CRED_NOT_TESTED ? (
+        (showSummary ? (
           <details className={getStatus(cred, testResult).replace(/\s/, "-")}>
             <summary>{renderStatus()}</summary>
-            <MS>{getReason(cred, testResult)}</MS>
+            {getStatus(cred, testResult) === CRED_NOT_TESTED ? (
+              <MS>{notTestedTxt}</MS>
+            ) : (
+              <MS>{getReason(cred, testResult)}</MS>
+            )}
           </details>
         ) : (
           renderStatus()

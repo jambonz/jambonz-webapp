@@ -62,6 +62,17 @@ details {
     background-color: mix(ui-vars.$white, ui-vars.$teal, 95%);
   }
 
+  &.not-tested {
+    color: vars.$jeangrey;
+    border: 2px solid vars.$jeangrey;
+
+    summary {
+      .txt--grey {
+        color: vars.$jeangrey;
+      }
+    }
+  }
+
   summary {
     display: list-item;
     cursor: pointer;
