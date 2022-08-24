@@ -1,5 +1,5 @@
-import { Button, ButtonGroup, MS } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
+import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import { postMsTeamsTentant, putMsTeamsTenant } from "src/api";
@@ -7,7 +7,10 @@ import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { ROUTE_INTERNAL_MS_TEAMS_TENANTS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_MS_TEAMS_TENANTS,
+} from "src/router/routes";
 
 import type {
   Account,
@@ -30,14 +33,10 @@ export const MsTeamsTenantForm = ({
   msTeamsTenant,
 }: MsTeamsTenantFormProps) => {
   const navigate = useNavigate();
-
   const currentServiceProvider = useSelectState("currentServiceProvider");
-
   const [domainName, setDomainName] = useState("");
-
   const [accountSid, setAccountSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
-
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -106,6 +105,17 @@ export const MsTeamsTenantForm = ({
     }
   }, [msTeamsTenant]);
 
+  useEffect(() => {
+    if (accounts && !accounts.length) {
+      toastError(
+        "You must create an account before you can create an Microsoft Teams Tenant."
+      );
+      navigate(ROUTE_INTERNAL_ACCOUNTS);
+    } else if (accounts && !accountSid) {
+      setAccountSid(accounts[0].account_sid);
+    }
+  }, [accounts, accountSid]);
+
   return (
     <Section slim>
       <form className="form form--internal" onSubmit={handleSubmit}>
@@ -136,17 +146,10 @@ export const MsTeamsTenantForm = ({
               name="account_name"
               required
               value={accountSid}
-              options={[
-                {
-                  name: "Choose account",
-                  value: "",
-                },
-              ].concat(
-                accounts.map((account) => ({
-                  name: account.name,
-                  value: account.account_sid,
-                }))
-              )}
+              options={accounts.map((account) => ({
+                name: account.name,
+                value: account.account_sid,
+              }))}
               onChange={(e) => setAccountSid(e.target.value)}
             />
           </fieldset>

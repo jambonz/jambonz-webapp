@@ -3,7 +3,7 @@ import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { deleteMsTeamsTenant, useApiData } from "src/api";
-import { withAccessControl } from "src/utils";
+import { hasLength, withAccessControl } from "src/utils";
 import { toastError, toastSuccess } from "src/store";
 import { Icons, Section, Spinner } from "src/components";
 import {
@@ -12,7 +12,7 @@ import {
 } from "src/router/routes";
 import { DeleteMsTeamsTenant } from "./delete";
 
-import type { Account, MSTeamsTenant } from "src/api/types";
+import type { Account, MSTeamsTenant, Application } from "src/api/types";
 import type { ACLGetIMessage } from "src/utils/with-access-control";
 
 export const MSTeamsTenants = () => {
@@ -23,6 +23,7 @@ export const MSTeamsTenants = () => {
     "MicrosoftTeamsTenants"
   );
   const [accounts] = useApiData<Account[]>("Accounts");
+  const [applications] = useApiData<Application[]>("Applications");
 
   const handleDelete = () => {
     if (msTeamsTenant) {
@@ -47,7 +48,7 @@ export const MSTeamsTenants = () => {
     <>
       <section className="mast">
         <H1>Microsoft Teams Tenants</H1>
-        {accounts && accounts.length > 0 && (
+        {hasLength(accounts) && (
           <Link
             to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}
             title="Add a Microsoft Teams Tenant"
@@ -58,9 +59,7 @@ export const MSTeamsTenants = () => {
           </Link>
         )}
       </section>
-      <Section
-        {...(msTeamsTenants && msTeamsTenants.length > 0 ? { slim: true } : {})}
-      >
+      <Section {...(hasLength(msTeamsTenants) ? { slim: true } : {})}>
         <div className="list">
           {msTeamsTenants ? (
             msTeamsTenants.length > 0 ? (
@@ -78,18 +77,42 @@ export const MSTeamsTenants = () => {
                           <Icons.ArrowRight />
                         </Link>
                       </div>
-                      <div className="item__sid">
-                        <strong>SID:</strong>{" "}
-                        <code>{msTeamsTenant.ms_teams_tenant_sid}</code>
+                      <div className="item__meta">
+                        <div>
+                          <div
+                            className={`i txt--${
+                              msTeamsTenant.account_sid ? "teal" : "grey"
+                            }`}
+                          >
+                            <Icons.Activity />
+                            <span>
+                              {
+                                accounts?.find(
+                                  (acct) =>
+                                    acct.account_sid ===
+                                    msTeamsTenant.account_sid
+                                )?.name
+                              }
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div
+                            className={`i txt--${
+                              msTeamsTenant.application_sid ? "teal" : "grey"
+                            }`}
+                          >
+                            <Icons.Grid />
+                            <span>
+                              {applications?.find(
+                                (app) =>
+                                  app.application_sid ===
+                                  msTeamsTenant.application_sid
+                              )?.name || "None"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      {/* some other infor like account and application will be done here as soon as the approriate change comes TODO?*/}
-                      {/* <div className="item__account">
-                        <strong>Account:</strong> <code>{accountName}</code>
-                      </div>
-                      <div className="item__application">
-                        <strong>application:</strong>{" "}
-                        <code>{applicationName || "[None]"}</code>
-                      </div> */}
                     </div>
                     <div className="item__actions">
                       <Link
@@ -111,7 +134,7 @@ export const MSTeamsTenants = () => {
                   </div>
                 );
               })
-            ) : accounts && accounts.length > 0 ? (
+            ) : hasLength(accounts) ? (
               <M>No Microsoft Teams Tenant yet.</M>
             ) : (
               <div>
@@ -128,7 +151,7 @@ export const MSTeamsTenants = () => {
         </div>
       </Section>
       <Section clean>
-        {accounts && accounts.length > 0 && (
+        {hasLength(accounts) && (
           <Button small as={Link} to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}>
             Add Microsoft Teams Tenant
           </Button>
