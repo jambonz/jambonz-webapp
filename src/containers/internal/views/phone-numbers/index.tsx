@@ -115,6 +115,7 @@ export const PhoneNumbers = () => {
                             setSelectedPhoneNumbers(phoneNumbers);
                           } else {
                             setSelectAll(false);
+                            setSelectedPhoneNumbers([]);
                           }
                         }}
                         checked={selectAll}
