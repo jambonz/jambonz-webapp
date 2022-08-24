@@ -74,13 +74,6 @@ which include the following:
 - `toastError(msg)`: helper for dispatching error toasts
 - `toastSuccess(msg)`: helper for dispatching success toasts
 
-### A note on feature flags
-
-Feature flags are enabled via [Vite's environment variables](https://vitejs.dev/guide/env-and-mode.html#env-files).
-They are implemented as `VITE_FEATURE_{THING}`. They then need to be added to
-the `FeatureFlag` store interface and their implementation should be added to the initial
-state object.
-
 ### A note here on type-safety
 
 Our action interface receives a generic type argument that is mapped to the type

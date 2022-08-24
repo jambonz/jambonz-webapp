@@ -15,7 +15,7 @@ export interface ACL {
 }
 
 export interface FeatureFlag {
-  developer: boolean;
+  development: boolean;
 }
 
 export interface State {

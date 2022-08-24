@@ -26,8 +26,8 @@ const initialState: State = {
   user: null,
   toast: null,
   featureFlags: {
-    /** Sort of just a noop example of a feature flag... */
-    developer: import.meta.env.VITE_FEATURE_DEVELOPER ? true : false,
+    /** Placeholder since we may need feature-flags in the future... */
+    development: import.meta.env.DEV,
   },
   accessControl: {
     hasAdminAuth: true,
