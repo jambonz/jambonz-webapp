@@ -16,6 +16,12 @@
 
   &__title {
     @include ui-mixins.p();
+    display: flex;
+    align-items: center;
+
+    input[type="checkbox"] {
+      margin: 0 ui-vars.$px02 0 0;
+    }
 
     svg {
       transform: translate3d(0, 0, 0);

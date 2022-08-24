@@ -1,7 +1,7 @@
 import Blockies from "react-blockies";
 import { classNames, getCssVar, M, Icon } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm, AccessControl } from "src/components";
 import { naviTop, naviByo } from "./items";
@@ -16,10 +16,6 @@ import { postServiceProviders } from "src/api";
 import type { NaviItem } from "./items";
 
 import "./styles.scss";
-import {
-  ROUTE_INTERNAL_ACCOUNTS,
-  ROUTE_INTERNAL_SETTINGS,
-} from "src/router/routes";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -54,8 +50,6 @@ const Item = ({ item, handleMenu }: ItemProps) => {
 
 export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
   const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
@@ -100,14 +94,6 @@ export const Navi = ({ mobile, className, handleMenu }: NaviProps) => {
 
       if (serviceProvider) {
         dispatch({ type: "currentServiceProvider", payload: serviceProvider });
-
-        /** This redirect covers the scenario in which you switch SPs from an edit view... */
-        if (
-          location.pathname !== ROUTE_INTERNAL_ACCOUNTS &&
-          location.pathname !== ROUTE_INTERNAL_SETTINGS
-        ) {
-          navigate(ROUTE_INTERNAL_ACCOUNTS);
-        }
       }
     }
   }, [serviceProviders, sid]);

@@ -5,6 +5,12 @@
 .smsel {
   position: relative;
 
+  label {
+    display: inline-block;
+    margin-right: ui-vars.$px01;
+    @include ui-mixins.ms();
+  }
+
   select {
     @include ui-mixins.mxs();
     font-family: inherit;

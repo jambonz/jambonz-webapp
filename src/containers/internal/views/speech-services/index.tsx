@@ -5,17 +5,18 @@ import { Link } from "react-router-dom";
 import { API_ACCOUNTS, API_SERVICE_PROVIDERS } from "src/api/constants";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
-import { getFetch, deleteSpeechService } from "src/api";
+import { getFetch, deleteSpeechService, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { getHumanDateTime, hasLength } from "src/utils";
 import DeleteSpeechService from "./delete";
 import { getUsage } from "./utils";
 import { CredentialStatus } from "./status";
 
-import type { SpeechCredential } from "src/api/types";
+import type { SpeechCredential, Account } from "src/api/types";
 
 export const SpeechServices = () => {
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [credential, setCredential] = useState<SpeechCredential | null>(null);
   const [credentials, setCredentials] = useState<SpeechCredential[] | null>(
@@ -81,8 +82,12 @@ export const SpeechServices = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters">
-        <AccountFilter account={[accountSid, setAccountSid]} defaultOption />
+      <section className="filters filters--ender">
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+          defaultOption
+        />
       </section>
       <Section {...(hasLength(credentials) ? { slim: true } : {})}>
         <div className="list">
@@ -102,10 +107,6 @@ export const SpeechServices = () => {
                           <Icons.ArrowRight />
                         </Link>
                       </div>
-                      {/* <div className="item__sid">
-                        <strong>SID:</strong>{" "}
-                        <code>{credential.speech_credential_sid}</code>
-                      </div> */}
                       <div className="item__meta">
                         <div>
                           <div
@@ -154,7 +155,6 @@ export const SpeechServices = () => {
                       <Link
                         to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
                         title="Edit speech service"
-                        className=""
                       >
                         <Icons.Edit3 />
                       </Link>
