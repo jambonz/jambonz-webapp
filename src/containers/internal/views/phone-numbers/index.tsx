@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Button, H1, Icon } from "jambonz-ui";
+import { Link } from "react-router-dom";
+
 import {
   deletePhoneNumber,
   putPhoneNumber,
   useApiData,
   useServiceProviderData,
 } from "src/api";
-import { Account, Application, PhoneNumber, VoipCarrier } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
-import { Link } from "react-router-dom";
 import { Icons, Section, Spinner } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import DeletePhoneNumber from "./delete";
 import { Selector } from "src/components/forms";
+import DeletePhoneNumber from "./delete";
+
+import type {
+  Account,
+  Application,
+  PhoneNumber,
+  VoipCarrier,
+} from "src/api/types";
 
 export const PhoneNumbers = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");

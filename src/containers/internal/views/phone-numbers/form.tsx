@@ -1,14 +1,8 @@
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import { postPhoneNumber, putPhoneNumber } from "src/api";
-import {
-  Account,
-  Application,
-  FetchError,
-  PhoneNumber,
-  VoipCarrier,
-} from "src/api/types";
 import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -18,6 +12,14 @@ import {
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
 import { toastError, toastSuccess } from "src/store";
+
+import type {
+  Account,
+  Application,
+  FetchError,
+  PhoneNumber,
+  VoipCarrier,
+} from "src/api/types";
 
 type UsePhoneNumberData = {
   data: PhoneNumber | null;

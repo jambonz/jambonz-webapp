@@ -6,7 +6,12 @@ import { useApiData, useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import { PhoneNumberForm } from "./form";
 
-import { Account, Application, PhoneNumber, VoipCarrier } from "src/api/types";
+import type {
+  Account,
+  Application,
+  PhoneNumber,
+  VoipCarrier,
+} from "src/api/types";
 
 export const EditPhoneNumber = () => {
   const params = useParams();

@@ -4,7 +4,12 @@ import { H1 } from "jambonz-ui";
 import { useApiData, useServiceProviderData } from "src/api";
 import { PhoneNumberForm } from "./form";
 
-import { Account, Application, PhoneNumber, VoipCarrier } from "src/api/types";
+import type {
+  Account,
+  Application,
+  PhoneNumber,
+  VoipCarrier,
+} from "src/api/types";
 
 export const AddPhoneNumber = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
