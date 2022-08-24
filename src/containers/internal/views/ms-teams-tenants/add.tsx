@@ -1,13 +1,13 @@
 import React from "react";
 import { H1 } from "jambonz-ui";
 
-import { useApiData, useServiceProviderData } from "src/api";
+import { useApiData } from "src/api";
 import { MsTeamsTenantForm } from "./form";
 
 import type { Account, Application, MSTeamsTenant } from "src/api/types";
 
 export const AddMsTeamsTenant = () => {
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [accounts] = useApiData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [msTeamsTenants] = useApiData<MSTeamsTenant[]>("MicrosoftTeamsTenants");
 

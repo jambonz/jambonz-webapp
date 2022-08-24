@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
 import { useParams } from "react-router-dom";
 
-import { useApiData, useServiceProviderData } from "src/api";
+import { useApiData } from "src/api";
 import { toastError } from "src/store";
 import { MsTeamsTenantForm } from "./form";
 
@@ -14,7 +14,7 @@ export const EditMsTeamsTenant = () => {
   const [data, refetch, error] = useApiData<MSTeamsTenant>(
     `MicrosoftTeamsTenants/${params.ms_teams_tenant_sid}`
   );
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [accounts] = useApiData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [msTeamsTenants] = useApiData<MSTeamsTenant[]>("MicrosoftTeamsTenants");
 

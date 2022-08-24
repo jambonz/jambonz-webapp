@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import {
-  deleteMsTeamsTenant,
-  useApiData,
-  useServiceProviderData,
-} from "src/api";
+import { deleteMsTeamsTenant, useApiData } from "src/api";
 import { withAccessControl } from "src/utils";
 import { toastError, toastSuccess } from "src/store";
 import { Icons, Section, Spinner } from "src/components";
@@ -26,7 +22,7 @@ export const MSTeamsTenants = () => {
   const [msTeamsTenants, refetch] = useApiData<MSTeamsTenant[]>(
     "MicrosoftTeamsTenants"
   );
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [accounts] = useApiData<Account[]>("Accounts");
 
   const handleDelete = () => {
     if (msTeamsTenant) {
