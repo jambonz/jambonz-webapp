@@ -61,6 +61,14 @@ const LazyPhoneNumbers = withSuspense(
 const LazyTeams = withSuspense(
   React.lazy(() => import("src/containers/internal/views/ms-teams-tenants"))
 );
+const LazyTeamsAdd = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/ms-teams-tenants/add"))
+);
+const LazyTeamsEdit = withSuspense(
+  React.lazy(
+    () => import("src/containers/internal/views/ms-teams-tenants/edit")
+  )
+);
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -129,6 +137,14 @@ export const Router = () => {
                   />
                   <Route path="phone-numbers" element={<LazyPhoneNumbers />} />
                   <Route path="ms-teams-tenants" element={<LazyTeams />} />
+                  <Route
+                    path="ms-teams-tenants/add"
+                    element={<LazyTeamsAdd />}
+                  />
+                  <Route
+                    path="ms-teams-tenants/:ms_teams_tenant_sid/edit"
+                    element={<LazyTeamsEdit />}
+                  />
 
                   {/* 404 page not found */}
                   <Route path="*" element={<NotFound />} />

@@ -11,6 +11,7 @@ import {
   API_API_KEYS,
   API_ACCOUNTS,
   API_APPLICATIONS,
+  API_MS_TEAMS_TENANTS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -40,6 +41,7 @@ import type {
   Account,
   Application,
   SpeechCredential,
+  MSTeamsTenant,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -240,6 +242,13 @@ export const postSpeechService = (
   );
 };
 
+export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {
+  return postFetch<SidResponse, Partial<MSTeamsTenant>>(
+    API_MS_TEAMS_TENANTS,
+    payload
+  );
+};
+
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: UserUpdatePayload) => {
@@ -284,6 +293,16 @@ export const putSpeechService = (
   );
 };
 
+export const putMsTeamsTenant = (
+  sid: string,
+  payload: Partial<MSTeamsTenant>
+) => {
+  return putFetch<EmptyResponse, Partial<MSTeamsTenant>>(
+    `${API_MS_TEAMS_TENANTS}/${sid}`,
+    payload
+  );
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteServiceProvider = (sid: string) => {
@@ -309,6 +328,10 @@ export const deleteSpeechService = (
   return deleteFetch<EmptyResponse>(
     `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`
   );
+};
+
+export const deleteMsTeamsTenant = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_MS_TEAMS_TENANTS}/${sid}`);
 };
 
 /** Named wrappers for `getFetch` */
