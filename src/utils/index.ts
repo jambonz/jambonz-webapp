@@ -3,6 +3,19 @@ import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
 
+export const hasValue = <T>(
+  variable: T | undefined
+): variable is NonNullable<T> => {
+  return variable !== null && variable !== undefined;
+};
+
+export const hasLength = <T>(
+  variable: T[] | null | undefined,
+  minimum = 0
+): variable is NonNullable<T[]> => {
+  return hasValue(variable) && variable.length > minimum;
+};
+
 export const isValidPasswd = (password: string) => {
   return (
     password.length >= 6 && /\d/.test(password) && /[a-zA-Z]/.test(password)

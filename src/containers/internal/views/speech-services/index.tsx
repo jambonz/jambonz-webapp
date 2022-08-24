@@ -7,7 +7,7 @@ import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
 import { getFetch, deleteSpeechService } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { getHumanDateTime } from "src/utils";
+import { getHumanDateTime, hasLength } from "src/utils";
 import DeleteSpeechService from "./delete";
 import { getUsage } from "./utils";
 import { CredentialStatus } from "./status";
@@ -84,9 +84,7 @@ export const SpeechServices = () => {
       <section className="filters">
         <AccountFilter account={[accountSid, setAccountSid]} defaultOption />
       </section>
-      <Section
-        {...(credentials && credentials.length > 0 ? { slim: true } : {})}
-      >
+      <Section {...(hasLength(credentials) ? { slim: true } : {})}>
         <div className="list">
           {credentials ? (
             credentials.length > 0 ? (

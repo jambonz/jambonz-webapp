@@ -9,7 +9,7 @@ import {
   API_PHONE_NUMBERS,
   API_MS_TEAMS_TENANTS,
 } from "src/api/constants";
-import { getObscured } from "src/utils";
+import { getObscured, hasLength } from "src/utils";
 
 import type {
   ApiKey,
@@ -128,7 +128,7 @@ export const DeleteAccount = ({
             <span>MS Teams Tenants ({inUse.teams.length})</span> or have any{" "}
             <span>Api Keys ({inUse.apiKeys.length})</span>.
           </P>
-          {inUse.apps.length > 0 && (
+          {hasLength(inUse.apps) && (
             <InUseItems
               items={inUse.apps}
               itemsLabel="Applications"
@@ -136,7 +136,7 @@ export const DeleteAccount = ({
               labelKey="name"
             />
           )}
-          {inUse.phones.length > 0 && (
+          {hasLength(inUse.phones) && (
             <InUseItems
               items={inUse.phones}
               itemsLabel="Phone Numbers"
@@ -144,7 +144,7 @@ export const DeleteAccount = ({
               labelKey="number"
             />
           )}
-          {inUse.teams.length > 0 && (
+          {hasLength(inUse.teams) && (
             <InUseItems
               items={inUse.teams}
               itemsLabel="MS Teams Tenants"
@@ -152,7 +152,7 @@ export const DeleteAccount = ({
               labelKey="tenant_fqdn"
             />
           )}
-          {inUse.apiKeys.length > 0 && (
+          {hasLength(inUse.apiKeys) && (
             <InUseItems
               items={inUse.apiKeys}
               itemsLabel="API Keys"
