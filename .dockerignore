@@ -34,5 +34,5 @@ CODEOWNERS
 Dockerfile
 LICENSE
 README.md
-dev.server.ts
+server
 docs
