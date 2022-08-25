@@ -54,6 +54,7 @@ export const API_APPLICATIONS = `${API_BASE_URL}/Applications`;
 export const API_PHONE_NUMBERS = `${API_BASE_URL}/PhoneNumbers`;
 export const API_MS_TEAMS_TENANTS = `${API_BASE_URL}/MicrosoftTeamsTenants`;
 export const API_SERVICE_PROVIDERS = `${API_BASE_URL}/ServiceProviders`;
+export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
 
 /* Reference: API usage by internal route
 

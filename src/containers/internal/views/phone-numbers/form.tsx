@@ -18,7 +18,7 @@ import type {
   Application,
   FetchError,
   PhoneNumber,
-  VoipCarrier,
+  Carrier,
 } from "src/api/types";
 
 type UsePhoneNumberData = {
@@ -32,7 +32,7 @@ type PhoneNumberFormProps = {
   phoneNumbers: PhoneNumber[] | null;
   accounts: Account[] | null;
   applications: Application[] | null;
-  voipCarriers: VoipCarrier[] | null;
+  carriers: Carrier[] | null;
 };
 
 export const PhoneNumberForm = ({
@@ -40,7 +40,7 @@ export const PhoneNumberForm = ({
   phoneNumbers,
   accounts,
   applications,
-  voipCarriers,
+  carriers,
 }: PhoneNumberFormProps) => {
   const navigate = useNavigate();
 
@@ -129,7 +129,7 @@ export const PhoneNumberForm = ({
       navigate(ROUTE_INTERNAL_ACCOUNTS);
     }
 
-    if (voipCarriers && voipCarriers.length === 0) {
+    if (carriers && carriers.length === 0) {
       toastError(
         "You must create a SIP trunk before you can create a phone number."
       );
@@ -142,8 +142,8 @@ export const PhoneNumberForm = ({
   }, [accounts, accountSid]);
 
   useEffect(() => {
-    if (voipCarriers && !sipTrunkSid) {
-      setSipTrunkSid(voipCarriers[0].voip_carrier_sid);
+    if (carriers && !sipTrunkSid) {
+      setSipTrunkSid(carriers[0].voip_carrier_sid);
     }
   });
 
@@ -169,7 +169,7 @@ export const PhoneNumberForm = ({
               disabled={phoneNumber ? true : false}
             ></input>
           </fieldset>
-          {voipCarriers && (
+          {carriers && (
             <fieldset>
               <label htmlFor="sip_trunk">
                 SIP Trunk <span>*</span>
@@ -179,7 +179,7 @@ export const PhoneNumberForm = ({
                 name="sip_trunk"
                 required
                 value={sipTrunkSid}
-                options={voipCarriers.map((trunk) => ({
+                options={carriers.map((trunk) => ({
                   name: trunk.name,
                   value: trunk.voip_carrier_sid,
                 }))}

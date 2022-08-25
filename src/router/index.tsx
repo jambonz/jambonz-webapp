@@ -46,6 +46,12 @@ const LazyAlerts = withSuspense(
 const LazyCarriers = withSuspense(
   React.lazy(() => import("src/containers/internal/views/carriers"))
 );
+const LazyCarriersAdd = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/carriers/add"))
+);
+const LazyCarriersEdit = withSuspense(
+  React.lazy(() => import("src/containers/internal/views/carriers/edit"))
+);
 const LazySpeechServices = withSuspense(
   React.lazy(() => import("src/containers/internal/views/speech-services"))
 );
@@ -129,6 +135,11 @@ export const Router = () => {
 
                   {/* BYO navi */}
                   <Route path="carriers" element={<LazyCarriers />} />
+                  <Route path="carriers/add" element={<LazyCarriersAdd />} />
+                  <Route
+                    path="carriers/:voip_carrier_sid/edit"
+                    element={<LazyCarriersEdit />}
+                  />
                   <Route
                     path="speech-services"
                     element={<LazySpeechServices />}

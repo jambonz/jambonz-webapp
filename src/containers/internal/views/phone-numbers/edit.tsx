@@ -6,12 +6,7 @@ import { useApiData, useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import { PhoneNumberForm } from "./form";
 
-import type {
-  Account,
-  Application,
-  PhoneNumber,
-  VoipCarrier,
-} from "src/api/types";
+import type { Account, Application, PhoneNumber, Carrier } from "src/api/types";
 
 export const EditPhoneNumber = () => {
   const params = useParams();
@@ -23,7 +18,7 @@ export const EditPhoneNumber = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [phoneNumbers] = useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
-  const [voipCarriers] = useApiData<VoipCarrier[]>("VoipCarriers");
+  const [carriers] = useApiData<Carrier[]>("VoipCarriers");
 
   useEffect(() => {
     if (error) {
@@ -39,7 +34,7 @@ export const EditPhoneNumber = () => {
         applications={applications}
         phoneNumber={{ data, refetch, error }}
         phoneNumbers={phoneNumbers}
-        voipCarriers={voipCarriers}
+        carriers={carriers}
       />
     </>
   );

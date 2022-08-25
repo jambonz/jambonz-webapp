@@ -18,17 +18,12 @@ import { hasLength, hasValue, formatPhoneNumber } from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 import { ApplicationSelect } from "./application-select";
 
-import type {
-  Account,
-  PhoneNumber,
-  VoipCarrier,
-  Application,
-} from "src/api/types";
+import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
 
 export const PhoneNumbers = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
-  const [voipCarriers] = useServiceProviderData<VoipCarrier[]>("VoipCarriers");
+  const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumber | null>(null);
   const [phoneNumbers, refetch] =
     useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
@@ -89,7 +84,7 @@ export const PhoneNumbers = () => {
     <>
       <section className="mast">
         <H1>Phone numbers</H1>
-        {hasLength(accounts) && hasLength(voipCarriers) && (
+        {hasLength(accounts) && hasLength(carriers) && (
           <Link
             to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}
             title="Add a phone number"
@@ -245,7 +240,7 @@ export const PhoneNumbers = () => {
               })}
             </>
           ) : hasLength(accounts) ? (
-            hasLength(voipCarriers) ? (
+            hasLength(carriers) ? (
               <div>No phone numbers yet.</div>
             ) : (
               <div>
@@ -268,7 +263,7 @@ export const PhoneNumbers = () => {
         </div>
       </Section>
       <Section clean>
-        {hasLength(accounts) && hasLength(voipCarriers) && (
+        {hasLength(accounts) && hasLength(carriers) && (
           <Button small as={Link} to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}>
             Add phone number
           </Button>

@@ -205,26 +205,27 @@ export interface Alert {
   detail: string;
 }
 
-export interface VoipCarrier {
+export interface Carrier {
   voip_carrier_sid: string;
   name: string;
   description: null | string;
-  account_sid: string;
-  application_sid: string;
+  is_active: boolean;
+  service_provider_sid: string;
+  account_sid: null | string;
+  application_sid: null | string;
   e164_leading_plus: boolean;
   requires_register: boolean;
-  register_username: string;
-  register_sip_realm: string;
-  register_password: string;
-  tech_prefix: string;
+  register_username: null | string;
+  register_sip_realm: null | string;
+  register_password: null | string;
+  tech_prefix: null | string;
+  diversion: null | string;
   inbound_auth_username: string;
   inbound_auth_password: string;
-  diversion: string;
-  is_active: boolean;
-  smpp_system_id: string;
-  smpp_password: string;
-  smpp_inbound_system_id: string;
-  smpp_inbound_password: string;
+  smpp_system_id: null | string;
+  smpp_password: null | string;
+  smpp_inbound_system_id: null | string;
+  smpp_inbound_password: null | string;
   smpp_enquire_link_interval: number;
 }
 
@@ -232,6 +233,7 @@ export interface ProtocolGateway {
   voip_carrier_sid: string;
   ipv4: string;
   port: number;
+  netmask: number;
   inbound: boolean;
   outbound: boolean;
 }
@@ -241,7 +243,6 @@ export interface SipGateway extends ProtocolGateway {
 }
 
 export interface SmppGateway extends ProtocolGateway {
-  netmask: number;
   is_primary: boolean;
   use_tls: boolean;
 }
