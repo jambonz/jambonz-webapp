@@ -416,142 +416,130 @@ export const ApplicationForm = ({
           );
         })}
         {synthesis && (
-          <>
-            <fieldset>
-              <label htmlFor="synthesis_vendor">Speech Synthesis Vendor</label>
-              <Selector
-                id="synthesis_vendor"
-                name="synthesis_vendor"
-                value={synthVendor}
-                options={vendors}
-                onChange={(e) => {
-                  const vendor = e.target.value as keyof SynthesisVendors;
-                  setSynthVendor(vendor);
+          <fieldset>
+            <label htmlFor="synthesis_vendor">Speech Synthesis Vendor</label>
+            <Selector
+              id="synthesis_vendor"
+              name="synthesis_vendor"
+              value={synthVendor}
+              options={vendors}
+              onChange={(e) => {
+                const vendor = e.target.value as keyof SynthesisVendors;
+                setSynthVendor(vendor);
 
-                  /** When using Google and en-US, ensure "Standard-C" is used as default */
-                  if (
-                    e.target.value === VENDOR_GOOGLE &&
-                    synthLang === LANG_EN_US
-                  ) {
-                    setSynthVoice(LANG_EN_US_STANDARD_C);
-                    return;
-                  }
+                /** When using Google and en-US, ensure "Standard-C" is used as default */
+                if (
+                  e.target.value === VENDOR_GOOGLE &&
+                  synthLang === LANG_EN_US
+                ) {
+                  setSynthVoice(LANG_EN_US_STANDARD_C);
+                  return;
+                }
 
-                  /** Google and AWS have different language lists */
-                  /** If the new language doesn't map then default to "en-US" */
-                  let newLang = synthesis[vendor].find(
-                    (lang) => lang.code === synthLang
-                  );
+                /** Google and AWS have different language lists */
+                /** If the new language doesn't map then default to "en-US" */
+                let newLang = synthesis[vendor].find(
+                  (lang) => lang.code === synthLang
+                );
 
-                  if (newLang) {
-                    setSynthVoice(newLang.voices[0].value);
-                    return;
-                  }
+                if (newLang) {
+                  setSynthVoice(newLang.voices[0].value);
+                  return;
+                }
 
-                  newLang = synthesis[vendor].find(
-                    (lang) => lang.code === LANG_EN_US
-                  );
+                newLang = synthesis[vendor].find(
+                  (lang) => lang.code === LANG_EN_US
+                );
 
-                  setSynthLang(LANG_EN_US);
-                  setSynthVoice(newLang!.voices[0].value);
-                }}
-              />
-            </fieldset>
+                setSynthLang(LANG_EN_US);
+                setSynthVoice(newLang!.voices[0].value);
+              }}
+            />
             {synthVendor && synthLang && (
               <>
-                <fieldset>
-                  <label htmlFor="synthesis_lang">Language</label>
-                  <Selector
-                    id="synthesis_lang"
-                    name="synthesis_lang"
-                    value={synthLang}
-                    options={synthesis[
-                      synthVendor as keyof SynthesisVendors
-                    ].map((lang: VoiceLanguage) => ({
+                <label htmlFor="synthesis_lang">Language</label>
+                <Selector
+                  id="synthesis_lang"
+                  name="synthesis_lang"
+                  value={synthLang}
+                  options={synthesis[synthVendor as keyof SynthesisVendors].map(
+                    (lang: VoiceLanguage) => ({
                       name: lang.name,
                       value: lang.code,
-                    }))}
-                    onChange={(e) => {
-                      const language = e.target.value;
-                      setSynthLang(language);
+                    })
+                  )}
+                  onChange={(e) => {
+                    const language = e.target.value;
+                    setSynthLang(language);
 
-                      /** When using Google and en-US, ensure "Standard-C" is used as default */
-                      if (
-                        synthVendor === VENDOR_GOOGLE &&
-                        language === LANG_EN_US
-                      ) {
-                        setSynthVoice(LANG_EN_US_STANDARD_C);
-                        return;
-                      }
-
-                      const newLang = synthesis[
-                        synthVendor as keyof SynthesisVendors
-                      ].find((lang) => lang.code === language);
-
-                      setSynthVoice(newLang!.voices[0].value);
-                    }}
-                  />
-                </fieldset>
-                <fieldset>
-                  <label htmlFor="synthesis_voice">Voice</label>
-                  <Selector
-                    id="synthesis_voice"
-                    name="synthesis_voice"
-                    value={synthVoice}
-                    options={
-                      synthesis[synthVendor as keyof SynthesisVendors]
-                        .filter(
-                          (lang: VoiceLanguage) => lang.code === synthLang
-                        )
-                        .map((lang: VoiceLanguage) =>
-                          lang.voices.map((voice: Voice) => ({
-                            name: voice.name,
-                            value: voice.value,
-                          }))
-                        )
-                        .flat() as Voice[]
+                    /** When using Google and en-US, ensure "Standard-C" is used as default */
+                    if (
+                      synthVendor === VENDOR_GOOGLE &&
+                      language === LANG_EN_US
+                    ) {
+                      setSynthVoice(LANG_EN_US_STANDARD_C);
+                      return;
                     }
-                    onChange={(e) => setSynthVoice(e.target.value)}
-                  />
-                </fieldset>
+
+                    const newLang = synthesis[
+                      synthVendor as keyof SynthesisVendors
+                    ].find((lang) => lang.code === language);
+
+                    setSynthVoice(newLang!.voices[0].value);
+                  }}
+                />
+                <label htmlFor="synthesis_voice">Voice</label>
+                <Selector
+                  id="synthesis_voice"
+                  name="synthesis_voice"
+                  value={synthVoice}
+                  options={
+                    synthesis[synthVendor as keyof SynthesisVendors]
+                      .filter((lang: VoiceLanguage) => lang.code === synthLang)
+                      .map((lang: VoiceLanguage) =>
+                        lang.voices.map((voice: Voice) => ({
+                          name: voice.name,
+                          value: voice.value,
+                        }))
+                      )
+                      .flat() as Voice[]
+                  }
+                  onChange={(e) => setSynthVoice(e.target.value)}
+                />
               </>
             )}
-          </>
+          </fieldset>
         )}
         {recognizers && (
-          <>
-            <fieldset>
-              <label htmlFor="recognizer_vendor">
-                Speech Recognizer Vendor
-              </label>
-              <Selector
-                id="recognizer_vendor"
-                name="recognizer_vendor"
-                value={recogVendor}
-                options={vendors.filter(
-                  (vendor) => vendor.value != VENDOR_WELLSAID
-                )}
-                onChange={(e) => {
-                  const vendor = e.target.value as keyof RecognizerVendors;
-                  setRecogVendor(vendor);
+          <fieldset>
+            <label htmlFor="recognizer_vendor">Speech Recognizer Vendor</label>
+            <Selector
+              id="recognizer_vendor"
+              name="recognizer_vendor"
+              value={recogVendor}
+              options={vendors.filter(
+                (vendor) => vendor.value != VENDOR_WELLSAID
+              )}
+              onChange={(e) => {
+                const vendor = e.target.value as keyof RecognizerVendors;
+                setRecogVendor(vendor);
 
-                  /** Google and AWS have different language lists */
-                  /** If the new language doesn't map then default to "en-US" */
-                  const newLang = recognizers[vendor].find(
-                    (lang: Language) => lang.code === recogLang
-                  );
+                /** Google and AWS have different language lists */
+                /** If the new language doesn't map then default to "en-US" */
+                const newLang = recognizers[vendor].find(
+                  (lang: Language) => lang.code === recogLang
+                );
 
-                  if (
-                    (vendor === VENDOR_GOOGLE || vendor === VENDOR_AWS) &&
-                    !newLang
-                  ) {
-                    setRecogLang(LANG_EN_US);
-                  }
-                }}
-              />
-            </fieldset>
+                if (
+                  (vendor === VENDOR_GOOGLE || vendor === VENDOR_AWS) &&
+                  !newLang
+                ) {
+                  setRecogLang(LANG_EN_US);
+                }
+              }}
+            />
             {recogVendor && recogLang && (
-              <fieldset>
+              <>
                 <label htmlFor="recognizer_lang">Language</label>
                 <Selector
                   id="recognizer_lang"
@@ -567,9 +555,9 @@ export const ApplicationForm = ({
                     setRecogLang(e.target.value);
                   }}
                 />
-              </fieldset>
+              </>
             )}
-          </>
+          </fieldset>
         )}
         {message && <fieldset>{<Message message={message} />}</fieldset>}
         <fieldset>

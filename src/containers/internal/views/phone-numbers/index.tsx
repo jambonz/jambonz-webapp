@@ -50,9 +50,11 @@ export const PhoneNumbers = () => {
     )
       .then(() => {
         refetch();
+        setApplicationSid("");
         toastSuccess("Number routing updated successfully");
       })
       .catch((error) => {
+        setApplicationSid("");
         toastError(error.msg);
       });
   };
@@ -79,7 +81,6 @@ export const PhoneNumbers = () => {
     if (applicationSid) {
       handleMassEdit();
       setSelectAll(false);
-      setApplicationSid("");
       setSelectedPhoneNumbers([]);
     }
   }, [applicationSid]);
@@ -125,11 +126,19 @@ export const PhoneNumbers = () => {
                     <div>Select all</div>
                   </label>
                 </div>
-                {hasLength(selectedPhoneNumbers) && (
+                {hasLength(selectedPhoneNumbers) && !applicationSid && (
                   <ApplicationSelect
                     application={[applicationSid, setApplicationSid]}
                     applications={applications}
                   />
+                )}
+                {applicationSid && (
+                  <div className="ispin">
+                    <Spinner small />
+                    <span className="ms txt--dark">
+                      Updating number routing...
+                    </span>
+                  </div>
                 )}
               </div>
               {phoneNumbers.map((phoneNumber) => {
