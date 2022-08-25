@@ -74,14 +74,6 @@ which include the following:
 - `toastError(msg)`: helper for dispatching error toasts
 - `toastSuccess(msg)`: helper for dispatching success toasts
 
-### A note here on type-safety
-
-Our action interface receives a generic type argument that is mapped to the type
-parameter for the action. This generic type is also used for indexed access to the
-state interface for the action payload parameter. We use global dispatch middleware
-to pass this type to the action. With this setup our app dispatch enforces that the
-type of payload maps to the type parameter received.
-
 ## :wales: API implementation
 
 We have a centralized API implementation that uses our normalized `fetchTransport` method
@@ -97,13 +89,9 @@ The hooks are:
 - `useApiData(path)`: returns `[data, refetcher, error]`
 - `useServiceProviderData(path)`: returns `[data, refetcher, error]`
 
-### A note here on type-safety
-
 All API requests are piped through the `fetchTransport` method which receives a generic type
-and returns it as the type of response data resolved. This ensures type-safety when using API
-data at the component level as well as provides property hinting based on interface implementations.
-Any `POST`, `PUT` or `DELETE` calls should have a wrapper method that calls our more generic methods
-under the hood, which are:
+and returns it as the type of response data resolved. Any `POST`, `PUT` or `DELETE` calls should
+have a wrapper method that calls our more generic methods under the hood, which are:
 
 - `getFetch(url)`
 - `postFetch(url, payload)`
