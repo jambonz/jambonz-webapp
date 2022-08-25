@@ -51,13 +51,13 @@ export const Applications = () => {
   useEffect(() => {
     if (accountSid) {
       getApplications();
-    } else {
+    } else if (accounts && !accounts.length) {
       setApplications([]);
     }
 
     return function cleanup() {
       setAccountSid("");
-      setApplications([]);
+      setApplications(null);
     };
   }, [accountSid, accounts]);
 
