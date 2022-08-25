@@ -6,8 +6,6 @@
 .internal {
   display: flex;
 
-  /** Structural layout: */
-
   header {
     /** Inheriting from jambonz-ui .wrap */
     padding-top: ui-vars.$px03;
@@ -39,40 +37,6 @@
 
     article {
       padding: 0 ui-vars.$width-padding ui-vars.$px04;
-    }
-  }
-
-  /** List indexes */
-
-  .mast {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .ico {
-      @include mixins.icosize();
-    }
-  }
-
-  .mass-edit {
-    padding: ui-vars.$px00 0;
-
-    label {
-      @include ui-mixins.ms();
-    }
-  }
-
-  .filters {
-    display: flex;
-    padding-top: ui-vars.$px04;
-    padding-bottom: ui-vars.$px03;
-
-    &--ender {
-      justify-content: flex-end;
-    }
-
-    + * {
-      margin-top: 0;
     }
   }
 }

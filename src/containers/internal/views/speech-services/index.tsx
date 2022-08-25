@@ -7,7 +7,7 @@ import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
 import { getFetch, deleteSpeechService, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { getHumanDateTime, hasLength } from "src/utils";
+import { getHumanDateTime, hasLength, hasValue } from "src/utils";
 import DeleteSpeechService from "./delete";
 import { getUsage } from "./utils";
 import { CredentialStatus } from "./status";
@@ -86,95 +86,92 @@ export const SpeechServices = () => {
         <AccountFilter
           account={[accountSid, setAccountSid]}
           accounts={accounts}
+          label="Used by"
           defaultOption
         />
       </section>
       <Section {...(hasLength(credentials) ? { slim: true } : {})}>
         <div className="list">
-          {credentials ? (
-            credentials.length > 0 ? (
-              credentials.map((credential) => {
-                return (
-                  <div className="item" key={credential.speech_credential_sid}>
-                    <div className="item__info">
-                      <div className="item__title">
-                        <Link
-                          to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
-                          title="Edit application"
-                          className="i txt--dark"
-                        >
-                          <strong>Vendor: {credential.vendor}</strong>
-                          <Icons.ArrowRight />
-                        </Link>
-                      </div>
-                      <div className="item__meta">
-                        <div>
-                          <div
-                            className={`i txt--${
-                              credential.use_for_tts || credential.use_for_stt
-                                ? "teal"
-                                : "grey"
-                            }`}
-                          >
-                            {credential.use_for_tts ||
-                            credential.use_for_stt ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>{getUsage(credential)}</span>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              credential.last_used ? "teal" : "grey"
-                            }`}
-                          >
-                            {credential.last_used ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>
-                              {credential.last_used
-                                ? getHumanDateTime(credential.last_used)
-                                : "Never used"}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <CredentialStatus
-                            cred={credential}
-                            serviceProvider={currentServiceProvider}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="item__actions">
+          {!hasValue(credentials) && <Spinner />}
+          {hasLength(credentials) ? (
+            credentials.map((credential) => {
+              return (
+                <div className="item" key={credential.speech_credential_sid}>
+                  <div className="item__info">
+                    <div className="item__title">
                       <Link
                         to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
-                        title="Edit speech service"
+                        title="Edit application"
+                        className="i txt--dark"
                       >
-                        <Icons.Edit3 />
+                        <strong>Vendor: {credential.vendor}</strong>
+                        <Icons.ArrowRight />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete speech service"
-                        onClick={() => setCredential(credential)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                    </div>
+                    <div className="item__meta">
+                      <div>
+                        <div
+                          className={`i txt--${
+                            credential.use_for_tts || credential.use_for_stt
+                              ? "teal"
+                              : "grey"
+                          }`}
+                        >
+                          {credential.use_for_tts || credential.use_for_stt ? (
+                            <Icons.CheckCircle />
+                          ) : (
+                            <Icons.XCircle />
+                          )}
+                          <span>{getUsage(credential)}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div
+                          className={`i txt--${
+                            credential.last_used ? "teal" : "grey"
+                          }`}
+                        >
+                          {credential.last_used ? (
+                            <Icons.CheckCircle />
+                          ) : (
+                            <Icons.XCircle />
+                          )}
+                          <span>
+                            {credential.last_used
+                              ? getHumanDateTime(credential.last_used)
+                              : "Never used"}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <CredentialStatus
+                          cred={credential}
+                          serviceProvider={currentServiceProvider}
+                        />
+                      </div>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <M>No speech services yet.</M>
-            )
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
+                      title="Edit speech service"
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete speech service"
+                      onClick={() => setCredential(credential)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
           ) : (
-            <Spinner />
+            <M>No speech services yet.</M>
           )}
         </div>
       </Section>

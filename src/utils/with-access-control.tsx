@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { toastError, useSelectState, useAccessControl } from "src/store";
-import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { ROUTE_INTERNAL_SETTINGS } from "src/router/routes";
 
 import type { ACL, IMessage } from "src/store/types";
 import type { ServiceProvider } from "src/api/types";
@@ -30,7 +30,7 @@ export const withAccessControl = (
       useEffect(() => {
         if (currentServiceProvider && !hasPermission) {
           toastError(getMessage(currentServiceProvider));
-          navigate(ROUTE_INTERNAL_ACCOUNTS);
+          navigate(ROUTE_INTERNAL_SETTINGS);
         }
       }, [hasPermission, currentServiceProvider]);
 

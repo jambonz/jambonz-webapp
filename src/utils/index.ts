@@ -59,4 +59,26 @@ export const getHumanDateTime = (date: string, fallbackText = "Never used") => {
     : fallbackText;
 };
 
+export const formatPhoneNumber = (number: string) => {
+  const match = number.match(/^(1?)([2-9][0-9]{2})([2-9][0-9]{2})([0-9]{4})$/);
+
+  if (match) {
+    return `${match[1] ? `+${match[1]} ` : ""}(${match[2]}) ${match[3]}-${
+      match[4]
+    }`;
+  }
+
+  return number;
+};
+
+export const timeFormat = (seconds: number) => {
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+};
+
 export { withSuspense, useMobileMedia, withAccessControl, withSelectState };

@@ -3,7 +3,7 @@ import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { deleteMsTeamsTenant, useApiData } from "src/api";
-import { hasLength, withAccessControl } from "src/utils";
+import { hasLength, hasValue, withAccessControl } from "src/utils";
 import { toastError, toastSuccess } from "src/store";
 import { Icons, Section, Spinner } from "src/components";
 import {
@@ -61,92 +61,88 @@ export const MSTeamsTenants = () => {
       </section>
       <Section {...(hasLength(msTeamsTenants) ? { slim: true } : {})}>
         <div className="list">
-          {msTeamsTenants ? (
-            msTeamsTenants.length > 0 ? (
-              msTeamsTenants.map((msTeamsTenant) => {
-                return (
-                  <div className="item" key={msTeamsTenant.ms_teams_tenant_sid}>
-                    <div className="item__info">
-                      <div className="item__title">
-                        <Link
-                          to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/${msTeamsTenant.ms_teams_tenant_sid}/edit`}
-                          title="Edit Microsoft Teams Tenant"
-                          className="i"
-                        >
-                          <strong>{msTeamsTenant.tenant_fqdn}</strong>
-                          <Icons.ArrowRight />
-                        </Link>
-                      </div>
-                      <div className="item__meta">
-                        <div>
-                          <div
-                            className={`i txt--${
-                              msTeamsTenant.account_sid ? "teal" : "grey"
-                            }`}
-                          >
-                            <Icons.Activity />
-                            <span>
-                              {
-                                accounts?.find(
-                                  (acct) =>
-                                    acct.account_sid ===
-                                    msTeamsTenant.account_sid
-                                )?.name
-                              }
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              msTeamsTenant.application_sid ? "teal" : "grey"
-                            }`}
-                          >
-                            <Icons.Grid />
-                            <span>
-                              {applications?.find(
-                                (app) =>
-                                  app.application_sid ===
-                                  msTeamsTenant.application_sid
-                              )?.name || "None"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="item__actions">
+          {!hasValue(msTeamsTenants) && <Spinner />}
+          {hasLength(msTeamsTenants) ? (
+            msTeamsTenants.map((msTeamsTenant) => {
+              return (
+                <div className="item" key={msTeamsTenant.ms_teams_tenant_sid}>
+                  <div className="item__info">
+                    <div className="item__title">
                       <Link
                         to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/${msTeamsTenant.ms_teams_tenant_sid}/edit`}
                         title="Edit Microsoft Teams Tenant"
-                        className=""
+                        className="i"
                       >
-                        <Icons.Edit3 />
+                        <strong>{msTeamsTenant.tenant_fqdn}</strong>
+                        <Icons.ArrowRight />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete Microsoft Teams Tenant"
-                        onClick={() => setMsTeamsTenant(msTeamsTenant)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                    </div>
+                    <div className="item__meta">
+                      <div>
+                        <div
+                          className={`i txt--${
+                            msTeamsTenant.account_sid ? "teal" : "grey"
+                          }`}
+                        >
+                          <Icons.Activity />
+                          <span>
+                            {
+                              accounts?.find(
+                                (acct) =>
+                                  acct.account_sid === msTeamsTenant.account_sid
+                              )?.name
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <div
+                          className={`i txt--${
+                            msTeamsTenant.application_sid ? "teal" : "grey"
+                          }`}
+                        >
+                          <Icons.Grid />
+                          <span>
+                            {applications?.find(
+                              (app) =>
+                                app.application_sid ===
+                                msTeamsTenant.application_sid
+                            )?.name || "None"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                );
-              })
-            ) : hasLength(accounts) ? (
-              <M>No Microsoft Teams Tenant yet.</M>
-            ) : (
-              <div>
-                You must{" "}
-                <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
-                  create an account
-                </Link>{" "}
-                before you can create a Microsoft Teams Tenant.
-              </div>
-            )
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/${msTeamsTenant.ms_teams_tenant_sid}/edit`}
+                      title="Edit Microsoft Teams Tenant"
+                      className=""
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete Microsoft Teams Tenant"
+                      onClick={() => setMsTeamsTenant(msTeamsTenant)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : hasLength(accounts) ? (
+            <M>No Microsoft Teams Tenant yet.</M>
           ) : (
-            <Spinner />
+            <div>
+              You must{" "}
+              <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
+                create an account
+              </Link>{" "}
+              before you can create a Microsoft Teams Tenant.
+            </div>
           )}
         </div>
       </Section>

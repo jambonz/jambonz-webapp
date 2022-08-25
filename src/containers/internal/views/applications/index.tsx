@@ -11,7 +11,7 @@ import {
 import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess } from "src/store";
-import { hasLength } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
 
@@ -47,13 +47,19 @@ export const Applications = () => {
     }
   };
 
+  /** The `accounts` dep is necessary for proper cleanup */
   useEffect(() => {
     if (accountSid) {
       getApplications();
     } else {
       setApplications([]);
     }
-  }, [accountSid]);
+
+    return function cleanup() {
+      setAccountSid("");
+      setApplications([]);
+    };
+  }, [accountSid, accounts]);
 
   return (
     <>
@@ -78,74 +84,71 @@ export const Applications = () => {
       </section>
       <Section {...(hasLength(applications) ? { slim: true } : {})}>
         <div className="list">
-          {applications ? (
-            applications.length > 0 ? (
-              applications.map((application) => {
-                return (
-                  <div className="item" key={application.application_sid}>
-                    <div className="item__info">
-                      <div className="item__title">
-                        <Link
-                          to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
-                          title="Edit application"
-                          className="i"
-                        >
-                          <strong>{application.name}</strong>
-                          <Icons.ArrowRight />
-                        </Link>
-                      </div>
-                      <div className="item__meta">
-                        <div>
-                          <div
-                            className={`i txt--${
-                              application.account_sid ? "teal" : "grey"
-                            }`}
-                          >
-                            <Icons.Activity />
-                            <span>
-                              {
-                                accounts?.find(
-                                  (acct) =>
-                                    acct.account_sid === application.account_sid
-                                )?.name
-                              }
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="item__actions">
+          {!hasValue(applications) && <Spinner />}
+          {hasLength(applications) ? (
+            applications.map((application) => {
+              return (
+                <div className="item" key={application.application_sid}>
+                  <div className="item__info">
+                    <div className="item__title">
                       <Link
                         to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
                         title="Edit application"
+                        className="i"
                       >
-                        <Icons.Edit3 />
+                        <strong>{application.name}</strong>
+                        <Icons.ArrowRight />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete application"
-                        onClick={() => setApplication(application)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                    </div>
+                    <div className="item__meta">
+                      <div>
+                        <div
+                          className={`i txt--${
+                            application.account_sid ? "teal" : "grey"
+                          }`}
+                        >
+                          <Icons.Activity />
+                          <span>
+                            {
+                              accounts?.find(
+                                (acct) =>
+                                  acct.account_sid === application.account_sid
+                              )?.name
+                            }
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                );
-              })
-            ) : accountSid ? (
-              <M>No applications yet.</M>
-            ) : (
-              <M>
-                You must{" "}
-                <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
-                  create an account
-                </Link>{" "}
-                before you can create an application.
-              </M>
-            )
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
+                      title="Edit application"
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete application"
+                      onClick={() => setApplication(application)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : accountSid ? (
+            <M>No applications yet.</M>
           ) : (
-            <Spinner />
+            <M>
+              You must{" "}
+              <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
+                create an account
+              </Link>{" "}
+              before you can create an application.
+            </M>
           )}
         </div>
       </Section>

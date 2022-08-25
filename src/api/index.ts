@@ -356,6 +356,7 @@ export const deletePhoneNumber = (sid: string) => {
 
 /** Named wrappers for `getFetch` */
 
+/** This is not a functioning API at the moment... */
 export const getUser = (sid: string) => {
   return getFetch<User>(`${API_USERS}/${sid}`);
 };

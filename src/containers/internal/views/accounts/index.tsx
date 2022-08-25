@@ -7,7 +7,7 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { Section, Icons, Spinner } from "src/components";
 import { DeleteAccount } from "./delete";
 import { toastError, toastSuccess } from "src/store";
-import { hasLength } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
 
 import type { Account } from "src/api/types";
 
@@ -45,166 +45,32 @@ export const Accounts = () => {
       </section>
       <Section {...(hasLength(accounts) ? { slim: true } : {})}>
         <div className="list">
-          {accounts ? (
-            accounts.length > 0 ? (
-              accounts.map((account) => {
-                return (
-                  <div className="item" key={account.account_sid}>
-                    <div className="item__info">
-                      <div className="item__title">
-                        <Link
-                          to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
-                          title="Edit account"
-                          className="i"
-                        >
-                          <strong>{account.name}</strong>
-                          <Icons.ArrowRight />
-                        </Link>
-                      </div>
-                      <div className="item__sid">
-                        <strong>SID:</strong> <code>{account.account_sid}</code>
-                      </div>
-                      {/* <div className="item__meta">
-                        <div>
-                          <div
-                            className={`i txt--${
-                              account.sip_realm ? "teal" : "grey"
-                            }`}
-                          >
-                            {account.sip_realm ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>SIP realm</span>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              account.registration_hook ? "teal" : "grey"
-                            }`}
-                          >
-                            {account.registration_hook ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>Registration webhook</span>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={`i txt--${
-                              account.queue_event_hook ? "teal" : "grey"
-                            }`}
-                          >
-                            {account.queue_event_hook ? (
-                              <Icons.CheckCircle />
-                            ) : (
-                              <Icons.XCircle />
-                            )}
-                            <span>Queue event webhook</span>
-                          </div>
-                        </div>
-                      </div> */}
-                    </div>
-                    <div className="item__actions">
+          {!hasValue(accounts) && <Spinner />}
+          {hasLength(accounts) ? (
+            accounts.map((account) => {
+              return (
+                <div className="item" key={account.account_sid}>
+                  <div className="item__info">
+                    <div className="item__title">
                       <Link
                         to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
                         title="Edit account"
+                        className="i"
                       >
-                        <Icons.Edit3 />
+                        <strong>{account.name}</strong>
+                        <Icons.ArrowRight />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete account"
-                        onClick={() => setAccount(account)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                    </div>
+                    <div className="item__sid">
+                      <strong>SID:</strong> <code>{account.account_sid}</code>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <M>No Accounts yet.</M>
-            )
-          ) : (
-            <Spinner />
-          )}
-        </div>
-      </Section>
-      {/* <section className="cards">
-        {accounts ? (
-          accounts.length > 0 ? (
-            accounts.map((account) => {
-              return (
-                <div className="card" key={account.account_sid}>
-                  <div className="card__title">
-                    <Link
-                      to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
-                      title="Edit account"
-                      className="i"
-                    >
-                      <strong>{account.name}</strong>
-                      <Icons.ArrowRight />
-                    </Link>
-                  </div>
-                  <div className="card__sid">
-                    <strong>SID:</strong> <code>{account.account_sid}</code>
-                  </div>
-                  <div className="card__meta">
-                    <div>
-                      <div
-                        className={`i txt--${
-                          account.sip_realm ? "teal" : "grey"
-                        }`}
-                      >
-                        {account.sip_realm ? (
-                          <Icons.CheckCircle />
-                        ) : (
-                          <Icons.XCircle />
-                        )}
-                        <span>SIP realm</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div
-                        className={`i txt--${
-                          account.registration_hook ? "teal" : "grey"
-                        }`}
-                      >
-                        {account.registration_hook ? (
-                          <Icons.CheckCircle />
-                        ) : (
-                          <Icons.XCircle />
-                        )}
-                        <span>Registration webhook</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div
-                        className={`i txt--${
-                          account.queue_event_hook ? "teal" : "grey"
-                        }`}
-                      >
-                        {account.queue_event_hook ? (
-                          <Icons.CheckCircle />
-                        ) : (
-                          <Icons.XCircle />
-                        )}
-                        <span>Queue event webhook</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="card__actions">
+                  <div className="item__actions">
                     <Link
                       to={`${ROUTE_INTERNAL_ACCOUNTS}/${account.account_sid}/edit`}
                       title="Edit account"
                     >
-                      <Icons.Edit />
+                      <Icons.Edit3 />
                     </Link>
                     <button
                       type="button"
@@ -212,19 +78,17 @@ export const Accounts = () => {
                       onClick={() => setAccount(account)}
                       className="btnty"
                     >
-                      <Icons.Trash2 />
+                      <Icons.Trash />
                     </button>
                   </div>
                 </div>
               );
             })
           ) : (
-            <div>No Accounts yet.</div>
-          )
-        ) : (
-          <Spinner />
-        )}
-      </section> */}
+            <M>No Accounts yet.</M>
+          )}
+        </div>
+      </Section>
       <Section clean>
         <Button small as={Link} to={`${ROUTE_INTERNAL_ACCOUNTS}/add`}>
           Add account

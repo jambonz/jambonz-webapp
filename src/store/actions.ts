@@ -61,22 +61,6 @@ export const currentServiceProviderAction = (
   return genericAction(state, action);
 };
 
-// export const toastAction = (state: State, action: Action): State => {
-//   const toast = state.toast;
-//   const found = toast.find((t) => t.id === action.payload.id);
-
-//   if (found) {
-//     toast.splice(toast.indexOf(found), 1);
-//   } else {
-//     toast.push(action.payload);
-//   }
-
-//   return {
-//     ...state,
-//     toast,
-//   };
-// };
-
 export const userAsyncAction = async (): Promise<User> => {
   const response = await getUser("user_sid");
   return response.json;

@@ -1,5 +1,5 @@
 @use "./forms";
-@use "./cards";
+// @use "./cards";
 @use "./lists";
 @use "./smsel";
 @use "./inpbtn";
@@ -20,7 +20,7 @@
 
 pre,
 code {
-  @include mixins.pre();
+  @include mixins.code();
 }
 
 pre {
@@ -44,12 +44,13 @@ p > code {
   border-radius: ui-vars.$px00;
 }
 
-/** Used on the speech credentials form */
 details {
   padding: ui-vars.$px02;
   border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$dark;
   max-width: vars.$widthinput;
 
+  /** Used on the speech credentials form */
   &.fail {
     color: ui-vars.$jambonz;
     border: 2px solid ui-vars.$jambonz;
@@ -77,15 +78,13 @@ details {
     display: list-item;
     cursor: pointer;
 
+    + * {
+      margin-top: ui-vars.$px02;
+    }
+
     > div {
       display: inline-block;
       padding-left: ui-vars.$px00;
-    }
-  }
-
-  &[open] {
-    summary {
-      margin-bottom: ui-vars.$px02;
     }
   }
 }
@@ -120,6 +119,38 @@ details {
 
   > * + * {
     margin-left: ui-vars.$px01;
+  }
+}
+
+.mast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .ico {
+    @include mixins.icosize();
+  }
+}
+
+.mass-edit {
+  padding: ui-vars.$px00 0;
+
+  label {
+    @include ui-mixins.ms();
+  }
+}
+
+.filters {
+  display: flex;
+  padding-top: ui-vars.$px04;
+  padding-bottom: ui-vars.$px03;
+
+  &--ender {
+    justify-content: flex-end;
+  }
+
+  + * {
+    margin-top: 0;
   }
 }
 
