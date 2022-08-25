@@ -8,4 +8,7 @@ npx lint-staged
 npm run test
 
 # run build -- tsc
-npm run build
+# npm run build
+
+# run tsc
+npx tsc
