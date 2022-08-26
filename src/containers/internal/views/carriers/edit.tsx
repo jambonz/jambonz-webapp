@@ -23,12 +23,12 @@ export const EditCarrier = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
 
-  const [carrierSipGateways] = useApiData<SipGateway[]>(
-    `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`
-  );
-  const [carrierSmppGateways] = useApiData<SmppGateway[]>(
-    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`
-  );
+  const [carrierSipGateways, carrierSipGatewaysRefetch] = useApiData<
+    SipGateway[]
+  >(`SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`);
+  const [carrierSmppGateways, carrierSmppGatewaysRefetch] = useApiData<
+    SmppGateway[]
+  >(`SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`);
   // const [carrierSipGateways, setCarrierSipGateways] = useState<
   //   SipGateway[] | null
   // >([]);
@@ -55,6 +55,8 @@ export const EditCarrier = () => {
         carrierSipGateways={carrierSipGateways}
         carrierSmppGateways={carrierSmppGateways}
         carrier={{ data, refetch, error }}
+        carrierSipGatewayRefetch={carrierSipGatewaysRefetch}
+        carrierSmppGatewayRefetch={carrierSmppGatewaysRefetch}
       />
     </>
   );

@@ -2,6 +2,8 @@ import { Button, ButtonGroup, MS, P, Tab, Tabs } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  deleteSipGateway,
+  deleteSmppGateway,
   postCarrier,
   postSipGateway,
   postSmppGateway,
@@ -28,16 +30,19 @@ type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
   carrierSipGateways?: SipGateway[] | null;
   carrierSmppGateways?: SmppGateway[] | null;
+  carrierSipGatewayRefetch?: () => void;
+  carrierSmppGatewayRefetch?: () => void;
   accounts: null | Account[];
   carriers: null | Carrier[];
   predefinedCarriers: null | PredefinedCarriers[];
-  // protocol gateway stuffs
 };
 
 export const CarrierForm = ({
   carrier,
   carrierSipGateways,
   carrierSmppGateways,
+  carrierSipGatewayRefetch,
+  carrierSmppGatewayRefetch,
   accounts,
   carriers,
   predefinedCarriers,
@@ -69,6 +74,11 @@ export const CarrierForm = ({
 
   const [sipGateways, setSipGateways] = useState<SipGateway[]>([]);
   const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([]);
+
+  const [sipGatewaysDelete, setSipGatewaysDelete] = useState<SipGateway[]>([]);
+  const [smppGatewaysDelete, setSmppGatewaysDelete] = useState<SmppGateway[]>(
+    []
+  );
 
   const [message, setMessage] = useState("");
 
@@ -158,6 +168,7 @@ export const CarrierForm = ({
     ]);
   };
 
+  // TODO we can try to reduce the code by making callback and stuff (3+ parameters for that function), or we can just move it out of here
   const updateSipGateways = (
     index: number,
     key: string,
@@ -171,7 +182,7 @@ export const CarrierForm = ({
   const updateSmppGateways = (
     index: number,
     key: string,
-    value: typeof sipGateways[number][keyof SipGateway]
+    value: typeof smppGateways[number][keyof SmppGateway]
   ) => {
     setSmppGateways(
       smppGateways.map((g, i) => (i === index ? { ...g, [key]: value } : g))
@@ -179,7 +190,7 @@ export const CarrierForm = ({
   };
 
   const handleSipGatewayPutPost = (voip_carrier_sid: string) => {
-    sipGateways.forEach(({ sip_gateway_sid, ...g }) =>
+    sipGateways.forEach(({ sip_gateway_sid, ...g }: SipGateway) =>
       sip_gateway_sid
         ? putSipGateway(sip_gateway_sid, g)
         : postSipGateway({ ...g, voip_carrier_sid: voip_carrier_sid })
@@ -187,10 +198,22 @@ export const CarrierForm = ({
   };
 
   const handleSmppGatewayPutPost = (voip_carrier_sid: string) => {
-    smppGateways.forEach(({ sip_gateway_sid, ...g }) =>
-      sip_gateway_sid && g.ipv4
-        ? putSmppGateway(sip_gateway_sid, g)
-        : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid })
+    smppGateways.forEach(({ smpp_gateway_sid, ...g }: SmppGateway) => {
+      smpp_gateway_sid
+        ? putSmppGateway(smpp_gateway_sid, g)
+        : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
+    });
+  };
+
+  const handleSipGatewayDelete = () => {
+    sipGatewaysDelete.forEach(
+      (g) => g.sip_gateway_sid && deleteSipGateway(g.sip_gateway_sid)
+    );
+  };
+
+  const handleSmppGatewayDelete = () => {
+    smppGatewaysDelete.forEach(
+      (g) => g.smpp_gateway_sid && deleteSmppGateway(g.smpp_gateway_sid)
     );
   };
 
@@ -231,8 +254,18 @@ export const CarrierForm = ({
               handleSipGatewayPutPost(carrier.data.voip_carrier_sid);
               handleSmppGatewayPutPost(carrier.data.voip_carrier_sid);
             }
+            handleSipGatewayDelete();
+            handleSmppGatewayDelete();
+
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
+
+            if (carrierSipGatewayRefetch) {
+              carrierSipGatewayRefetch();
+            }
+            if (carrierSmppGatewayRefetch) {
+              carrierSmppGatewayRefetch();
+            }
           })
           .catch((error) => {
             toastError(error.msg);
@@ -245,6 +278,9 @@ export const CarrierForm = ({
           .then(({ json }) => {
             handleSipGatewayPutPost(json.sid);
             handleSmppGatewayPutPost(json.sid);
+
+            handleSipGatewayDelete();
+            handleSmppGatewayDelete();
 
             toastSuccess("Carrier created successfully");
             navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
@@ -265,17 +301,7 @@ export const CarrierForm = ({
   }, [predefinedName]);
 
   useEffect(() => {
-    if (
-      !carrier &&
-      !hasLength(carrierSipGateways) &&
-      !hasLength(carrierSmppGateways)
-    ) {
-      addSipGateway();
-      // probably a TODO?
-      console.log("this just gets claled for no reason");
-      addSmppGateway(false);
-      addSmppGateway(true);
-    } else if (carrier && carrier.data) {
+    if (carrier && carrier.data) {
       setCarrierStates(carrier.data);
 
       if (carrierSipGateways) {
@@ -284,6 +310,10 @@ export const CarrierForm = ({
       if (carrierSmppGateways && carrierSmppGateways) {
         setSmppGateways(carrierSmppGateways);
       }
+    } else {
+      addSipGateway();
+      addSmppGateway(false); // the argument could be a bit clearer
+      addSmppGateway(true);
     }
   }, [carrier, carrierSipGateways, carrierSmppGateways]);
 
@@ -310,10 +340,11 @@ export const CarrierForm = ({
                   value: "",
                 },
               ].concat(
-                predefinedCarriers?.map((carrier) => ({
-                  // TODO filter by `requires_static_ip`
-                  // the type is different, but we're totally knowing what we are doing
-                  name: carrier.name,
+                predefinedCarriers?.map((carrier: PredefinedCarriers) => ({
+                  // TODO disable option by static ip, requires changes to Selector tag
+                  name: carrier.requires_static_ip
+                    ? `${carrier.name} -- requires static ip`
+                    : carrier.name,
                   value: carrier.name,
                 }))
               )}
@@ -537,7 +568,13 @@ export const CarrierForm = ({
                       title="Delete SIP Gateway"
                       type="button"
                       onClick={() =>
-                        setSipGateways(sipGateways.filter((g2, i2) => i2 !== i))
+                        setSipGateways(
+                          sipGateways.filter(
+                            (g2, i2) =>
+                              i2 !== i ||
+                              setSipGatewaysDelete((curr) => [...curr, g2])
+                          )
+                        )
                       }
                     >
                       <Icons.Trash />
@@ -627,7 +664,11 @@ export const CarrierForm = ({
                         type="button"
                         onClick={() =>
                           setSmppGateways(
-                            smppGateways.filter((g2, i2) => i2 !== i)
+                            smppGateways.filter(
+                              (g2, i2) =>
+                                i2 !== i ||
+                                setSmppGatewaysDelete((curr) => [...curr, g2])
+                            )
                           )
                         }
                       >
@@ -696,7 +737,11 @@ export const CarrierForm = ({
                         type="button"
                         onClick={() =>
                           setSmppGateways(
-                            smppGateways.filter((g2, i2) => i2 !== i)
+                            smppGateways.filter(
+                              (g2, i2) =>
+                                i2 !== i ||
+                                setSmppGatewaysDelete((curr) => [...curr, g2])
+                            )
                           )
                         }
                       >
@@ -710,7 +755,6 @@ export const CarrierForm = ({
               </Button>
             </fieldset>
           </Tab>
-          {/*SMPP ends*/}
         </Tabs>
         <fieldset>
           <ButtonGroup left>
