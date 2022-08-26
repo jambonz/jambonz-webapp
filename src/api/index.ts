@@ -14,6 +14,8 @@ import {
   API_MS_TEAMS_TENANTS,
   API_PHONE_NUMBERS,
   API_CARRIERS,
+  API_SMPP_GATEWAY,
+  API_SIP_GATEWAY,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -46,6 +48,8 @@ import type {
   MSTeamsTenant,
   PhoneNumber,
   Carrier,
+  SmppGateway,
+  SipGateway,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -270,6 +274,16 @@ export const postCarrier = (
   );
 };
 
+export const postSipGateway = (payload: Partial<SipGateway>) => {
+  return postFetch<SidResponse, Partial<SipGateway>>(API_SIP_GATEWAY, payload);
+};
+
+export const postSmppGateway = (payload: Partial<SmppGateway>) => {
+  return postFetch<SidResponse, Partial<SmppGateway>>(
+    API_SMPP_GATEWAY,
+    payload
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: UserUpdatePayload) => {
@@ -342,6 +356,20 @@ export const putCarrier = (
   );
 };
 
+export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
+  return putFetch<EmptyResponse, Partial<SipGateway>>(
+    `${API_SIP_GATEWAY}/${sid}`,
+    payload
+  );
+};
+
+export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
+  return putFetch<EmptyResponse, Partial<SmppGateway>>(
+    `${API_SMPP_GATEWAY}/${sid}`,
+    payload
+  );
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteServiceProvider = (sid: string) => {
@@ -379,6 +407,14 @@ export const deletePhoneNumber = (sid: string) => {
 
 export const deleteCarrier = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_CARRIERS}/${sid}`);
+};
+
+export const deleteSipGateway = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_SIP_GATEWAY}/${sid}`);
+};
+
+export const deleteSmppGateway = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_SMPP_GATEWAY}/${sid}`);
 };
 
 /** Named wrappers for `getFetch` */

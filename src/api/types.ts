@@ -234,6 +234,7 @@ export interface PredefinedCarriers extends Carrier {
 }
 
 export interface ProtocolGateway {
+  sip_gateway_sid: null | string;
   voip_carrier_sid: string;
   ipv4: string;
   port: number;

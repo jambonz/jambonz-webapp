@@ -6,17 +6,36 @@ import { useApiData, useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import { CarrierForm } from "./form";
 
-import type { Account, Carrier, PredefinedCarriers } from "src/api/types";
+import {
+  Account,
+  Carrier,
+  PredefinedCarriers,
+  SipGateway,
+  SmppGateway,
+} from "src/api/types";
 
 export const EditCarrier = () => {
   const params = useParams();
-  console.log(params);
   const [data, refetch, error] = useApiData<Carrier>(
     `VoipCarriers/${params.voip_carrier_sid}`
   );
 
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
+
+  const [carrierSipGateways] = useApiData<SipGateway[]>(
+    `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+  );
+  const [carrierSmppGateways] = useApiData<SmppGateway[]>(
+    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+  );
+  // const [carrierSipGateways, setCarrierSipGateways] = useState<
+  //   SipGateway[] | null
+  // >([]);
+  // const [carrierSmppGateways, setCarrierSmppGateways] = useState<
+  //   SmppGateway[] | null
+  // >([]);
+
   const [predefinedCarriers] =
     useApiData<PredefinedCarriers[]>("PredefinedCarriers");
 
@@ -28,11 +47,13 @@ export const EditCarrier = () => {
 
   return (
     <>
-      <H1>Edit account</H1>
+      <H1>Edit carrier</H1>
       <CarrierForm
         accounts={accounts}
         carriers={carriers}
         predefinedCarriers={predefinedCarriers}
+        carrierSipGateways={carrierSipGateways}
+        carrierSmppGateways={carrierSmppGateways}
         carrier={{ data, refetch, error }}
       />
     </>
