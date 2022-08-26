@@ -24,5 +24,3 @@ export const DeleteCarrier = ({
     </Modal>
   );
 };
-
-export default DeleteCarrier;

@@ -7,11 +7,9 @@ import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { Link } from "react-router-dom";
 import { Icons, Section, Spinner } from "src/components";
 import { hasLength } from "src/utils";
-import DeleteCarrier from "./delete";
+import { DeleteCarrier } from "./delete";
 
 export const Carriers = () => {
-  // the webapp fetches from all rather than jus the SP
-  // i guess we can fetch from SP but post in all?
   const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
 
   const [carrier, setCarrier] = useState<Carrier | null>(null);

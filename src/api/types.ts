@@ -229,6 +229,10 @@ export interface Carrier {
   smpp_enquire_link_interval: number;
 }
 
+export interface PredefinedCarriers extends Carrier {
+  requires_static_ip: boolean;
+}
+
 export interface ProtocolGateway {
   voip_carrier_sid: string;
   ipv4: string;

@@ -260,8 +260,14 @@ export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
   );
 };
 
-export const postCarrier = (payload: Partial<Carrier>) => {
-  return postFetch<SidResponse, Partial<PhoneNumber>>(API_CARRIERS, payload);
+export const postCarrier = (
+  service_provider_sid: string,
+  payload: Partial<Carrier>
+) => {
+  return postFetch<SidResponse, Partial<Carrier>>(
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/VoipCarriers/`,
+    payload
+  );
 };
 
 /** Named wrappers for `putFetch` */
@@ -325,9 +331,13 @@ export const putPhoneNumber = (sid: string, payload: Partial<PhoneNumber>) => {
   );
 };
 
-export const putCarrier = (sid: string, payload: Partial<Carrier>) => {
+export const putCarrier = (
+  service_provider_sid: string,
+  sid: string,
+  payload: Partial<Carrier>
+) => {
   return putFetch<EmptyResponse, Partial<Carrier>>(
-    `${API_CARRIERS}/${sid}`,
+    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/VoipCarriers/${sid}`,
     payload
   );
 };

@@ -6,7 +6,7 @@ import { useApiData, useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import { CarrierForm } from "./form";
 
-import type { Account, Carrier } from "src/api/types";
+import type { Account, Carrier, PredefinedCarriers } from "src/api/types";
 
 export const EditCarrier = () => {
   const params = useParams();
@@ -17,7 +17,8 @@ export const EditCarrier = () => {
 
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
-  const [predefinedCarriers] = useApiData<Carrier[]>("PredefinedCarriers");
+  const [predefinedCarriers] =
+    useApiData<PredefinedCarriers[]>("PredefinedCarriers");
 
   useEffect(() => {
     if (error) {
