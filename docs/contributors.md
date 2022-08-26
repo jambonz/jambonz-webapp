@@ -23,10 +23,9 @@ just run `npm install` and then `npm start`.
 
 ## :pancakes: Dev stack
 
-We're using [vite](https://vitejs.dev/) for development.
-The main application is [react](https://reactjs.org/docs/getting-started.html)
-aliasing [preact/compat](https://preactjs.com/guide/v10/switching-to-preact#setting-up-compat)
-for production builds. For code we're using [typescript](https://www.typescriptlang.org/),
+We're using [vite](https://vitejs.dev/) for development and
+the main application is [react](https://reactjs.org/docs/getting-started.html)
+with [typescript](https://www.typescriptlang.org/),
 [prettier](https://prettier.io/), [eslint](https://eslint.org/),
 [husky](https://typicode.github.io/husky/#/)
 and [lint-staged](https://www.npmjs.com/package/lint-staged).
