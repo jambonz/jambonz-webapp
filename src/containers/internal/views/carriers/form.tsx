@@ -20,7 +20,7 @@ import {
   PredefinedCarriers,
 } from "src/api/types";
 import { Icons, Section } from "src/components";
-import { Checkzone, Passwd, Selector } from "src/components/forms";
+import { Checkzone, Message, Passwd, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -44,11 +44,11 @@ export const CarrierForm = ({
   carrierSipGatewayRefetch,
   carrierSmppGatewayRefetch,
   accounts,
-  carriers,
   predefinedCarriers,
 }: CarrierFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
 
   const [carrierName, setCarrierName] = useState("");
@@ -146,7 +146,7 @@ export const CarrierForm = ({
         port: 5060,
         netmask: 32,
         is_active: false,
-        inbound: false,
+        inbound: true,
         outbound: false,
       } as SipGateway,
     ]);
@@ -222,7 +222,92 @@ export const CarrierForm = ({
 
     setMessage("");
 
-    if (carriers) {
+    if (!hasLength(sipGateways)) {
+      setMessage("You must provide at least one SIP Gateway.");
+      return;
+    }
+
+    const regIp =
+      /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/;
+    const regFqdn = /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/;
+    const regFqdnTopLevel = /^([a-zA-Z][^.]*)(\.[^.]+)$/;
+    const regPort = /^[0-9]+$/;
+
+    // copy pasted portion
+    // uhhh, not sure if this is what we want
+    for (const gateway of sipGateways) {
+      console.log("do validation");
+      //-----------------------------------------------------------------------------
+      // IP validation
+      //-----------------------------------------------------------------------------
+      const type = regIp.test(gateway.ipv4.trim())
+        ? "ip"
+        : regFqdn.test(gateway.ipv4.trim())
+        ? "fqdn"
+        : regFqdnTopLevel.test(gateway.ipv4.trim())
+        ? "fqdn-top-level"
+        : "invalid";
+
+      console.log(type);
+
+      if (!gateway.ipv4) {
+        setMessage(
+          "The IP Address cannot be blank. Please provide an IP address or delete the row."
+        );
+        return;
+      } else if (type === "fqdn-top-level") {
+        setMessage(
+          "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
+        );
+        return;
+      } else if (type === "invalid") {
+        setMessage(
+          "Please provide a valid IP address or fully qualified domain name."
+        );
+        return;
+      }
+
+      //-----------------------------------------------------------------------------
+      // Port validation
+      //-----------------------------------------------------------------------------
+      if (
+        gateway.port &&
+        (!regPort.test(gateway.port.toString().trim()) ||
+          parseInt(gateway.port.toString().trim()) < 0 ||
+          parseInt(gateway.port.toString().trim()) > 65535)
+      ) {
+        setMessage("Please provide a valid port number between 0 and 65535");
+        return;
+      }
+      //-----------------------------------------------------------------------------
+      // inbound/outbound validation
+      //-----------------------------------------------------------------------------
+      if (type === "fqdn" && (!gateway.outbound || gateway.inbound)) {
+        setMessage(
+          "A fully qualified domain name may only be used for outbound calls."
+        );
+        return;
+      } else if (!gateway.inbound && !gateway.outbound) {
+        setMessage(
+          "Each SIP Gateway must accept inbound calls, outbound calls, or both."
+        );
+        return;
+      }
+
+      //-----------------------------------------------------------------------------
+      // duplicates validation
+      //-----------------------------------------------------------------------------
+      for (const otherGateway of sipGateways) {
+        if (gateway.sip_gateway_sid === otherGateway.sip_gateway_sid) continue;
+        if (!gateway.ipv4) continue;
+        if (
+          gateway.ipv4 === otherGateway.ipv4 &&
+          gateway.port === otherGateway.port
+        ) {
+          setMessage("Each SIP gateway must have a unique IP address.");
+          return;
+        }
+      }
     }
     if (currentServiceProvider) {
       const carrierPayload: Partial<Carrier> = {
@@ -312,13 +397,13 @@ export const CarrierForm = ({
       }
     } else {
       addSipGateway();
-      addSmppGateway(false); // the argument could be a bit clearer
+      addSmppGateway(false); // the argument could be a bit clearer TODO
       addSmppGateway(true);
     }
   }, [carrier, carrierSipGateways, carrierSmppGateways]);
 
   useEffect(() => {
-    console.log(smppGateways);
+    console.log(sipGateways);
   }, [sipGateways, smppGateways]);
 
   return (
@@ -377,7 +462,7 @@ export const CarrierForm = ({
           </label>
         </fieldset>
 
-        <Tabs>
+        <Tabs setActiveTab={setActiveTab}>
           {/*TODO aligning and giving more space for tab button*/}
           <Tab id="sip" label="Voice">
             <fieldset>
@@ -424,29 +509,40 @@ export const CarrierForm = ({
               )}
             </fieldset>
             <fieldset>
-              <Checkzone
+              <Checkzone // uncheck the checkzone clear everything? TODO
                 hidden
                 name="sip_credentials"
                 label="Does your carrier require authentication on outbound calls?"
-                initialCheck={sipUser ? true : false}
+                // im testing the UX over here to see how it is like, pretty complicated
+                initialCheck={
+                  sipUser || sipPass || sipRegister || sipRealm ? true : false
+                }
               >
-                <label htmlFor="sip_username">Username</label>
+                <label htmlFor="sip_username">
+                  Username {sipPass || sipRegister ? <span>*</span> : ""}
+                </label>
                 <input
                   id="sip_username"
                   name="sip_username"
                   type="text"
                   value={sipUser}
                   placeholder="SIP username for authenticating outbound calls"
+                  // hasValue cant be used much because this is not null
+                  required={sipRegister || sipPass.length > 0}
                   onChange={(e) => {
                     setSipUser(e.target.value);
                   }}
                 />
-                <label htmlFor="sip_password">Password</label>
+                <label htmlFor="sip_password">
+                  Password
+                  {sipUser || sipRegister ? <span>*</span> : ""}
+                </label>
                 <Passwd
                   id="sip_password"
                   name="sip_password"
                   value={sipPass}
                   placeholder="SIP password for authenticating outbound calls"
+                  required={sipRegister || sipUser.length > 0}
                   onChange={(e) => {
                     setSipPass(e.target.value);
                   }}
@@ -457,12 +553,28 @@ export const CarrierForm = ({
                     name="sip_register"
                     type="checkbox"
                     checked={sipRegister}
+                    required={sipRegister}
                     onChange={(e) => setSipRegister(e.target.checked)}
                   />
                   <div>
                     Carrier requires SIP Register before sending outbound calls
                   </div>
                 </label>
+                {sipRegister && (
+                  <>
+                    <label htmlFor="sip_realm">
+                      SIP Realm{sipRegister ? <span>*</span> : ""}
+                    </label>
+                    <input
+                      id="sip_realm"
+                      name="sip_realm"
+                      type="text"
+                      value={sipRealm}
+                      required={sipRegister} // this is reduntant to check
+                      onChange={(e) => setSipRealm(e.target.value)}
+                    />
+                  </>
+                )}
               </Checkzone>
             </fieldset>
             <fieldset>
@@ -470,16 +582,22 @@ export const CarrierForm = ({
                 hidden
                 name="tech_prefix_check"
                 label="Does your carrier require a tech prefix on outbound calls?"
+                // errorMessages.push('If registration is required,
+                // you must provide a Tech prefix with more than 2 characters.');
+                // ?? no check for that so not sure if the sipRegister is needed
                 initialCheck={prefix ? true : false}
               >
+                <label htmlFor="tech_prefix">Tech prefix</label>
+                {/* <MS>Prefix length has to be greater than 2</MS> */}
                 <input
                   id="tech_prefix"
                   name="tech_prefix"
                   type="text"
                   value={prefix}
                   placeholder="Tech prefix"
+                  // required={prefix.length < 2} // does not work??
                   onChange={(e) => {
-                    // TODO, clear the payload if these are unchecked
+                    // TODO, clear the payload if these are unchecked?
                     setPrefix(e.target.value);
                   }}
                 />
@@ -515,12 +633,14 @@ export const CarrierForm = ({
               {sipGateways &&
                 hasLength(sipGateways) &&
                 sipGateways.map((g, i) => (
+                  // className="multi" right now makes the buttons minicule
                   <div key={`sip_gateway_${i}`}>
                     <input
                       id={`sip_ip_${i}`}
                       name={`sip_ip_${i}`}
                       type="text"
                       placeholder="1.2.3.4"
+                      required
                       value={g.ipv4}
                       onChange={(e) => {
                         updateSipGateways(i, "ipv4", e.target.value);
@@ -536,12 +656,17 @@ export const CarrierForm = ({
                         updateSipGateways(i, "port", e.target.value);
                       }}
                     />
-                    <input
+                    <Selector
                       id={`sip_netmask_${i}`}
                       name={`sip_netmask${i}`}
-                      type="text"
                       placeholder="32"
                       value={g.netmask}
+                      options={Array(32) // not being initialized at 32 like the placeholder?
+                        .fill(1)
+                        .map((_, index) => ({
+                          name: index.toString(),
+                          value: index.toString(),
+                        }))}
                       onChange={(e) => {
                         updateSipGateways(i, "netmask", e.target.value);
                       }}
@@ -551,8 +676,13 @@ export const CarrierForm = ({
                       name={`sip_inbound_${i}`}
                       type="checkbox"
                       checked={g.inbound}
+                      required={!g.outbound}
                       onChange={(e) => {
-                        updateSipGateways(i, "inbound", e.target.checked);
+                        updateSipGateways(
+                          i,
+                          "inbound",
+                          e.target.checked ? 1 : 0
+                        );
                       }}
                     />
                     <input
@@ -560,8 +690,13 @@ export const CarrierForm = ({
                       name={`sip_outbound_${i}`}
                       type="checkbox"
                       checked={g.outbound}
+                      required={!g.inbound}
                       onChange={(e) => {
-                        updateSipGateways(i, "outbound", e.target.checked);
+                        updateSipGateways(
+                          i,
+                          "outbound",
+                          e.target.checked ? 1 : 0
+                        );
                       }}
                     />
                     <button
@@ -631,6 +766,7 @@ export const CarrierForm = ({
                         name={`ip_${i}`}
                         type="text"
                         placeholder="1.2.3.4"
+                        required={activeTab === "smpp"}
                         value={g.ipv4}
                         onChange={(e) =>
                           updateSmppGateways(i, "ipv4", e.target.value)
@@ -711,7 +847,7 @@ export const CarrierForm = ({
                 hasLength(smppGateways) &&
                 smppGateways.map((g, i) =>
                   g.inbound ? (
-                    <div key={`smpp_gateway_outbound_${i}`}>
+                    <div key={`smpp_gateway_inbound_${i}`}>
                       <input
                         id={`smpp_ip_${i}`}
                         name={`smpp_ip_${i}`}
@@ -722,11 +858,16 @@ export const CarrierForm = ({
                           updateSmppGateways(i, "ipv4", e.target.value)
                         }
                       />
-                      <input
+                      <Selector
                         id={`smpp_netmask_${i}`}
                         name={`smpp_netmask_${i}`}
-                        type="text"
                         placeholder="32"
+                        options={Array(32)
+                          .fill(1)
+                          .map((_, index) => ({
+                            name: index.toString(),
+                            value: index.toString(),
+                          }))}
                         value={g.netmask}
                         onChange={(e) =>
                           updateSmppGateways(i, "netmask", e.target.value)
@@ -756,6 +897,7 @@ export const CarrierForm = ({
             </fieldset>
           </Tab>
         </Tabs>
+        {message && <fieldset>{<Message message={message} />}</fieldset>}
         <fieldset>
           <ButtonGroup left>
             <Button

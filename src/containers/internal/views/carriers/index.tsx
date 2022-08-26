@@ -1,24 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
-import { deleteCarrier, useServiceProviderData } from "src/api";
-import { Carrier } from "src/api/types";
-import { toastSuccess, toastError } from "src/store";
+import { deleteCarrier, getFetch, useServiceProviderData } from "src/api";
+import { Account, Carrier } from "src/api/types";
+import { toastSuccess, toastError, useSelectState } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { Link } from "react-router-dom";
-import { Icons, Section, Spinner } from "src/components";
+import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { hasLength } from "src/utils";
 import { DeleteCarrier } from "./delete";
+import { API_SERVICE_PROVIDERS } from "src/api/constants";
 
 export const Carriers = () => {
-  const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
 
   const [carrier, setCarrier] = useState<Carrier | null>(null);
+
+  // const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
+  const [carriers, setCarriers] = useState<Carrier[]>([]);
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [accountSid, setAccountSid] = useState("");
+
+  const [refetch, setRefetch] = useState(0);
+
+  const getCarriers = (all: boolean) => {
+    getFetch<Carrier[]>(
+      `${API_SERVICE_PROVIDERS}/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
+    )
+      .then(({ json }) => {
+        setCarriers(json.filter((a) => all || a.account_sid === accountSid));
+      })
+      .catch((error) => toastError(error.msg));
+  };
 
   const handleDelete = () => {
     if (carrier) {
       deleteCarrier(carrier.voip_carrier_sid)
         .then(() => {
-          refetch();
+          setRefetch(refetch + 1);
           setCarrier(null);
           toastSuccess(
             <>
@@ -32,6 +50,14 @@ export const Carriers = () => {
     }
   };
 
+  useEffect(() => {
+    if (accountSid && currentServiceProvider) {
+      getCarriers(false); // clearer argument? TODO
+    } else {
+      getCarriers(true);
+    }
+  }, [accountSid, currentServiceProvider, refetch]);
+
   return (
     <>
       <section className="mast">
@@ -42,6 +68,14 @@ export const Carriers = () => {
             <Icons.Plus />
           </Icon>
         </Link>
+      </section>
+      <section className="filters filters--ender">
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+          label="Used by"
+          defaultOption
+        />
       </section>
       <Section {...(hasLength(carriers) ? { slim: true } : {})}>
         <div className="list">

@@ -17,7 +17,7 @@ export const AddCarrier = () => {
       <H1>Add a speech service</H1>
       <CarrierForm
         accounts={accounts}
-        carriers={carriers}
+        carriers={carriers} // currently unused
         predefinedCarriers={predefinedCarriers}
       />
     </>
