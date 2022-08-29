@@ -26,14 +26,16 @@ import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { hasLength } from "src/utils";
 
+type CarrierProtocolGatewayProps<Type> = {
+  data: Type[] | null;
+  refetch: () => void;
+};
+
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
-  carrierSipGateways?: SipGateway[] | null;
-  carrierSmppGateways?: SmppGateway[] | null;
-  carrierSipGatewayRefetch?: () => void;
-  carrierSmppGatewayRefetch?: () => void;
+  carrierSipGateways?: CarrierProtocolGatewayProps<SipGateway>;
+  carrierSmppGateways?: CarrierProtocolGatewayProps<SmppGateway>;
   accounts: null | Account[];
-  carriers: null | Carrier[];
   predefinedCarriers: null | PredefinedCarriers[];
 };
 
@@ -41,8 +43,6 @@ export const CarrierForm = ({
   carrier,
   carrierSipGateways,
   carrierSmppGateways,
-  carrierSipGatewayRefetch,
-  carrierSmppGatewayRefetch,
   accounts,
   predefinedCarriers,
 }: CarrierFormProps) => {
@@ -50,6 +50,12 @@ export const CarrierForm = ({
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
+  const netmaskSelectOption = Array(32)
+    .fill(0)
+    .map((_, index) => ({
+      name: (index + 1).toString(),
+      value: (index + 1).toString(),
+    }));
 
   const [carrierName, setCarrierName] = useState("");
   // unused feature, maybe we can add this?
@@ -81,10 +87,6 @@ export const CarrierForm = ({
   );
 
   const [message, setMessage] = useState("");
-
-  if (message) {
-    // unwarning com/transpiler warning TODO if needed
-  }
 
   const setCarrierStates = (obj: Carrier) => {
     if (obj) {
@@ -191,7 +193,7 @@ export const CarrierForm = ({
 
   const handleSipGatewayPutPost = (voip_carrier_sid: string) => {
     sipGateways.forEach(({ sip_gateway_sid, ...g }: SipGateway) =>
-      sip_gateway_sid
+      sip_gateway_sid // && g.ipv4.length > 0 this conditioni does not work because of branching and redundant as it is handled already
         ? putSipGateway(sip_gateway_sid, g)
         : postSipGateway({ ...g, voip_carrier_sid: voip_carrier_sid })
     );
@@ -201,7 +203,11 @@ export const CarrierForm = ({
     smppGateways.forEach(({ smpp_gateway_sid, ...g }: SmppGateway) => {
       smpp_gateway_sid
         ? putSmppGateway(smpp_gateway_sid, g)
-        : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
+        : // right now, i am not sure how this condition would belong for the UX
+          // the webapp lets empty smpp ipv4 getting into the db, maybe that is more preferable
+          // since it happens exact to what is expected
+          g.ipv4 &&
+          postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
     });
   };
 
@@ -236,7 +242,6 @@ export const CarrierForm = ({
     // copy pasted portion
     // uhhh, not sure if this is what we want
     for (const gateway of sipGateways) {
-      console.log("do validation");
       //-----------------------------------------------------------------------------
       // IP validation
       //-----------------------------------------------------------------------------
@@ -247,8 +252,6 @@ export const CarrierForm = ({
         : regFqdnTopLevel.test(gateway.ipv4.trim())
         ? "fqdn-top-level"
         : "invalid";
-
-      console.log(type);
 
       if (!gateway.ipv4) {
         setMessage(
@@ -309,6 +312,7 @@ export const CarrierForm = ({
         }
       }
     }
+
     if (currentServiceProvider) {
       const carrierPayload: Partial<Carrier> = {
         name: carrierName.trim(),
@@ -345,12 +349,8 @@ export const CarrierForm = ({
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
 
-            if (carrierSipGatewayRefetch) {
-              carrierSipGatewayRefetch();
-            }
-            if (carrierSmppGatewayRefetch) {
-              carrierSmppGatewayRefetch();
-            }
+            carrierSipGateways?.refetch && carrierSipGateways.refetch();
+            carrierSmppGateways?.refetch && carrierSmppGateways.refetch();
           })
           .catch((error) => {
             toastError(error.msg);
@@ -389,22 +389,14 @@ export const CarrierForm = ({
     if (carrier && carrier.data) {
       setCarrierStates(carrier.data);
 
-      if (carrierSipGateways) {
-        setSipGateways(carrierSipGateways);
-      }
-      if (carrierSmppGateways && carrierSmppGateways) {
-        setSmppGateways(carrierSmppGateways);
-      }
+      carrierSipGateways?.data && setSipGateways(carrierSipGateways.data);
+      carrierSmppGateways?.data && setSmppGateways(carrierSmppGateways.data);
     } else {
       addSipGateway();
       addSmppGateway(false); // the argument could be a bit clearer TODO
       addSmppGateway(true);
     }
   }, [carrier, carrierSipGateways, carrierSmppGateways]);
-
-  useEffect(() => {
-    console.log(sipGateways);
-  }, [sipGateways, smppGateways]);
 
   return (
     <Section slim>
@@ -584,7 +576,7 @@ export const CarrierForm = ({
                 label="Does your carrier require a tech prefix on outbound calls?"
                 // errorMessages.push('If registration is required,
                 // you must provide a Tech prefix with more than 2 characters.');
-                // ?? no check for that so not sure if the sipRegister is needed
+                // ?? no check for that in webapp, just a message so I am not sure if the sipRegister condition is needed
                 initialCheck={prefix ? true : false}
               >
                 <label htmlFor="tech_prefix">Tech prefix</label>
@@ -619,7 +611,7 @@ export const CarrierForm = ({
                   value={diversion}
                   placeholder="Phone number or SIP URI"
                   onChange={(e) => {
-                    // TODO, clear the payload if these are unchecked
+                    // TODO, clear the payload if these are unchecked?
                     setDiversion(e.target.value);
                   }}
                 />
@@ -661,12 +653,7 @@ export const CarrierForm = ({
                       name={`sip_netmask${i}`}
                       placeholder="32"
                       value={g.netmask}
-                      options={Array(32) // not being initialized at 32 like the placeholder?
-                        .fill(1)
-                        .map((_, index) => ({
-                          name: index.toString(),
-                          value: index.toString(),
-                        }))}
+                      options={netmaskSelectOption}
                       onChange={(e) => {
                         updateSipGateways(i, "netmask", e.target.value);
                       }}
@@ -862,12 +849,7 @@ export const CarrierForm = ({
                         id={`smpp_netmask_${i}`}
                         name={`smpp_netmask_${i}`}
                         placeholder="32"
-                        options={Array(32)
-                          .fill(1)
-                          .map((_, index) => ({
-                            name: index.toString(),
-                            value: index.toString(),
-                          }))}
+                        options={netmaskSelectOption}
                         value={g.netmask}
                         onChange={(e) =>
                           updateSmppGateways(i, "netmask", e.target.value)

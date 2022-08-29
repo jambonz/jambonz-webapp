@@ -3,7 +3,7 @@ import { P } from "jambonz-ui";
 
 import { Modal, ModalClose } from "src/components";
 
-import type { Carrier, PhoneNumber } from "src/api/types";
+import { Carrier, PhoneNumber } from "src/api/types";
 import { getFetch } from "src/api";
 import { API_PHONE_NUMBERS } from "src/api/constants";
 import { hasLength } from "src/utils";
@@ -53,32 +53,31 @@ export const DeleteCarrier = ({
   useEffect(() => {
     let ignore = false;
 
-    Promise.all([getFetch<PhoneNumber[]>(API_PHONE_NUMBERS)]).then(
-      ([phonesRes]) => {
-        if (!ignore) {
-          const used = {
-            phones: phonesRes.json.filter(
-              (phone) => phone.voip_carrier_sid === carrier.voip_carrier_sid
-            ),
-          };
-          const deletable =
-            Object.keys(used).reduce((acc, key) => {
-              return acc + used[key as keyof InUse].length;
-            }, 0) === 0;
+    getFetch<PhoneNumber[]>(API_PHONE_NUMBERS).then(({ json }) => {
+      if (!ignore) {
+        const used = {
+          phones: json.filter(
+            (phone) => phone.voip_carrier_sid === carrier.voip_carrier_sid
+          ),
+        };
+        const deletable =
+          Object.keys(used).reduce((acc, key) => {
+            return acc + used[key as keyof InUse].length;
+          }, 0) === 0;
 
-          if (deletable) {
-            setIsDeletable(deletable);
-          } else {
-            setInUse(used);
-          }
+        if (deletable) {
+          setIsDeletable(deletable);
+        } else {
+          setInUse(used);
         }
       }
-    );
+    });
 
     return function cleanup() {
       ignore = true;
     };
   }, []);
+
   return (
     <>
       {isDeletable && (

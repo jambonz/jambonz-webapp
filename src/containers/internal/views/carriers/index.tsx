@@ -1,42 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
-import { deleteCarrier, getFetch, useServiceProviderData } from "src/api";
-import { Account, Carrier } from "src/api/types";
-import { toastSuccess, toastError, useSelectState } from "src/store";
+import {
+  deleteCarrier,
+  deleteSipGateway,
+  deleteSmppGateway,
+  getFetch,
+  useServiceProviderData,
+} from "src/api";
+import { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
+import { toastSuccess, toastError } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { Link } from "react-router-dom";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
-import { hasLength } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
 import { DeleteCarrier } from "./delete";
-import { API_SERVICE_PROVIDERS } from "src/api/constants";
+import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
 
 export const Carriers = () => {
-  const currentServiceProvider = useSelectState("currentServiceProvider");
-
   const [carrier, setCarrier] = useState<Carrier | null>(null);
 
-  // const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
-  const [carriers, setCarriers] = useState<Carrier[]>([]);
+  const [carriers, refetch] = useServiceProviderData<Carrier[]>(`VoipCarriers`);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
 
-  const [refetch, setRefetch] = useState(0);
-
-  const getCarriers = (all: boolean) => {
-    getFetch<Carrier[]>(
-      `${API_SERVICE_PROVIDERS}/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
-    )
-      .then(({ json }) => {
-        setCarriers(json.filter((a) => all || a.account_sid === accountSid));
-      })
-      .catch((error) => toastError(error.msg));
-  };
+  const [carriersFiltered, setCarriersFiltered] = useState<Carrier[]>([]);
 
   const handleDelete = () => {
     if (carrier) {
       deleteCarrier(carrier.voip_carrier_sid)
         .then(() => {
-          setRefetch(refetch + 1);
+          Promise.all([
+            getFetch<SipGateway[]>(
+              `${API_SIP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`
+            ),
+            getFetch<SmppGateway[]>(
+              `${API_SMPP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`
+            ),
+          ]).then(([sipGatewaysRes, smppGatewaysRes]) => {
+            hasLength(sipGatewaysRes.json) &&
+              sipGatewaysRes.json.forEach(
+                (g) =>
+                  g &&
+                  g.sip_gateway_sid &&
+                  deleteSipGateway(g.sip_gateway_sid).catch((error) =>
+                    toastError(error.msg)
+                  )
+              );
+            hasLength(smppGatewaysRes.json) &&
+              smppGatewaysRes.json.forEach(
+                (g) =>
+                  g &&
+                  g.smpp_gateway_sid &&
+                  deleteSmppGateway(g.smpp_gateway_sid).catch((error) =>
+                    toastError(error.msg)
+                  )
+              );
+          });
+          refetch();
           setCarrier(null);
           toastSuccess(
             <>
@@ -51,12 +71,14 @@ export const Carriers = () => {
   };
 
   useEffect(() => {
-    if (accountSid && currentServiceProvider) {
-      getCarriers(false); // clearer argument? TODO
-    } else {
-      getCarriers(true);
+    if (carriers) {
+      setCarriersFiltered(
+        carriers.filter(
+          (carrier) => !accountSid || carrier.account_sid === accountSid
+        )
+      );
     }
-  }, [accountSid, currentServiceProvider, refetch]);
+  }, [accountSid, carriers]);
 
   return (
     <>
@@ -79,59 +101,56 @@ export const Carriers = () => {
       </section>
       <Section {...(hasLength(carriers) ? { slim: true } : {})}>
         <div className="list">
-          {carriers ? (
-            hasLength(carriers) ? (
-              carriers.map((carrier) => (
-                <div className="item" key={carrier.voip_carrier_sid}>
-                  <div className="item__info">
-                    <div className="item__title">
-                      <Link
-                        to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                        title="Edit Carrier"
-                        className="i"
-                      >
-                        <strong>{carrier.name}</strong>
-                        <Icons.ArrowRight />
-                      </Link>
-                    </div>
-                    {
-                      // stuff being active and inbound/outbound gateway
-                    }
-                    <div className="item__meta">
-                      <div>
-                        <div
-                          className={`i txt--${
-                            carrier.is_active ? "teal" : "grey"
-                          }`}
-                        >
-                          {carrier.is_active ? "Active" : "Not active"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="item__actions">
+          {!hasValue(carriers) && <Spinner />}
+          {hasLength(carriersFiltered) ? (
+            carriersFiltered.map((carrier) => (
+              <div className="item" key={carrier.voip_carrier_sid}>
+                <div className="item__info">
+                  <div className="item__title">
                     <Link
                       to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
                       title="Edit Carrier"
+                      className="i"
                     >
-                      <Icons.Edit3 />
+                      <strong>{carrier.name}</strong>
+                      <Icons.ArrowRight />
                     </Link>
-                    <button
-                      type="button"
-                      title="Delete Carrier"
-                      onClick={() => setCarrier(carrier)}
-                      className="btnty"
-                    >
-                      <Icons.Trash />
-                    </button>
+                  </div>
+                  {
+                    // stuff being active and inbound/outbound gateway
+                  }
+                  <div className="item__meta">
+                    <div>
+                      <div
+                        className={`i txt--${
+                          carrier.is_active ? "teal" : "grey"
+                        }`}
+                      >
+                        {carrier.is_active ? "Active" : "Not active"}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <M>No Carriers yet.</M>
-            )
+                <div className="item__actions">
+                  <Link
+                    to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
+                    title="Edit Carrier"
+                  >
+                    <Icons.Edit3 />
+                  </Link>
+                  <button
+                    type="button"
+                    title="Delete Carrier"
+                    onClick={() => setCarrier(carrier)}
+                    className="btnty"
+                  >
+                    <Icons.Trash />
+                  </button>
+                </div>
+              </div>
+            ))
           ) : (
-            <Spinner />
+            <M>No Carriers yet.</M> // weird style if empty
           )}
         </div>
       </Section>
