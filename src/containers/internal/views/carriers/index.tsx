@@ -16,6 +16,7 @@ import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
 import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
+import { Gateways } from "./gateways";
 
 export const Carriers = () => {
   const [carrier, setCarrier] = useState<Carrier | null>(null);
@@ -122,9 +123,17 @@ export const Carriers = () => {
                           carrier.is_active ? "teal" : "grey"
                         }`}
                       >
-                        {carrier.is_active ? "Active" : "Not active"}
+                        {carrier.is_active ? (
+                          <Icons.CheckCircle />
+                        ) : (
+                          <Icons.XCircle />
+                        )}
+                        <span>
+                          Status: {carrier.is_active ? "Active" : "Inactive"}
+                        </span>
                       </div>
                     </div>
+                    <Gateways carrier={carrier} />
                   </div>
                 </div>
                 <div className="item__actions">

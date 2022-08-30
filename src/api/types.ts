@@ -6,6 +6,8 @@ export type WebhookMethod = "POST" | "GET";
 
 export type CredentialStatus = "ok" | "fail" | "not tested";
 
+export type IpType = "ip" | "fqdn" | "fqdn-top-level" | "invalid";
+
 /** Status codes */
 
 export enum StatusCodes {

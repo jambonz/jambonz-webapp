@@ -49,13 +49,11 @@ export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
   outbound: true,
 };
 
-/** Netmask Select Options */
-export const NETMASK_OPTIONS = Array(32)
+/** Netmask Bits */
+export const NETMASK_BITS = Array(32)
   .fill(0)
-  .map((_, index) => ({
-    name: (index + 1).toString(),
-    value: (index + 1).toString(),
-  }));
+  .map((_, index) => index + 1)
+  .reverse();
 
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [

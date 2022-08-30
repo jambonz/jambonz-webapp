@@ -2,17 +2,18 @@ import { withSuspense } from "./with-suspense";
 import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
+import { IpType } from "src/api/types";
 
-export const hasValue = <T>(
-  variable: T | undefined
-): variable is NonNullable<T> => {
+export const hasValue = <Type>(
+  variable: Type | undefined
+): variable is NonNullable<Type> => {
   return variable !== null && variable !== undefined;
 };
 
-export const hasLength = <T>(
-  variable: T[] | null | undefined,
+export const hasLength = <Type>(
+  variable: Type[] | null | undefined,
   minimum = 0
-): variable is NonNullable<T[]> => {
+): variable is NonNullable<Type[]> => {
   return hasValue(variable) && variable.length > minimum;
 };
 
@@ -20,6 +21,29 @@ export const isValidPasswd = (password: string) => {
   return (
     password.length >= 6 && /\d/.test(password) && /[a-zA-Z]/.test(password)
   );
+};
+
+export const isValidPort = (port: number) => {
+  return (
+    (port && !/^[0-9]+$/.test(port.toString().trim())) ||
+    parseInt(port.toString().trim()) < 0 ||
+    parseInt(port.toString().trim()) > 65535
+  );
+};
+
+export const getIpValidationType = (ipv4: string): IpType => {
+  const type =
+    /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/.test(
+      ipv4.trim()
+    )
+      ? "ip"
+      : /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/.test(ipv4.trim())
+      ? "fqdn"
+      : /^([a-zA-Z][^.]*)(\.[^.]+)$/.test(ipv4.trim())
+      ? "fqdn-top-level"
+      : "invalid";
+
+  return type;
 };
 
 export const getObscured = (str: string, sub = 4, char = "*") => {

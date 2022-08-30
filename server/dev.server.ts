@@ -36,7 +36,7 @@ app.get(
     };
     const total = 50;
     /** Simple dumb hack to populate mock data for responses... */
-    const data = new Array(total).fill(call, 0, total);
+    const data = Array(total).fill(call, 0, total);
 
     res.status(200).json(<PagedResponse<RecentCall>>{
       total,
@@ -75,7 +75,7 @@ app.get("/api/Accounts/:account_sid/Alerts", (req: Request, res: Response) => {
   };
   const total = 50;
   /** Simple dumb hack to populate mock data for responses... */
-  const data = new Array(total).fill(alert, 0, total);
+  const data = Array(total).fill(alert, 0, total);
 
   res.status(200).json(<PagedResponse<Alert>>{
     total,

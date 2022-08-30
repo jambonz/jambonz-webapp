@@ -14,64 +14,23 @@ type DeleteProps = {
   handleSubmit: () => void;
 };
 
-type InUseProps = {
-  items: PhoneNumber[];
-  sidKey: string;
-  labelKey: string;
-  itemsLabel: string;
-};
-
-interface InUse {
-  phones: PhoneNumber[];
-}
-
-const InUseItems = ({ items, itemsLabel, sidKey, labelKey }: InUseProps) => {
-  return (
-    <ul className="m">
-      <li>
-        <strong>{itemsLabel}:</strong>
-      </li>
-      {items.map((item) => {
-        return (
-          <li className="txt--teal" key={item[sidKey as keyof typeof item]}>
-            {labelKey === "number"
-              ? formatPhoneNumber(item[labelKey])
-              : item[labelKey as keyof typeof item]}
-          </li>
-        );
-      })}
-    </ul>
-  );
-};
-
 export const DeleteCarrier = ({
   carrier,
   handleCancel,
   handleSubmit,
 }: DeleteProps) => {
-  const [inUse, setInUse] = useState<InUse | null>(null);
-  const [isDeletable, setIsDeletable] = useState(false);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[] | null>(null);
 
   useEffect(() => {
     let ignore = false;
 
     getFetch<PhoneNumber[]>(API_PHONE_NUMBERS).then(({ json }) => {
       if (!ignore) {
-        const used = {
-          phones: json.filter(
+        setPhoneNumbers(
+          json.filter(
             (phone) => phone.voip_carrier_sid === carrier.voip_carrier_sid
-          ),
-        };
-        const deletable =
-          Object.keys(used).reduce((acc, key) => {
-            return acc + used[key as keyof InUse].length;
-          }, 0) === 0;
-
-        if (deletable) {
-          setIsDeletable(deletable);
-        } else {
-          setInUse(used);
-        }
+          )
+        );
       }
     });
 
@@ -82,7 +41,7 @@ export const DeleteCarrier = ({
 
   return (
     <>
-      {isDeletable && (
+      {phoneNumbers && !hasLength(phoneNumbers) && (
         <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
           <P>
             Are you sure you want to delete carrier{" "}
@@ -90,20 +49,24 @@ export const DeleteCarrier = ({
           </P>
         </Modal>
       )}
-      {inUse && (
+      {hasLength(phoneNumbers) && (
         <ModalClose handleClose={handleCancel}>
           <P>
             In order to delete the carrier it cannot be in use by any{" "}
-            <span>Phone Numbers ({inUse.phones.length})</span>.
+            <span>Phone Numbers ({phoneNumbers.length})</span>.
           </P>
-          {hasLength(inUse.phones) && (
-            <InUseItems
-              items={inUse.phones}
-              itemsLabel="Phone Numbers"
-              sidKey="phone_number_sid"
-              labelKey="number"
-            />
-          )}
+          <ul className="m">
+            <li>
+              <strong>Phone Numbers:</strong>
+            </li>
+            {phoneNumbers.map((phone) => {
+              return (
+                <li className="txt--teal" key={phone.phone_number_sid}>
+                  {formatPhoneNumber(phone.number)}
+                </li>
+              );
+            })}
+          </ul>
         </ModalClose>
       )}
     </>

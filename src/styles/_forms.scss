@@ -37,17 +37,25 @@ fieldset {
 
 .form {
   &--internal {
-    > * + *,
-    .tabs__tabs__item > * + * {
-      border-top: 1px solid ui-vars.$grey;
+    > * + * {
+      @include mixins.formline();
     }
 
     fieldset {
       padding: ui-vars.$px03;
     }
 
+    /** Third-party -- e.g. jambonz-ui */
     .tabs__nav {
       padding: ui-vars.$px01 ui-vars.$px03;
+    }
+
+    .tabs__tabs__item > * + * {
+      @include mixins.formline();
+    }
+
+    .btnty > .ico {
+      @include mixins.icosize();
     }
   }
 
@@ -131,26 +139,15 @@ fieldset {
     align-items: flex-start;
   }
 
-  > div + div {
-    margin-left: ui-vars.$px01;
-  }
-
   .inp {
     width: 100%;
     max-width: vars.$widthinput;
-
-    &--med {
-      max-width: calc(#{vars.$widthinput} / 2);
-    }
-
-    &--mini {
-      max-width: 130px;
-    }
   }
 
   .sel {
     width: 100%;
     max-width: 130px;
+    margin-left: ui-vars.$px01;
 
     &--preset {
       max-width: 220px;
@@ -161,5 +158,39 @@ fieldset {
       margin-top: ui-vars.$px01;
       max-width: vars.$widthinput;
     }
+  }
+}
+
+.gateway {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  max-width: vars.$widthinput;
+  position: relative;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 25% [col] 25%;
+    }
+
+    &:nth-child(2) {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: ui-vars.$px02;
+
+      > div:last-child {
+        text-align: right;
+      }
+    }
+  }
+
+  > button {
+    position: absolute;
+    right: 0;
+    bottom: 50%;
+    transform: translate3d(50%, 50%, 0);
   }
 }
