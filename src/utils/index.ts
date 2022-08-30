@@ -2,7 +2,15 @@ import { withSuspense } from "./with-suspense";
 import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
-import { IpType } from "src/api/types";
+import {
+  FQDN,
+  FQDN_TOP_LEVEL,
+  INVALID,
+  IP,
+  TCP_MAX_PORT,
+} from "src/api/constants";
+
+import type { IpType } from "src/api/types";
 
 export const hasValue = <Type>(
   variable: Type | undefined
@@ -27,7 +35,7 @@ export const isValidPort = (port: number) => {
   return (
     (port && !/^[0-9]+$/.test(port.toString().trim())) ||
     parseInt(port.toString().trim()) < 0 ||
-    parseInt(port.toString().trim()) > 65535
+    parseInt(port.toString().trim()) > TCP_MAX_PORT
   );
 };
 
@@ -36,13 +44,12 @@ export const getIpValidationType = (ipv4: string): IpType => {
     /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/.test(
       ipv4.trim()
     )
-      ? "ip"
+      ? IP
       : /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/.test(ipv4.trim())
-      ? "fqdn"
+      ? FQDN
       : /^([a-zA-Z][^.]*)(\.[^.]+)$/.test(ipv4.trim())
-      ? "fqdn-top-level"
-      : "invalid";
-
+      ? FQDN_TOP_LEVEL
+      : INVALID;
   return type;
 };
 

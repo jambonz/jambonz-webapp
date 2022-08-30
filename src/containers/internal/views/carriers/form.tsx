@@ -16,6 +16,8 @@ import {
 import {
   DEFAULT_SIP_GATEWAY,
   DEFAULT_SMPP_GATEWAY,
+  FQDN_TOP_LEVEL,
+  INVALID,
   NETMASK_BITS,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
@@ -236,12 +238,12 @@ export const CarrierForm = ({
           "The IP Address cannot be blank. Please provide an IP address or delete the row."
         );
         return;
-      } else if (type === "fqdn-top-level") {
+      } else if (type === FQDN_TOP_LEVEL) {
         setMessage(
           "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
         );
         return;
-      } else if (type === "invalid") {
+      } else if (type === INVALID) {
         setMessage(
           "Please provide a valid IP address or fully qualified domain name."
         );
@@ -784,85 +786,81 @@ export const CarrierForm = ({
               <label htmlFor="outbound_smpp">Carrier SMPP Gateways</label>
               <label htmlFor="outbound_smpp">IP or DNS / Port</label>
               {hasLength(smppGateways.filter((g) => g.outbound)) &&
-                smppGateways
-                  .filter((g) => g.outbound)
-                  .map((g, i) => {
-                    return (
-                      <div
-                        key={`smpp_gateway_outbound_${i}`}
-                        className="gateway"
-                      >
+                smppGateways.map((g, i) => {
+                  return !g.outbound ? null : (
+                    <div key={`smpp_gateway_outbound_${i}`} className="gateway">
+                      <div>
                         <div>
-                          <div>
-                            <input
-                              id={`ip_${i}`}
-                              name={`ip_${i}`}
-                              type="text"
-                              placeholder="1.2.3.4"
-                              required={activeTab === "smpp"}
-                              value={g.ipv4}
-                              onChange={(e) =>
-                                updateSmppGateways(i, "ipv4", e.target.value)
-                              }
-                            />
-                          </div>
-                          <div>
-                            <input
-                              id={`port_${i}`}
-                              name={`port_${i}`}
-                              type="text"
-                              placeholder="2775"
-                              value={g.port}
-                              onChange={(e) =>
-                                updateSmppGateways(i, "port", e.target.value)
-                              }
-                            />
-                          </div>
-                          <div>
-                            <label htmlFor={`use_tls_${i}`} className="chk">
-                              <input
-                                id={`use_tls_${i}`}
-                                name={`use_tls_${i}`}
-                                type="checkbox"
-                                checked={g.use_tls}
-                                onChange={(e) =>
-                                  updateSmppGateways(
-                                    i,
-                                    "use_tls",
-                                    e.target.checked
-                                  )
-                                }
-                              />
-                              <div>Use&nbsp;TLS</div>
-                            </label>
-                          </div>
+                          <input
+                            id={`ip_${i}`}
+                            name={`ip_${i}`}
+                            type="text"
+                            placeholder="1.2.3.4"
+                            required={activeTab === "smpp"}
+                            value={g.ipv4}
+                            onChange={(e) =>
+                              updateSmppGateways(i, "ipv4", e.target.value)
+                            }
+                          />
                         </div>
-                        <button
-                          title="Delete Outbound SMPP Gateway"
-                          type="button"
-                          className="btnty"
-                          onClick={() =>
-                            setSmppGateways(
-                              smppGateways.filter(
-                                (g2, i2) =>
-                                  i2 !== i ||
-                                  setSmppGatewaysDelete((curr) => [...curr, g2])
-                              )
-                            )
-                          }
-                        >
-                          <Icon>
-                            <Icons.Trash2 />
-                          </Icon>
-                        </button>
+                        <div>
+                          <input
+                            id={`port_${i}`}
+                            name={`port_${i}`}
+                            type="text"
+                            placeholder="2775"
+                            value={g.port}
+                            onChange={(e) =>
+                              updateSmppGateways(i, "port", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor={`use_tls_${i}`} className="chk">
+                            <input
+                              id={`use_tls_${i}`}
+                              name={`use_tls_${i}`}
+                              type="checkbox"
+                              checked={g.use_tls}
+                              onChange={(e) =>
+                                updateSmppGateways(
+                                  i,
+                                  "use_tls",
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <div>Use&nbsp;TLS</div>
+                          </label>
+                        </div>
                       </div>
-                    );
-                  })}
+                      <button
+                        title="Delete Outbound SMPP Gateway"
+                        type="button"
+                        className="btnty"
+                        onClick={() =>
+                          setSmppGateways(
+                            smppGateways.filter(
+                              (g2, i2) =>
+                                i2 !== i ||
+                                setSmppGatewaysDelete((curr) => [...curr, g2])
+                            )
+                          )
+                        }
+                      >
+                        <Icon>
+                          <Icons.Trash2 />
+                        </Icon>
+                      </button>
+                    </div>
+                  );
+                })}
               <ButtonGroup left>
                 <button
                   className="btnty"
                   type="button"
                   onClick={() => addSmppGateway(true)}
+                  title="Add Outbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">
                     <Icons.Plus />
@@ -898,66 +896,62 @@ export const CarrierForm = ({
               </label>
               <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
               {hasLength(smppGateways.filter((g) => g.inbound)) &&
-                smppGateways
-                  .filter((g) => g.inbound)
-                  .map((g, i) => {
-                    return (
-                      <div
-                        key={`smpp_gateway_inbound_${i}`}
-                        className="gateway"
-                      >
+                smppGateways.map((g, i) => {
+                  return !g.inbound ? null : (
+                    <div key={`smpp_gateway_inbound_${i}`} className="gateway">
+                      <div>
                         <div>
-                          <div>
-                            <input
-                              id={`smpp_ip_${i}`}
-                              name={`smpp_ip_${i}`}
-                              type="text"
-                              placeholder="1.2.3.4"
-                              value={g.ipv4}
-                              onChange={(e) =>
-                                updateSmppGateways(i, "ipv4", e.target.value)
-                              }
-                            />
-                          </div>
-                          <div>
-                            <Selector
-                              id={`smpp_netmask_${i}`}
-                              name={`smpp_netmask_${i}`}
-                              placeholder="32"
-                              options={netmaskOptions}
-                              value={g.netmask}
-                              onChange={(e) =>
-                                updateSmppGateways(i, "netmask", e.target.value)
-                              }
-                            />
-                          </div>
+                          <input
+                            id={`smpp_ip_${i}`}
+                            name={`smpp_ip_${i}`}
+                            type="text"
+                            placeholder="1.2.3.4"
+                            value={g.ipv4}
+                            onChange={(e) =>
+                              updateSmppGateways(i, "ipv4", e.target.value)
+                            }
+                          />
                         </div>
-                        <button
-                          className="btnty"
-                          title="Delete Inbound SMPP Gateway"
-                          type="button"
-                          onClick={() =>
-                            setSmppGateways(
-                              smppGateways.filter(
-                                (g2, i2) =>
-                                  i2 !== i ||
-                                  setSmppGatewaysDelete((curr) => [...curr, g2])
-                              )
-                            )
-                          }
-                        >
-                          <Icon>
-                            <Icons.Trash2 />
-                          </Icon>
-                        </button>
+                        <div>
+                          <Selector
+                            id={`smpp_netmask_${i}`}
+                            name={`smpp_netmask_${i}`}
+                            placeholder="32"
+                            options={netmaskOptions}
+                            value={g.netmask}
+                            onChange={(e) =>
+                              updateSmppGateways(i, "netmask", e.target.value)
+                            }
+                          />
+                        </div>
                       </div>
-                    );
-                  })}
+                      <button
+                        className="btnty"
+                        title="Delete Inbound SMPP Gateway"
+                        type="button"
+                        onClick={() =>
+                          setSmppGateways(
+                            smppGateways.filter(
+                              (g2, i2) =>
+                                i2 !== i ||
+                                setSmppGatewaysDelete((curr) => [...curr, g2])
+                            )
+                          )
+                        }
+                      >
+                        <Icon>
+                          <Icons.Trash2 />
+                        </Icon>
+                      </button>
+                    </div>
+                  );
+                })}
               <ButtonGroup left>
                 <button
                   className="btnty"
                   type="button"
                   onClick={() => addSmppGateway(false)}
+                  title="Add Inbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">
                     <Icons.Plus />
