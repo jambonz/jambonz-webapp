@@ -3,18 +3,12 @@ import { P, Button } from "jambonz-ui";
 
 import { toastSuccess, toastError } from "src/store";
 import { useApiData, postApiKey, deleteApiKey } from "src/api";
-import {
-  Modal,
-  ModalClose,
-  Obscure,
-  ClipBoard,
-  Section,
-  Grid,
-  GridRow,
-} from "src/components";
+import { Modal, ModalClose, Obscure, ClipBoard, Section } from "src/components";
 import { getHumanDateTime, hasLength } from "src/utils";
 
 import type { ApiKey, TokenResponse } from "src/api/types";
+
+import "./styles.scss";
 
 type ApiKeyProps = {
   path: string;
@@ -63,16 +57,16 @@ export const ApiKeys = ({ path, post, label }: ApiKeyProps) => {
   return (
     <>
       <Section slim>
-        <Grid col3>
-          <GridRow header>
+        <div className="grid grid--col3">
+          <div className="grid__row grid__th">
             <div>{label} API keys</div>
             <div>Last used</div>
             <div>&nbsp;</div>
-          </GridRow>
+          </div>
           {hasLength(apiKeys) ? (
             apiKeys.map((apiKey) => {
               return (
-                <GridRow key={apiKey.api_key_sid}>
+                <div className="grid__row" key={apiKey.api_key_sid}>
                   <div>
                     <Obscure text={apiKey.token} />
                   </div>
@@ -90,15 +84,15 @@ export const ApiKeys = ({ path, post, label }: ApiKeyProps) => {
                       Delete
                     </Button>
                   </div>
-                </GridRow>
+                </div>
               );
             })
           ) : (
-            <GridRow empty>
+            <div className="grid__row grid__empty">
               <div>No API keys yet.</div>
-            </GridRow>
+            </div>
           )}
-        </Grid>
+        </div>
       </Section>
       <Section clean>
         <Button small onClick={handleAdd}>

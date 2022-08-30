@@ -6,7 +6,6 @@ import { AccessControl } from "./access-control";
 import { Obscure } from "./obscure";
 import { ClipBoard } from "./clipboard";
 import { Section } from "./section";
-import { Grid, GridRow } from "./grid";
 import { Tooltip } from "./tooltip";
 import { Spinner } from "./spinner";
 import { AccountFilter } from "./account-filter";
@@ -22,8 +21,6 @@ export {
   Obscure,
   ClipBoard,
   Section,
-  Grid,
-  GridRow,
   Tooltip,
   Spinner,
   AccountFilter,

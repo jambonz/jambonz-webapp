@@ -93,17 +93,4 @@
       }
     }
   }
-
-  &--col5 {
-    .grid__row {
-      grid-template-columns: [col] 20% [col] 20% [col] 20% [col] 20% [col] 20%;
-      grid-template-rows: [row] auto [row] auto [row];
-
-      > div {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-    }
-  }
 }
