@@ -128,9 +128,7 @@ export const Carriers = () => {
                         ) : (
                           <Icons.XCircle />
                         )}
-                        <span>
-                          Status: {carrier.is_active ? "Active" : "Inactive"}
-                        </span>
+                        <span>{carrier.is_active ? "Active" : "Inactive"}</span>
                       </div>
                     </div>
                     <Gateways carrier={carrier} />
