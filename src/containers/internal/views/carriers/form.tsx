@@ -1,6 +1,7 @@
-import { Button, ButtonGroup, MS, P, Tab, Tabs } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Button, ButtonGroup, Icon, MS, MXS, Tab, Tabs } from "jambonz-ui";
+
 import {
   deleteSipGateway,
   deleteSmppGateway,
@@ -10,15 +11,13 @@ import {
   putCarrier,
   putSipGateway,
   putSmppGateway,
+  useApiData,
 } from "src/api";
 import {
-  Account,
-  UseApiDataMap,
-  Carrier,
-  SipGateway,
-  SmppGateway,
-  PredefinedCarriers,
-} from "src/api/types";
+  DEFAULT_SIP_GATEWAY,
+  DEFAULT_SMPP_GATEWAY,
+  NETMASK_OPTIONS,
+} from "src/api/constants";
 import { Icons, Section } from "src/components";
 import { Checkzone, Message, Passwd, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -26,36 +25,40 @@ import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { hasLength } from "src/utils";
 
-type CarrierProtocolGatewayProps<Type> = {
-  data: Type[] | null;
-  refetch: () => void;
-};
+import type {
+  Account,
+  UseApiDataMap,
+  Carrier,
+  SipGateway,
+  SmppGateway,
+  PredefinedCarriers,
+  Sbc,
+  Smpp,
+} from "src/api/types";
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
-  carrierSipGateways?: CarrierProtocolGatewayProps<SipGateway>;
-  carrierSmppGateways?: CarrierProtocolGatewayProps<SmppGateway>;
   accounts: null | Account[];
   predefinedCarriers: null | PredefinedCarriers[];
+  carrierSipGateways?: UseApiDataMap<SipGateway[]>;
+  carrierSmppGateways?: UseApiDataMap<SmppGateway[]>;
 };
 
 export const CarrierForm = ({
   carrier,
-  carrierSipGateways,
-  carrierSmppGateways,
   accounts,
   predefinedCarriers,
+  carrierSipGateways,
+  carrierSmppGateways,
 }: CarrierFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+
+  const [sbcs] = useApiData<Sbc[]>("Sbcs");
+  const [smpps] = useApiData<Smpp[]>("Smpps");
+
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
-  const netmaskSelectOption = Array(32)
-    .fill(0)
-    .map((_, index) => ({
-      name: (index + 1).toString(),
-      value: (index + 1).toString(),
-    }));
 
   const [carrierName, setCarrierName] = useState("");
   // unused feature, maybe we can add this?
@@ -139,34 +142,17 @@ export const CarrierForm = ({
   };
 
   const addSipGateway = () => {
-    setSipGateways((curr) => [
-      // this could be move to the constant TODO
-      ...curr,
-      {
-        voip_carrier_sid: "",
-        ipv4: "",
-        port: 5060,
-        netmask: 32,
-        is_active: false,
-        inbound: true,
-        outbound: false,
-      } as SipGateway,
-    ]);
+    setSipGateways((curr) => [...curr, DEFAULT_SIP_GATEWAY]);
   };
 
   const addSmppGateway = (type: boolean) => {
     setSmppGateways((curr) => [
       ...curr,
       {
-        voip_carrier_sid: "",
-        ipv4: "",
-        port: 2775,
-        is_primary: false,
-        use_tls: false,
-        netmask: 32,
+        ...DEFAULT_SMPP_GATEWAY,
         inbound: !type,
         outbound: type,
-      } as SmppGateway,
+      },
     ]);
   };
 
@@ -392,9 +378,19 @@ export const CarrierForm = ({
       carrierSipGateways?.data && setSipGateways(carrierSipGateways.data);
       carrierSmppGateways?.data && setSmppGateways(carrierSmppGateways.data);
     } else {
-      addSipGateway();
-      addSmppGateway(false); // the argument could be a bit clearer TODO
-      addSmppGateway(true);
+      setSipGateways([DEFAULT_SIP_GATEWAY]);
+      setSmppGateways([
+        {
+          ...DEFAULT_SMPP_GATEWAY,
+          inbound: false,
+          outbound: true,
+        },
+        {
+          ...DEFAULT_SMPP_GATEWAY,
+          inbound: true,
+          outbound: false,
+        },
+      ]);
     }
   }, [carrier, carrierSipGateways, carrierSmppGateways]);
 
@@ -404,44 +400,55 @@ export const CarrierForm = ({
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>
-        {!carrier && predefinedCarriers && hasLength(predefinedCarriers) && (
-          <fieldset>
-            <label htmlFor="predefined_select">Presets</label>
-            <Selector // TODO selecting NONE reset the fields?
-              id="predefined_select"
-              name="predefined_select"
-              value={predefinedName}
-              options={[
-                {
-                  name: "None",
-                  value: "",
-                },
-              ].concat(
-                predefinedCarriers?.map((carrier: PredefinedCarriers) => ({
-                  // TODO disable option by static ip, requires changes to Selector tag
-                  name: carrier.requires_static_ip
-                    ? `${carrier.name} -- requires static ip`
-                    : carrier.name,
-                  value: carrier.name,
-                }))
-              )}
-              onChange={(e) => setPredefinedName(e.target.value)}
-            />
-          </fieldset>
-        )}
         <fieldset>
-          <label htmlFor="carrier_name">
-            Carrier name<span>*</span>
-          </label>
-          <input
-            id="carrier_name"
-            name="carrier_name"
-            type="text"
-            required
-            placeholder="Carrier name"
-            value={carrierName}
-            onChange={(e) => setCarrierName(e.target.value)}
-          />
+          <div className="multi">
+            <div className="inp">
+              <label htmlFor="carrier_name">
+                Carrier name<span>*</span>
+              </label>
+              <input
+                id="carrier_name"
+                name="carrier_name"
+                type="text"
+                required
+                placeholder="Carrier name"
+                value={carrierName}
+                onChange={(e) => setCarrierName(e.target.value)}
+              />
+            </div>
+            {hasLength(predefinedCarriers) && !carrier && (
+              <div className="sel sel--preset">
+                <label htmlFor="predefined_select">Presets</label>
+                <Selector
+                  id="predefined_select"
+                  name="predefined_select"
+                  value={predefinedName}
+                  options={[
+                    {
+                      name: "None",
+                      value: "",
+                    },
+                  ].concat(
+                    predefinedCarriers?.map((carrier: PredefinedCarriers) => ({
+                      // TODO disable option by static ip, requires changes to Selector tag
+                      name: carrier.requires_static_ip
+                        ? `${carrier.name} -- requires static ip`
+                        : carrier.name,
+                      value: carrier.name,
+                    }))
+                  )}
+                  onChange={(e) => {
+                    setPredefinedName(e.target.value);
+
+                    // Reset prefefined carrier fields when selecting "None"
+                    if (e.target.value === "") {
+                      console.log("Reset predefinedCarriers fields");
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </div>
           <label htmlFor="is_active" className="chk">
             <input
               id="is_active"
@@ -455,31 +462,26 @@ export const CarrierForm = ({
         </fieldset>
 
         <Tabs setActiveTab={setActiveTab}>
-          {/*TODO aligning and giving more space for tab button*/}
           <Tab id="sip" label="Voice">
             <fieldset>
               <details>
                 <summary>
-                  Have your carriers whitelist ours{" "}
-                  <span>SIP signaling IPs</span>
+                  Have your carriers whitelist our SIP signaling IPs
                 </summary>
-                <P>3.34.102.122:5060</P>
-                <P>52.55.111.178:5060</P>
+                {hasLength(sbcs) &&
+                  sbcs.map((sbc) => {
+                    return (
+                      <MS key={sbc.sbc_address_sid}>
+                        {sbc.ipv4}:{sbc.port}
+                      </MS>
+                    );
+                  })}
               </details>
-              <label htmlFor="e164" className="chk">
-                <div>E.164 Syntax</div>
-                <input
-                  id="e164"
-                  name="e164"
-                  type="checkbox"
-                  checked={e164}
-                  onChange={(e) => setE164(e.target.checked)}
-                />
-                <div>prepend a leading + on origination attempts</div>
-              </label>
+            </fieldset>
+            <fieldset>
               {accounts && (
                 <>
-                  <label htmlFor="account_name">Account</label>
+                  <label htmlFor="account_name">Used by</label>
                   <Selector
                     id="account_name"
                     name="account_name"
@@ -499,17 +501,36 @@ export const CarrierForm = ({
                   />
                 </>
               )}
+              <label htmlFor="e164" className="chk">
+                <input
+                  id="e164"
+                  name="e164"
+                  type="checkbox"
+                  checked={e164}
+                  onChange={(e) => setE164(e.target.checked)}
+                />
+                <div>E.164 Syntax</div>
+                <MXS>(prepend a leading + on origination attempts)</MXS>
+              </label>
             </fieldset>
             <fieldset>
-              <Checkzone // uncheck the checkzone clear everything? TODO
+              <Checkzone
                 hidden
                 name="sip_credentials"
-                label="Does your carrier require authentication on outbound calls?"
-                // im testing the UX over here to see how it is like, pretty complicated
-                initialCheck={
-                  sipUser || sipPass || sipRegister || sipRealm ? true : false
-                }
+                label="Outbound Authentication"
+                initialCheck={sipUser || sipPass || sipRealm ? true : false}
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setSipUser("");
+                    setSipPass("");
+                    setSipRealm("");
+                    setSipRegister(false);
+                  }
+                }}
               >
+                <MS>
+                  Does your carrier require authentication on outbound calls?
+                </MS>
                 <label htmlFor="sip_username">
                   Username {sipPass || sipRegister ? <span>*</span> : ""}
                 </label>
@@ -519,7 +540,6 @@ export const CarrierForm = ({
                   type="text"
                   value={sipUser}
                   placeholder="SIP username for authenticating outbound calls"
-                  // hasValue cant be used much because this is not null
                   required={sipRegister || sipPass.length > 0}
                   onChange={(e) => {
                     setSipUser(e.target.value);
@@ -539,7 +559,7 @@ export const CarrierForm = ({
                     setSipPass(e.target.value);
                   }}
                 />
-                <label htmlFor="sip_register">
+                <label htmlFor="sip_register" className="chk">
                   <input
                     id="sip_register"
                     name="sip_register"
@@ -548,12 +568,14 @@ export const CarrierForm = ({
                     required={sipRegister}
                     onChange={(e) => setSipRegister(e.target.checked)}
                   />
-                  <div>
-                    Carrier requires SIP Register before sending outbound calls
-                  </div>
+                  <div>Require SIP Register</div>
                 </label>
                 {sipRegister && (
                   <>
+                    <MS>
+                      Carrier requires SIP Register before sending outbound
+                      calls.
+                    </MS>
                     <label htmlFor="sip_realm">
                       SIP Realm{sipRegister ? <span>*</span> : ""}
                     </label>
@@ -562,6 +584,7 @@ export const CarrierForm = ({
                       name="sip_realm"
                       type="text"
                       value={sipRealm}
+                      placeholder="SIP realm for registration"
                       required={sipRegister} // this is reduntant to check
                       onChange={(e) => setSipRealm(e.target.value)}
                     />
@@ -573,23 +596,25 @@ export const CarrierForm = ({
               <Checkzone
                 hidden
                 name="tech_prefix_check"
-                label="Does your carrier require a tech prefix on outbound calls?"
-                // errorMessages.push('If registration is required,
-                // you must provide a Tech prefix with more than 2 characters.');
-                // ?? no check for that in webapp, just a message so I am not sure if the sipRegister condition is needed
+                label="Tech Prefix"
                 initialCheck={prefix ? true : false}
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setPrefix("");
+                  }
+                }}
               >
-                <label htmlFor="tech_prefix">Tech prefix</label>
-                {/* <MS>Prefix length has to be greater than 2</MS> */}
+                <MS>
+                  Does your carrier require a tech prefix on outbound calls?
+                </MS>
                 <input
                   id="tech_prefix"
                   name="tech_prefix"
                   type="text"
                   value={prefix}
+                  minLength={3}
                   placeholder="Tech prefix"
-                  // required={prefix.length < 2} // does not work??
                   onChange={(e) => {
-                    // TODO, clear the payload if these are unchecked?
                     setPrefix(e.target.value);
                   }}
                 />
@@ -597,13 +622,18 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <Checkzone
-                // the checkbox size is scaling by how long the label is
-                // so this one size looks comically small
                 hidden
                 name="diversion_check"
-                label="Does your carrier support the SIP Diversion header for authenticating the calling number?"
+                label="SIP Diversion Header"
                 initialCheck={diversion ? true : false}
+                handleChecked={() => {
+                  setDiversion("");
+                }}
               >
+                <MS>
+                  Does your carrier support the SIP Diversion header for
+                  authenticating the calling number?
+                </MS>
                 <input
                   id="diversion"
                   name="diversion"
@@ -611,7 +641,6 @@ export const CarrierForm = ({
                   value={diversion}
                   placeholder="Phone number or SIP URI"
                   onChange={(e) => {
-                    // TODO, clear the payload if these are unchecked?
                     setDiversion(e.target.value);
                   }}
                 />
@@ -625,68 +654,84 @@ export const CarrierForm = ({
               {sipGateways &&
                 hasLength(sipGateways) &&
                 sipGateways.map((g, i) => (
-                  // className="multi" right now makes the buttons minicule
-                  <div key={`sip_gateway_${i}`}>
-                    <input
-                      id={`sip_ip_${i}`}
-                      name={`sip_ip_${i}`}
-                      type="text"
-                      placeholder="1.2.3.4"
-                      required
-                      value={g.ipv4}
-                      onChange={(e) => {
-                        updateSipGateways(i, "ipv4", e.target.value);
-                      }}
-                    />
-                    <input
-                      id={`sip_port_${i}`}
-                      name={`sip_port_${i}`}
-                      type="text"
-                      placeholder="5060"
-                      value={g.port}
-                      onChange={(e) => {
-                        updateSipGateways(i, "port", e.target.value);
-                      }}
-                    />
-                    <Selector
-                      id={`sip_netmask_${i}`}
-                      name={`sip_netmask${i}`}
-                      placeholder="32"
-                      value={g.netmask}
-                      options={netmaskSelectOption}
-                      onChange={(e) => {
-                        updateSipGateways(i, "netmask", e.target.value);
-                      }}
-                    />
-                    <input
-                      id={`sip_inbound_${i}`}
-                      name={`sip_inbound_${i}`}
-                      type="checkbox"
-                      checked={g.inbound}
-                      required={!g.outbound}
-                      onChange={(e) => {
-                        updateSipGateways(
-                          i,
-                          "inbound",
-                          e.target.checked ? 1 : 0
-                        );
-                      }}
-                    />
-                    <input
-                      id={`sip_outbound_${i}`}
-                      name={`sip_outbound_${i}`}
-                      type="checkbox"
-                      checked={g.outbound}
-                      required={!g.inbound}
-                      onChange={(e) => {
-                        updateSipGateways(
-                          i,
-                          "outbound",
-                          e.target.checked ? 1 : 0
-                        );
-                      }}
-                    />
+                  <div key={`sip_gateway_${i}`} className="multi">
+                    <div className="inp inp--med">
+                      <input
+                        id={`sip_ip_${i}`}
+                        name={`sip_ip_${i}`}
+                        type="text"
+                        placeholder="1.2.3.4"
+                        required
+                        value={g.ipv4}
+                        onChange={(e) => {
+                          updateSipGateways(i, "ipv4", e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="inp inp--mini">
+                      <input
+                        id={`sip_port_${i}`}
+                        name={`sip_port_${i}`}
+                        type="text"
+                        placeholder="5060"
+                        value={g.port}
+                        onChange={(e) => {
+                          updateSipGateways(i, "port", e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="sel">
+                      <Selector
+                        id={`sip_netmask_${i}`}
+                        name={`sip_netmask${i}`}
+                        placeholder="32"
+                        value={g.netmask}
+                        options={NETMASK_OPTIONS}
+                        onChange={(e) => {
+                          updateSipGateways(i, "netmask", e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`sip_inbound_${i}`} className="chk">
+                        <input
+                          id={`sip_inbound_${i}`}
+                          name={`sip_inbound_${i}`}
+                          type="checkbox"
+                          checked={g.inbound}
+                          required={!g.outbound}
+                          onChange={(e) => {
+                            updateSipGateways(
+                              i,
+                              "inbound",
+                              e.target.checked ? 1 : 0
+                            );
+                          }}
+                        />
+                        <div>Inbound</div>
+                      </label>
+                    </div>
+                    <div>
+                      <label htmlFor={`sip_outbound_${i}`} className="chk">
+                        <input
+                          id={`sip_outbound_${i}`}
+                          name={`sip_outbound_${i}`}
+                          type="checkbox"
+                          checked={g.outbound}
+                          required={!g.inbound}
+                          onChange={(e) => {
+                            updateSipGateways(
+                              i,
+                              "outbound",
+                              e.target.checked ? 1 : 0
+                            );
+                          }}
+                        />
+                        <div>Outbound</div>
+                      </label>
+                    </div>
                     <button
+                      className="btnty"
                       title="Delete SIP Gateway"
                       type="button"
                       onClick={() =>
@@ -703,20 +748,32 @@ export const CarrierForm = ({
                     </button>
                   </div>
                 ))}
-              <Button type="button" onClick={() => addSipGateway()}>
-                <Icons.Plus />
-              </Button>
+              <button
+                className="btnty"
+                type="button"
+                onClick={() => addSipGateway()}
+              >
+                <Icon>
+                  <Icons.Plus />
+                </Icon>
+              </button>
             </fieldset>
           </Tab>
           <Tab id="smpp" label="SMS">
             <fieldset>
               <details>
                 <summary>
-                  Have your carriers whitelist ours{" "}
-                  <span>SMPP signaling IPs</span>
+                  Have your carriers whitelist our SMPP signaling IPs
                 </summary>
-                <P>3.209.58.102:3550 (TLS)</P>
-                <P>34.197.99.29:27750</P>
+                {hasLength(smpps) &&
+                  smpps.map((smpp) => {
+                    return (
+                      <MS key={smpp.smpp_address_sid}>
+                        {smpp.ipv4}:{smpp.port}
+                        {smpp.use_tls && " (TLS)"}
+                      </MS>
+                    );
+                  })}
               </details>
             </fieldset>
             <fieldset>
@@ -849,7 +906,7 @@ export const CarrierForm = ({
                         id={`smpp_netmask_${i}`}
                         name={`smpp_netmask_${i}`}
                         placeholder="32"
-                        options={netmaskSelectOption}
+                        options={NETMASK_OPTIONS}
                         value={g.netmask}
                         onChange={(e) =>
                           updateSmppGateways(i, "netmask", e.target.value)

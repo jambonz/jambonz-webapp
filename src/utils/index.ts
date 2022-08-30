@@ -71,7 +71,7 @@ export const formatPhoneNumber = (number: string) => {
   return number;
 };
 
-export const timeFormat = (seconds: number) => {
+export const formatTime = (seconds: number) => {
   if (seconds < 60) {
     return `${seconds}s`;
   }

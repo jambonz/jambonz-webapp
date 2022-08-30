@@ -75,7 +75,7 @@ details {
   }
 
   summary {
-    display: list-item;
+    @include ui-mixins.m();
     cursor: pointer;
 
     + * {

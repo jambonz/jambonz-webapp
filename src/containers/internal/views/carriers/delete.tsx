@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { P } from "jambonz-ui";
 
 import { Modal, ModalClose } from "src/components";
-
-import { Carrier, PhoneNumber } from "src/api/types";
 import { getFetch } from "src/api";
 import { API_PHONE_NUMBERS } from "src/api/constants";
-import { hasLength } from "src/utils";
-// there is this error that is sent from the backend, not the frontend......
+import { formatPhoneNumber, hasLength } from "src/utils";
+
+import type { Carrier, PhoneNumber } from "src/api/types";
+
 type DeleteProps = {
   carrier: Carrier;
   handleCancel: () => void;
@@ -34,7 +34,9 @@ const InUseItems = ({ items, itemsLabel, sidKey, labelKey }: InUseProps) => {
       {items.map((item) => {
         return (
           <li className="txt--teal" key={item[sidKey as keyof typeof item]}>
-            {item[labelKey as keyof typeof item]}
+            {labelKey === "number"
+              ? formatPhoneNumber(item[labelKey])
+              : item[labelKey as keyof typeof item]}
           </li>
         );
       })}

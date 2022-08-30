@@ -1,4 +1,4 @@
-import type { WebHook, WebhookOption } from "./types";
+import type { SipGateway, SmppGateway, WebHook, WebhookOption } from "./types";
 
 /** This window object is serialized and injected at docker runtime */
 /** The API url is constructed with the docker containers `ip:port` */
@@ -26,6 +26,36 @@ export const DEFAULT_WEBHOOK: WebHook = {
   username: "",
   password: "",
 };
+
+/** Default SIP/SMPP Gateways  */
+export const DEFAULT_SIP_GATEWAY: SipGateway = {
+  voip_carrier_sid: "",
+  ipv4: "",
+  port: 5060,
+  netmask: 32,
+  is_active: false,
+  inbound: true,
+  outbound: false,
+};
+
+export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
+  voip_carrier_sid: "",
+  ipv4: "",
+  port: 2775,
+  is_primary: false,
+  use_tls: false,
+  netmask: 32,
+  inbound: true,
+  outbound: true,
+};
+
+/** Netmask Select Options */
+export const NETMASK_OPTIONS = Array(32)
+  .fill(0)
+  .map((_, index) => ({
+    name: (index + 1).toString(),
+    value: (index + 1).toString(),
+  }));
 
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [

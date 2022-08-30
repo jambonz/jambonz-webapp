@@ -44,7 +44,7 @@ export interface UseApiData {
 
 export interface UseApiDataMap<Type> {
   data: Type | null;
-  error: FetchError | null;
+  error?: FetchError | null;
   refetch: () => void;
 }
 
@@ -117,6 +117,15 @@ export interface Sbc {
   ipv4: string;
   port: number | string;
   sbc_address_sid: string;
+  service_provider_sid: null | string;
+}
+
+export interface Smpp {
+  ipv4: string;
+  port: number | string;
+  use_tls: boolean;
+  is_primary: boolean;
+  smpp_address_sid: string;
   service_provider_sid: null | string;
 }
 
@@ -243,12 +252,12 @@ export interface ProtocolGateway {
 }
 
 export interface SipGateway extends ProtocolGateway {
-  sip_gateway_sid: null | string;
+  sip_gateway_sid?: null | string;
   is_active: boolean;
 }
 
 export interface SmppGateway extends ProtocolGateway {
-  smpp_gateway_sid: null | string;
+  smpp_gateway_sid?: null | string;
   is_primary: boolean;
   use_tls: boolean;
 }

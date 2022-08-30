@@ -19,16 +19,13 @@ export const EditCarrier = () => {
   const [data, refetch, error] = useApiData<Carrier>(
     `VoipCarriers/${params.voip_carrier_sid}`
   );
-
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
-
-  const [carrierSipGateways, carrierSipGatewaysRefetch] = useApiData<
-    SipGateway[]
-  >(`SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`);
-  const [carrierSmppGateways, carrierSmppGatewaysRefetch] = useApiData<
-    SmppGateway[]
-  >(`SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`);
-
+  const [sipGateways, sipGatewaysRefetch] = useApiData<SipGateway[]>(
+    `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+  );
+  const [smppGateways, smppGatewaysRefetch] = useApiData<SmppGateway[]>(
+    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+  );
   const [predefinedCarriers] =
     useApiData<PredefinedCarriers[]>("PredefinedCarriers");
 
@@ -42,16 +39,16 @@ export const EditCarrier = () => {
     <>
       <H1>Edit carrier</H1>
       <CarrierForm
+        carrier={{ data, refetch, error }}
         accounts={accounts}
         predefinedCarriers={predefinedCarriers}
-        carrier={{ data, refetch, error }}
         carrierSipGateways={{
-          data: carrierSipGateways,
-          refetch: carrierSipGatewaysRefetch,
+          data: sipGateways,
+          refetch: sipGatewaysRefetch,
         }}
         carrierSmppGateways={{
-          data: carrierSmppGateways,
-          refetch: carrierSmppGatewaysRefetch,
+          data: smppGateways,
+          refetch: smppGatewaysRefetch,
         }}
       />
     </>

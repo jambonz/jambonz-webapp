@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import {
   deleteCarrier,
@@ -7,22 +8,20 @@ import {
   getFetch,
   useServiceProviderData,
 } from "src/api";
-import { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
 import { toastSuccess, toastError } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
-import { Link } from "react-router-dom";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { hasLength, hasValue } from "src/utils";
-import { DeleteCarrier } from "./delete";
 import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
+import { DeleteCarrier } from "./delete";
+
+import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
 
 export const Carriers = () => {
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-
-  const [carriers, refetch] = useServiceProviderData<Carrier[]>(`VoipCarriers`);
+  const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
-
   const [carriersFiltered, setCarriersFiltered] = useState<Carrier[]>([]);
 
   const handleDelete = () => {
@@ -99,7 +98,7 @@ export const Carriers = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(carriers) ? { slim: true } : {})}>
+      <Section {...(hasLength(carriersFiltered) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(carriers) && <Spinner />}
           {hasLength(carriersFiltered) ? (
@@ -116,9 +115,6 @@ export const Carriers = () => {
                       <Icons.ArrowRight />
                     </Link>
                   </div>
-                  {
-                    // stuff being active and inbound/outbound gateway
-                  }
                   <div className="item__meta">
                     <div>
                       <div
@@ -150,7 +146,7 @@ export const Carriers = () => {
               </div>
             ))
           ) : (
-            <M>No Carriers yet.</M> // weird style if empty
+            <M>No Carriers yet.</M>
           )}
         </div>
       </Section>
