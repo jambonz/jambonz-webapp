@@ -12,7 +12,8 @@ import {
 import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
 import { Selector, Checkzone, Passwd, Message } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
-import { DEFAULT_WEBHOOK } from "src/api/constants";
+import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
+import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 import type {
   WebHook,
@@ -21,7 +22,6 @@ import type {
   WebhookMethod,
   UseApiDataMap,
 } from "src/api/types";
-import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -311,19 +311,9 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
               );
             })}
           {webhooks.map((webhook) => {
-            const selectOptions = [
-              {
-                name: "POST",
-                value: "POST",
-              },
-            ];
-
-            if (webhook.label === "Registration") {
-              selectOptions.push({
-                name: "GET",
-                value: "GET",
-              });
-            }
+            const selectOptions = WEBHOOK_METHODS.filter((wm) =>
+              webhook.prefix === "queue_event_hook" ? wm.name !== "GET" : true
+            );
 
             return (
               <fieldset key={webhook.prefix}>
