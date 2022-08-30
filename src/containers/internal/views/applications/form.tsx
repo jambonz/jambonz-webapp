@@ -38,15 +38,15 @@ import type {
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 type ApplicationFormProps = {
-  accounts: null | Account[];
+  accounts?: Account[];
   application?: UseApiDataMap<Application>;
-  applications: null | Application[];
+  applications?: Application[];
 };
 
 export const ApplicationForm = ({
   application,
-  applications = null,
-  accounts = null,
+  applications,
+  accounts,
 }: ApplicationFormProps) => {
   const navigate = useNavigate();
   const [applicationName, setApplicationName] = useState("");
@@ -65,10 +65,8 @@ export const ApplicationForm = ({
   const [recogVendor, setRecogVendor] =
     useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
   const [recogLang, setRecogLang] = useState(LANG_EN_US);
-  const [synthesis, setSynthesis] = useState<SynthesisVendors | null>(null);
-  const [recognizers, setRecognizers] = useState<RecognizerVendors | null>(
-    null
-  );
+  const [synthesis, setSynthesis] = useState<SynthesisVendors>();
+  const [recognizers, setRecognizers] = useState<RecognizerVendors>();
   const [message, setMessage] = useState("");
 
   /** This lets us map and render the same UI for each... */

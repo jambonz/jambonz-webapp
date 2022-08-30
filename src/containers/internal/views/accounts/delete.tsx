@@ -63,7 +63,7 @@ export const DeleteAccount = ({
   handleCancel,
   handleSubmit,
 }: DeleteProps) => {
-  const [inUse, setInUse] = useState<InUse | null>(null);
+  const [inUse, setInUse] = useState<InUse>();
   const [isDeletable, setIsDeletable] = useState(false);
 
   /** Fetch data to see if account can be deleted */

@@ -24,7 +24,7 @@ import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
-  accounts: null | Account[];
+  accounts?: Account[];
 };
 
 export const SpeechServiceForm = ({
@@ -40,7 +40,7 @@ export const SpeechServiceForm = ({
     "" as Lowercase<Vendor>
   );
   const [region, setRegion] = useState("");
-  const [regions, setRegions] = useState<RegionVendors | null>(null);
+  const [regions, setRegions] = useState<RegionVendors>();
   const [apiKey, setApiKey] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");

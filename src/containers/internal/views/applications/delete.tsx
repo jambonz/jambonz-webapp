@@ -50,7 +50,7 @@ export const DeleteApplication = ({
   handleCancel,
   handleSubmit,
 }: DeleteProps) => {
-  const [inUse, setInUse] = useState<InUse | null>(null);
+  const [inUse, setInUse] = useState<InUse>();
   const [isDeletable, setIsDeletable] = useState(false);
 
   useEffect(() => {

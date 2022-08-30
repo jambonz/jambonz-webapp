@@ -39,14 +39,18 @@ export interface FetchError {
 }
 
 export interface UseApiData {
-  <Type>(apiPath: string): [null | Type, () => void, null | FetchError];
+  <Type>(apiPath: string): [
+    Type | undefined,
+    () => void,
+    FetchError | undefined
+  ];
 }
 
 /** API related interfaces */
 
 export interface UseApiDataMap<Type> {
-  data: Type | null;
-  error?: FetchError | null;
+  data?: Type;
+  error?: FetchError;
   refetch: () => void;
 }
 

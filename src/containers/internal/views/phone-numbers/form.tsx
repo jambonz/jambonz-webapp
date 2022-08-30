@@ -16,23 +16,17 @@ import { toastError, toastSuccess } from "src/store";
 import type {
   Account,
   Application,
-  FetchError,
   PhoneNumber,
   Carrier,
+  UseApiDataMap,
 } from "src/api/types";
 
-type UsePhoneNumberData = {
-  data: PhoneNumber | null;
-  error: FetchError | null;
-  refetch: () => void;
-};
-
 type PhoneNumberFormProps = {
-  phoneNumber?: UsePhoneNumberData;
-  phoneNumbers: PhoneNumber[] | null;
-  accounts: Account[] | null;
-  applications: Application[] | null;
-  carriers: Carrier[] | null;
+  phoneNumber?: UseApiDataMap<PhoneNumber>;
+  phoneNumbers?: PhoneNumber[];
+  accounts?: Account[];
+  applications?: Application[];
+  carriers?: Carrier[];
 };
 
 export const PhoneNumberForm = ({
@@ -74,8 +68,6 @@ export const PhoneNumberForm = ({
     const payload = {
       account_sid: accountSid,
       application_sid: applicationSid || null,
-      // this field is in the sql but not here and it is never updated in the back end))
-      // service_provider_sid: null,
     };
 
     if (phoneNumber && phoneNumber.data) {

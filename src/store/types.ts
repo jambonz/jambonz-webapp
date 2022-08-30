@@ -20,9 +20,9 @@ export interface FeatureFlag {
 
 export interface State {
   /** logged in user */
-  user: User | null;
+  user?: User;
   /** global toast notifications  */
-  toast: Toast | null;
+  toast?: Toast;
   /** feature flags from vite ENV */
   featureFlags: FeatureFlag;
   /** access controls */
@@ -30,7 +30,7 @@ export interface State {
   /** available service providers */
   serviceProviders: ServiceProvider[];
   /** current selected service provider */
-  currentServiceProvider: ServiceProvider | null;
+  currentServiceProvider?: ServiceProvider;
 }
 
 /** Generic interface enforces type-safety with global dispatch */

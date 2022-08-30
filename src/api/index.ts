@@ -464,8 +464,8 @@ export const getAlerts = (sid: string) => {
 
 /** :GET /{apiPath} -- this is generic for any fetch of data collections */
 export const useApiData: UseApiData = <Type>(apiPath: string) => {
-  const [result, setResult] = useState<Type | null>(null);
-  const [error, setError] = useState<FetchError | null>(null);
+  const [result, setResult] = useState<Type>();
+  const [error, setError] = useState<FetchError>();
   const [refetch, setRefetch] = useState(0);
 
   const refetcher = () => {
@@ -501,8 +501,8 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
 /** :GET /ServiceProviders/:service_provider_sid/Accounts */
 export const useServiceProviderData: UseApiData = <Type>(apiPath: string) => {
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [result, setResult] = useState<Type | null>(null);
-  const [error, setError] = useState<FetchError | null>(null);
+  const [result, setResult] = useState<Type>();
+  const [error, setError] = useState<FetchError>();
   const [refetch, setRefetch] = useState(0);
 
   const refetcher = () => {

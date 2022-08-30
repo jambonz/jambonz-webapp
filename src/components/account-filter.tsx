@@ -9,7 +9,7 @@ import type { Account } from "src/api/types";
 type AccountFilterProps = {
   label?: string;
   account: [string, Dispatch<SetStateAction<string>>];
-  accounts: Account[] | null;
+  accounts?: Account[];
   defaultOption?: boolean;
 };
 

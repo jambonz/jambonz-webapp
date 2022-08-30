@@ -8,7 +8,7 @@ import type { Application } from "src/api/types";
 
 type SelectorProps = JSX.IntrinsicElements["select"] & {
   application: [string, Dispatch<SetStateAction<string>>];
-  applications: Application[] | null;
+  applications?: Application[];
 };
 
 export const ApplicationSelect = ({

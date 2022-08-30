@@ -24,11 +24,11 @@ import type {
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 type AccountFormProps = {
-  apps?: null | Application[];
+  apps?: Application[];
   account?: UseApiDataMap<Account>;
 };
 
-export const AccountForm = ({ apps = null, account }: AccountFormProps) => {
+export const AccountForm = ({ apps, account }: AccountFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");

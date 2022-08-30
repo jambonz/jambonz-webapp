@@ -38,8 +38,8 @@ import type {
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
-  accounts: null | Account[];
-  predefinedCarriers: null | PredefinedCarriers[];
+  accounts?: Account[];
+  predefinedCarriers?: PredefinedCarriers[];
   carrierSipGateways?: UseApiDataMap<SipGateway[]>;
   carrierSmppGateways?: UseApiDataMap<SmppGateway[]>;
 };

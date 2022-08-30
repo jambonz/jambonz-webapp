@@ -12,8 +12,8 @@ type GatewaysProps = {
 };
 
 export const Gateways = ({ carrier }: GatewaysProps) => {
-  const [gateways, setGateways] = useState<SipGateway[] | null>(null);
-  const [error, setError] = useState<TypeError | null>(null);
+  const [gateways, setGateways] = useState<SipGateway[]>();
+  const [error, setError] = useState<TypeError>();
 
   const renderGateways = () => {
     if (gateways) {

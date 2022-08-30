@@ -8,8 +8,8 @@ import { Section } from "src/components";
 import type { Pcap, RecentCall } from "src/api/types";
 
 export const RecentCalls = () => {
-  const [pcap, setPcap] = useState<Pcap | null>(null);
-  const [calls, setCalls] = useState<RecentCall[] | null>(null);
+  const [pcap, setPcap] = useState<Pcap>();
+  const [calls, setCalls] = useState<RecentCall[]>();
 
   useEffect(() => {
     let ignore = false;

@@ -19,7 +19,7 @@ export const DeleteCarrier = ({
   handleCancel,
   handleSubmit,
 }: DeleteProps) => {
-  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[] | null>(null);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>();
 
   useEffect(() => {
     let ignore = false;

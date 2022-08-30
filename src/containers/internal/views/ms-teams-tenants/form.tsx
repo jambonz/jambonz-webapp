@@ -20,9 +20,9 @@ import type {
 } from "src/api/types";
 
 type MsTeamsTenantFormProps = {
-  accounts: null | Account[];
-  applications: null | Application[];
-  msTeamsTenants: null | MSTeamsTenant[];
+  accounts?: Account[];
+  applications?: Application[];
+  msTeamsTenants?: MSTeamsTenant[];
   msTeamsTenant?: UseApiDataMap<MSTeamsTenant>;
 };
 

@@ -19,9 +19,7 @@ export const SpeechServices = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [credential, setCredential] = useState<SpeechCredential | null>(null);
-  const [credentials, setCredentials] = useState<SpeechCredential[] | null>(
-    null
-  );
+  const [credentials, setCredentials] = useState<SpeechCredential[]>();
 
   const getSpeechCredentials = (url: string) => {
     getFetch<SpeechCredential[]>(url)

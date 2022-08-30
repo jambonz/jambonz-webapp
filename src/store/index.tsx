@@ -23,8 +23,6 @@ import type {
 } from "./types";
 
 const initialState: State = {
-  user: null,
-  toast: null,
   featureFlags: {
     /** Placeholder since we may need feature-flags in the future... */
     development: import.meta.env.DEV,
@@ -34,7 +32,6 @@ const initialState: State = {
     hasMSTeamsFqdn: false,
   },
   serviceProviders: [],
-  currentServiceProvider: null,
 };
 
 const reducer: Reducer<State, Action<keyof State>> = (state, action) => {
@@ -64,7 +61,7 @@ const middleware: MiddleWare = (dispatch) => {
           clearTimeout(toastTimeout);
         }
         toastTimeout = setTimeout(() => {
-          dispatch({ type: "toast", payload: null });
+          dispatch({ type: "toast" });
         }, TOAST_TIME);
         return dispatch(action);
       case "user":

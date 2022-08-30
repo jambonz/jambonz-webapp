@@ -19,7 +19,7 @@ import type {
 type CredentialStatusProps = {
   cred: SpeechCredential;
   showSummary?: boolean;
-  serviceProvider: ServiceProvider | null;
+  serviceProvider?: ServiceProvider;
 };
 
 export const CredentialStatus = ({
@@ -27,10 +27,8 @@ export const CredentialStatus = ({
   showSummary = false,
   serviceProvider,
 }: CredentialStatusProps) => {
-  const [testResult, setTestResult] = useState<CredentialTestResult | null>(
-    null
-  );
-  const [testError, setTestError] = useState<TypeError | null>(null);
+  const [testResult, setTestResult] = useState<CredentialTestResult>();
+  const [testError, setTestError] = useState<TypeError>();
   const notTestedTxt =
     "In order to test your credentials you need to enable TTS/STT.";
 
