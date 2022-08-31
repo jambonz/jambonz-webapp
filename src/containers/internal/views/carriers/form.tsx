@@ -20,6 +20,7 @@ import {
   INVALID,
   NETMASK_BITS,
   TCP_MAX_PORT,
+  TECH_PREFIX_MINLENGTH,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
 import { Checkzone, Message, Passwd, Selector } from "src/components/forms";
@@ -165,13 +166,12 @@ export const CarrierForm = ({
     setSipGateways((curr) => [...curr, DEFAULT_SIP_GATEWAY]);
   };
 
-  const addSmppGateway = (type: boolean) => {
+  const addSmppGateway = (obj: Partial<SmppGateway>) => {
     setSmppGateways((curr) => [
       ...curr,
       {
-        ...DEFAULT_SMPP_GATEWAY,
-        inbound: !type,
-        outbound: type,
+        ...DEFAULT_SMPP_GATEWAY /** { inbound: true, outbound: true } */,
+        ...obj /** pass which one is false: e.g. { outbound: false } */,
       },
     ]);
   };
@@ -227,32 +227,46 @@ export const CarrierForm = ({
   const hasEmptySmppGateways = (type: keyof SmppGateway) => {
     const filtered = smppGateways.filter((g) => g[type]);
     return (
-      hasLength(filtered) && filtered.map((g) => g.ipv4.trim()).join("") === ""
+      hasLength(filtered) &&
+      filtered.reduce((acc, g) => {
+        return acc + g.ipv4.trim();
+      }, "") === ""
     );
   };
 
-  const handleOnClick = () => {
+  const handleActiveTab = () => {
     /** When to switch to `sip` tab */
 
     const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
+    const invalidSipPort = sipGateways.find((g) => !isValidPort(g.port));
 
     /** Empty SIP gateway */
+    /** Invalid SIP port number */
     /** Outbound auth conditionals */
     if (
       emptySipIp ||
+      invalidSipPort ||
       (sipUser && !sipPass) ||
       (sipPass && !sipUser) ||
       (sipRegister && (!sipRealm || !sipPass || !sipUser)) ||
-      (prefix && prefix.length < 3)
+      (prefix && prefix.length < TECH_PREFIX_MINLENGTH)
     ) {
       setActiveTab("sip");
     }
 
     /** When to switch to the `smpp` tab */
 
+    const invalidSmppPort = smppGateways
+      .filter((g) => g.outbound)
+      .find((g) => !isValidPort(g.port));
+
+    console.log(invalidSmppPort);
+
     /** Outbound user/pass filled out but no gateways */
     /** Inbound gateways but no inbound pass */
+    /** Invalid SMPP port number */
     if (
+      invalidSmppPort ||
       (smppSystemId && smppPass && hasEmptySmppGateways("outbound")) ||
       (!smppInboundPass && !hasEmptySmppGateways("inbound"))
     ) {
@@ -290,7 +304,9 @@ export const CarrierForm = ({
 
       /** Port validation */
       if (!isValidPort(gateway.port)) {
-        setMessage("Please provide a valid port number between 0 and 65535");
+        setMessage(
+          `Please provide a valid port number between 0 and ${TCP_MAX_PORT}`
+        );
         refSipPort.current[i].focus();
         return;
       }
@@ -436,21 +452,11 @@ export const CarrierForm = ({
                     },
                   ].concat(
                     predefinedCarriers?.map((carrier: PredefinedCarriers) => ({
-                      // TODO: Disable option by static ip, requires changes to Selector tag
-                      name: carrier.requires_static_ip
-                        ? `${carrier.name} -- requires static ip`
-                        : carrier.name,
+                      name: carrier.name,
                       value: carrier.name,
                     }))
                   )}
-                  onChange={(e) => {
-                    setPredefinedName(e.target.value);
-
-                    // TODO: Reset prefefined carrier fields when selecting "None"
-                    if (e.target.value === "") {
-                      console.log("Reset predefinedCarriers fields");
-                    }
-                  }}
+                  onChange={(e) => setPredefinedName(e.target.value)}
                 />
               </div>
             )}
@@ -515,8 +521,10 @@ export const CarrierForm = ({
                   onChange={(e) => setE164(e.target.checked)}
                 />
                 <div>E.164 Syntax</div>
-                <MXS>(prepend a leading + on origination attempts)</MXS>
               </label>
+              <MXS>
+                <em>Prepend a leading + on origination attempts.</em>
+              </MXS>
             </fieldset>
             <fieldset>
               <Checkzone
@@ -572,7 +580,6 @@ export const CarrierForm = ({
                     name="sip_register"
                     type="checkbox"
                     checked={sipRegister}
-                    required={sipRegister}
                     onChange={(e) => setSipRegister(e.target.checked)}
                   />
                   <div>Require SIP Register</div>
@@ -619,7 +626,7 @@ export const CarrierForm = ({
                   name="tech_prefix"
                   type="text"
                   value={prefix}
-                  minLength={3}
+                  minLength={TECH_PREFIX_MINLENGTH}
                   placeholder="Tech prefix"
                   onChange={(e) => {
                     setPrefix(e.target.value);
@@ -633,8 +640,10 @@ export const CarrierForm = ({
                 name="diversion_check"
                 label="SIP Diversion Header"
                 initialCheck={diversion ? true : false}
-                handleChecked={() => {
-                  setDiversion("");
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setDiversion("");
+                  }
                 }}
               >
                 <MS>
@@ -654,7 +663,12 @@ export const CarrierForm = ({
               </Checkzone>
             </fieldset>
             <fieldset>
-              <label htmlFor="sip_gateways">SIP Gateways</label>
+              <label htmlFor="sip_gateways">
+                SIP Gateways<span>*</span>
+              </label>
+              <MXS>
+                <em>At least one SIP gateway is required.</em>
+              </MXS>
               <label htmlFor="sip_gateways">
                 Network Address / Port / Netmask
               </label>
@@ -821,7 +835,7 @@ export const CarrierForm = ({
                 name="outbound_id"
                 type="text"
                 value={smppSystemId}
-                placeholder="SMPP system id to authenticate with"
+                placeholder="SMPP system ID to authenticate with"
                 onChange={(e) => {
                   setSmppSystemId(e.target.value);
                 }}
@@ -836,7 +850,16 @@ export const CarrierForm = ({
                   setSmppPass(e.target.value);
                 }}
               />
-              <label htmlFor="outbound_smpp">Carrier SMPP Gateways</label>
+              <label htmlFor="outbound_smpp">
+                Carrier SMPP Gateways
+                <span>{smppSystemId || smppPass ? "*" : ""}</span>
+              </label>
+              <MXS>
+                <em>
+                  At least one outbound gateway is required when using system ID
+                  or password.
+                </em>
+              </MXS>
               <label htmlFor="outbound_smpp">IP or DNS / Port</label>
               {hasLength(smppGateways.filter((g) => g.outbound)) &&
                 smppGateways.map((g, i) => {
@@ -903,15 +926,27 @@ export const CarrierForm = ({
                         title="Delete Outbound SMPP Gateway"
                         type="button"
                         className="btnty"
-                        onClick={() =>
-                          setSmppGateways(
-                            smppGateways.filter(
-                              (g2, i2) =>
-                                i2 !== i ||
-                                setSmppGatewaysDelete((curr) => [...curr, g2])
-                            )
-                          )
-                        }
+                        onClick={() => {
+                          if (
+                            hasLength(smpps) &&
+                            smppGateways.filter((g) => g.outbound).length <=
+                              1 &&
+                            smppSystemId &&
+                            smppPass
+                          ) {
+                            setMessage(
+                              "You must provide at least one Outbound Gateway."
+                            );
+                          } else {
+                            setSmppGateways(
+                              smppGateways.filter(
+                                (g2, i2) =>
+                                  i2 !== i ||
+                                  setSmppGatewaysDelete((curr) => [...curr, g2])
+                              )
+                            );
+                          }
+                        }}
                       >
                         <Icon>
                           <Icons.Trash2 />
@@ -924,7 +959,7 @@ export const CarrierForm = ({
                 <button
                   className="btnty"
                   type="button"
-                  onClick={() => addSmppGateway(true)}
+                  onClick={() => addSmppGateway({ inbound: false })}
                   title="Add Outbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">
@@ -941,12 +976,21 @@ export const CarrierForm = ({
                 name="inbound_id"
                 type="text"
                 value={smppInboundSystemId}
-                placeholder="SMPP system id to authenticate with"
+                placeholder="SMPP system ID to authenticate with"
                 onChange={(e) => {
                   setSmppInboundSystemId(e.target.value);
                 }}
               />
-              <label htmlFor="inbound_pass">Password</label>
+              <label htmlFor="inbound_pass">
+                Password
+                <span>{!hasEmptySmppGateways("inbound") ? "*" : ""}</span>
+              </label>
+              <MXS>
+                <em>
+                  Passord is required if whitelisting carrier IP address(es)
+                  below.
+                </em>
+              </MXS>
               <Passwd
                 id="inbound_pass"
                 name="inbound_pass"
@@ -1019,7 +1063,7 @@ export const CarrierForm = ({
                 <button
                   className="btnty"
                   type="button"
-                  onClick={() => addSmppGateway(false)}
+                  onClick={() => addSmppGateway({ outbound: false })}
                   title="Add Inbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">
@@ -1041,7 +1085,7 @@ export const CarrierForm = ({
             >
               Cancel
             </Button>
-            <Button type="submit" small onClick={handleOnClick}>
+            <Button type="submit" small onClick={handleActiveTab}>
               Save
             </Button>
           </ButtonGroup>

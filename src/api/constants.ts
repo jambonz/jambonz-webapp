@@ -22,6 +22,9 @@ export const DEV_BASE_URL = import.meta.env.VITE_DEV_BASE_URL;
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
+/** Tech Prefix minlength */
+export const TECH_PREFIX_MINLENGTH = 3;
+
 /** IP Types for validations */
 export const IP = "ip";
 export const FQDN = "fqdn";

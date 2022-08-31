@@ -65,6 +65,7 @@ fieldset {
     @include ui-mixins.font-medium();
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 
     span {
       color: ui-vars.$jambonz;
@@ -125,10 +126,6 @@ fieldset {
 
   input {
     margin: 0 ui-vars.$px01 0 0;
-  }
-
-  div + div {
-    margin-left: ui-vars.$px01;
   }
 }
 
