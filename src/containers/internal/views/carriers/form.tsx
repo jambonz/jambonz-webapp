@@ -113,7 +113,9 @@ export const CarrierForm = ({
     []
   );
 
-  const [message, setMessage] = useState("");
+  const [sipMessage, setSipMessage] = useState("");
+  const [smppInboundMessage, setSmppInboundMessage] = useState("");
+  const [smppOutboundMessage, setSmppOutboundMessage] = useState("");
 
   const setCarrierStates = (obj: Carrier) => {
     if (obj) {
@@ -291,13 +293,22 @@ export const CarrierForm = ({
 
       if (type === FQDN_TOP_LEVEL) {
         refSmppIp.current[i].focus();
-        return "When using an FQDN, you must use a subdomain (e.g. sip.example.com).";
+        return {
+          msg: "When using an FQDN, you must use a subdomain (e.g. sip.example.com).",
+          type: gatewayType,
+        };
       } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
         refSmppIp.current[i].focus();
-        return "A fully qualified domain name may only be used for outbound calls.";
+        return {
+          msg: "A fully qualified domain name may only be used for outbound calls.",
+          type: gatewayType,
+        };
       } else if (type === INVALID && gateway.ipv4.trim() !== "") {
         refSmppIp.current[i].focus();
-        return `Please provide a valid ${gatewayType} IP address or fully qualified domain name.`;
+        return {
+          msg: `Please provide a valid ${gatewayType} IP address or fully qualified domain name.`,
+          type: gatewayType,
+        };
       }
 
       /** Duplicates validation */
@@ -313,7 +324,10 @@ export const CarrierForm = ({
 
       if (dupeSmppGateway) {
         refSmppIp.current[i].focus();
-        return `Each ${gatewayType} SMPP gateway must have a unique IP address.`;
+        return {
+          msg: `Each ${gatewayType} SMPP gateway must have a unique IP address.`,
+          type: gatewayType,
+        };
       }
     }
   };
@@ -373,12 +387,14 @@ export const CarrierForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    setMessage("");
+    setSipMessage("");
+    setSmppInboundMessage("");
+    setSmppOutboundMessage("");
 
     const sipGatewayValidation = getSipValidation();
 
     if (sipGatewayValidation) {
-      setMessage(sipGatewayValidation);
+      setSipMessage(sipGatewayValidation);
       return;
     }
 
@@ -387,7 +403,11 @@ export const CarrierForm = ({
       const smppGatewayValidation = getSmppValidation();
 
       if (smppGatewayValidation) {
-        setMessage(smppGatewayValidation);
+        if (smppGatewayValidation.type === "outbound") {
+          setSmppOutboundMessage(smppGatewayValidation.msg);
+        } else {
+          setSmppInboundMessage(smppGatewayValidation.msg);
+        }
         return;
       }
     }
@@ -778,6 +798,7 @@ export const CarrierForm = ({
               <label htmlFor="sip_gateways">
                 Network Address / Port / Netmask
               </label>
+              {sipMessage && <Message message={sipMessage} />}
               {hasLength(sipGateways) &&
                 sipGateways.map((g, i) => (
                   <div
@@ -880,10 +901,10 @@ export const CarrierForm = ({
                       title="Delete SIP Gateway"
                       type="button"
                       onClick={() => {
-                        setMessage("");
+                        setSipMessage("");
 
                         if (sipGateways.length === 1) {
-                          setMessage(
+                          setSipMessage(
                             "You must provide at least one SIP Gateway."
                           );
                         } else {
@@ -909,7 +930,7 @@ export const CarrierForm = ({
                   type="button"
                   title="Add SIP Gateway"
                   onClick={() => {
-                    setMessage("");
+                    setSipMessage("");
                     addSipGateway();
                   }}
                 >
@@ -971,6 +992,7 @@ export const CarrierForm = ({
                 </em>
               </MXS>
               <label htmlFor="outbound_smpp">IP or DNS / Port</label>
+              {smppOutboundMessage && <Message message={smppOutboundMessage} />}
               {hasLength(smppGateways.filter((g) => g.outbound)) &&
                 smppGateways.map((g, i) => {
                   return g.outbound ? (
@@ -1037,13 +1059,15 @@ export const CarrierForm = ({
                         type="button"
                         className="btnty"
                         onClick={() => {
+                          setSmppOutboundMessage("");
+
                           if (
                             hasLength(smpps) &&
                             smppGateways.filter((g) => g.outbound).length <=
                               1 &&
                             (smppSystemId || smppPass)
                           ) {
-                            setMessage(
+                            setSmppOutboundMessage(
                               "You must provide at least one Outbound Gateway."
                             );
                           } else {
@@ -1114,6 +1138,7 @@ export const CarrierForm = ({
                 Carrier IP Address(es) to whitelist
               </label>
               <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
+              {smppInboundMessage && <Message message={smppInboundMessage} />}
               {hasLength(smppGateways.filter((g) => g.inbound)) &&
                 smppGateways.map((g, i) => {
                   return g.inbound ? (
@@ -1183,7 +1208,6 @@ export const CarrierForm = ({
             </fieldset>
           </Tab>
         </Tabs>
-        {message && <fieldset>{<Message message={message} />}</fieldset>}
         <fieldset>
           <ButtonGroup left>
             <Button
