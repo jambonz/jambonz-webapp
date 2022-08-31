@@ -13,16 +13,16 @@ import {
 import type { IpType } from "src/api/types";
 
 export const hasValue = <Type>(
-  variable: Type | undefined
+  variable: Type | null | undefined
 ): variable is NonNullable<Type> => {
   return variable !== null && variable !== undefined;
 };
 
 export const hasLength = <Type>(
   variable: Type[] | null | undefined,
-  minimum = 0
+  minlength = 0
 ): variable is NonNullable<Type[]> => {
-  return hasValue(variable) && variable.length > minimum;
+  return hasValue(variable) && variable.length > minlength;
 };
 
 export const isValidPasswd = (password: string) => {
@@ -35,7 +35,7 @@ export const isValidPort = (port: number) => {
   return (
     port &&
     /^[0-9]+$/.test(port.toString().trim()) &&
-    parseInt(port.toString().trim(), 10) > 0 &&
+    parseInt(port.toString().trim(), 10) >= 0 &&
     parseInt(port.toString().trim(), 10) <= TCP_MAX_PORT
   );
 };
