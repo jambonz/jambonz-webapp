@@ -246,11 +246,90 @@ export const CarrierForm = ({
     );
   };
 
+  const getSipValidation = () => {
+    for (let i = 0; i < sipGateways.length; i++) {
+      const gateway = sipGateways[i];
+      const type = getIpValidationType(gateway.ipv4);
+
+      if (type === FQDN_TOP_LEVEL) {
+        refSipIp.current[i].focus();
+        return "When using an FQDN, you must use a subdomain (e.g. sip.example.com).";
+      } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
+        refSipIp.current[i].focus();
+        return "A fully qualified domain name may only be used for outbound calls.";
+      } else if (type === INVALID) {
+        refSipIp.current[i].focus();
+        return "Please provide a valid IP address or fully qualified domain name.";
+      }
+
+      /** Duplicates validation */
+      const dupeSipGateway = sipGateways.find((g) => {
+        return (
+          g !== gateway &&
+          gateway.ipv4 &&
+          g.ipv4 === gateway.ipv4 &&
+          g.port === gateway.port
+        );
+      });
+
+      if (dupeSipGateway) {
+        refSipIp.current[i].focus();
+        return "Each SIP gateway must have a unique IP address.";
+      }
+    }
+  };
+
+  const getSmppValidation = () => {
+    for (let i = 0; i < smppGateways.length; i++) {
+      const gateway = smppGateways[i];
+      const gatewayType = gateway.inbound ? "inbound" : "outbound";
+      const type = getIpValidationType(gateway.ipv4);
+
+      if (type === FQDN_TOP_LEVEL) {
+        refSmppIp.current[i].focus();
+        return "When using an FQDN, you must use a subdomain (e.g. sip.example.com).";
+      } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
+        refSmppIp.current[i].focus();
+        return "A fully qualified domain name may only be used for outbound calls.";
+      } else if (type === INVALID && gateway.ipv4.trim() !== "") {
+        refSmppIp.current[i].focus();
+        return `Please provide a valid ${gatewayType} IP address or fully qualified domain name.`;
+      }
+
+      /** Duplicates validation */
+      const dupeSmppGateway = smppGateways.find((g) => {
+        return (
+          g !== gateway &&
+          gateway.ipv4 &&
+          g[gatewayType] === gateway[gatewayType] &&
+          g.ipv4 === gateway.ipv4 &&
+          g.port === gateway.port
+        );
+      });
+
+      if (dupeSmppGateway) {
+        refSmppIp.current[i].focus();
+        return `Each ${gatewayType} SMPP gateway must have a unique IP address.`;
+      }
+    }
+  };
+
+  const shouldValidateSmpp = () => {
+    return (
+      smppSystemId ||
+      smppPass ||
+      smppInboundPass ||
+      !hasEmptySmppGateways("outbound") ||
+      !hasEmptySmppGateways("inbound")
+    );
+  };
+
   const handleActiveTab = () => {
     /** When to switch to `sip` tab */
 
     const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
     const invalidSipPort = sipGateways.find((g) => !isValidPort(g.port));
+    const sipGatewayValidation = getSipValidation();
 
     /** Empty SIP gateway */
     /** Invalid SIP port number */
@@ -258,6 +337,7 @@ export const CarrierForm = ({
     if (
       emptySipIp ||
       invalidSipPort ||
+      sipGatewayValidation ||
       (sipUser && !sipPass) ||
       (sipPass && !sipUser) ||
       (sipRegister && (!sipRealm || !sipPass || !sipUser)) ||
@@ -271,12 +351,14 @@ export const CarrierForm = ({
     const invalidSmppPort = smppGateways
       .filter((g) => g.outbound)
       .find((g) => !isValidPort(g.port));
+    const smppGatewayValidation = shouldValidateSmpp() && getSmppValidation();
 
     /** Outbound user/pass filled out but no gateways */
     /** Inbound gateways but no inbound pass */
     /** Invalid SMPP port number */
     if (
       invalidSmppPort ||
+      smppGatewayValidation ||
       (smppSystemId && smppPass && hasEmptySmppGateways("outbound")) ||
       (!smppInboundPass && !hasEmptySmppGateways("inbound"))
     ) {
@@ -294,98 +376,20 @@ export const CarrierForm = ({
       return;
     }
 
-    for (let i = 0; i < sipGateways.length; i++) {
-      const gateway = sipGateways[i];
-      const type = getIpValidationType(gateway.ipv4);
+    const sipGatewayValidation = getSipValidation();
 
-      if (type === FQDN_TOP_LEVEL) {
-        setMessage(
-          "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
-        );
-        refSipIp.current[i].focus();
-        return;
-      } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
-        setMessage(
-          "A fully qualified domain name may only be used for outbound calls."
-        );
-        refSipIp.current[i].focus();
-        return;
-      } else if (type === INVALID) {
-        setMessage(
-          "Please provide a valid IP address or fully qualified domain name."
-        );
-        refSipIp.current[i].focus();
-        return;
-      }
-
-      /** Duplicates validation */
-      const dupeSipGateway = sipGateways.find((g) => {
-        return (
-          g !== gateway &&
-          gateway.ipv4 &&
-          g.ipv4 === gateway.ipv4 &&
-          g.port === gateway.port
-        );
-      });
-
-      if (dupeSipGateway) {
-        setMessage("Each SIP gateway must have a unique IP address.");
-        refSipIp.current[i].focus();
-        return;
-      }
+    if (sipGatewayValidation) {
+      setMessage(sipGatewayValidation);
+      return;
     }
 
     /** Conditions to validate SMPP gateway fields... */
-    if (
-      smppSystemId ||
-      smppPass ||
-      smppInboundPass ||
-      !hasEmptySmppGateways("outbound") ||
-      !hasEmptySmppGateways("inbound")
-    ) {
-      for (let i = 0; i < smppGateways.length; i++) {
-        const gateway = smppGateways[i];
-        const gatewayType = gateway.inbound ? "inbound" : "outbound";
-        const type = getIpValidationType(gateway.ipv4);
+    if (shouldValidateSmpp()) {
+      const smppGatewayValidation = getSmppValidation();
 
-        if (type === FQDN_TOP_LEVEL) {
-          setMessage(
-            "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
-          );
-          refSmppIp.current[i].focus();
-          return;
-        } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
-          setMessage(
-            "A fully qualified domain name may only be used for outbound calls."
-          );
-          refSmppIp.current[i].focus();
-          return;
-        } else if (type === INVALID && gateway.ipv4.trim() !== "") {
-          setMessage(
-            `Please provide a valid ${gatewayType} IP address or fully qualified domain name.`
-          );
-          refSmppIp.current[i].focus();
-          return;
-        }
-
-        /** Duplicates validation */
-        const dupeSmppGateway = smppGateways.find((g) => {
-          return (
-            g !== gateway &&
-            gateway.ipv4 &&
-            g[gatewayType] === gateway[gatewayType] &&
-            g.ipv4 === gateway.ipv4 &&
-            g.port === gateway.port
-          );
-        });
-
-        if (dupeSmppGateway) {
-          setMessage(
-            `Each ${gatewayType} SMPP gateway must have a unique IP address.`
-          );
-          refSmppIp.current[i].focus();
-          return;
-        }
+      if (smppGatewayValidation) {
+        setMessage(smppGatewayValidation);
+        return;
       }
     }
 
