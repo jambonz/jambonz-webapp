@@ -247,6 +247,10 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
+    if (!hasLength(sipGateways)) {
+      return "You must provide at least one SIP Gateway.";
+    }
+
     for (let i = 0; i < sipGateways.length; i++) {
       const gateway = sipGateways[i];
       const type = getIpValidationType(gateway.ipv4);
@@ -370,11 +374,6 @@ export const CarrierForm = ({
     e.preventDefault();
 
     setMessage("");
-
-    if (!hasLength(sipGateways)) {
-      setMessage("You must provide at least one SIP Gateway.");
-      return;
-    }
 
     const sipGatewayValidation = getSipValidation();
 
