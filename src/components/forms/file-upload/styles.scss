@@ -14,14 +14,16 @@
   }
 
   &.focused {
-    input[type="text"] {
+    input[type="text"],
+    input[type="number"] {
       border-color: ui-vars.$dark;
       color: ui-vars.$dark;
     }
   }
 
   &.disabled {
-    input[type="text"] {
+    input[type="text"],
+    input[type="number"] {
       @include mixins.disabled();
     }
   }

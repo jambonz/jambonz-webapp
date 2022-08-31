@@ -33,9 +33,10 @@ export const isValidPasswd = (password: string) => {
 
 export const isValidPort = (port: number) => {
   return (
-    (port && !/^[0-9]+$/.test(port.toString().trim())) ||
-    parseInt(port.toString().trim()) < 0 ||
-    parseInt(port.toString().trim()) > TCP_MAX_PORT
+    port &&
+    /^[0-9]+$/.test(port.toString().trim()) &&
+    parseInt(port.toString().trim(), 10) > 0 &&
+    parseInt(port.toString().trim(), 10) <= TCP_MAX_PORT
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Icon, MS, MXS, Tab, Tabs } from "jambonz-ui";
 
@@ -19,6 +19,7 @@ import {
   FQDN_TOP_LEVEL,
   INVALID,
   NETMASK_BITS,
+  TCP_MAX_PORT,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
 import { Checkzone, Message, Passwd, Selector } from "src/components/forms";
@@ -69,6 +70,11 @@ export const CarrierForm = ({
       outbound: false,
     },
   ];
+
+  const refSipIp = useRef<HTMLInputElement[]>([]);
+  const refSipPort = useRef<HTMLInputElement[]>([]);
+  const refSmppIp = useRef<HTMLInputElement[]>([]);
+  const refSmppPort = useRef<HTMLInputElement[]>([]);
 
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [smpps] = useApiData<Smpp[]>("Smpps");
@@ -170,7 +176,6 @@ export const CarrierForm = ({
     ]);
   };
 
-  /** TODO: we can try to reduce the code by making callback and stuff (3+ parameters for that function), or we can just move it out of here */
   const updateSipGateways = (
     index: number,
     key: string,
@@ -265,43 +270,28 @@ export const CarrierForm = ({
       return;
     }
 
-    for (const gateway of sipGateways) {
+    for (let i = 0; i < sipGateways.length; i++) {
+      const gateway = sipGateways[i];
       const type = getIpValidationType(gateway.ipv4);
 
-      /** IP validation */
-      if (!gateway.ipv4) {
-        setMessage(
-          "The IP Address cannot be blank. Please provide an IP address or delete the row."
-        );
-        return;
-      } else if (type === FQDN_TOP_LEVEL) {
+      if (type === FQDN_TOP_LEVEL) {
         setMessage(
           "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
         );
+        refSipIp.current[i].focus();
         return;
       } else if (type === INVALID) {
         setMessage(
           "Please provide a valid IP address or fully qualified domain name."
         );
+        refSipIp.current[i].focus();
         return;
       }
 
       /** Port validation */
-      if (isValidPort(gateway.port)) {
+      if (!isValidPort(gateway.port)) {
         setMessage("Please provide a valid port number between 0 and 65535");
-        return;
-      }
-
-      /** Inbound/Outbound validation */
-      if (type === "fqdn" && (!gateway.outbound || gateway.inbound)) {
-        setMessage(
-          "A fully qualified domain name may only be used for outbound calls."
-        );
-        return;
-      } else if (!gateway.inbound && !gateway.outbound) {
-        setMessage(
-          "Each SIP Gateway must accept inbound calls, outbound calls, or both."
-        );
+        refSipPort.current[i].focus();
         return;
       }
 
@@ -317,6 +307,7 @@ export const CarrierForm = ({
 
       if (dupeSipGateway) {
         setMessage("Each SIP gateway must have a unique IP address.");
+        refSipIp.current[i].focus();
         return;
       }
     }
@@ -685,18 +676,30 @@ export const CarrierForm = ({
                           onChange={(e) => {
                             updateSipGateways(i, "ipv4", e.target.value);
                           }}
+                          ref={(ref: HTMLInputElement) =>
+                            (refSipIp.current[i] = ref)
+                          }
                         />
                       </div>
                       <div>
                         <input
                           id={`sip_port_${i}`}
                           name={`sip_port_${i}`}
-                          type="text"
+                          type="number"
+                          min="0"
+                          max={TCP_MAX_PORT}
                           placeholder={DEFAULT_SIP_GATEWAY.port.toString()}
                           value={g.port}
                           onChange={(e) => {
-                            updateSipGateways(i, "port", e.target.value);
+                            updateSipGateways(
+                              i,
+                              "port",
+                              Number(e.target.value)
+                            );
                           }}
+                          ref={(ref: HTMLInputElement) =>
+                            (refSipPort.current[i] = ref)
+                          }
                         />
                       </div>
                       <div>
@@ -851,17 +854,29 @@ export const CarrierForm = ({
                             onChange={(e) =>
                               updateSmppGateways(i, "ipv4", e.target.value)
                             }
+                            ref={(ref: HTMLInputElement) =>
+                              (refSmppIp.current[i] = ref)
+                            }
                           />
                         </div>
                         <div>
                           <input
                             id={`port_${i}`}
                             name={`port_${i}`}
-                            type="text"
+                            type="number"
+                            min="0"
+                            max={TCP_MAX_PORT}
                             placeholder={DEFAULT_SMPP_GATEWAY.port.toString()}
                             value={g.port}
                             onChange={(e) =>
-                              updateSmppGateways(i, "port", e.target.value)
+                              updateSmppGateways(
+                                i,
+                                "port",
+                                Number(e.target.value)
+                              )
+                            }
+                            ref={(ref: HTMLInputElement) =>
+                              (refSmppPort.current[i] = ref)
                             }
                           />
                         </div>
@@ -960,6 +975,9 @@ export const CarrierForm = ({
                             value={g.ipv4}
                             onChange={(e) =>
                               updateSmppGateways(i, "ipv4", e.target.value)
+                            }
+                            ref={(ref: HTMLInputElement) =>
+                              (refSmppIp.current[i] = ref)
                             }
                           />
                         </div>

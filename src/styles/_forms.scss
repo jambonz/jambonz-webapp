@@ -4,6 +4,7 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 input[type="text"],
+input[type="number"],
 input[type="password"] {
   @include ui-mixins.m();
   padding: ui-vars.$px01 ui-vars.$px02;
@@ -111,6 +112,7 @@ fieldset {
   }
 
   input[type="text"],
+  input[type="number"],
   input[type="password"] {
     width: 100%;
     max-width: vars.$widthinput;
