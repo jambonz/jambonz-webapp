@@ -379,8 +379,6 @@ export const CarrierForm = ({
           );
         });
 
-        console.log(dupeSmppGateway, smppGateways);
-
         if (dupeSmppGateway) {
           setMessage(
             `Each ${gatewayType} SMPP gateway must have a unique IP address.`
@@ -1095,7 +1093,7 @@ export const CarrierForm = ({
               </label>
               <MXS>
                 <em>
-                  Passord is required if whitelisting carrier IP address(es)
+                  Password is required if whitelisting carrier IP address(es)
                   below.
                 </em>
               </MXS>
