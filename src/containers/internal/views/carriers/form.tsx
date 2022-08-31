@@ -362,6 +362,7 @@ export const CarrierForm = ({
       (prefix && prefix.length < TECH_PREFIX_MINLENGTH)
     ) {
       setActiveTab("sip");
+      return; /** Important so browser contstraints work properly */
     }
 
     /** When to switch to the `smpp` tab */
