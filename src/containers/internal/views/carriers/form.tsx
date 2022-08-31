@@ -66,11 +66,11 @@ export const CarrierForm = ({
   const defaultSmppGateways = [
     {
       ...DEFAULT_SMPP_GATEWAY,
-      inbound: false,
+      inbound: 0,
     },
     {
       ...DEFAULT_SMPP_GATEWAY,
-      outbound: false,
+      outbound: 0,
     },
   ];
 
@@ -173,8 +173,8 @@ export const CarrierForm = ({
     setSmppGateways((curr) => [
       ...curr,
       {
-        ...DEFAULT_SMPP_GATEWAY /** { inbound: true, outbound: true } */,
-        ...obj /** pass which one is false: e.g. { outbound: false } */,
+        ...DEFAULT_SMPP_GATEWAY /** { inbound: 1, outbound: 1 } */,
+        ...obj /** pass the values: e.g. { outbound: 1, inbound: 0 } */,
       },
     ]);
   };
@@ -208,11 +208,14 @@ export const CarrierForm = ({
   };
 
   const handleSmppGatewayPutPost = (voip_carrier_sid: string) => {
-    smppGateways.forEach(({ smpp_gateway_sid, ...g }: SmppGateway) => {
-      smpp_gateway_sid
-        ? putSmppGateway(smpp_gateway_sid, g)
-        : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
-    });
+    smppGateways
+      /** Ensure the empty UI fields don't actually save in the background... */
+      .filter((g) => g.ipv4.trim() !== "" && isValidPort(g.port))
+      .forEach(({ smpp_gateway_sid, ...g }: SmppGateway) => {
+        smpp_gateway_sid
+          ? putSmppGateway(smpp_gateway_sid, g)
+          : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
+      });
   };
 
   const handleSipGatewayDelete = () => {
@@ -370,10 +373,13 @@ export const CarrierForm = ({
           return (
             g !== gateway &&
             gateway.ipv4 &&
+            g[gatewayType] === gateway[gatewayType] &&
             g.ipv4 === gateway.ipv4 &&
             g.port === gateway.port
           );
         });
+
+        console.log(dupeSmppGateway, smppGateways);
 
         if (dupeSmppGateway) {
           setMessage(
@@ -460,17 +466,35 @@ export const CarrierForm = ({
   useEffect(() => {
     if (carrier && carrier.data) {
       setCarrierStates(carrier.data);
+    }
 
-      carrierSipGateways?.data
-        ? setSipGateways(carrierSipGateways.data)
-        : setSipGateways([DEFAULT_SIP_GATEWAY]);
-      carrierSmppGateways?.data
-        ? setSmppGateways(carrierSmppGateways.data)
-        : setSmppGateways(defaultSmppGateways);
+    if (carrierSipGateways && hasLength(carrierSipGateways.data)) {
+      setSipGateways(carrierSipGateways.data);
     } else {
       setSipGateways([DEFAULT_SIP_GATEWAY]);
+    }
+
+    if (carrierSmppGateways && hasLength(carrierSmppGateways.data)) {
+      const inbound = carrierSmppGateways.data.filter((g) => g.inbound);
+      const outbound = carrierSmppGateways.data.filter((g) => g.outbound);
+
+      setSmppGateways(carrierSmppGateways.data);
+
+      if (inbound.length <= 0) {
+        addSmppGateway({ inbound: 1, outbound: 0 });
+      }
+
+      if (outbound.length <= 0) {
+        addSmppGateway({ outbound: 1, inbound: 0 });
+      }
+    } else {
       setSmppGateways(defaultSmppGateways);
     }
+
+    /** Cleanup SMPP gateways for sanity... */
+    return function cleanup() {
+      setSmppGateways([]);
+    };
   }, [carrier, carrierSipGateways, carrierSmppGateways]);
 
   return (
@@ -817,10 +841,14 @@ export const CarrierForm = ({
                             id={`sip_inbound_${i}`}
                             name={`sip_inbound_${i}`}
                             type="checkbox"
-                            checked={g.inbound}
+                            checked={g.inbound ? true : false}
                             required={!g.outbound}
                             onChange={(e) => {
-                              updateSipGateways(i, "inbound", e.target.checked);
+                              updateSipGateways(
+                                i,
+                                "inbound",
+                                e.target.checked ? 1 : 0
+                              );
                             }}
                           />
                           <div>Inbound</div>
@@ -832,7 +860,7 @@ export const CarrierForm = ({
                             id={`sip_outbound_${i}`}
                             name={`sip_outbound_${i}`}
                             type="checkbox"
-                            checked={g.outbound}
+                            checked={g.outbound ? true : false}
                             required={!g.inbound}
                             onChange={(e) => {
                               updateSipGateways(
@@ -1039,7 +1067,7 @@ export const CarrierForm = ({
                 <button
                   className="btnty"
                   type="button"
-                  onClick={() => addSmppGateway({ inbound: false })}
+                  onClick={() => addSmppGateway({ inbound: 0, outbound: 1 })}
                   title="Add Outbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">
@@ -1143,7 +1171,7 @@ export const CarrierForm = ({
                 <button
                   className="btnty"
                   type="button"
-                  onClick={() => addSmppGateway({ outbound: false })}
+                  onClick={() => addSmppGateway({ outbound: 0, inbound: 1 })}
                   title="Add Inbound SMPP Gateway"
                 >
                   <Icon subStyle="teal">

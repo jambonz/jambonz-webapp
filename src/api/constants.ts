@@ -46,8 +46,8 @@ export const DEFAULT_SIP_GATEWAY: SipGateway = {
   port: 5060,
   netmask: 32,
   is_active: false,
-  inbound: true,
-  outbound: false,
+  inbound: 1,
+  outbound: 0,
 };
 
 export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
@@ -57,8 +57,8 @@ export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
   is_primary: false,
   use_tls: false,
   netmask: 32,
-  inbound: true,
-  outbound: true,
+  inbound: 1,
+  outbound: 1,
 };
 
 /** Netmask Bits */

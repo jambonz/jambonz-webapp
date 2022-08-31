@@ -253,8 +253,8 @@ export interface ProtocolGateway {
   ipv4: string;
   port: number;
   netmask: number;
-  inbound: boolean;
-  outbound: boolean;
+  inbound: number;
+  outbound: number;
 }
 
 export interface SipGateway extends ProtocolGateway {
