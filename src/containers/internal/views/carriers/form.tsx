@@ -1139,6 +1139,12 @@ export const CarrierForm = ({
                 Carrier IP Address(es) to whitelist
               </label>
               <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
+              <MXS>
+                <em>
+                  Note: fully qualified domain names (e.g. sip.example.com) may
+                  only be used for outbound calls above.
+                </em>
+              </MXS>
               {smppInboundMessage && <Message message={smppInboundMessage} />}
               {hasLength(smppGateways.filter((g) => g.inbound)) &&
                 smppGateways.map((g, i) => {
@@ -1151,6 +1157,7 @@ export const CarrierForm = ({
                             name={`smpp_ip_${i}`}
                             type="text"
                             placeholder="1.2.3.4"
+                            pattern="((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])"
                             value={g.ipv4}
                             onChange={(e) =>
                               updateSmppGateways(i, "ipv4", e.target.value)
