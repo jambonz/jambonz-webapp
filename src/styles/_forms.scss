@@ -49,6 +49,10 @@ fieldset {
     /** Third-party -- e.g. jambonz-ui */
     .tabs__nav {
       padding: ui-vars.$px01 ui-vars.$px03;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: rgba(255, 255, 255, 0.9);
     }
 
     .tabs__tabs__item > * + * {
