@@ -265,60 +265,60 @@ export const CarrierForm = ({
       return;
     }
 
-    let loop_type = 0; // just to make it quick
-    for (const gateways of [sipGateways, smppGateways]) {
-      for (const gateway of gateways) {
-        const type = getIpValidationType(gateway.ipv4);
-        let message = "";
+    for (const gateway of sipGateways) {
+      const type = getIpValidationType(gateway.ipv4);
 
-        /** IP validation */
-        if (!gateway.ipv4) {
-          message +=
-            "The IP Address cannot be blank. Please provide an IP address or delete the row.\n";
-        } else if (type === FQDN_TOP_LEVEL) {
-          message +=
-            "When using an FQDN, you must use a subdomain (e.g. sip.example.com).\n";
-        } else if (type === INVALID) {
-          message +=
-            "Please provide a valid IP address or fully qualified domain name.\n";
-        }
-
-        /** Port validation */
-        if (isValidPort(gateway.port)) {
-          message +=
-            "Please provide a valid port number between 0 and 65535.\n";
-        }
-
-        /** Inbound/Outbound validation */
-        if (type === "fqdn" && (!gateway.outbound || gateway.inbound)) {
-          message +=
-            "A fully qualified domain name may only be used for outbound calls.\n";
-        } else if (!gateway.inbound && !gateway.outbound) {
-          message +=
-            "Each SIP Gateway must accept inbound calls, outbound calls, or both.\n";
-        }
-
-        /** Duplicates validation */
-        const dupeSipGateway = sipGateways.find((g) => {
-          return (
-            g !== gateway &&
-            gateway.ipv4 &&
-            g.ipv4 === gateway.ipv4 &&
-            g.port === gateway.port
-          );
-        });
-
-        if (dupeSipGateway) {
-          message += "Each SIP gateway must have a unique IP address.\n";
-        }
-
-        if (message) {
-          loop_type === 0 ? setActiveTab("sip") : setActiveTab("smpp");
-          setMessage(message);
-          return;
-        }
+      /** IP validation */
+      if (!gateway.ipv4) {
+        setMessage(
+          "The IP Address cannot be blank. Please provide an IP address or delete the row."
+        );
+        return;
+      } else if (type === FQDN_TOP_LEVEL) {
+        setMessage(
+          "When using an FQDN, you must use a subdomain (e.g. sip.example.com)."
+        );
+        return;
+      } else if (type === INVALID) {
+        setMessage(
+          "Please provide a valid IP address or fully qualified domain name."
+        );
+        return;
       }
-      ++loop_type;
+
+      /** Port validation */
+      if (isValidPort(gateway.port)) {
+        setMessage("Please provide a valid port number between 0 and 65535");
+        return;
+      }
+
+      /** Inbound/Outbound validation */
+      if (type === "fqdn" && (!gateway.outbound || gateway.inbound)) {
+        setMessage(
+          "A fully qualified domain name may only be used for outbound calls."
+        );
+        return;
+      } else if (!gateway.inbound && !gateway.outbound) {
+        setMessage(
+          "Each SIP Gateway must accept inbound calls, outbound calls, or both."
+        );
+        return;
+      }
+
+      /** Duplicates validation */
+      const dupeSipGateway = sipGateways.find((g) => {
+        return (
+          g !== gateway &&
+          gateway.ipv4 &&
+          g.ipv4 === gateway.ipv4 &&
+          g.port === gateway.port
+        );
+      });
+
+      if (dupeSipGateway) {
+        setMessage("Each SIP gateway must have a unique IP address.");
+        return;
+      }
     }
 
     if (currentServiceProvider) {
