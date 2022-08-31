@@ -812,7 +812,7 @@ export const CarrierForm = ({
                           id={`sip_ip_${i}`}
                           name={`sip_ip_${i}`}
                           type="text"
-                          placeholder="1.2.3.4"
+                          placeholder="1.2.3.4 / sip.my.com"
                           required
                           value={g.ipv4}
                           onChange={(e) => {
@@ -1004,7 +1004,7 @@ export const CarrierForm = ({
                             id={`ip_${i}`}
                             name={`ip_${i}`}
                             type="text"
-                            placeholder="1.2.3.4"
+                            placeholder="1.2.3.4 / smpp.my.com"
                             required={smppSystemId || smppPass ? true : false}
                             value={g.ipv4}
                             onChange={(e) =>
