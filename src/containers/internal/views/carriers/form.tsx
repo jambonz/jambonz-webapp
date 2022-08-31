@@ -30,7 +30,7 @@ import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { getIpValidationType, hasLength, isValidPort } from "src/utils";
 
-import type {
+import {
   Account,
   UseApiDataMap,
   Carrier,
@@ -39,6 +39,7 @@ import type {
   PredefinedCarriers,
   Sbc,
   Smpp,
+  Application,
 } from "src/api/types";
 
 type CarrierFormProps = {
@@ -80,6 +81,7 @@ export const CarrierForm = ({
 
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [smpps] = useApiData<Smpp[]>("Smpps");
+  const [applications] = useApiData<Application[]>("Applications");
 
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
@@ -545,9 +547,22 @@ export const CarrierForm = ({
               </details>
             </fieldset>
             <fieldset>
+              <label htmlFor="e164" className="chk">
+                <input
+                  id="e164"
+                  name="e164"
+                  type="checkbox"
+                  checked={e164}
+                  onChange={(e) => setE164(e.target.checked)}
+                />
+                <div>E.164 Syntax</div>
+              </label>
+              <MXS>
+                <em>Prepend a leading + on origination attempts.</em>
+              </MXS>
               {accounts && (
                 <>
-                  <label htmlFor="account_name">Used by</label>
+                  <label htmlFor="account_name">Used By</label>
                   <Selector
                     id="account_name"
                     name="account_name"
@@ -567,19 +582,30 @@ export const CarrierForm = ({
                   />
                 </>
               )}
-              <label htmlFor="e164" className="chk">
-                <input
-                  id="e164"
-                  name="e164"
-                  type="checkbox"
-                  checked={e164}
-                  onChange={(e) => setE164(e.target.checked)}
-                />
-                <div>E.164 Syntax</div>
-              </label>
-              <MXS>
-                <em>Prepend a leading + on origination attempts.</em>
-              </MXS>
+              {accountSid && hasLength(applications) && (
+                <>
+                  <label htmlFor="application_sid">Default Application</label>
+                  <Selector
+                    id="application_sid"
+                    name="application_sid"
+                    value={applicationSid}
+                    options={[
+                      {
+                        name: "None",
+                        value: "",
+                      },
+                    ].concat(
+                      applications.map((app) => ({
+                        name: app.name,
+                        value: app.application_sid,
+                      }))
+                    )}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      setApplicationSid(e.target.value)
+                    }
+                  />
+                </>
+              )}
             </fieldset>
             <fieldset>
               <Checkzone
