@@ -237,7 +237,8 @@ export const CarrierForm = ({
       emptySipIp ||
       (sipUser && !sipPass) ||
       (sipPass && !sipUser) ||
-      (sipRegister && (!sipRealm || !sipPass || !sipUser))
+      (sipRegister && (!sipRealm || !sipPass || !sipUser)) ||
+      (prefix && prefix.length < 3)
     ) {
       setActiveTab("sip");
     }
