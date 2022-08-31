@@ -1,34 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { MS } from "jambonz-ui";
 
-import {
-  API_SERVICE_PROVIDERS,
-  CRED_NOT_TESTED,
-  CRED_OK,
-} from "src/api/constants";
+import { CRED_NOT_TESTED, CRED_OK } from "src/api/constants";
 import { Icons, Spinner } from "src/components";
-import { getFetch } from "src/api";
+import { useServiceProviderData } from "src/api";
 import { getStatus, getReason } from "./utils";
 
-import type {
-  ServiceProvider,
-  SpeechCredential,
-  CredentialTestResult,
-} from "src/api/types";
+import type { SpeechCredential, CredentialTestResult } from "src/api/types";
 
 type CredentialStatusProps = {
   cred: SpeechCredential;
   showSummary?: boolean;
-  serviceProvider?: ServiceProvider;
 };
 
 export const CredentialStatus = ({
   cred,
   showSummary = false,
-  serviceProvider,
 }: CredentialStatusProps) => {
-  const [testResult, setTestResult] = useState<CredentialTestResult>();
-  const [testError, setTestError] = useState<TypeError>();
+  const [testResult, , testError] =
+    useServiceProviderData<CredentialTestResult>(
+      `SpeechCredentials/${cred.speech_credential_sid}/test`
+    );
   const notTestedTxt =
     "In order to test your credentials you need to enable TTS/STT.";
 
@@ -55,30 +47,6 @@ export const CredentialStatus = ({
     }
   };
 
-  useEffect(() => {
-    let ignore = false;
-
-    if (serviceProvider) {
-      getFetch<CredentialTestResult>(
-        `${API_SERVICE_PROVIDERS}/${serviceProvider.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
-      )
-        .then(({ json }) => {
-          if (!ignore) {
-            setTestResult(json);
-          }
-        })
-        .catch((error: TypeError) => {
-          if (!ignore) {
-            setTestError(error);
-          }
-        });
-    }
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, [cred]);
-
   return (
     <>
       {!testError && !testResult && (
@@ -88,7 +56,7 @@ export const CredentialStatus = ({
         </div>
       )}
       {testError && (
-        <div className="i txt--jam" title={testError.message}>
+        <div className="i txt--jam" title={testError.msg}>
           <Icons.XCircle />
           <span>Status error</span>
         </div>

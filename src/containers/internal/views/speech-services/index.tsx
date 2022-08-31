@@ -142,10 +142,7 @@ export const SpeechServices = () => {
                         </div>
                       </div>
                       <div>
-                        <CredentialStatus
-                          cred={credential}
-                          serviceProvider={currentServiceProvider}
-                        />
+                        <CredentialStatus cred={credential} />
                       </div>
                     </div>
                   </div>

@@ -205,11 +205,7 @@ export const SpeechServiceForm = ({
         {credential && credential.data && (
           <fieldset>
             <div className="m med">Credential status</div>
-            <CredentialStatus
-              cred={credential.data}
-              serviceProvider={currentServiceProvider}
-              showSummary
-            />
+            <CredentialStatus cred={credential.data} showSummary />
           </fieldset>
         )}
         <fieldset>
