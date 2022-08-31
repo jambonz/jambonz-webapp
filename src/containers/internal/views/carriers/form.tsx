@@ -219,6 +219,41 @@ export const CarrierForm = ({
     );
   };
 
+  const hasEmptySmppGateways = (type: keyof SmppGateway) => {
+    const filtered = smppGateways.filter((g) => g[type]);
+    return (
+      hasLength(filtered) && filtered.map((g) => g.ipv4.trim()).join("") === ""
+    );
+  };
+
+  const handleOnClick = () => {
+    /** When to switch to `sip` tab */
+
+    const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
+
+    /** Empty SIP gateway */
+    /** Outbound auth conditionals */
+    if (
+      emptySipIp ||
+      (sipUser && !sipPass) ||
+      (sipPass && !sipUser) ||
+      (sipRegister && (!sipRealm || !sipPass || !sipUser))
+    ) {
+      setActiveTab("sip");
+    }
+
+    /** When to switch to the `smpp` tab */
+
+    /** Outbound user/pass filled out but no gateways */
+    /** Inbound gateways but no inbound pass */
+    if (
+      (smppSystemId && smppPass && hasEmptySmppGateways("outbound")) ||
+      (!smppInboundPass && !hasEmptySmppGateways("inbound"))
+    ) {
+      setActiveTab("smpp");
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -439,7 +474,7 @@ export const CarrierForm = ({
             <div>Active</div>
           </label>
         </fieldset>
-        <Tabs setActiveTab={setActiveTab}>
+        <Tabs active={[activeTab, setActiveTab]}>
           <Tab id="sip" label="Voice">
             <fieldset>
               <details>
@@ -633,7 +668,10 @@ export const CarrierForm = ({
               </label>
               {hasLength(sipGateways) &&
                 sipGateways.map((g, i) => (
-                  <div key={`sip_gateway_${i}`} className="gateway">
+                  <div
+                    key={`sip_gateway_${i}`}
+                    className="gateway gateway--sip"
+                  >
                     <div>
                       <div>
                         <input
@@ -653,7 +691,7 @@ export const CarrierForm = ({
                           id={`sip_port_${i}`}
                           name={`sip_port_${i}`}
                           type="text"
-                          placeholder="5060"
+                          placeholder={DEFAULT_SIP_GATEWAY.port.toString()}
                           value={g.port}
                           onChange={(e) => {
                             updateSipGateways(i, "port", e.target.value);
@@ -713,15 +751,23 @@ export const CarrierForm = ({
                       className="btnty"
                       title="Delete SIP Gateway"
                       type="button"
-                      onClick={() =>
-                        setSipGateways(
-                          sipGateways.filter(
-                            (g2, i2) =>
-                              i2 !== i ||
-                              setSipGatewaysDelete((curr) => [...curr, g2])
-                          )
-                        )
-                      }
+                      onClick={() => {
+                        setMessage("");
+
+                        if (sipGateways.length === 1) {
+                          setMessage(
+                            "You must provide at least one SIP Gateway."
+                          );
+                        } else {
+                          setSipGateways(
+                            sipGateways.filter(
+                              (g2, i2) =>
+                                i2 !== i ||
+                                setSipGatewaysDelete((curr) => [...curr, g2])
+                            )
+                          );
+                        }
+                      }}
                     >
                       <Icon>
                         <Icons.Trash2 />
@@ -734,7 +780,10 @@ export const CarrierForm = ({
                   className="btnty"
                   type="button"
                   title="Add SIP Gateway"
-                  onClick={() => addSipGateway()}
+                  onClick={() => {
+                    setMessage("");
+                    addSipGateway();
+                  }}
                 >
                   <Icon subStyle="teal">
                     <Icons.Plus />
@@ -787,7 +836,7 @@ export const CarrierForm = ({
               <label htmlFor="outbound_smpp">IP or DNS / Port</label>
               {hasLength(smppGateways.filter((g) => g.outbound)) &&
                 smppGateways.map((g, i) => {
-                  return !g.outbound ? null : (
+                  return g.outbound ? (
                     <div key={`smpp_gateway_outbound_${i}`} className="gateway">
                       <div>
                         <div>
@@ -796,7 +845,7 @@ export const CarrierForm = ({
                             name={`ip_${i}`}
                             type="text"
                             placeholder="1.2.3.4"
-                            required={activeTab === "smpp"}
+                            required={smppSystemId || smppPass ? true : false}
                             value={g.ipv4}
                             onChange={(e) =>
                               updateSmppGateways(i, "ipv4", e.target.value)
@@ -808,7 +857,7 @@ export const CarrierForm = ({
                             id={`port_${i}`}
                             name={`port_${i}`}
                             type="text"
-                            placeholder="2775"
+                            placeholder={DEFAULT_SMPP_GATEWAY.port.toString()}
                             value={g.port}
                             onChange={(e) =>
                               updateSmppGateways(i, "port", e.target.value)
@@ -853,7 +902,7 @@ export const CarrierForm = ({
                         </Icon>
                       </button>
                     </div>
-                  );
+                  ) : null;
                 })}
               <ButtonGroup left>
                 <button
@@ -887,6 +936,7 @@ export const CarrierForm = ({
                 name="inbound_pass"
                 value={smppInboundPass}
                 placeholder="SMPP password for authenticating inbound messages"
+                required={!hasEmptySmppGateways("inbound")}
                 onChange={(e) => {
                   setSmppInboundPass(e.target.value);
                 }}
@@ -897,7 +947,7 @@ export const CarrierForm = ({
               <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
               {hasLength(smppGateways.filter((g) => g.inbound)) &&
                 smppGateways.map((g, i) => {
-                  return !g.inbound ? null : (
+                  return g.inbound ? (
                     <div key={`smpp_gateway_inbound_${i}`} className="gateway">
                       <div>
                         <div>
@@ -944,7 +994,7 @@ export const CarrierForm = ({
                         </Icon>
                       </button>
                     </div>
-                  );
+                  ) : null;
                 })}
               <ButtonGroup left>
                 <button
@@ -972,7 +1022,7 @@ export const CarrierForm = ({
             >
               Cancel
             </Button>
-            <Button type="submit" small>
+            <Button type="submit" small onClick={handleOnClick}>
               Save
             </Button>
           </ButtonGroup>
