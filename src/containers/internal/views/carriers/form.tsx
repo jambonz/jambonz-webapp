@@ -213,15 +213,21 @@ export const CarrierForm = ({
   };
 
   const handleSipGatewayDelete = () => {
-    sipGatewaysDelete.forEach(
-      (g) => g.sip_gateway_sid && deleteSipGateway(g.sip_gateway_sid)
-    );
+    sipGatewaysDelete.forEach((g) => {
+      if (g.sip_gateway_sid) {
+        deleteSipGateway(g.sip_gateway_sid);
+      }
+    });
+    setSipGatewaysDelete([]);
   };
 
   const handleSmppGatewayDelete = () => {
-    smppGatewaysDelete.forEach(
-      (g) => g.smpp_gateway_sid && deleteSmppGateway(g.smpp_gateway_sid)
-    );
+    smppGatewaysDelete.forEach((g) => {
+      if (g.smpp_gateway_sid) {
+        deleteSmppGateway(g.smpp_gateway_sid);
+      }
+    });
+    setSmppGatewaysDelete([]);
   };
 
   const hasEmptySmppGateways = (type: keyof SmppGateway) => {
@@ -259,8 +265,6 @@ export const CarrierForm = ({
     const invalidSmppPort = smppGateways
       .filter((g) => g.outbound)
       .find((g) => !isValidPort(g.port));
-
-    console.log(invalidSmppPort);
 
     /** Outbound user/pass filled out but no gateways */
     /** Inbound gateways but no inbound pass */
@@ -857,7 +861,7 @@ export const CarrierForm = ({
               <MXS>
                 <em>
                   At least one outbound gateway is required when using system ID
-                  or password.
+                  or password above.
                 </em>
               </MXS>
               <label htmlFor="outbound_smpp">IP or DNS / Port</label>
@@ -931,8 +935,7 @@ export const CarrierForm = ({
                             hasLength(smpps) &&
                             smppGateways.filter((g) => g.outbound).length <=
                               1 &&
-                            smppSystemId &&
-                            smppPass
+                            (smppSystemId || smppPass)
                           ) {
                             setMessage(
                               "You must provide at least one Outbound Gateway."
