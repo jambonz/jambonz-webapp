@@ -105,8 +105,11 @@ export const CarrierForm = ({
   const [smppInboundSystemId, setSmppInboundSystemId] = useState("");
   const [smppInboundPass, setSmppInboundPass] = useState("");
 
-  const [sipGateways, setSipGateways] = useState<SipGateway[]>([]);
-  const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([]);
+  const [sipGateways, setSipGateways] = useState<SipGateway[]>([
+    DEFAULT_SIP_GATEWAY,
+  ]);
+  const [smppGateways, setSmppGateways] =
+    useState<SmppGateway[]>(defaultSmppGateways);
 
   const [sipMessage, setSipMessage] = useState("");
   const [smppInboundMessage, setSmppInboundMessage] = useState("");
@@ -484,37 +487,39 @@ export const CarrierForm = ({
     }
   }, [carrier]);
 
-  useEffect(() => {
-    if (carrierSipGateways && hasLength(carrierSipGateways.data)) {
-      setSipGateways(carrierSipGateways.data);
-    } else {
-      setSipGateways([DEFAULT_SIP_GATEWAY]);
+  /** This fixes a re-rendering glitch that is annoying but not breaking */
+  /** https://beta.reactjs.org/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes */
+  const [prevSipGateways, setPrevSipGateways] = useState<SipGateway[]>();
+  const [prevSmppGateways, setPrevSmppGateways] = useState<SmppGateway[]>();
+
+  if (
+    carrierSipGateways &&
+    hasLength(carrierSipGateways.data) &&
+    carrierSipGateways.data !== prevSipGateways
+  ) {
+    setPrevSipGateways(carrierSipGateways.data); /** Deadly important */
+    setSipGateways(carrierSipGateways.data);
+  }
+
+  if (
+    carrierSmppGateways &&
+    hasLength(carrierSmppGateways.data) &&
+    carrierSmppGateways.data !== prevSmppGateways
+  ) {
+    const inbound = carrierSmppGateways.data.filter((g) => g.inbound);
+    const outbound = carrierSmppGateways.data.filter((g) => g.outbound);
+
+    setPrevSmppGateways(carrierSmppGateways.data); /** Deadly important */
+    setSmppGateways(carrierSmppGateways.data);
+
+    if (inbound.length <= 0) {
+      addSmppGateway({ inbound: 1, outbound: 0 });
     }
-  }, [carrierSipGateways]);
 
-  useEffect(() => {
-    if (carrierSmppGateways && hasLength(carrierSmppGateways.data)) {
-      const inbound = carrierSmppGateways.data.filter((g) => g.inbound);
-      const outbound = carrierSmppGateways.data.filter((g) => g.outbound);
-
-      setSmppGateways(carrierSmppGateways.data);
-
-      if (inbound.length <= 0) {
-        addSmppGateway({ inbound: 1, outbound: 0 });
-      }
-
-      if (outbound.length <= 0) {
-        addSmppGateway({ outbound: 1, inbound: 0 });
-      }
-    } else {
-      setSmppGateways(defaultSmppGateways);
+    if (outbound.length <= 0) {
+      addSmppGateway({ outbound: 1, inbound: 0 });
     }
-
-    /** Cleanup SMPP gateways for sanity... */
-    return function cleanup() {
-      setSmppGateways([]);
-    };
-  }, [carrierSmppGateways]);
+  }
 
   return (
     <Section slim>
