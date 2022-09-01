@@ -108,11 +108,6 @@ export const CarrierForm = ({
   const [sipGateways, setSipGateways] = useState<SipGateway[]>([]);
   const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([]);
 
-  const [sipGatewaysDelete, setSipGatewaysDelete] = useState<SipGateway[]>([]);
-  const [smppGatewaysDelete, setSmppGatewaysDelete] = useState<SmppGateway[]>(
-    []
-  );
-
   const [sipMessage, setSipMessage] = useState("");
   const [smppInboundMessage, setSmppInboundMessage] = useState("");
   const [smppOutboundMessage, setSmppOutboundMessage] = useState("");
@@ -202,40 +197,46 @@ export const CarrierForm = ({
   };
 
   const handleSipGatewayPutPost = (voip_carrier_sid: string) => {
-    sipGateways.forEach(({ sip_gateway_sid, ...g }: SipGateway) =>
-      sip_gateway_sid
-        ? putSipGateway(sip_gateway_sid, g)
-        : postSipGateway({ ...g, voip_carrier_sid: voip_carrier_sid })
-    );
+    Promise.all(
+      sipGateways.map(({ sip_gateway_sid, ...g }: SipGateway) =>
+        sip_gateway_sid
+          ? putSipGateway(sip_gateway_sid, g)
+          : postSipGateway({ ...g, voip_carrier_sid: voip_carrier_sid })
+      )
+    ).then(() => {
+      if (carrierSipGateways) {
+        carrierSipGateways.refetch();
+      }
+    });
   };
 
   const handleSmppGatewayPutPost = (voip_carrier_sid: string) => {
-    smppGateways
-      /** Ensure the empty UI fields don't actually save in the background... */
-      .filter((g) => g.ipv4.trim() !== "" && isValidPort(g.port))
-      .forEach(({ smpp_gateway_sid, ...g }: SmppGateway) => {
-        smpp_gateway_sid
-          ? putSmppGateway(smpp_gateway_sid, g)
-          : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
-      });
-  };
-
-  const handleSipGatewayDelete = () => {
-    sipGatewaysDelete.forEach((g) => {
-      if (g.sip_gateway_sid) {
-        deleteSipGateway(g.sip_gateway_sid);
+    Promise.all(
+      smppGateways
+        /** Ensure the empty UI fields don't actually save in the background... */
+        .filter((g) => g.ipv4.trim() !== "" && isValidPort(g.port))
+        .map(({ smpp_gateway_sid, ...g }: SmppGateway) => {
+          smpp_gateway_sid
+            ? putSmppGateway(smpp_gateway_sid, g)
+            : postSmppGateway({ ...g, voip_carrier_sid: voip_carrier_sid });
+        })
+    ).then(() => {
+      if (carrierSmppGateways) {
+        carrierSmppGateways.refetch();
       }
     });
-    setSipGatewaysDelete([]);
   };
 
-  const handleSmppGatewayDelete = () => {
-    smppGatewaysDelete.forEach((g) => {
-      if (g.smpp_gateway_sid) {
-        deleteSmppGateway(g.smpp_gateway_sid);
-      }
-    });
-    setSmppGatewaysDelete([]);
+  const handleSipGatewayDelete = (g?: SipGateway) => {
+    if (g && g.sip_gateway_sid) {
+      deleteSipGateway(g.sip_gateway_sid);
+    }
+  };
+
+  const handleSmppGatewayDelete = (g?: SmppGateway) => {
+    if (g && g.smpp_gateway_sid) {
+      deleteSmppGateway(g.smpp_gateway_sid);
+    }
   };
 
   const hasEmptySmppGateways = (type: keyof SmppGateway) => {
@@ -443,19 +444,9 @@ export const CarrierForm = ({
               handleSipGatewayPutPost(carrier.data.voip_carrier_sid);
               handleSmppGatewayPutPost(carrier.data.voip_carrier_sid);
             }
-            handleSipGatewayDelete();
-            handleSmppGatewayDelete();
 
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
-
-            if (carrierSipGateways) {
-              carrierSipGateways.refetch();
-            }
-
-            if (carrierSmppGateways) {
-              carrierSmppGateways.refetch();
-            }
           })
           .catch((error) => {
             toastError(error.msg);
@@ -468,9 +459,6 @@ export const CarrierForm = ({
           .then(({ json }) => {
             handleSipGatewayPutPost(json.sid);
             handleSmppGatewayPutPost(json.sid);
-
-            handleSipGatewayDelete();
-            handleSmppGatewayDelete();
 
             toastSuccess("Carrier created successfully");
             navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
@@ -494,13 +482,17 @@ export const CarrierForm = ({
     if (carrier && carrier.data) {
       setCarrierStates(carrier.data);
     }
+  }, [carrier]);
 
+  useEffect(() => {
     if (carrierSipGateways && hasLength(carrierSipGateways.data)) {
       setSipGateways(carrierSipGateways.data);
     } else {
       setSipGateways([DEFAULT_SIP_GATEWAY]);
     }
+  }, [carrierSipGateways]);
 
+  useEffect(() => {
     if (carrierSmppGateways && hasLength(carrierSmppGateways.data)) {
       const inbound = carrierSmppGateways.data.filter((g) => g.inbound);
       const outbound = carrierSmppGateways.data.filter((g) => g.outbound);
@@ -522,7 +514,7 @@ export const CarrierForm = ({
     return function cleanup() {
       setSmppGateways([]);
     };
-  }, [carrier, carrierSipGateways, carrierSmppGateways]);
+  }, [carrierSmppGateways]);
 
   return (
     <Section slim>
@@ -914,12 +906,12 @@ export const CarrierForm = ({
                             "You must provide at least one SIP Gateway."
                           );
                         } else {
+                          handleSipGatewayDelete(
+                            sipGateways.find((g2, i2) => i2 === i)
+                          );
+
                           setSipGateways(
-                            sipGateways.filter(
-                              (g2, i2) =>
-                                i2 !== i ||
-                                setSipGatewaysDelete((curr) => [...curr, g2])
-                            )
+                            sipGateways.filter((g2, i2) => i2 !== i)
                           );
                         }
                       }}
@@ -1077,12 +1069,12 @@ export const CarrierForm = ({
                               "You must provide at least one Outbound Gateway."
                             );
                           } else {
+                            handleSmppGatewayDelete(
+                              smppGateways.find((g2, i2) => i2 === i)
+                            );
+
                             setSmppGateways(
-                              smppGateways.filter(
-                                (g2, i2) =>
-                                  i2 !== i ||
-                                  setSmppGatewaysDelete((curr) => [...curr, g2])
-                              )
+                              smppGateways.filter((g2, i2) => i2 !== i)
                             );
                           }
                         }}
@@ -1189,15 +1181,15 @@ export const CarrierForm = ({
                         className="btnty"
                         title="Delete Inbound SMPP Gateway"
                         type="button"
-                        onClick={() =>
+                        onClick={() => {
+                          handleSmppGatewayDelete(
+                            smppGateways.find((g2, i2) => i2 === i)
+                          );
+
                           setSmppGateways(
-                            smppGateways.filter(
-                              (g2, i2) =>
-                                i2 !== i ||
-                                setSmppGatewaysDelete((curr) => [...curr, g2])
-                            )
-                          )
-                        }
+                            smppGateways.filter((g2, i2) => i2 !== i)
+                          );
+                        }}
                       >
                         <Icon>
                           <Icons.Trash2 />
