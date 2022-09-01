@@ -1138,13 +1138,13 @@ export const CarrierForm = ({
               <label htmlFor="inbound_smpp">
                 Carrier IP Address(es) to whitelist
               </label>
-              <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
               <MXS>
                 <em>
-                  Note: fully qualified domain names (e.g. sip.example.com) may
-                  only be used for outbound calls above.
+                  Fully qualified domain names (e.g. sip.example.com) may only
+                  be used for outbound calls above.
                 </em>
               </MXS>
+              <label htmlFor="inbound_smpp">IP Adress / Netmask</label>
               {smppInboundMessage && <Message message={smppInboundMessage} />}
               {hasLength(smppGateways.filter((g) => g.inbound)) &&
                 smppGateways.map((g, i) => {
