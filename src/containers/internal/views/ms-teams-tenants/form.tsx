@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { postMsTeamsTentant, putMsTeamsTenant } from "src/api";
+import { postMsTeamsTentant, putMsTeamsTenant, useApiData } from "src/api";
 import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -20,20 +20,17 @@ import type {
 } from "src/api/types";
 
 type MsTeamsTenantFormProps = {
-  accounts?: Account[];
-  applications?: Application[];
-  msTeamsTenants?: MSTeamsTenant[];
   msTeamsTenant?: UseApiDataMap<MSTeamsTenant>;
 };
 
 export const MsTeamsTenantForm = ({
-  accounts,
-  applications,
-  msTeamsTenants,
   msTeamsTenant,
 }: MsTeamsTenantFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [accounts] = useApiData<Account[]>("Accounts");
+  const [applications] = useApiData<Application[]>("Applications");
+  const [msTeamsTenants] = useApiData<MSTeamsTenant[]>("MicrosoftTeamsTenants");
   const [domainName, setDomainName] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");

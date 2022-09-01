@@ -6,7 +6,11 @@ import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { Section } from "src/components";
 import { FileUpload, Selector, Passwd } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { postSpeechService, putSpeechService } from "src/api";
+import {
+  postSpeechService,
+  putSpeechService,
+  useServiceProviderData,
+} from "src/api";
 import {
   vendors,
   VENDOR_AWS,
@@ -24,15 +28,12 @@ import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
-  accounts?: Account[];
 };
 
-export const SpeechServiceForm = ({
-  accounts,
-  credential,
-}: SpeechServiceFormProps) => {
+export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [ttsCheck, setTtsCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
@@ -250,6 +251,7 @@ export const SpeechServiceForm = ({
                 }))
               )}
               onChange={(e) => setAccountSid(e.target.value)}
+              disabled={credential ? true : false}
             />
           </fieldset>
         )}
@@ -375,6 +377,7 @@ export const SpeechServiceForm = ({
                 },
               ].concat(regions[vendor as keyof RegionVendors])}
               onChange={(e) => setRegion(e.target.value)}
+              disabled={credential ? true : false}
             />
           </fieldset>
         )}

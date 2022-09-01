@@ -6,14 +6,13 @@ import { useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import { SpeechServiceForm } from "./form";
 
-import type { Account, SpeechCredential } from "src/api/types";
+import type { SpeechCredential } from "src/api/types";
 
 export const EditSpeechService = () => {
   const params = useParams();
   const [data, refetch, error] = useServiceProviderData<SpeechCredential>(
     `SpeechCredentials/${params.speech_credential_sid}`
   );
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   useEffect(() => {
     if (error) {
@@ -24,10 +23,7 @@ export const EditSpeechService = () => {
   return (
     <>
       <H1>Edit Speech Service</H1>
-      <SpeechServiceForm
-        accounts={accounts}
-        credential={{ data, refetch, error }}
-      />
+      <SpeechServiceForm credential={{ data, refetch, error }} />
     </>
   );
 };

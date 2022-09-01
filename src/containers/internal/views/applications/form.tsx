@@ -13,7 +13,12 @@ import {
   VENDOR_AWS,
   VENDOR_WELLSAID,
 } from "src/vendor";
-import { postApplication, putApplication } from "src/api";
+import {
+  postApplication,
+  putApplication,
+  useServiceProviderData,
+  useApiData,
+} from "src/api";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
@@ -38,17 +43,13 @@ import type {
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 type ApplicationFormProps = {
-  accounts?: Account[];
   application?: UseApiDataMap<Application>;
-  applications?: Application[];
 };
 
-export const ApplicationForm = ({
-  application,
-  applications,
-  accounts,
-}: ApplicationFormProps) => {
+export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);

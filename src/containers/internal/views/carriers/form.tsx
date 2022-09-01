@@ -12,6 +12,7 @@ import {
   putSipGateway,
   putSmppGateway,
   useApiData,
+  useServiceProviderData,
 } from "src/api";
 import {
   DEFAULT_SIP_GATEWAY,
@@ -44,16 +45,12 @@ import {
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
-  accounts?: Account[];
-  predefinedCarriers?: PredefinedCarriers[];
   carrierSipGateways?: UseApiDataMap<SipGateway[]>;
   carrierSmppGateways?: UseApiDataMap<SmppGateway[]>;
 };
 
 export const CarrierForm = ({
   carrier,
-  accounts,
-  predefinedCarriers,
   carrierSipGateways,
   carrierSmppGateways,
 }: CarrierFormProps) => {
@@ -82,6 +79,9 @@ export const CarrierForm = ({
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [smpps] = useApiData<Smpp[]>("Smpps");
   const [applications] = useApiData<Application[]>("Applications");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [predefinedCarriers] =
+    useApiData<PredefinedCarriers[]>("PredefinedCarriers");
 
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");

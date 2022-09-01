@@ -2,7 +2,12 @@ import { Button, ButtonGroup, MS } from "jambonz-ui";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { postPhoneNumber, putPhoneNumber } from "src/api";
+import {
+  postPhoneNumber,
+  putPhoneNumber,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
 import { Section } from "src/components";
 import { Message, Selector } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -23,27 +28,18 @@ import type {
 
 type PhoneNumberFormProps = {
   phoneNumber?: UseApiDataMap<PhoneNumber>;
-  phoneNumbers?: PhoneNumber[];
-  accounts?: Account[];
-  applications?: Application[];
-  carriers?: Carrier[];
 };
 
-export const PhoneNumberForm = ({
-  phoneNumber,
-  phoneNumbers,
-  accounts,
-  applications,
-  carriers,
-}: PhoneNumberFormProps) => {
+export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   const navigate = useNavigate();
-
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [applications] = useApiData<Application[]>("Applications");
+  const [phoneNumbers] = useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
+  const [carriers] = useApiData<Carrier[]>("VoipCarriers");
   const [phoneNumberNum, setPhoneNumberNum] = useState("");
-
   const [accountSid, setAccountSid] = useState("");
   const [sipTrunkSid, setSipTrunkSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
-
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
