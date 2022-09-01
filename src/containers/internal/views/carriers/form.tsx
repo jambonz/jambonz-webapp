@@ -449,8 +449,13 @@ export const CarrierForm = ({
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
 
-            carrierSipGateways?.refetch && carrierSipGateways.refetch();
-            carrierSmppGateways?.refetch && carrierSmppGateways.refetch();
+            if (carrierSipGateways) {
+              carrierSipGateways.refetch();
+            }
+
+            if (carrierSmppGateways) {
+              carrierSmppGateways.refetch();
+            }
           })
           .catch((error) => {
             toastError(error.msg);
