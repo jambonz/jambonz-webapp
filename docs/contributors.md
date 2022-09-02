@@ -113,6 +113,20 @@ export const putAccount = (sid: string, payload: Partial<Account>) => {
 };
 ```
 
+### Local dev mock API server
+
+There are two views that rely on call detail records (CDRs) that don't exist in the local
+developer db when running the docker stack. For these views we have a local node express
+server that replicates functional parity of the backend APIs in question so you can work
+on the UI. The views are `Recent Calls` and `Alerts`. They are simple table views with
+filter and pagination functionalities. You can view the implementation at `server/dev.server.ts`.
+The approach is to replicate the pattern of how test data is seeded for the API server and
+add the filtering on top of it with simple JavaScript functions. To run the dev server:
+
+```shell
+npm run dev:server
+```
+
 ## :file_folder: Vendor data modules
 
 Large data modules are used for menu options on the Applications and Speech Services
