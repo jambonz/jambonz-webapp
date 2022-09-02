@@ -31,8 +31,8 @@
     "deploy": "npm i && npm run build && npm run pm2"
   },
   "dependencies": {
+    "dayjs": "^1.11.5",
     "jambonz-ui": "^0.0.19",
-    "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-blockies": "^1.4.1",
     "react-dom": "^18.0.0",

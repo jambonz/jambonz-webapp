@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, H1, P } from "jambonz-ui";
-import moment from "moment";
+import dayjs from "dayjs";
 
 import { getRecentCalls, getRecentCall, getPcap } from "src/api";
 import { toastError } from "src/store";
@@ -18,7 +18,7 @@ export const RecentCalls = () => {
     getRecentCalls("account-sid", {
       page: 1,
       count: 25,
-      start: moment().startOf("date").toISOString(),
+      start: dayjs().startOf("date").toISOString(),
     })
       .then(({ json }) => {
         if (!ignore) {
