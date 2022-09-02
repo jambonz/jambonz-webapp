@@ -183,7 +183,7 @@ export interface RecentCall {
   from: string;
   to: string;
   answered: boolean;
-  sip_call_id: string;
+  sip_callid: string;
   sip_status: number;
   duration: number;
   attempted_at: number;
@@ -194,6 +194,15 @@ export interface RecentCall {
   remote_host: string;
   direction: string;
   trunk: string;
+}
+
+export interface CallQuery {
+  page: number;
+  count: number;
+  start?: string;
+  days?: number;
+  direction?: string;
+  answered?: boolean;
 }
 
 export interface SpeechCredential {
@@ -289,4 +298,8 @@ export interface SecretResponse {
 
 export interface EmptyResponse {
   [key: string]: unknown;
+}
+
+export interface TotalResponse {
+  total: number;
 }

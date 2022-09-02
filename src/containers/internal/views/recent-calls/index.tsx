@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, H1, P } from "jambonz-ui";
+import moment from "moment";
 
-import { getRecentCalls, getPcap } from "src/api";
+import { getRecentCalls, getRecentCall, getPcap } from "src/api";
 import { toastError } from "src/store";
 import { Section } from "src/components";
 
@@ -14,7 +15,11 @@ export const RecentCalls = () => {
   useEffect(() => {
     let ignore = false;
 
-    getRecentCalls("account-sid")
+    getRecentCalls("account-sid", {
+      page: 1,
+      count: 25,
+      start: moment().startOf("date").toISOString(),
+    })
       .then(({ json }) => {
         if (!ignore) {
           setCalls(json.data);
@@ -62,13 +67,21 @@ export const RecentCalls = () => {
           <Button
             small
             onClick={() => {
-              getPcap(calls[0].account_sid, calls[0].call_sid)
-                .then(({ blob }) => {
-                  if (blob) {
-                    setPcap({
-                      data_url: URL.createObjectURL(blob),
-                      file_name: `callid-${calls[0].sip_call_id}.pcap`,
-                    });
+              getRecentCall(calls[0].account_sid, calls[0].call_sid)
+                .then(({ json }) => {
+                  if (json.total > 0) {
+                    getPcap(calls[0].account_sid, calls[0].call_sid)
+                      .then(({ blob }) => {
+                        if (blob) {
+                          setPcap({
+                            data_url: URL.createObjectURL(blob),
+                            file_name: `callid-${calls[0].sip_callid}.pcap`,
+                          });
+                        }
+                      })
+                      .catch((error) => {
+                        toastError(error.msg);
+                      });
                   }
                 })
                 .catch((error) => {

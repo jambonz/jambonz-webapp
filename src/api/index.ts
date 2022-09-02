@@ -50,6 +50,8 @@ import type {
   Carrier,
   SmppGateway,
   SipGateway,
+  TotalResponse,
+  CallQuery,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -436,11 +438,25 @@ export const getAccountWebhook = (sid: string) => {
 
 /** Wrappers for APIs that can have a mock dev server response */
 
-export const getRecentCalls = (sid: string) => {
+export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
+  const qryStr = new URLSearchParams(
+    query as Record<string, string>
+  ).toString();
+
   return getFetch<PagedResponse<RecentCall>>(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls?${decodeURIComponent(
+          qryStr
+        )}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls?${decodeURIComponent(qryStr)}`
+  );
+};
+
+export const getRecentCall = (sid: string, callSid: string) => {
+  return getFetch<TotalResponse>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${callSid}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${callSid}`
   );
 };
 
