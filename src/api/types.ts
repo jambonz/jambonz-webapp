@@ -196,15 +196,6 @@ export interface RecentCall {
   trunk: string;
 }
 
-export interface CallQuery {
-  page: number;
-  count: number;
-  start?: string;
-  days?: number;
-  direction?: string;
-  answered?: boolean;
-}
-
 export interface SpeechCredential {
   speech_credential_sid: string;
   service_provider_sid: null | string;
@@ -222,7 +213,7 @@ export interface SpeechCredential {
 }
 
 export interface Alert {
-  time: string;
+  time: number;
   account_sid: string;
   alert_type: string;
   message: string;
@@ -275,6 +266,18 @@ export interface SmppGateway extends ProtocolGateway {
   smpp_gateway_sid?: null | string;
   is_primary: boolean;
   use_tls: boolean;
+}
+
+export interface PageQuery {
+  page: number;
+  count: number;
+  start?: string;
+  days?: number;
+}
+
+export interface CallQuery extends PageQuery {
+  direction?: string;
+  answered?: boolean;
 }
 
 export interface PagedResponse<Type> {

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { H1, P } from "jambonz-ui";
+import dayjs from "dayjs";
 
 import { getAlerts } from "src/api";
 import { toastError } from "src/store";
@@ -9,7 +10,11 @@ export const Alerts = () => {
   useEffect(() => {
     let ignore = false;
 
-    getAlerts("foo-sid")
+    getAlerts("foo-sid", {
+      page: 1,
+      count: 25,
+      start: dayjs().startOf("date").toISOString(),
+    })
       .then(({ json }) => {
         if (!ignore) {
           console.log(json);

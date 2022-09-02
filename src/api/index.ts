@@ -52,6 +52,7 @@ import type {
   SipGateway,
   TotalResponse,
   CallQuery,
+  PageQuery,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -141,6 +142,12 @@ const getAuthHeaders = () => {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
+};
+
+const getQuery = <Type>(query: Type) => {
+  return decodeURIComponent(
+    new URLSearchParams(query as unknown as Record<string, string>).toString()
+  );
 };
 
 /** Hard boot on 401 status code for unauthorized users */
@@ -439,16 +446,12 @@ export const getAccountWebhook = (sid: string) => {
 /** Wrappers for APIs that can have a mock dev server response */
 
 export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
-  const qryStr = new URLSearchParams(
-    query as Record<string, string>
-  ).toString();
+  const qryStr = getQuery<Partial<CallQuery>>(query);
 
   return getFetch<PagedResponse<RecentCall>>(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls?${decodeURIComponent(
-          qryStr
-        )}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls?${decodeURIComponent(qryStr)}`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls?${qryStr}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls?${qryStr}`
   );
 };
 
@@ -468,11 +471,13 @@ export const getPcap = (sid: string, callSid: string) => {
   );
 };
 
-export const getAlerts = (sid: string) => {
+export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
+  const qryStr = getQuery<Partial<PageQuery>>(query);
+
   return getFetch<PagedResponse<Alert>>(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts`
-      : `${API_ACCOUNTS}/${sid}/Alerts`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts?${qryStr}`
+      : `${API_ACCOUNTS}/${sid}/Alerts?${qryStr}`
   );
 };
 
