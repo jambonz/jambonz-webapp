@@ -24,38 +24,37 @@ export const Pagination = ({
       >
         {"<"}
       </button>
-      {Array(maxPageNumber)
+      {Array(maxPageNumber) // also show 3 when the selected is 1? it is getting complicated
         .fill(0)
-        .map(
-          (_, index) =>
-            (pageNumber === index + 1 ||
-              (pageNumber > index + 1 && pageNumber <= index + 1 + nextTo) ||
-              (pageNumber < index + 1 && pageNumber >= index + 1 - nextTo) ||
-              index === 0 ||
-              index === maxPageNumber - 1) && (
-              <div key={`button-page-${index + 1}`}>
-                {index + 1 === pageNumber - nextTo && index + 1 > 1 + nextTo && (
-                  <button
-                    type="button"
-                    onClick={() => setPageNumber(index - jumpNum)}
-                  >
-                    ...
-                  </button>
-                )}
-                <button type="button" onClick={() => setPageNumber(index + 1)}>
-                  {index + 1}
-                </button>
-                {index + 1 === pageNumber + nextTo &&
-                  index + 1 < maxPageNumber - nextTo && (
-                    <button
-                      type="button"
-                      onClick={() => setPageNumber(index + jumpNum)}
-                    >
-                      ...
-                    </button>
-                  )}
-              </div>
-            )
+        .map((_, index) =>
+          pageNumber === index + 1 ||
+          index + 1 === 1 ||
+          index + 1 === maxPageNumber ||
+          (pageNumber > index + 1 && pageNumber <= index + 1 + nextTo) ||
+          (pageNumber < index + 1 && pageNumber >= index + 1 - nextTo) ? (
+            <button type="button" onClick={() => setPageNumber(index + 1)}>
+              {index + 1}
+            </button>
+          ) : (
+            (index + 1 === pageNumber + nextTo + 1 && (
+              <button
+                name="jump_right"
+                type="button"
+                onClick={() => setPageNumber(pageNumber + jumpNum)}
+              >
+                ...
+              </button>
+            )) ||
+            (index + 1 === pageNumber - nextTo - 1 && (
+              <button
+                name="jump_left"
+                type="button"
+                onClick={() => setPageNumber(pageNumber - jumpNum)}
+              >
+                ...
+              </button>
+            ))
+          )
         )}
       <button
         type="button"

@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  ButtonGroup,
-  H1,
-  M,
-  // MS,
-  P,
-} from "jambonz-ui";
+import { ButtonGroup, H1, M, P } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import {
   getRecentCalls,
-  // getRecentCall,
-  // getPcap,
+  getRecentCall,
+  getPcap,
   useServiceProviderData,
 } from "src/api";
 import { toastError } from "src/store";
 import { Section, AccountFilter, Spinner, Pagination } from "src/components";
 
-import type {
-  Account,
-  CallQuery,
-  // Pcap,
-  RecentCall,
-} from "src/api/types";
+import type { Account, CallQuery, Pcap, RecentCall } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
 
@@ -37,7 +26,6 @@ export const RecentCalls = () => {
   const [perPageFilter, setPerPageFilter] = useState("25"); // string.....................
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  // const [pcap, setPcap] = useState<Pcap>();
   const [calls, setCalls] = useState<RecentCall[]>();
   const [callsTotal, setCallsTotal] = useState(0);
 
@@ -57,7 +45,7 @@ export const RecentCalls = () => {
   const statusSelection = [
     { name: "all", value: "all" },
     { name: "answered", value: "true" }, // string..........
-    { name: "not answered", value: "false" },
+    { name: "not answered", value: "false" }, // string...
   ];
 
   const perPageSelection = [
@@ -93,8 +81,55 @@ export const RecentCalls = () => {
     );
   };
 
+  type PcapButtonProp = {
+    call_data: RecentCall;
+  };
+  const PcapButton = ({ call_data }: PcapButtonProp) => {
+    console.log("this runs");
+    const [pcap, setPcap] = useState<Pcap>();
+
+    // not sure why but this get recent call will prevent tons of freezing requests
+    // still, it is sending a lot of requests right now
+    useEffect(() => {
+      getRecentCall(call_data.account_sid, call_data.call_sid)
+        .then(({ json }) => {
+          if (json.total > 0) {
+            getPcap(call_data.account_sid, call_data.call_sid)
+              .then(({ blob }) => {
+                if (blob) {
+                  console.log(blob);
+                  setPcap({
+                    data_url: URL.createObjectURL(blob),
+                    file_name: `callid-${call_data.sip_callid}.pcap`,
+                  });
+                }
+              })
+              .catch((error) => {
+                toastError(error.msg);
+              });
+          }
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }, [call_data, setPcap]);
+
+    return (
+      <div className="p">
+        {pcap ? (
+          <>
+            <a href={pcap.data_url} download={pcap.file_name}>
+              Download pcap file
+            </a>
+          </>
+        ) : (
+          <strong>undefined</strong>
+        )}
+      </div>
+    );
+  };
+
   const handleFilterChange = () => {
-    console.log(`${pageNumber} ${maxPageNumber}`);
     if (pageNumber >= maxPageNumber) {
       setPageNumber(maxPageNumber);
     } else if (pageNumber <= 0) {
@@ -107,20 +142,17 @@ export const RecentCalls = () => {
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
         : { days: parseInt(dateFilter, 10) }),
-      ...(statusFilter !== "all" && { answered: statusFilter }),
+      ...(statusFilter !== "all" &&
+        (statusFilter === "true" ? { answered: true } : { answered: false })),
       ...(directionFilter !== "io" && { direction: directionFilter }),
     };
 
     getRecentCalls("account-sid", payload)
       .then(({ json }) => {
+        console.log(json);
         setCalls(json.data);
         setCallsTotal(json.total);
         setMaxPageNumber(Math.ceil(json.total / parseInt(perPageFilter, 10)));
-        console.log(
-          `${callsTotal} ${perPageFilter} ${Math.ceil(
-            callsTotal / parseInt(perPageFilter, 10)
-          )}`
-        );
       })
       .catch((error) => {
         toastError(error.msg);
@@ -171,62 +203,7 @@ export const RecentCalls = () => {
           options={statusSelection}
         />
       </section>
-      {/* <Section>
-        <P>Example using a test dev server for mocked API responses.</P>
-        <P>
-          To run the dev mock api server run <code>npm run dev:server</code>.
-        </P>
-        <P>If the dev server is not running you will get an error toast.</P>
-        <P>Otherwise check the browser console to see the data logged...</P>
-        <P>&nbsp;</P>
-        <P>
-          Also this page shows how to fetch a <span>pcap</span> file from the
-          API:
-        </P>
-        <div className="p">
-          Selected pcap state object:{" "}
-          {pcap ? (
-            <>
-              <pre>{JSON.stringify(pcap, null, 2)}</pre>
-              <a href={pcap.data_url} download={pcap.file_name}>
-                Download pcap file
-              </a>
-            </>
-          ) : (
-            <strong>undefined</strong>
-          )}
-        </div>
-        <P>&nbsp;</P>
-        {calls && (
-          <Button
-            small
-            onClick={() => {
-              getRecentCall(calls[0].account_sid, calls[0].call_sid)
-                .then(({ json }) => {
-                  if (json.total > 0) {
-                    getPcap(calls[0].account_sid, calls[0].call_sid)
-                      .then(({ blob }) => {
-                        if (blob) {
-                          setPcap({
-                            data_url: URL.createObjectURL(blob),
-                            file_name: `callid-${calls[0].sip_callid}.pcap`,
-                          });
-                        }
-                      })
-                      .catch((error) => {
-                        toastError(error.msg);
-                      });
-                  }
-                })
-                .catch((error) => {
-                  toastError(error.msg);
-                });
-            }}
-          >
-            Fetch pcap
-          </Button>
-        )}
-      </Section> */}
+
       <Section {...(hasLength(calls) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(calls) && <Spinner />}
@@ -236,21 +213,31 @@ export const RecentCalls = () => {
                 className="item"
                 key={`${call.call_sid}-${call.attempted_at}-p${pageNumber}`}
               >
-                <div className="item__info">
-                  <div className="item__title">
-                    {/* i dont think this is working, it updates every second if button pressed TODO*/}
-                    {dayjs
-                      .unix(call.attempted_at / 1000)
-                      .format("YYYY MM.DD hh:mm a")}
-                  </div>
-                  <div className="item__meta">
-                    <div>
-                      {call.direction} from {formatPhoneNumber(call.from)} to{" "}
-                      {formatPhoneNumber(call.to)} with {call.trunk} for{" "}
-                      {call.duration}s
+                <details>
+                  <summary>
+                    <div className="item__info">
+                      <div className="item__title">
+                        {/*it updates if button pressed??*/}
+                        {dayjs
+                          .unix(call.attempted_at / 1000)
+                          .format("YYYY MM.DD hh:mm a")}
+                      </div>
+                      <div className="item__meta">
+                        <div>
+                          {call.direction} from {formatPhoneNumber(call.from)}{" "}
+                          to {formatPhoneNumber(call.to)} with {call.trunk} for{" "}
+                          {call.duration}s
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </summary>
+                  {Object.keys(call).map((key) => (
+                    <div key={key}>{`${key}: ${call[key as keyof typeof call]
+                      .toString()
+                      .padStart(10)}`}</div>
+                  ))}
+                  <PcapButton call_data={call} />
+                </details>
               </div>
             ))
           ) : (
