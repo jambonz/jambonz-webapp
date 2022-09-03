@@ -9,6 +9,7 @@ import { Section } from "./section";
 import { Tooltip } from "./tooltip";
 import { Spinner } from "./spinner";
 import { AccountFilter } from "./account-filter";
+import { Pagination } from "./pagination";
 
 export {
   Icons,
@@ -24,4 +25,5 @@ export {
   Tooltip,
   Spinner,
   AccountFilter,
+  Pagination,
 };

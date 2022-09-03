@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   ButtonGroup,
   H1,
   M,
@@ -16,15 +15,16 @@ import {
   useServiceProviderData,
 } from "src/api";
 import { toastError } from "src/store";
-import { Section, AccountFilter, Spinner } from "src/components";
+import { Section, AccountFilter, Spinner, Pagination } from "src/components";
 
 import type {
   Account,
+  CallQuery,
   // Pcap,
   RecentCall,
 } from "src/api/types";
 import { Selector } from "src/components/forms";
-import { hasLength, hasValue } from "src/utils";
+import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
 
 export const RecentCalls = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -66,63 +66,78 @@ export const RecentCalls = () => {
     { name: "100 / page", value: "100" },
   ];
 
-  const phoneNumberFormat = (number: string) => {
-    const usaReg = /^(1?)([2-9][0-9]{2})([2-9][0-9]{2})([0-9]{4})$/;
-    const match = number.match(usaReg);
-    if (match) {
-      return `${match[1] ? `+${match[1]} ` : ""}(${match[2]}) ${match[3]}-${
-        match[4]
-      }`;
-    }
-    return number;
+  // i guess this is just temporary until proper style is there?
+  type JustFilterProps = {
+    get: string | number;
+    set: React.Dispatch<React.SetStateAction<string>>;
+    label: string;
+    name: string;
+    options: { name: string; value: string }[];
+  };
+  const JustFilter = (props: JustFilterProps) => {
+    return (
+      <div className={props.name}>
+        <label htmlFor={props.name}>{props.label}</label>
+        <select
+          name={props.name}
+          value={props.get}
+          onChange={(e) => props.set(e.target.value)}
+        >
+          {props.options.map((option) => (
+            <option key={`${props.name}-${option.value}`} value={option.value}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
   };
 
-  useEffect(() => {
-    let ignore = false;
-
-    getRecentCalls("account-sid", {
-      ...(dateFilter === "today"
-        ? { start: dayjs().startOf("date").toISOString() }
-        : { days: parseInt(dateFilter) }),
-      ...(statusFilter !== "all" && { answered: statusFilter }),
-      ...(directionFilter !== "io" && { direction: directionFilter }),
-      page: pageNumber,
-      count: parseInt(perPageFilter),
-    })
-      .then(({ json }) => {
-        if (!ignore) {
-          console.log(json);
-          setCalls(json.data);
-          setCallsTotal(json.total);
-        }
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, [
-    accountSid,
-    dateFilter,
-    directionFilter,
-    statusFilter,
-    perPageFilter,
-    pageNumber,
-  ]);
-
-  useEffect(() => {
-    if (pageNumber > maxPageNumber) {
+  const handleFilterChange = () => {
+    console.log(`${pageNumber} ${maxPageNumber}`);
+    if (pageNumber >= maxPageNumber) {
       setPageNumber(maxPageNumber);
     } else if (pageNumber <= 0) {
       setPageNumber(1);
     }
-  }, [pageNumber]);
+
+    const payload: Partial<CallQuery> = {
+      page: pageNumber,
+      count: parseInt(perPageFilter, 10),
+      ...(dateFilter === "today"
+        ? { start: dayjs().startOf("date").toISOString() }
+        : { days: parseInt(dateFilter, 10) }),
+      ...(statusFilter !== "all" && { answered: statusFilter }),
+      ...(directionFilter !== "io" && { direction: directionFilter }),
+    };
+
+    getRecentCalls("account-sid", payload)
+      .then(({ json }) => {
+        setCalls(json.data);
+        setCallsTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / parseInt(perPageFilter, 10)));
+        console.log(
+          `${callsTotal} ${perPageFilter} ${Math.ceil(
+            callsTotal / parseInt(perPageFilter, 10)
+          )}`
+        );
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   useEffect(() => {
-    setMaxPageNumber(Math.ceil(callsTotal / parseInt(perPageFilter)));
-  }, [callsTotal, perPageFilter]);
+    if (pageNumber === 1) {
+      handleFilterChange();
+    } else {
+      setPageNumber(1);
+    }
+  }, [accountSid, dateFilter, directionFilter, statusFilter, perPageFilter]);
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [pageNumber, perPageFilter]);
 
   return (
     <>
@@ -224,12 +239,14 @@ export const RecentCalls = () => {
                 <div className="item__info">
                   <div className="item__title">
                     {/* i dont think this is working, it updates every second if button pressed TODO*/}
-                    {new Date(call.attempted_at).toLocaleString()}{" "}
+                    {dayjs
+                      .unix(call.attempted_at / 1000)
+                      .format("YYYY MM.DD hh:mm a")}
                   </div>
                   <div className="item__meta">
                     <div>
-                      {call.direction} from {phoneNumberFormat(call.from)} to{" "}
-                      {phoneNumberFormat(call.to)} with {call.trunk} for{" "}
+                      {call.direction} from {formatPhoneNumber(call.from)} to{" "}
+                      {formatPhoneNumber(call.to)} with {call.trunk} for{" "}
                       {call.duration}s
                     </div>
                   </div>
@@ -246,54 +263,18 @@ export const RecentCalls = () => {
         <P>
           Total: {callsTotal} record{callsTotal === 1 ? "" : "s"}
         </P>
-        <Button
-          disabled={pageNumber === 1}
-          small
-          onClick={() => setPageNumber(pageNumber - 1)}
-        >
-          {"<"}{" "}
-          {/* go back will have a problem where the page will be longer, thus we are not at the bottom any more if the next page is shorter TODO*/}
-        </Button>
-        {hasLength(calls) &&
-          Array(maxPageNumber)
-            .fill(0)
-            .map(
-              (_, index) =>
-                (pageNumber === index + 1 ||
-                  pageNumber - 1 === index + 1 ||
-                  pageNumber + 1 === index + 1 ||
-                  index === 0 ||
-                  index === maxPageNumber - 1) && (
-                  <div key={`button-page-${index + 1}`}>
-                    {/*make them clickable with style TODO*/}
-                    {pageNumber - 1 === index + 1 &&
-                      pageNumber > 3 &&
-                      "---   "}{" "}
-                    <Button
-                      subStyle={index + 1 === pageNumber ? "teal" : "grey"} // why cant i make it pink??
-                      small
-                      onClick={() => setPageNumber(index + 1)}
-                    >
-                      {index + 1}
-                    </Button>
-                    {pageNumber + 1 === index + 1 &&
-                      maxPageNumber - pageNumber > 2 &&
-                      "   ---"}
-                  </div>
-                )
-            )}
-
-        <Button
-          disabled={pageNumber === maxPageNumber}
-          small
-          onClick={() => setPageNumber(pageNumber + 1)}
-        >
-          {">"}
-        </Button>
-        <Selector
+        {hasLength(calls) && (
+          <Pagination
+            pageNumber={pageNumber}
+            setPageNumber={setPageNumber}
+            maxPageNumber={maxPageNumber}
+          />
+        )}
+        <JustFilter
+          get={perPageFilter}
+          set={setPerPageFilter}
+          label=""
           name="page_filter"
-          value={perPageFilter}
-          onChange={(e) => setPerPageFilter(e.target.value)}
           options={perPageSelection}
         />
       </ButtonGroup>
