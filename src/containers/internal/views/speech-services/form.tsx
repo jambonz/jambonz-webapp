@@ -12,6 +12,7 @@ import {
   useServiceProviderData,
 } from "src/api";
 import {
+  useRegionVendors,
   vendors,
   VENDOR_AWS,
   VENDOR_GOOGLE,
@@ -33,6 +34,7 @@ type SpeechServiceFormProps = {
 export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [ttsCheck, setTtsCheck] = useState(false);
@@ -41,7 +43,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     "" as Lowercase<Vendor>
   );
   const [region, setRegion] = useState("");
-  const [regions, setRegions] = useState<RegionVendors>();
   const [apiKey, setApiKey] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
@@ -176,26 +177,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
     }
   }, [credential]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    Promise.all([
-      import("src/vendor/regions/aws-regions"),
-      import("src/vendor/regions/ms-azure-regions"),
-    ]).then(([{ default: awsRegions }, { default: msRegions }]) => {
-      if (!ignore) {
-        setRegions({
-          aws: awsRegions,
-          microsoft: msRegions,
-        });
-      }
-    });
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
 
   return (
     <Section slim>

@@ -12,6 +12,7 @@ import {
   LANG_EN_US_STANDARD_C,
   VENDOR_AWS,
   VENDOR_WELLSAID,
+  useSpeechVendors,
 } from "src/vendor";
 import {
   postApplication,
@@ -48,6 +49,7 @@ type ApplicationFormProps = {
 
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
+  const [synthesis, recognizers] = useSpeechVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
@@ -66,8 +68,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [recogVendor, setRecogVendor] =
     useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
   const [recogLang, setRecogLang] = useState(LANG_EN_US);
-  const [synthesis, setSynthesis] = useState<SynthesisVendors>();
-  const [recognizers, setRecognizers] = useState<RecognizerVendors>();
   const [message, setMessage] = useState("");
 
   /** This lets us map and render the same UI for each... */
@@ -165,48 +165,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       setAccountSid(accounts[0].account_sid);
     }
   }, [accounts, accountSid]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    Promise.all([
-      import("src/vendor/speech-recognizer/aws-speech-recognizer-lang"),
-      import("src/vendor/speech-recognizer/google-speech-recognizer-lang"),
-      import("src/vendor/speech-recognizer/ms-speech-recognizer-lang"),
-      import("src/vendor/speech-synthesis/aws-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/google-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/ms-speech-synthesis-lang"),
-      import("src/vendor/speech-synthesis/wellsaid-speech-synthesis-lang"),
-    ]).then(
-      ([
-        { default: awsRecognizer },
-        { default: googleRecognizer },
-        { default: msRecognizer },
-        { default: awsSynthesis },
-        { default: googleSynthesis },
-        { default: msSynthesis },
-        { default: wellsaidSynthesis },
-      ]) => {
-        if (!ignore) {
-          setSynthesis({
-            aws: awsSynthesis,
-            google: googleSynthesis,
-            microsoft: msSynthesis,
-            wellsaid: wellsaidSynthesis,
-          });
-          setRecognizers({
-            aws: awsRecognizer,
-            google: googleRecognizer,
-            microsoft: msRecognizer,
-          });
-        }
-      }
-    );
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
 
   useEffect(() => {
     if (application && application.data) {
