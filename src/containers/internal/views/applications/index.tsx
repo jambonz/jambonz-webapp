@@ -10,12 +10,13 @@ import {
 } from "src/router/routes";
 import { Icons, Section, Spinner, AccountFilter } from "src/components";
 import { DeleteApplication } from "./delete";
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { hasLength, hasValue } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
 
 export const Applications = () => {
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [applications, setApplications] = useState<Application[] | null>(null);
@@ -47,19 +48,20 @@ export const Applications = () => {
     }
   };
 
-  /** The `accounts` dep is necessary for proper cleanup */
   useEffect(() => {
     if (accountSid) {
       getApplications();
     } else if (accounts && !accounts.length) {
       setApplications([]);
     }
+  }, [accountSid, accounts]);
 
+  useEffect(() => {
     return function cleanup() {
       setAccountSid("");
       setApplications(null);
     };
-  }, [accountSid, accounts]);
+  }, [currentServiceProvider]);
 
   return (
     <>
