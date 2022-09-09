@@ -49,7 +49,7 @@ type ApplicationFormProps = {
 
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
-  const [synthesis, recognizers] = useSpeechVendors();
+  const { synthesis, recognizers } = useSpeechVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");

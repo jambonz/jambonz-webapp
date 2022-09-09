@@ -59,9 +59,11 @@ export const useRegionVendors = () => {
   return regions;
 };
 
-export const useSpeechVendors = (): [SynthesisVendors?, RecognizerVendors?] => {
-  const [synthesis, setSynthesis] = useState<SynthesisVendors>();
-  const [recognizers, setRecognizers] = useState<RecognizerVendors>();
+export const useSpeechVendors = () => {
+  const [speech, setSpeech] = useState<{
+    synthesis?: SynthesisVendors;
+    recognizers?: RecognizerVendors;
+  }>({});
 
   useEffect(() => {
     let ignore = false;
@@ -85,16 +87,18 @@ export const useSpeechVendors = (): [SynthesisVendors?, RecognizerVendors?] => {
         { default: wellsaidSynthesis },
       ]) => {
         if (!ignore) {
-          setSynthesis({
-            aws: awsSynthesis,
-            google: googleSynthesis,
-            microsoft: msSynthesis,
-            wellsaid: wellsaidSynthesis,
-          });
-          setRecognizers({
-            aws: awsRecognizer,
-            google: googleRecognizer,
-            microsoft: msRecognizer,
+          setSpeech({
+            synthesis: {
+              aws: awsSynthesis,
+              google: googleSynthesis,
+              microsoft: msSynthesis,
+              wellsaid: wellsaidSynthesis,
+            },
+            recognizers: {
+              aws: awsRecognizer,
+              google: googleRecognizer,
+              microsoft: msRecognizer,
+            },
           });
         }
       }
@@ -105,5 +109,5 @@ export const useSpeechVendors = (): [SynthesisVendors?, RecognizerVendors?] => {
     };
   }, []);
 
-  return [synthesis, recognizers];
+  return speech;
 };
