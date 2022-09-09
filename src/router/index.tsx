@@ -2,85 +2,38 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import { RequireAuth, Toast } from "src/components";
-import { withSuspense } from "src/utils";
 import { useSelectState } from "src/store";
 import { Login, Layout as LoginLayout } from "src/containers/login";
 import { Layout as InternalLayout } from "src/containers/internal";
 import { NotFound } from "src/containers/notfound";
 
 /** Login */
-const LazyCreatePassword = withSuspense(
-  React.lazy(() => import("src/containers/login/create-password"))
-);
+import CreatePassword from "src/containers/login/create-password";
 
 /** Top navi */
-const LazySettings = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/settings"))
-);
-const LazyAccounts = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/accounts"))
-);
-const LazyAccountAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/accounts/add"))
-);
-const LazyAccountEdit = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/accounts/edit"))
-);
-const LazyApplications = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/applications"))
-);
-const LazyApplicationsAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/applications/add"))
-);
-const LazyApplicationsEdit = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/applications/edit"))
-);
-const LazyRecentCalls = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/recent-calls"))
-);
-const LazyAlerts = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/alerts"))
-);
+import Settings from "src/containers/internal/views/settings";
+import Accounts from "src/containers/internal/views/accounts";
+import AccountAdd from "src/containers/internal/views/accounts/add";
+import AccountEdit from "src/containers/internal/views/accounts/edit";
+import Applications from "src/containers/internal/views/applications";
+import ApplicationAdd from "src/containers/internal/views/applications/add";
+import ApplicationEdit from "src/containers/internal/views/applications/edit";
+import RecentCalls from "src/containers/internal/views/recent-calls";
+import Alerts from "src/containers/internal/views/alerts";
 
 /** BYO navi */
-const LazyCarriers = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/carriers"))
-);
-const LazyCarriersAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/carriers/add"))
-);
-const LazyCarriersEdit = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/carriers/edit"))
-);
-const LazySpeechServices = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/speech-services"))
-);
-const LazySpeechServicesAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/speech-services/add"))
-);
-const LazySpeechServicesEdit = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/speech-services/edit"))
-);
-const LazyPhoneNumbers = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/phone-numbers"))
-);
-const LazyPhoneNumbersAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/phone-numbers/add"))
-);
-const LazyPhoneNumbersEdit = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/phone-numbers/edit"))
-);
-const LazyTeams = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/ms-teams-tenants"))
-);
-const LazyTeamsAdd = withSuspense(
-  React.lazy(() => import("src/containers/internal/views/ms-teams-tenants/add"))
-);
-const LazyTeamsEdit = withSuspense(
-  React.lazy(
-    () => import("src/containers/internal/views/ms-teams-tenants/edit")
-  )
-);
+import Carriers from "src/containers/internal/views/carriers";
+import CarrierAdd from "src/containers/internal/views/carriers/add";
+import CarrierEdit from "src/containers/internal/views/carriers/edit";
+import SpeechServices from "src/containers/internal/views/speech-services";
+import SpeechServicesAdd from "src/containers/internal/views/speech-services/add";
+import SpeechServicesEdit from "src/containers/internal/views/speech-services/edit";
+import PhoneNumbers from "src/containers/internal/views/phone-numbers";
+import PhoneNumbersAdd from "src/containers/internal/views/phone-numbers/add";
+import PhoneNumbersEdit from "src/containers/internal/views/phone-numbers/edit";
+import MSTeamsTenants from "src/containers/internal/views/ms-teams-tenants";
+import MSTeamsTenantsAdd from "src/containers/internal/views/ms-teams-tenants/add";
+import MSTeamsTenantsEdit from "src/containers/internal/views/ms-teams-tenants/edit";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -96,7 +49,7 @@ export const Router = () => {
             path="create-password"
             element={
               <RequireAuth>
-                <LazyCreatePassword />
+                <CreatePassword />
               </RequireAuth>
             }
           />
@@ -113,62 +66,56 @@ export const Router = () => {
               <Routes>
                 <Route path="*" element={<InternalLayout />}>
                   {/* Top navi */}
-                  <Route path="settings" element={<LazySettings />} />
-                  <Route path="accounts" element={<LazyAccounts />} />
-                  <Route path="accounts/add" element={<LazyAccountAdd />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="accounts" element={<Accounts />} />
+                  <Route path="accounts/add" element={<AccountAdd />} />
                   <Route
                     path="accounts/:account_sid/edit"
-                    element={<LazyAccountEdit />}
+                    element={<AccountEdit />}
                   />
-                  <Route path="applications" element={<LazyApplications />} />
-                  <Route
-                    path="applications/add"
-                    element={<LazyApplicationsAdd />}
-                  />
+                  <Route path="applications" element={<Applications />} />
+                  <Route path="applications/add" element={<ApplicationAdd />} />
                   <Route
                     path="applications/:application_sid/edit"
-                    element={<LazyApplicationsEdit />}
+                    element={<ApplicationEdit />}
                   />
 
-                  <Route path="recent-calls" element={<LazyRecentCalls />} />
-                  <Route path="alerts" element={<LazyAlerts />} />
+                  <Route path="recent-calls" element={<RecentCalls />} />
+                  <Route path="alerts" element={<Alerts />} />
 
                   {/* BYO navi */}
-                  <Route path="carriers" element={<LazyCarriers />} />
-                  <Route path="carriers/add" element={<LazyCarriersAdd />} />
+                  <Route path="carriers" element={<Carriers />} />
+                  <Route path="carriers/add" element={<CarrierAdd />} />
                   <Route
                     path="carriers/:voip_carrier_sid/edit"
-                    element={<LazyCarriersEdit />}
+                    element={<CarrierEdit />}
                   />
-                  <Route
-                    path="speech-services"
-                    element={<LazySpeechServices />}
-                  />
+                  <Route path="speech-services" element={<SpeechServices />} />
                   <Route
                     path="speech-services/add"
-                    element={<LazySpeechServicesAdd />}
+                    element={<SpeechServicesAdd />}
                   />
                   <Route
                     path="speech-services/:speech_credential_sid/edit"
-                    element={<LazySpeechServicesEdit />}
+                    element={<SpeechServicesEdit />}
                   />
-                  <Route path="phone-numbers" element={<LazyPhoneNumbers />} />
+                  <Route path="phone-numbers" element={<PhoneNumbers />} />
                   <Route
                     path="phone-numbers/add"
-                    element={<LazyPhoneNumbersAdd />}
+                    element={<PhoneNumbersAdd />}
                   />
                   <Route
                     path="phone-numbers/:phone_number_sid/edit"
-                    element={<LazyPhoneNumbersEdit />}
+                    element={<PhoneNumbersEdit />}
                   />
-                  <Route path="ms-teams-tenants" element={<LazyTeams />} />
+                  <Route path="ms-teams-tenants" element={<MSTeamsTenants />} />
                   <Route
                     path="ms-teams-tenants/add"
-                    element={<LazyTeamsAdd />}
+                    element={<MSTeamsTenantsAdd />}
                   />
                   <Route
                     path="ms-teams-tenants/:ms_teams_tenant_sid/edit"
-                    element={<LazyTeamsEdit />}
+                    element={<MSTeamsTenantsEdit />}
                   />
 
                   {/* 404 page not found */}
