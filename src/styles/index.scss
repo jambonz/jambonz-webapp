@@ -149,6 +149,20 @@ details {
     justify-content: flex-end;
   }
 
+  &--grid {
+    // display: grid;
+    // grid-gap: ui-vars.$px02;
+    // grid-template-columns: auto auto auto auto;
+    justify-content: space-between;
+    overflow-x: auto;
+    white-space: nowrap;
+    // text-align: right;
+  }
+
+  > * + * {
+    margin-left: ui-vars.$px02;
+  }
+
   + * {
     margin-top: 0;
   }

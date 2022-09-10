@@ -3,12 +3,15 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 .smsel {
-  position: relative;
-
   label {
     display: inline-block;
     margin-right: ui-vars.$px01;
     @include ui-mixins.ms();
+  }
+
+  div {
+    position: relative;
+    display: inline-block;
   }
 
   select {
@@ -72,7 +75,7 @@
       border-radius: ui-vars.$px01;
       padding: ui-vars.$px00 48px ui-vars.$px00 ui-vars.$px01;
       max-width: 230px;
-      min-width: 185px;
+      // min-width: 185px;
 
       &:focus {
         border-color: ui-vars.$dark;

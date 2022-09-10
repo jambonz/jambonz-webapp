@@ -9,6 +9,7 @@ import { Section } from "./section";
 import { Tooltip } from "./tooltip";
 import { Spinner } from "./spinner";
 import { AccountFilter } from "./account-filter";
+import { SelectFilter } from "./select-filter";
 import { Pagination } from "./pagination";
 
 export {
@@ -25,5 +26,6 @@ export {
   Tooltip,
   Spinner,
   AccountFilter,
+  SelectFilter,
   Pagination,
 };

@@ -5,7 +5,7 @@ import { Icons } from "src/components/icons";
 
 import "./styles.scss";
 
-interface SelectorOption {
+export interface SelectorOption {
   name: string;
   value: string;
 }

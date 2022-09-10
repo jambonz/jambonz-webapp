@@ -26,30 +26,32 @@ export const ApplicationSelect = ({
   return (
     <div className={classNames(classes)}>
       <label htmlFor="application_select">Application:</label>
-      <select
-        name="application_select"
-        value={applicationSid}
-        onChange={(e) => setApplicationSid(e.target.value)}
-        onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
-      >
-        <option value="">Choose application</option>
-        {applications &&
-          applications
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((app) => {
-              return (
-                <option key={app.application_sid} value={app.application_sid}>
-                  {app.name}
-                </option>
-              );
-            })}
-        <option value="none">None</option>
-      </select>
-      <span>
-        <Icons.ChevronUp />
-        <Icons.ChevronDown />
-      </span>
+      <div>
+        <select
+          name="application_select"
+          value={applicationSid}
+          onChange={(e) => setApplicationSid(e.target.value)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
+        >
+          <option value="">Choose application</option>
+          {applications &&
+            applications
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((app) => {
+                return (
+                  <option key={app.application_sid} value={app.application_sid}>
+                    {app.name}
+                  </option>
+                );
+              })}
+          <option value="none">None</option>
+        </select>
+        <span>
+          <Icons.ChevronUp />
+          <Icons.ChevronDown />
+        </span>
+      </div>
     </div>
   );
 };

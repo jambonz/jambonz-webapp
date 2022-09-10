@@ -9,11 +9,60 @@ import {
   useServiceProviderData,
 } from "src/api";
 import { toastError } from "src/store";
-import { Section, AccountFilter, Spinner, Pagination } from "src/components";
+import {
+  Section,
+  AccountFilter,
+  Spinner,
+  Pagination,
+  SelectFilter,
+} from "src/components";
+import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
 
 import type { Account, CallQuery, Pcap, RecentCall } from "src/api/types";
-import { Selector } from "src/components/forms";
-import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
+
+type PcapButtonProp = {
+  call_data: RecentCall;
+};
+
+/** We can modify this so it only makes the fetch if the details are toggled open... */
+const PcapButton = ({ call_data }: PcapButtonProp) => {
+  const [pcap, setPcap] = useState<Pcap>();
+
+  useEffect(() => {
+    getRecentCall(call_data.account_sid, call_data.call_sid)
+      .then(({ json }) => {
+        if (json.total > 0) {
+          getPcap(call_data.account_sid, call_data.call_sid)
+            .then(({ blob }) => {
+              if (blob) {
+                setPcap({
+                  data_url: URL.createObjectURL(blob),
+                  file_name: `callid-${call_data.sip_callid}.pcap`,
+                });
+              }
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
+        }
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  }, [call_data]);
+
+  return (
+    <div className="p">
+      {pcap ? (
+        <>
+          <a href={pcap.data_url} download={pcap.file_name}>
+            Download pcap file
+          </a>
+        </>
+      ) : null}
+    </div>
+  );
+};
 
 export const RecentCalls = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -23,7 +72,7 @@ export const RecentCalls = () => {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [perPageFilter, setPerPageFilter] = useState("25"); // string.....................
+  const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
   const [calls, setCalls] = useState<RecentCall[]>();
@@ -44,8 +93,8 @@ export const RecentCalls = () => {
 
   const statusSelection = [
     { name: "all", value: "all" },
-    { name: "answered", value: "true" }, // string..........
-    { name: "not answered", value: "false" }, // string...
+    { name: "answered", value: "answered" },
+    { name: "not answered", value: "not-answered" },
   ];
 
   const perPageSelection = [
@@ -54,82 +103,8 @@ export const RecentCalls = () => {
     { name: "100 / page", value: "100" },
   ];
 
-  // i guess this is just temporary until proper style is there?
-  type JustFilterProps = {
-    get: string | number;
-    set: React.Dispatch<React.SetStateAction<string>>;
-    label: string;
-    name: string;
-    options: { name: string; value: string }[];
-  };
-  const JustFilter = (props: JustFilterProps) => {
-    return (
-      <div className={props.name}>
-        <label htmlFor={props.name}>{props.label}</label>
-        <select
-          name={props.name}
-          value={props.get}
-          onChange={(e) => props.set(e.target.value)}
-        >
-          {props.options.map((option) => (
-            <option key={`${props.name}-${option.value}`} value={option.value}>
-              {option.name}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  };
-
-  type PcapButtonProp = {
-    call_data: RecentCall;
-  };
-  const PcapButton = ({ call_data }: PcapButtonProp) => {
-    console.log("this runs");
-    const [pcap, setPcap] = useState<Pcap>();
-
-    // not sure why but this get recent call will prevent tons of freezing requests
-    // still, it is sending a lot of requests right now
-    useEffect(() => {
-      getRecentCall(call_data.account_sid, call_data.call_sid)
-        .then(({ json }) => {
-          if (json.total > 0) {
-            getPcap(call_data.account_sid, call_data.call_sid)
-              .then(({ blob }) => {
-                if (blob) {
-                  console.log(blob);
-                  setPcap({
-                    data_url: URL.createObjectURL(blob),
-                    file_name: `callid-${call_data.sip_callid}.pcap`,
-                  });
-                }
-              })
-              .catch((error) => {
-                toastError(error.msg);
-              });
-          }
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
-    }, [call_data, setPcap]);
-
-    return (
-      <div className="p">
-        {pcap ? (
-          <>
-            <a href={pcap.data_url} download={pcap.file_name}>
-              Download pcap file
-            </a>
-          </>
-        ) : (
-          <strong>undefined</strong>
-        )}
-      </div>
-    );
-  };
-
   const handleFilterChange = () => {
+    /** This doesn't work because SetStateAction is `async`... */
     if (pageNumber >= maxPageNumber) {
       setPageNumber(maxPageNumber);
     } else if (pageNumber <= 0) {
@@ -138,21 +113,21 @@ export const RecentCalls = () => {
 
     const payload: Partial<CallQuery> = {
       page: pageNumber,
-      count: parseInt(perPageFilter, 10),
+      count: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
-        : { days: parseInt(dateFilter, 10) }),
+        : { days: Number(dateFilter) }),
       ...(statusFilter !== "all" &&
         (statusFilter === "true" ? { answered: true } : { answered: false })),
       ...(directionFilter !== "io" && { direction: directionFilter }),
     };
 
-    getRecentCalls("account-sid", payload)
+    getRecentCalls(accountSid, payload)
       .then(({ json }) => {
         console.log(json);
         setCalls(json.data);
         setCallsTotal(json.total);
-        setMaxPageNumber(Math.ceil(json.total / parseInt(perPageFilter, 10)));
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
       })
       .catch((error) => {
         toastError(error.msg);
@@ -160,7 +135,7 @@ export const RecentCalls = () => {
   };
 
   useEffect(() => {
-    if (pageNumber === 1) {
+    if (pageNumber === 1 && accountSid) {
       handleFilterChange();
     } else {
       setPageNumber(1);
@@ -168,42 +143,41 @@ export const RecentCalls = () => {
   }, [accountSid, dateFilter, directionFilter, statusFilter, perPageFilter]);
 
   useEffect(() => {
-    handleFilterChange();
-  }, [pageNumber, perPageFilter]);
+    if (accountSid) {
+      handleFilterChange();
+    }
+  }, [accountSid, pageNumber, perPageFilter]);
 
   return (
     <>
       <section className="mast">
         <H1>Recent Calls</H1>
       </section>
-      <section className="filters filters--ender">
-        <AccountFilter // half and half
+      {/* Setting overflow-x auto for now until we have a better responsive solution... */}
+      <section className="filters filters--grid">
+        <AccountFilter
           account={[accountSid, setAccountSid]}
           accounts={accounts}
         />
-        <label htmlFor="date_filter">Date: </label>
-        <Selector
-          name="date_filter"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
+        <SelectFilter
+          id="date_filter"
+          label="Date"
+          filter={[dateFilter, setDateFilter]}
           options={dateSelection}
         />
-        <label htmlFor="direction_filter">Direction: </label>
-        <Selector
-          name="direction_filter"
-          value={directionFilter}
-          onChange={(e) => setDirectionFilter(e.target.value)}
+        <SelectFilter
+          id="direction_filter"
+          label="Direction"
+          filter={[directionFilter, setDirectionFilter]}
           options={directionSelection}
         />
-        <label htmlFor="status_filter">Status: </label>
-        <Selector
-          name="status_filter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+        <SelectFilter
+          id="status_filter"
+          label="Status"
+          filter={[statusFilter, setStatusFilter]}
           options={statusSelection}
         />
       </section>
-
       <Section {...(hasLength(calls) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(calls) && <Spinner />}
@@ -245,7 +219,6 @@ export const RecentCalls = () => {
           )}
         </div>
       </Section>
-
       <ButtonGroup>
         <P>
           Total: {callsTotal} record{callsTotal === 1 ? "" : "s"}
@@ -257,11 +230,9 @@ export const RecentCalls = () => {
             maxPageNumber={maxPageNumber}
           />
         )}
-        <JustFilter
-          get={perPageFilter}
-          set={setPerPageFilter}
-          label=""
-          name="page_filter"
+        <SelectFilter
+          id="page_filter"
+          filter={[perPageFilter, setPerPageFilter]}
           options={perPageSelection}
         />
       </ButtonGroup>

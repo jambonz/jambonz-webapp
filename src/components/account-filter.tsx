@@ -39,33 +39,37 @@ export const AccountFilter = ({
   return (
     <div className={classNames(classes)}>
       <label htmlFor="account_filter">{label}:</label>
-      <select
-        name="account_filter"
-        value={accountSid}
-        onChange={(e) => setAccountSid(e.target.value)}
-        onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
-      >
-        {defaultOption ? (
-          <option value="">All accounts</option>
-        ) : (
-          accounts && !accounts.length && <option value="">No accounts</option>
-        )}
-        {hasLength(accounts) &&
-          accounts
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((acct) => {
-              return (
-                <option key={acct.account_sid} value={acct.account_sid}>
-                  {acct.name}
-                </option>
-              );
-            })}
-      </select>
-      <span>
-        <Icons.ChevronUp />
-        <Icons.ChevronDown />
-      </span>
+      <div>
+        <select
+          id="account_filter"
+          name="account_filter"
+          value={accountSid}
+          onChange={(e) => setAccountSid(e.target.value)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
+        >
+          {defaultOption ? (
+            <option value="">All accounts</option>
+          ) : (
+            accounts &&
+            !accounts.length && <option value="">No accounts</option>
+          )}
+          {hasLength(accounts) &&
+            accounts
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((acct) => {
+                return (
+                  <option key={acct.account_sid} value={acct.account_sid}>
+                    {acct.name}
+                  </option>
+                );
+              })}
+        </select>
+        <span>
+          <Icons.ChevronUp />
+          <Icons.ChevronDown />
+        </span>
+      </div>
     </div>
   );
 };

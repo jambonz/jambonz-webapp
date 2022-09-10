@@ -32,12 +32,17 @@ export const Pagination = ({
           index + 1 === maxPageNumber ||
           (pageNumber > index + 1 && pageNumber <= index + 1 + nextTo) ||
           (pageNumber < index + 1 && pageNumber >= index + 1 - nextTo) ? (
-            <button type="button" onClick={() => setPageNumber(index + 1)}>
+            <button
+              type="button"
+              onClick={() => setPageNumber(index + 1)}
+              key={index + 1}
+            >
               {index + 1}
             </button>
           ) : (
             (index + 1 === pageNumber + nextTo + 1 && (
               <button
+                key="jump_right"
                 name="jump_right"
                 type="button"
                 onClick={() => setPageNumber(pageNumber + jumpNum)}
@@ -47,6 +52,7 @@ export const Pagination = ({
             )) ||
             (index + 1 === pageNumber - nextTo - 1 && (
               <button
+                key="jump_left"
                 name="jump_left"
                 type="button"
                 onClick={() => setPageNumber(pageNumber - jumpNum)}

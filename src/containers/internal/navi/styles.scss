@@ -60,6 +60,7 @@
   &__sps {
     padding-top: ui-vars.$px03;
     padding-bottom: ui-vars.$px03;
+    position: relative;
 
     button[type="button"] {
       cursor: pointer;
