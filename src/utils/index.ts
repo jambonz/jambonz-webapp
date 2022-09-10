@@ -2,6 +2,7 @@ import { withSuspense } from "./with-suspense";
 import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
+import { useRedirect } from "./use-redirect";
 import {
   FQDN,
   FQDN_TOP_LEVEL,
@@ -113,4 +114,10 @@ export const formatTime = (seconds: number) => {
   return `${minutes}m ${remainingSeconds}s`;
 };
 
-export { withSuspense, useMobileMedia, withAccessControl, withSelectState };
+export {
+  withSuspense,
+  useMobileMedia,
+  withAccessControl,
+  withSelectState,
+  useRedirect,
+};

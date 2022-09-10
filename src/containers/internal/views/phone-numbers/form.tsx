@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   postPhoneNumber,
   putPhoneNumber,
-  useApiData,
   useServiceProviderData,
 } from "src/api";
 import { Section } from "src/components";
@@ -17,6 +16,7 @@ import {
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
 import { toastError, toastSuccess } from "src/store";
+import { hasLength, useRedirect } from "src/utils";
 
 import type {
   Account,
@@ -25,7 +25,6 @@ import type {
   Carrier,
   UseApiDataMap,
 } from "src/api/types";
-import { hasLength } from "src/utils";
 
 type PhoneNumberFormProps = {
   phoneNumber?: UseApiDataMap<PhoneNumber>;
@@ -34,14 +33,26 @@ type PhoneNumberFormProps = {
 export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   const navigate = useNavigate();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
-  const [applications] = useApiData<Application[]>("Applications");
+  const [applications] = useServiceProviderData<Application[]>("Applications");
   const [phoneNumbers] = useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
-  const [carriers] = useApiData<Carrier[]>("VoipCarriers");
+  const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumberNum, setPhoneNumberNum] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [sipTrunkSid, setSipTrunkSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
   const [message, setMessage] = useState("");
+
+  useRedirect(
+    accounts,
+    ROUTE_INTERNAL_ACCOUNTS,
+    "You must create an account before you can create a phone number."
+  );
+
+  useRedirect(
+    carriers,
+    ROUTE_INTERNAL_CARRIERS,
+    "You must create a SIP trunk before you can create a phone number."
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,24 +120,6 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
       }
     }
   }, [phoneNumber]);
-
-  useEffect(() => {
-    if (accounts && !accounts.length) {
-      toastError(
-        "You must create an account before you can create a phone number."
-      );
-      navigate(ROUTE_INTERNAL_ACCOUNTS);
-    }
-  }, [accounts]);
-
-  useEffect(() => {
-    if (carriers && !carriers.length) {
-      toastError(
-        "You must create a SIP trunk before you can create a phone number."
-      );
-      navigate(ROUTE_INTERNAL_CARRIERS);
-    }
-  }, [carriers]);
 
   useEffect(() => {
     if (hasLength(carriers) && !sipTrunkSid) {

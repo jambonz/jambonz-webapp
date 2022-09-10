@@ -11,6 +11,7 @@ import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
 } from "src/router/routes";
+import { useRedirect } from "src/utils";
 
 import type {
   Account,
@@ -35,6 +36,12 @@ export const MsTeamsTenantForm = ({
   const [accountSid, setAccountSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
   const [message, setMessage] = useState("");
+
+  useRedirect(
+    accounts,
+    ROUTE_INTERNAL_ACCOUNTS,
+    "You must create an account before you can create an Microsoft Teams Tenant."
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,15 +108,6 @@ export const MsTeamsTenantForm = ({
       }
     }
   }, [msTeamsTenant]);
-
-  useEffect(() => {
-    if (accounts && !accounts.length) {
-      toastError(
-        "You must create an account before you can create an Microsoft Teams Tenant."
-      );
-      navigate(ROUTE_INTERNAL_ACCOUNTS);
-    }
-  }, [accounts]);
 
   return (
     <Section slim>

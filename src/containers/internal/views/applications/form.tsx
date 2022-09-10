@@ -48,6 +48,7 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
+import { useRedirect } from "src/utils";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -104,6 +105,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     },
   ];
 
+  useRedirect(
+    accounts,
+    ROUTE_INTERNAL_ACCOUNTS,
+    "You must create an account before you can create an application."
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -159,16 +166,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         });
     }
   };
-
-  useEffect(() => {
-    /** Accounts are required to create applications */
-    if (accounts && !accounts.length) {
-      toastError(
-        "You must create an account before you can create an application."
-      );
-      navigate(ROUTE_INTERNAL_ACCOUNTS);
-    }
-  }, [accounts]);
 
   useEffect(() => {
     if (application && application.data) {
