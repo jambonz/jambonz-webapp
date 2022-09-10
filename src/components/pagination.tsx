@@ -15,12 +15,16 @@ export const Pagination = ({
   const nextTo = 1;
   const jumpNum = 3;
 
+  const handleSetPageNumber = (num: number) => {
+    setPageNumber(Math.max(1, Math.min(maxPageNumber, num)));
+  };
+
   return (
     <>
       <button
         type="button"
         disabled={pageNumber === 1}
-        onClick={() => setPageNumber(pageNumber - 1)}
+        onClick={() => handleSetPageNumber(pageNumber - 1)}
       >
         {"<"}
       </button>
@@ -34,7 +38,7 @@ export const Pagination = ({
           (pageNumber < index + 1 && pageNumber >= index + 1 - nextTo) ? (
             <button
               type="button"
-              onClick={() => setPageNumber(index + 1)}
+              onClick={() => handleSetPageNumber(index + 1)}
               key={index + 1}
             >
               {index + 1}
@@ -45,7 +49,7 @@ export const Pagination = ({
                 key="jump_right"
                 name="jump_right"
                 type="button"
-                onClick={() => setPageNumber(pageNumber + jumpNum)}
+                onClick={() => handleSetPageNumber(pageNumber + jumpNum)}
               >
                 ...
               </button>
@@ -55,7 +59,7 @@ export const Pagination = ({
                 key="jump_left"
                 name="jump_left"
                 type="button"
-                onClick={() => setPageNumber(pageNumber - jumpNum)}
+                onClick={() => handleSetPageNumber(pageNumber - jumpNum)}
               >
                 ...
               </button>
@@ -65,7 +69,7 @@ export const Pagination = ({
       <button
         type="button"
         disabled={pageNumber === maxPageNumber}
-        onClick={() => setPageNumber(pageNumber + 1)}
+        onClick={() => handleSetPageNumber(pageNumber + 1)}
       >
         {">"}
       </button>

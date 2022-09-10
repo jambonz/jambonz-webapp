@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import cors from "cors";
 import express from "express";
+import { nanoid } from "nanoid";
 
 import type { Request, Response } from "express";
 import type {
@@ -32,11 +33,11 @@ app.get(
       const failed = 0 === i % 5;
       const call: RecentCall = {
         account_sid: req.params.account_sid,
-        call_sid: "b6f48929-8e86-4d62-ae3b-64fb574d91f6",
+        call_sid: nanoid(),
         from: "15083084809",
         to: "18882349999",
         answered: !failed,
-        sip_callid: "685cd008-0a66-4974-b37a-bdd6d9a3c4aa@192.168.1.100",
+        sip_callid: `${nanoid()}@192.168.1.100`,
         sip_status: 200,
         duration: failed ? 0 : 45,
         attempted_at: attempted_at.getTime(),
@@ -88,7 +89,7 @@ app.get(
 
     if (query.answered) {
       filtered = filtered.filter((call) => {
-        return call.answered === query.answered;
+        return call.answered.toString() === query.answered;
       });
     }
 

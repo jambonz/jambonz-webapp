@@ -277,7 +277,7 @@ export interface PageQuery {
 
 export interface CallQuery extends PageQuery {
   direction?: string;
-  answered?: boolean;
+  answered?: string;
 }
 
 export interface PagedResponse<Type> {

@@ -93,8 +93,8 @@ export const RecentCalls = () => {
 
   const statusSelection = [
     { name: "all", value: "all" },
-    { name: "answered", value: "answered" },
-    { name: "not answered", value: "not-answered" },
+    { name: "answered", value: "true" },
+    { name: "not answered", value: "false" },
   ];
 
   const perPageSelection = [
@@ -104,27 +104,18 @@ export const RecentCalls = () => {
   ];
 
   const handleFilterChange = () => {
-    /** This doesn't work because SetStateAction is `async`... */
-    if (pageNumber >= maxPageNumber) {
-      setPageNumber(maxPageNumber);
-    } else if (pageNumber <= 0) {
-      setPageNumber(1);
-    }
-
     const payload: Partial<CallQuery> = {
       page: pageNumber,
       count: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
         : { days: Number(dateFilter) }),
-      ...(statusFilter !== "all" &&
-        (statusFilter === "true" ? { answered: true } : { answered: false })),
+      ...(statusFilter !== "all" && { answered: statusFilter }),
       ...(directionFilter !== "io" && { direction: directionFilter }),
     };
 
     getRecentCalls(accountSid, payload)
       .then(({ json }) => {
-        console.log(json);
         setCalls(json.data);
         setCallsTotal(json.total);
         setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
@@ -135,18 +126,17 @@ export const RecentCalls = () => {
   };
 
   useEffect(() => {
-    if (pageNumber === 1 && accountSid) {
-      handleFilterChange();
-    } else {
-      setPageNumber(1);
-    }
-  }, [accountSid, dateFilter, directionFilter, statusFilter, perPageFilter]);
-
-  useEffect(() => {
     if (accountSid) {
       handleFilterChange();
     }
-  }, [accountSid, pageNumber, perPageFilter]);
+  }, [
+    accountSid,
+    pageNumber,
+    dateFilter,
+    directionFilter,
+    statusFilter,
+    perPageFilter,
+  ]);
 
   return (
     <>
@@ -183,10 +173,7 @@ export const RecentCalls = () => {
           {!hasValue(calls) && <Spinner />}
           {hasLength(calls) ? (
             calls.map((call) => (
-              <div
-                className="item"
-                key={`${call.call_sid}-${call.attempted_at}-p${pageNumber}`}
-              >
+              <div className="item" key={call.call_sid}>
                 <details>
                   <summary>
                     <div className="item__info">
