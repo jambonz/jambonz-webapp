@@ -102,8 +102,8 @@ app.get(
     console.log("---");
 
     res.status(200).json(<PagedResponse<RecentCall>>{
+      page_size: query.count,
       total: filtered.length,
-      batch: 0,
       page: query.page,
       data: paged,
     });
@@ -222,8 +222,8 @@ app.get("/api/Accounts/:account_sid/Alerts", (req: Request, res: Response) => {
   console.log("---");
 
   res.status(200).json(<PagedResponse<Alert>>{
+    page_size: query.count,
     total: filtered.length,
-    batch: 0,
     page: query.page,
     data: paged,
   });

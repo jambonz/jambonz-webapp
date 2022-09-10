@@ -281,8 +281,8 @@ export interface CallQuery extends PageQuery {
 }
 
 export interface PagedResponse<Type> {
+  page_size: number;
   total: number;
-  batch: number;
   page: number;
   data: Type[];
 }
