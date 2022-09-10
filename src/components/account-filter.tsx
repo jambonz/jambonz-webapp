@@ -5,6 +5,7 @@ import { Icons } from "src/components/icons";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { Account } from "src/api/types";
+import { hasLength } from "src/utils";
 
 type AccountFilterProps = {
   label?: string;
@@ -30,7 +31,7 @@ export const AccountFilter = ({
   };
 
   useEffect(() => {
-    if (accounts && accounts.length > 0 && !defaultOption) {
+    if (hasLength(accounts) && !defaultOption) {
       setAccountSid(accounts[0].account_sid);
     }
   }, [accounts, defaultOption, setAccountSid]);
@@ -50,7 +51,7 @@ export const AccountFilter = ({
         ) : (
           accounts && !accounts.length && <option value="">No accounts</option>
         )}
-        {accounts &&
+        {hasLength(accounts) &&
           accounts
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((acct) => {

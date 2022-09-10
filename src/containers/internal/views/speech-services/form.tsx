@@ -4,7 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { Section } from "src/components";
-import { FileUpload, Selector, Passwd } from "src/components/forms";
+import {
+  FileUpload,
+  Selector,
+  Passwd,
+  AccountSelect,
+} from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   postSpeechService,
@@ -211,31 +216,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setGoogleServiceKey(null);
             }}
             disabled={credential ? true : false}
+            required
           />
         </fieldset>
-        {accounts && (
-          <fieldset>
-            <label htmlFor="account_name">Account</label>
-            <Selector
-              id="account_name"
-              name="account_name"
-              value={accountSid}
-              options={[
-                {
-                  name: "All accounts",
-                  value: "",
-                },
-              ].concat(
-                accounts.map((account) => ({
-                  name: account.name,
-                  value: account.account_sid,
-                }))
-              )}
-              onChange={(e) => setAccountSid(e.target.value)}
-              disabled={credential ? true : false}
-            />
-          </fieldset>
-        )}
+        <fieldset>
+          <AccountSelect
+            accounts={accounts}
+            account={[accountSid, setAccountSid]}
+            required={false}
+            defaultOption
+            disabled={credential ? true : false}
+          />
+        </fieldset>
         {vendor && (
           <fieldset>
             <label htmlFor="use_for_tts" className="chk">
@@ -272,6 +264,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   name="google_service_key"
                   handleFile={handleFile}
                   disabled={credential ? true : false}
+                  required
                 />
               </fieldset>
             )}

@@ -25,7 +25,13 @@ import {
   TECH_PREFIX_MINLENGTH,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
-import { Checkzone, Message, Passwd, Selector } from "src/components/forms";
+import {
+  Checkzone,
+  Message,
+  Passwd,
+  Selector,
+  AccountSelect,
+} from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -610,28 +616,13 @@ export const CarrierForm = ({
               <MXS>
                 <em>Prepend a leading + on origination attempts.</em>
               </MXS>
-              {accounts && (
-                <>
-                  <label htmlFor="account_name">Used By</label>
-                  <Selector
-                    id="account_name"
-                    name="account_name"
-                    value={accountSid}
-                    options={[
-                      {
-                        name: "All accounts",
-                        value: "",
-                      },
-                    ].concat(
-                      accounts.map((account) => ({
-                        name: account.name,
-                        value: account.account_sid,
-                      }))
-                    )}
-                    onChange={(e) => setAccountSid(e.target.value)}
-                  />
-                </>
-              )}
+              <AccountSelect
+                accounts={accounts}
+                account={[accountSid, setAccountSid]}
+                label="Used By"
+                required={false}
+                defaultOption
+              />
               {accountSid && hasLength(applications) && (
                 <>
                   <label htmlFor="application_sid">Default Application</label>

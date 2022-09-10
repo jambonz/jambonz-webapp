@@ -9,7 +9,7 @@ import {
   useServiceProviderData,
 } from "src/api";
 import { Section } from "src/components";
-import { Message, Selector } from "src/components/forms";
+import { Message, Selector, AccountSelect } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -25,6 +25,7 @@ import type {
   Carrier,
   UseApiDataMap,
 } from "src/api/types";
+import { hasLength } from "src/utils";
 
 type PhoneNumberFormProps = {
   phoneNumber?: UseApiDataMap<PhoneNumber>;
@@ -116,24 +117,22 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
       );
       navigate(ROUTE_INTERNAL_ACCOUNTS);
     }
+  }, [accounts]);
 
-    if (carriers && carriers.length === 0) {
+  useEffect(() => {
+    if (carriers && !carriers.length) {
       toastError(
         "You must create a SIP trunk before you can create a phone number."
       );
       navigate(ROUTE_INTERNAL_CARRIERS);
     }
-
-    if (accounts && !accountSid) {
-      setAccountSid(accounts[0].account_sid);
-    }
-  }, [accounts, accountSid]);
+  }, [carriers]);
 
   useEffect(() => {
-    if (carriers && !sipTrunkSid) {
+    if (hasLength(carriers) && !sipTrunkSid) {
       setSipTrunkSid(carriers[0].voip_carrier_sid);
     }
-  });
+  }, [carriers, sipTrunkSid]);
 
   return (
     <>
@@ -173,30 +172,17 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
                 }))}
                 onChange={(e) => {
                   setSipTrunkSid(e.target.value);
-                  console.log(e.target.value);
                 }}
                 disabled={phoneNumber ? true : false}
               />
             </fieldset>
           )}
-          {accounts && (
-            <fieldset>
-              <label htmlFor="account_name">
-                Account <span>*</span>
-              </label>
-              <Selector
-                id="account_name"
-                name="account_name"
-                required
-                value={accountSid}
-                options={accounts.map((account) => ({
-                  name: account.name,
-                  value: account.account_sid,
-                }))}
-                onChange={(e) => setAccountSid(e.target.value)}
-              />
-            </fieldset>
-          )}
+          <fieldset>
+            <AccountSelect
+              accounts={accounts}
+              account={[accountSid, setAccountSid]}
+            />
+          </fieldset>
           {applications && accountSid && (
             <fieldset>
               <label htmlFor="application_name">Application</label>

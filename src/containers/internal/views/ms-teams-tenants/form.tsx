@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { postMsTeamsTentant, putMsTeamsTenant, useApiData } from "src/api";
 import { Section } from "src/components";
-import { Message, Selector } from "src/components/forms";
+import { Message, Selector, AccountSelect } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -108,10 +108,8 @@ export const MsTeamsTenantForm = ({
         "You must create an account before you can create an Microsoft Teams Tenant."
       );
       navigate(ROUTE_INTERNAL_ACCOUNTS);
-    } else if (accounts && !accountSid) {
-      setAccountSid(accounts[0].account_sid);
     }
-  }, [accounts, accountSid]);
+  }, [accounts]);
 
   return (
     <Section slim>
@@ -133,24 +131,12 @@ export const MsTeamsTenantForm = ({
             onChange={(e) => setDomainName(e.target.value)}
           />
         </fieldset>
-        {accounts && (
-          <fieldset>
-            <label htmlFor="account_name">
-              Account <span>*</span>
-            </label>
-            <Selector
-              id="account_name"
-              name="account_name"
-              required
-              value={accountSid}
-              options={accounts.map((account) => ({
-                name: account.name,
-                value: account.account_sid,
-              }))}
-              onChange={(e) => setAccountSid(e.target.value)}
-            />
-          </fieldset>
-        )}
+        <fieldset>
+          <AccountSelect
+            accounts={accounts}
+            account={[accountSid, setAccountSid]}
+          />
+        </fieldset>
         {applications && (
           <fieldset>
             <label htmlFor="application_name">Application</label>

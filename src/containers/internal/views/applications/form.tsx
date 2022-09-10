@@ -4,7 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
 import { ClipBoard, Section } from "src/components";
-import { Selector, Checkzone, Passwd, Message } from "src/components/forms";
+import {
+  Selector,
+  Checkzone,
+  Passwd,
+  Message,
+  AccountSelect,
+} from "src/components/forms";
 import {
   vendors,
   LANG_EN_US,
@@ -161,10 +167,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         "You must create an account before you can create an application."
       );
       navigate(ROUTE_INTERNAL_ACCOUNTS);
-    } else if (accounts && !accountSid) {
-      setAccountSid(accounts[0].account_sid);
     }
-  }, [accounts, accountSid]);
+  }, [accounts]);
 
   useEffect(() => {
     if (application && application.data) {
@@ -262,24 +266,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             onChange={(e) => setApplicationName(e.target.value)}
           />
         </fieldset>
-        {accounts && (
-          <fieldset>
-            <label htmlFor="account_name">
-              Account <span>*</span>
-            </label>
-            <Selector
-              id="account_name"
-              name="account_name"
-              required
-              value={accountSid}
-              options={accounts.map((account) => ({
-                name: account.name,
-                value: account.account_sid,
-              }))}
-              onChange={(e) => setAccountSid(e.target.value)}
-            />
-          </fieldset>
-        )}
+        <fieldset>
+          <AccountSelect
+            accounts={accounts}
+            account={[accountSid, setAccountSid]}
+          />
+        </fieldset>
         {webhooks.map((webhook) => {
           return (
             <fieldset key={webhook.prefix}>
