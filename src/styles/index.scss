@@ -50,6 +50,14 @@ details {
   border: 2px solid ui-vars.$dark;
   max-width: vars.$widthinput;
 
+  /** Used for recent calls and alerts */
+  &.clean {
+    padding: 0;
+    border: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
   /** Used on the speech credentials form */
   &.fail {
     color: ui-vars.$jambonz;
@@ -85,6 +93,7 @@ details {
     > div {
       display: inline-block;
       padding-left: ui-vars.$px00;
+      vertical-align: top;
     }
   }
 }
@@ -149,7 +158,7 @@ details {
     justify-content: flex-end;
   }
 
-  &--grid {
+  &--multi {
     // display: grid;
     // grid-gap: ui-vars.$px02;
     // grid-template-columns: auto auto auto auto;
@@ -166,6 +175,23 @@ details {
   + * {
     margin-top: 0;
   }
+}
+
+/** Use for reccent-calls and alerts */
+.pre-grid {
+  @include mixins.code();
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: ui-vars.$px01;
+  text-align: left;
+  padding: ui-vars.$px03;
+  color: ui-vars.$pink;
+  background-color: ui-vars.$dark;
+  border-radius: ui-vars.$px01;
+}
+
+.pcap {
+  margin-top: ui-vars.$px02;
 }
 
 .txt--dark {

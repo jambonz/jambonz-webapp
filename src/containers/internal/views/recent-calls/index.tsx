@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ButtonGroup, H1, M, P } from "jambonz-ui";
+import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import {
@@ -15,17 +15,17 @@ import {
   Spinner,
   Pagination,
   SelectFilter,
+  Icons,
 } from "src/components";
 import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
 
 import type { Account, CallQuery, Pcap, RecentCall } from "src/api/types";
 
-type PcapButtonProp = {
+type PcapButtonProps = {
   call_data: RecentCall;
 };
 
-/** We can modify this so it only makes the fetch if the details are toggled open... */
-const PcapButton = ({ call_data }: PcapButtonProp) => {
+const PcapButton = ({ call_data }: PcapButtonProps) => {
   const [pcap, setPcap] = useState<Pcap>();
 
   useEffect(() => {
@@ -49,17 +49,93 @@ const PcapButton = ({ call_data }: PcapButtonProp) => {
       .catch((error) => {
         toastError(error.msg);
       });
-  }, [call_data]);
+  }, []);
+
+  if (pcap) {
+    return (
+      <a
+        href={pcap.data_url}
+        download={pcap.file_name}
+        className="btn btn--small pcap"
+      >
+        Download pcap file
+      </a>
+    );
+  }
+
+  return null;
+};
+
+type DetailsItemProps = {
+  call: RecentCall;
+};
+
+const DetailsItem = ({ call }: DetailsItemProps) => {
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="p">
-      {pcap ? (
-        <>
-          <a href={pcap.data_url} download={pcap.file_name}>
-            Download pcap file
-          </a>
-        </>
-      ) : null}
+    <div className="item">
+      <details
+        className="clean"
+        onToggle={(e: React.BaseSyntheticEvent) => {
+          if (e.target.open && !open) {
+            setOpen(e.target.open);
+          }
+        }}
+      >
+        <summary>
+          <div className="item__info">
+            <div className="item__title">
+              <strong>
+                {dayjs
+                  .unix(call.attempted_at / 1000)
+                  .format("YYYY MM.DD hh:mm a")}
+              </strong>
+              <span className="ms i txt--grey">
+                <Icons.Clock />
+                <span>{call.duration}s</span>
+              </span>
+            </div>
+            <div className="item__meta">
+              <div>
+                <div className="i txt--teal">
+                  {call.direction === "inbound" ? (
+                    <Icons.LogIn />
+                  ) : (
+                    <Icons.LogOut />
+                  )}
+                  <span>{call.direction}</span>
+                </div>
+              </div>
+              <div>
+                <div className="i txt--teal">
+                  <Icons.PhoneOutgoing />
+                  <span>{formatPhoneNumber(call.from)}</span>
+                </div>
+              </div>
+              <div>
+                <div className="i txt--teal">
+                  <Icons.PhoneIncoming />
+                  <span>{formatPhoneNumber(call.to)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </summary>
+        <div className="item__details">
+          <div className="pre-grid">
+            {Object.keys(call).map((key) => (
+              <React.Fragment key={key}>
+                <div>{key}:</div>
+                <div>
+                  {call[key as keyof typeof call].toString().padStart(10)}
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
+          {open && <PcapButton call_data={call} />}
+        </div>
+      </details>
     </div>
   );
 };
@@ -144,7 +220,7 @@ export const RecentCalls = () => {
         <H1>Recent Calls</H1>
       </section>
       {/* Setting overflow-x auto for now until we have a better responsive solution... */}
-      <section className="filters filters--grid">
+      <section className="filters filters--multi">
         <AccountFilter
           account={[accountSid, setAccountSid]}
           accounts={accounts}
@@ -172,57 +248,33 @@ export const RecentCalls = () => {
         <div className="list">
           {!hasValue(calls) && <Spinner />}
           {hasLength(calls) ? (
-            calls.map((call) => (
-              <div className="item" key={call.call_sid}>
-                <details>
-                  <summary>
-                    <div className="item__info">
-                      <div className="item__title">
-                        {/*it updates if button pressed??*/}
-                        {dayjs
-                          .unix(call.attempted_at / 1000)
-                          .format("YYYY MM.DD hh:mm a")}
-                      </div>
-                      <div className="item__meta">
-                        <div>
-                          {call.direction} from {formatPhoneNumber(call.from)}{" "}
-                          to {formatPhoneNumber(call.to)} with {call.trunk} for{" "}
-                          {call.duration}s
-                        </div>
-                      </div>
-                    </div>
-                  </summary>
-                  {Object.keys(call).map((key) => (
-                    <div key={key}>{`${key}: ${call[key as keyof typeof call]
-                      .toString()
-                      .padStart(10)}`}</div>
-                  ))}
-                  <PcapButton call_data={call} />
-                </details>
-              </div>
-            ))
+            calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
           ) : (
-            <M>No data</M>
+            <div className="item">
+              <M>No data</M>
+            </div>
           )}
         </div>
       </Section>
-      <ButtonGroup>
-        <P>
-          Total: {callsTotal} record{callsTotal === 1 ? "" : "s"}
-        </P>
-        {hasLength(calls) && (
-          <Pagination
-            pageNumber={pageNumber}
-            setPageNumber={setPageNumber}
-            maxPageNumber={maxPageNumber}
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {callsTotal} record{callsTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(calls) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={perPageSelection}
           />
-        )}
-        <SelectFilter
-          id="page_filter"
-          filter={[perPageFilter, setPerPageFilter]}
-          options={perPageSelection}
-        />
-      </ButtonGroup>
+        </ButtonGroup>
+      </footer>
     </>
   );
 };
