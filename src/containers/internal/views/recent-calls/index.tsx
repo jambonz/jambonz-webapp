@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
-import {
-  getRecentCalls,
-  getRecentCall,
-  getPcap,
-  useServiceProviderData,
-} from "src/api";
+import { getRecentCalls, useServiceProviderData } from "src/api";
 import { toastError } from "src/store";
 import {
   Section,
@@ -15,130 +10,11 @@ import {
   Spinner,
   Pagination,
   SelectFilter,
-  Icons,
 } from "src/components";
-import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
+import { DetailsItem } from "./details";
 
-import type { Account, CallQuery, Pcap, RecentCall } from "src/api/types";
-
-type PcapButtonProps = {
-  call_data: RecentCall;
-};
-
-const PcapButton = ({ call_data }: PcapButtonProps) => {
-  const [pcap, setPcap] = useState<Pcap>();
-
-  useEffect(() => {
-    getRecentCall(call_data.account_sid, call_data.call_sid)
-      .then(({ json }) => {
-        if (json.total > 0) {
-          getPcap(call_data.account_sid, call_data.call_sid)
-            .then(({ blob }) => {
-              if (blob) {
-                setPcap({
-                  data_url: URL.createObjectURL(blob),
-                  file_name: `callid-${call_data.sip_callid}.pcap`,
-                });
-              }
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
-        }
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
-  }, []);
-
-  if (pcap) {
-    return (
-      <a
-        href={pcap.data_url}
-        download={pcap.file_name}
-        className="btn btn--small pcap"
-      >
-        Download pcap file
-      </a>
-    );
-  }
-
-  return null;
-};
-
-type DetailsItemProps = {
-  call: RecentCall;
-};
-
-const DetailsItem = ({ call }: DetailsItemProps) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="item">
-      <details
-        className="clean"
-        onToggle={(e: React.BaseSyntheticEvent) => {
-          if (e.target.open && !open) {
-            setOpen(e.target.open);
-          }
-        }}
-      >
-        <summary>
-          <div className="item__info">
-            <div className="item__title">
-              <strong>
-                {dayjs
-                  .unix(call.attempted_at / 1000)
-                  .format("YYYY MM.DD hh:mm a")}
-              </strong>
-              <span className="ms i txt--grey">
-                <Icons.Clock />
-                <span>{call.duration}s</span>
-              </span>
-            </div>
-            <div className="item__meta">
-              <div>
-                <div className="i txt--teal">
-                  {call.direction === "inbound" ? (
-                    <Icons.LogIn />
-                  ) : (
-                    <Icons.LogOut />
-                  )}
-                  <span>{call.direction}</span>
-                </div>
-              </div>
-              <div>
-                <div className="i txt--teal">
-                  <Icons.PhoneOutgoing />
-                  <span>{formatPhoneNumber(call.from)}</span>
-                </div>
-              </div>
-              <div>
-                <div className="i txt--teal">
-                  <Icons.PhoneIncoming />
-                  <span>{formatPhoneNumber(call.to)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </summary>
-        <div className="item__details">
-          <div className="pre-grid">
-            {Object.keys(call).map((key) => (
-              <React.Fragment key={key}>
-                <div>{key}:</div>
-                <div>
-                  {call[key as keyof typeof call].toString().padStart(10)}
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
-          {open && <PcapButton call_data={call} />}
-        </div>
-      </details>
-    </div>
-  );
-};
+import type { Account, CallQuery, RecentCall } from "src/api/types";
 
 export const RecentCalls = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");

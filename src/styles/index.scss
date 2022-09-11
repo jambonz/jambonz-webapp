@@ -159,13 +159,12 @@ details {
   }
 
   &--multi {
-    // display: grid;
-    // grid-gap: ui-vars.$px02;
-    // grid-template-columns: auto auto auto auto;
-    justify-content: space-between;
     overflow-x: auto;
     white-space: nowrap;
-    // text-align: right;
+
+    > :first-child {
+      margin-left: auto;
+    }
   }
 
   > * + * {
@@ -177,7 +176,7 @@ details {
   }
 }
 
-/** Use for reccent-calls and alerts */
+/** Used for reccent-calls and alerts */
 .pre-grid {
   @include mixins.code();
   display: grid;
