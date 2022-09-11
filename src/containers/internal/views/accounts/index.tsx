@@ -36,7 +36,7 @@ export const Accounts = () => {
   return (
     <>
       <section className="mast">
-        <H1>Accounts</H1>
+        <H1 className="h2">Accounts</H1>
         <Link to={`${ROUTE_INTERNAL_ACCOUNTS}/add`} title="Add account">
           <Icon>
             <Icons.Plus />

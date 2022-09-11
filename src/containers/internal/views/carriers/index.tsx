@@ -83,7 +83,7 @@ export const Carriers = () => {
   return (
     <>
       <section className="mast">
-        <H1>Carriers</H1>
+        <H1 className="h2">Carriers</H1>
         <Link to={`${ROUTE_INTERNAL_CARRIERS}/add`} title="Add a Carrier">
           {" "}
           <Icon>

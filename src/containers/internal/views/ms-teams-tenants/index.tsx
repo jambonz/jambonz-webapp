@@ -47,7 +47,7 @@ export const MSTeamsTenants = () => {
   return (
     <>
       <section className="mast">
-        <H1>Microsoft Teams Tenants</H1>
+        <H1 className="h2">Microsoft Teams Tenants</H1>
         {hasLength(accounts) && (
           <Link
             to={`${ROUTE_INTERNAL_MS_TEAMS_TENANTS}/add`}

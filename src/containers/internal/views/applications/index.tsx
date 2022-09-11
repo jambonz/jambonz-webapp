@@ -66,7 +66,7 @@ export const Applications = () => {
   return (
     <>
       <section className="mast">
-        <H1>Applications</H1>
+        <H1 className="h2">Applications</H1>
         {accountSid && (
           <Link
             to={`${ROUTE_INTERNAL_APPLICATIONS}/add`}

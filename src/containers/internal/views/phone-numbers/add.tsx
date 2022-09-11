@@ -6,7 +6,7 @@ import { PhoneNumberForm } from "./form";
 export const AddPhoneNumber = () => {
   return (
     <>
-      <H1>Add a phone number</H1>
+      <H1 className="h2">Add a phone number</H1>
       <PhoneNumberForm />
     </>
   );

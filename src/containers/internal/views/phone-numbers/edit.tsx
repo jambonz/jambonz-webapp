@@ -22,7 +22,7 @@ export const EditPhoneNumber = () => {
 
   return (
     <>
-      <H1>Edit phone number</H1>
+      <H1 className="h2">Edit phone number</H1>
       <PhoneNumberForm phoneNumber={{ data, refetch, error }} />
     </>
   );

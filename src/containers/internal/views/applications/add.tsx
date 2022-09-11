@@ -6,7 +6,7 @@ import { ApplicationForm } from "./form";
 export const AddApplication = () => {
   return (
     <>
-      <H1>Add an application</H1>
+      <H1 className="h2">Add an application</H1>
       <ApplicationForm />
     </>
   );

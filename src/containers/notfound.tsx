@@ -14,7 +14,7 @@ export const NotFound = () => {
 
   return (
     <div className={classNames(classes)}>
-      <H1>That page doesn&apos;t exist.</H1>
+      <H1 className="h2">That page doesn&apos;t exist.</H1>
       {!authorized && (
         <Button as={Link} to={ROUTE_LOGIN} mainStyle="hollow" subStyle="white">
           Log in

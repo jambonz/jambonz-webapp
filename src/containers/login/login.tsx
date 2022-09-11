@@ -60,7 +60,7 @@ export const Login = () => {
 
   return (
     <>
-      <H1>Log in</H1>
+      <H1 className="h2">Log in</H1>
       <form onSubmit={handleSubmit}>
         <input
           required

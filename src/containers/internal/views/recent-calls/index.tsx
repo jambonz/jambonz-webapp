@@ -93,7 +93,7 @@ export const RecentCalls = () => {
   return (
     <>
       <section className="mast">
-        <H1>Recent Calls</H1>
+        <H1 className="h2">Recent Calls</H1>
       </section>
       {/* Setting overflow-x auto for now until we have a better responsive solution... */}
       <section className="filters filters--multi">

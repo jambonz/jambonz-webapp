@@ -101,7 +101,7 @@ export const Settings = ({
 
   return (
     <>
-      <H1>Settings</H1>
+      <H1 className="h2">Settings</H1>
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>

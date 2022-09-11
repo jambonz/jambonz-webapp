@@ -28,7 +28,7 @@ export const EditCarrier = () => {
 
   return (
     <>
-      <H1>Edit carrier</H1>
+      <H1 className="h2">Edit carrier</H1>
       <CarrierForm
         carrier={{ data, refetch, error }}
         carrierSipGateways={{

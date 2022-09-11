@@ -33,15 +33,15 @@
     }
 
     /** Used by recent calls */
-    .i {
+    span.i {
       margin-left: ui-vars.$px02;
     }
 
-    .i span {
+    span.i span {
       color: inherit;
     }
 
-    .i svg {
+    span.i svg {
       width: 16px;
       height: 16px;
     }

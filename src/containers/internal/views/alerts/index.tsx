@@ -31,7 +31,7 @@ export const Alerts = () => {
 
   return (
     <>
-      <H1>Alerts</H1>
+      <H1 className="h2">Alerts</H1>
       <Section>
         <P>Example using a test dev server for mocked API responses.</P>
         <P>

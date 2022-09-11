@@ -25,7 +25,7 @@ export const EditAccount = () => {
 
   return (
     <>
-      <H1>Edit account</H1>
+      <H1 className="h2">Edit account</H1>
       <AccountForm apps={apps} account={{ data, refetch, error }} />
       <ApiKeys
         path={`Accounts/${params.account_sid}/ApiKeys`}

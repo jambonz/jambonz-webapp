@@ -22,7 +22,7 @@ export const EditMsTeamsTenant = () => {
 
   return (
     <>
-      <H1>Edit Microsoft Teams Tenant</H1>
+      <H1 className="h2">Edit Microsoft Teams Tenant</H1>
       <MsTeamsTenantForm msTeamsTenant={{ data, refetch, error }} />
     </>
   );

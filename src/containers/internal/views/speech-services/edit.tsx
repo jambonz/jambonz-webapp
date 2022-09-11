@@ -22,7 +22,7 @@ export const EditSpeechService = () => {
 
   return (
     <>
-      <H1>Edit Speech Service</H1>
+      <H1 className="h2">Edit Speech Service</H1>
       <SpeechServiceForm credential={{ data, refetch, error }} />
     </>
   );

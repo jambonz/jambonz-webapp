@@ -83,7 +83,7 @@ export const PhoneNumbers = () => {
   return (
     <>
       <section className="mast">
-        <H1>Phone numbers</H1>
+        <H1 className="h2">Phone numbers</H1>
         {hasLength(accounts) && hasLength(carriers) && (
           <Link
             to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}

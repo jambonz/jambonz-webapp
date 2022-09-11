@@ -79,7 +79,7 @@ export const CreatePassword = () => {
 
   return (
     <>
-      <H1>Create password</H1>
+      <H1 className="h2">Create password</H1>
       <form onSubmit={handleSubmit}>
         <M>You must create a new password</M>
         <Passwd

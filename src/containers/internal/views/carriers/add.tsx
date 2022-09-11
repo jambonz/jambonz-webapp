@@ -6,7 +6,7 @@ import { CarrierForm } from "./form";
 export const AddCarrier = () => {
   return (
     <>
-      <H1>Add a carrier</H1>
+      <H1 className="h2">Add a carrier</H1>
       <CarrierForm />
     </>
   );
