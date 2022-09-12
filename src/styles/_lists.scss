@@ -23,25 +23,24 @@
       margin: 0 ui-vars.$px02 0 0;
     }
 
-    > a > svg {
+    > a svg {
       transform: translate3d(0, 0, 0);
       transition: transform ui-vars.$base-dur ui-vars.$base-ease;
     }
 
-    &:hover > a > svg {
+    &:hover > a svg {
       transform: translate3d(ui-vars.$px01, 0, 0);
     }
 
-    /** Used by recent calls */
-    span.i {
+    > * + * {
       margin-left: ui-vars.$px02;
     }
 
-    span.i span {
+    > * span {
       color: inherit;
     }
 
-    span.i svg {
+    > span svg {
       width: 16px;
       height: 16px;
     }
