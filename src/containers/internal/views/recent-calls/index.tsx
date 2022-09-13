@@ -81,14 +81,7 @@ export const RecentCalls = () => {
     if (accountSid) {
       handleFilterChange();
     }
-  }, [
-    accountSid,
-    pageNumber,
-    dateFilter,
-    directionFilter,
-    statusFilter,
-    perPageFilter,
-  ]);
+  }, [accountSid, pageNumber, dateFilter, directionFilter, statusFilter]);
 
   return (
     <>
@@ -126,9 +119,7 @@ export const RecentCalls = () => {
           {hasLength(calls) ? (
             calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
           ) : (
-            <div className="item">
-              <M>No data</M>
-            </div>
+            <M>No data</M>
           )}
         </div>
       </Section>
@@ -148,6 +139,7 @@ export const RecentCalls = () => {
             id="page_filter"
             filter={[perPageFilter, setPerPageFilter]}
             options={perPageSelection}
+            handleSelect={() => setPageNumber(1)}
           />
         </ButtonGroup>
       </footer>

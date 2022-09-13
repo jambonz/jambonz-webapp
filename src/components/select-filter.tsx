@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { classNames } from "jambonz-ui";
 
 import { Icons } from "src/components/icons";
@@ -11,6 +11,7 @@ type SelectFilterProps = {
   label?: string;
   options: SelectorOption[];
   filter: [string, Dispatch<SetStateAction<string>>];
+  handleSelect?: (e: ChangeEvent<HTMLSelectElement>) => void;
 };
 
 export const SelectFilter = ({
@@ -18,6 +19,7 @@ export const SelectFilter = ({
   label,
   options,
   filter: [filterValue, setFilterValue],
+  handleSelect,
 }: SelectFilterProps) => {
   const [focus, setFocus] = useState(false);
   const classes = {
@@ -35,7 +37,13 @@ export const SelectFilter = ({
           id={id}
           name={id}
           value={filterValue}
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => {
+            setFilterValue(e.target.value);
+
+            if (handleSelect) {
+              handleSelect(e);
+            }
+          }}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
         >
