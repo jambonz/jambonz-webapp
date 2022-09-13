@@ -61,10 +61,6 @@ export const Alerts = () => {
   };
 
   useEffect(() => {
-    setPageNumber(1);
-  }, [perPageFilter]);
-
-  useEffect(() => {
     if (accountSid) {
       handleFilterChange();
     }
@@ -98,9 +94,7 @@ export const Alerts = () => {
               </div>
             ))
           ) : (
-            <div className="item">
-              <M>No data</M>
-            </div>
+            <M>No data</M>
           )}
         </div>
       </Section>
@@ -120,6 +114,7 @@ export const Alerts = () => {
             id="page_filter"
             filter={[perPageFilter, setPerPageFilter]}
             options={perPageSelection}
+            handleSelect={() => setPageNumber(1)}
           />
         </ButtonGroup>
       </footer>
