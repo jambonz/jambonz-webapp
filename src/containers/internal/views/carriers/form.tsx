@@ -67,6 +67,7 @@ export const CarrierForm = ({
   const refSipPort = useRef<HTMLInputElement[]>([]);
   const refSmppIp = useRef<HTMLInputElement[]>([]);
   const refSmppPort = useRef<HTMLInputElement[]>([]);
+  const refOutbound = useRef<HTMLInputElement>();
 
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [smpps] = useApiData<Smpp[]>("Smpps");
@@ -651,10 +652,17 @@ export const CarrierForm = ({
             <fieldset>
               <Checkzone
                 hidden
+                ref={(ref: HTMLInputElement) => (refOutbound.current = ref)}
                 name="sip_credentials"
                 label="Outbound Authentication"
                 initialCheck={
-                  sipUser || sipPass || sipRealm || sipRegister ? true : false
+                  sipUser ||
+                  sipPass ||
+                  sipRealm ||
+                  sipRegister ||
+                  refOutbound.current?.checked
+                    ? true
+                    : false
                 }
                 handleChecked={(e) => {
                   if (!e.target.checked) {

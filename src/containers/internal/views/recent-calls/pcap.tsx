@@ -42,7 +42,7 @@ export const PcapButton = ({ call }: PcapButtonProps) => {
         download={pcap.file_name}
         className="btn btn--small pcap"
       >
-        Download pcap file
+        Download pcap
       </a>
     );
   }

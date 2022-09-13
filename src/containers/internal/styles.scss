@@ -7,9 +7,7 @@
   display: flex;
 
   header {
-    /** Inheriting from jambonz-ui .wrap */
-    padding-top: ui-vars.$px03;
-    padding-bottom: ui-vars.$px03;
+    padding: ui-vars.$px03;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -36,7 +34,7 @@
     }
 
     article {
-      padding: 0 ui-vars.$width-padding ui-vars.$px04;
+      padding: 0 ui-vars.$px03 ui-vars.$px04;
     }
 
     footer {

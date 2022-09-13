@@ -18,6 +18,7 @@
     @include ui-mixins.p();
     display: flex;
     align-items: center;
+    grid-gap: ui-vars.$px02;
 
     input[type="checkbox"] {
       margin: 0 ui-vars.$px02 0 0;
@@ -32,17 +33,13 @@
       transform: translate3d(ui-vars.$px01, 0, 0);
     }
 
-    > * + * {
-      margin-left: ui-vars.$px02;
-    }
+    > span {
+      @include ui-mixins.ms();
 
-    > * span {
-      color: inherit;
-    }
-
-    > span svg {
-      width: 16px;
-      height: 16px;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 
@@ -54,10 +51,7 @@
     @include ui-mixins.ms();
     display: flex;
     align-items: center;
-
-    > * + * {
-      margin-left: ui-vars.$px02;
-    }
+    grid-gap: ui-vars.$px02;
 
     svg {
       width: 16px;

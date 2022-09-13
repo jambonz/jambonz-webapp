@@ -24,7 +24,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
           }
         }}
       >
-        <summary>
+        <summary className="txt--jam">
           <div className="item__info">
             <div className="item__title">
               <strong>
@@ -32,22 +32,16 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
                   .unix(call.attempted_at / 1000)
                   .format("YYYY MM.DD hh:mm a")}
               </strong>
-              <span className="ms i txt--grey">
-                <Icons.Clock />
-                <span>{call.duration}s</span>
+              <span className="i txt--dark">
+                {call.direction === "inbound" ? (
+                  <Icons.LogIn />
+                ) : (
+                  <Icons.LogOut />
+                )}
+                <span>{call.direction}</span>
               </span>
             </div>
             <div className="item__meta">
-              <div>
-                <div className="i txt--teal">
-                  {call.direction === "inbound" ? (
-                    <Icons.LogIn />
-                  ) : (
-                    <Icons.LogOut />
-                  )}
-                  <span>{call.direction}</span>
-                </div>
-              </div>
               <div>
                 <div className="i txt--teal">
                   <Icons.PhoneOutgoing />
@@ -68,9 +62,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             {Object.keys(call).map((key) => (
               <React.Fragment key={key}>
                 <div>{key}:</div>
-                <div>
-                  {call[key as keyof typeof call].toString().padStart(10)}
-                </div>
+                <div>{call[key as keyof typeof call].toString()}</div>
               </React.Fragment>
             ))}
           </div>

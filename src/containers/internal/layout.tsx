@@ -44,7 +44,7 @@ export const Layout = () => {
         handleMenu={handleMenu}
       />
       <main>
-        <header className="wrap">
+        <header>
           <Icon subStyle="dark" onClick={handleMenu}>
             <Icons.Menu />
           </Icon>

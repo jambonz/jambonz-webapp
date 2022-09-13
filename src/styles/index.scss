@@ -16,6 +16,12 @@
   --mobile-media: #{vars.$widthbreak};
 }
 
+/** Could go in jambonz-ui */
+
+.txt--dark {
+  color: ui-vars.$dark;
+}
+
 /** Global things */
 
 pre,
@@ -50,7 +56,7 @@ details {
   border: 2px solid ui-vars.$dark;
   max-width: vars.$widthinput;
 
-  /** Used for recent calls and alerts */
+  /** Used for recent calls */
   &.clean {
     padding: 0;
     border: 0;
@@ -125,10 +131,7 @@ details {
 .ispin {
   display: flex;
   align-items: center;
-
-  > * + * {
-    margin-left: ui-vars.$px01;
-  }
+  grid-gap: ui-vars.$px01;
 }
 
 .mast {
@@ -161,14 +164,11 @@ details {
   &--multi {
     overflow-x: auto;
     white-space: nowrap;
+    grid-gap: ui-vars.$px02;
 
     > :first-child {
       margin-left: auto;
     }
-  }
-
-  > * + * {
-    margin-left: ui-vars.$px02;
   }
 
   + * {
@@ -176,12 +176,13 @@ details {
   }
 }
 
-/** Used for reccent-calls and alerts */
+/** Used for reccent-calls */
 .pre-grid {
   @include mixins.code();
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-gap: ui-vars.$px01;
+  grid-row-gap: ui-vars.$px01;
+  grid-column-gap: ui-vars.$px03;
   text-align: left;
   padding: ui-vars.$px03;
   color: ui-vars.$pink;
@@ -191,8 +192,4 @@ details {
 
 .pcap {
   margin-top: ui-vars.$px02;
-}
-
-.txt--dark {
-  color: ui-vars.$dark;
 }
