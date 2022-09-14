@@ -36,7 +36,6 @@ import {
   MoreHorizontal,
   PhoneOutgoing,
   PhoneIncoming,
-  Clock,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -83,5 +82,4 @@ export const Icons: IconMap = {
   MoreHorizontal,
   PhoneOutgoing,
   PhoneIncoming,
-  Clock,
 };

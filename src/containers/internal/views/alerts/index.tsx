@@ -12,6 +12,7 @@ import {
   Section,
   SelectFilter,
   Spinner,
+  Icons,
 } from "src/components";
 
 import type { Account, Alert, PageQuery } from "src/api/types";
@@ -68,7 +69,7 @@ export const Alerts = () => {
           id="date_filter"
           label="Date"
           filter={[dateFilter, setDateFilter]}
-          options={DATE_SELECTION}
+          options={DATE_SELECTION.slice(0, 2)}
         />
       </section>
       <Section {...(hasLength(alerts) ? { slim: true } : {})}>
@@ -76,9 +77,22 @@ export const Alerts = () => {
           {!hasValue(alerts) && <Spinner />}
           {hasLength(alerts) ? (
             alerts.map((alert) => (
-              <div key={`${alert.alert_type}-${alert.time}`}>
-                {dayjs.unix(alert.time / 1000).format("YYYY MM.DD hh:mm a")}{" "}
-                {alert.message}
+              <div className="item" key={`${alert.alert_type}-${alert.time}`}>
+                <div className="item__info">
+                  <div className="item__title txt--jam">
+                    <strong>
+                      {dayjs
+                        .unix(alert.time / 1000)
+                        .format("YYYY MM.DD hh:mm a")}
+                    </strong>
+                  </div>
+                  <div className="item__meta">
+                    <div className="i">
+                      <Icons.AlertCircle />
+                      <span>{alert.message}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))
           ) : (
