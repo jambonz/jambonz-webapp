@@ -3,7 +3,9 @@ import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import { getAlerts, useServiceProviderData } from "src/api";
+import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
 import { toastError } from "src/store";
+import { hasLength, hasValue } from "src/utils";
 import {
   AccountFilter,
   Pagination,
@@ -13,7 +15,6 @@ import {
 } from "src/components";
 
 import type { Account, Alert, PageQuery } from "src/api/types";
-import { hasLength, hasValue } from "src/utils";
 
 export const Alerts = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -26,19 +27,6 @@ export const Alerts = () => {
 
   const [alerts, setAlerts] = useState<Alert[]>();
   const [alertsTotal, setAlertsTotal] = useState(0);
-
-  const dateSelection = [
-    { name: "today", value: "today" },
-    { name: "last 7d", value: "7" },
-    { name: "last 14d", value: "14" },
-    { name: "last 30d", value: "30" },
-  ];
-
-  const perPageSelection = [
-    { name: "25 / page", value: "25" },
-    { name: "50 / page", value: "50" },
-    { name: "100 / page", value: "100" },
-  ];
 
   const handleFilterChange = () => {
     const payload: Partial<PageQuery> = {
@@ -64,7 +52,7 @@ export const Alerts = () => {
     if (accountSid) {
       handleFilterChange();
     }
-  }, [accountSid, pageNumber, dateFilter, perPageFilter]);
+  }, [accountSid, pageNumber, dateFilter]);
 
   return (
     <>
@@ -80,7 +68,7 @@ export const Alerts = () => {
           id="date_filter"
           label="Date"
           filter={[dateFilter, setDateFilter]}
-          options={dateSelection}
+          options={DATE_SELECTION}
         />
       </section>
       <Section {...(hasLength(alerts) ? { slim: true } : {})}>
@@ -113,7 +101,7 @@ export const Alerts = () => {
           <SelectFilter
             id="page_filter"
             filter={[perPageFilter, setPerPageFilter]}
-            options={perPageSelection}
+            options={PER_PAGE_SELECTION}
             handleSelect={() => setPageNumber(1)}
           />
         </ButtonGroup>
