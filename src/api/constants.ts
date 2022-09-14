@@ -72,6 +72,20 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   value: bit.toString(),
 }));
 
+/** List view filters*/
+export const DATE_SELECTION = [
+  { name: "today", value: "today" },
+  { name: "last 7d", value: "7" },
+  { name: "last 14d", value: "14" },
+  { name: "last 30d", value: "30" },
+];
+
+export const PER_PAGE_SELECTION = [
+  { name: "25 / page", value: "25" },
+  { name: "50 / page", value: "50" },
+  { name: "100 / page", value: "100" },
+];
+
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [
   {

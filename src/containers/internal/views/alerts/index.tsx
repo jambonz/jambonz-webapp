@@ -1,45 +1,125 @@
-import React, { useEffect } from "react";
-import { H1, P } from "jambonz-ui";
+import React, { useEffect, useState } from "react";
+import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
-import { getAlerts } from "src/api";
+import { getAlerts, useServiceProviderData } from "src/api";
+import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
 import { toastError } from "src/store";
-import { Section } from "src/components";
+import { hasLength, hasValue } from "src/utils";
+import {
+  AccountFilter,
+  Pagination,
+  Section,
+  SelectFilter,
+  Spinner,
+  Icons,
+} from "src/components";
+
+import type { Account, Alert, PageQuery } from "src/api/types";
 
 export const Alerts = () => {
-  useEffect(() => {
-    let ignore = false;
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [accountSid, setAccountSid] = useState("");
+  const [dateFilter, setDateFilter] = useState("today");
 
-    getAlerts("foo-sid", {
-      page: 1,
-      count: 25,
-      start: dayjs().startOf("date").toISOString(),
-    })
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+
+  const [alerts, setAlerts] = useState<Alert[]>();
+  const [alertsTotal, setAlertsTotal] = useState(0);
+
+  const handleFilterChange = () => {
+    const payload: Partial<PageQuery> = {
+      page: pageNumber,
+      count: Number(perPageFilter),
+      ...(dateFilter === "today"
+        ? { start: dayjs().startOf("date").toISOString() }
+        : { days: Number(dateFilter) }),
+    };
+
+    getAlerts(accountSid, payload)
       .then(({ json }) => {
-        if (!ignore) {
-          console.log(json);
-        }
+        setAlerts(json.data);
+        setAlertsTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
       })
       .catch((error) => {
         toastError(error.msg);
       });
+  };
 
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
+  useEffect(() => {
+    if (accountSid) {
+      handleFilterChange();
+    }
+  }, [accountSid, pageNumber, dateFilter]);
 
   return (
     <>
-      <H1 className="h2">Alerts</H1>
-      <Section>
-        <P>Example using a test dev server for mocked API responses.</P>
-        <P>
-          To run the dev mock api server run <code>npm run dev:server</code>.
-        </P>
-        <P>If the dev server is not running you will get an error toast.</P>
-        <P>Otherwise check the browser console to see the data logged...</P>
+      <section className="mast">
+        <H1 className="h2">Alerts</H1>
+      </section>
+      <section className="filters filters--multi">
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+        />
+        <SelectFilter
+          id="date_filter"
+          label="Date"
+          filter={[dateFilter, setDateFilter]}
+          options={DATE_SELECTION.slice(0, 2)}
+        />
+      </section>
+      <Section {...(hasLength(alerts) ? { slim: true } : {})}>
+        <div className="list">
+          {!hasValue(alerts) && <Spinner />}
+          {hasLength(alerts) ? (
+            alerts.map((alert) => (
+              <div className="item" key={`${alert.alert_type}-${alert.time}`}>
+                <div className="item__info">
+                  <div className="item__title txt--jam">
+                    <strong>
+                      {dayjs
+                        .unix(alert.time / 1000)
+                        .format("YYYY MM.DD hh:mm a")}
+                    </strong>
+                  </div>
+                  <div className="item__meta">
+                    <div className="i">
+                      <Icons.AlertCircle />
+                      <span>{alert.message}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <M>No data</M>
+          )}
+        </div>
       </Section>
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {alertsTotal} record{alertsTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(alerts) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+            handleSelect={() => setPageNumber(1)}
+          />
+        </ButtonGroup>
+      </footer>
     </>
   );
 };
