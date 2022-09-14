@@ -11,16 +11,20 @@ type PaginationProps = {
   pageNumber: number;
   setPageNumber: Dispatch<SetStateAction<number>>;
   maxPageNumber: number;
-};
 
-const nextTo = 1;
-const jumpNum = 3;
-const showMin = 4; // hard coded and tested for now, if we want something more sophisticated, sure
+  /** Sort of "secret" props... */
+  nextTo?: number;
+  jumpNum?: number;
+  showMin?: number;
+};
 
 export const Pagination = ({
   pageNumber,
   setPageNumber,
   maxPageNumber,
+  nextTo = 1,
+  jumpNum = 3,
+  showMin = 4,
 }: PaginationProps) => {
   const handleSetPageNumber = (num: number) => {
     setPageNumber(Math.max(1, Math.min(maxPageNumber, num)));

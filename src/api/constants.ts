@@ -72,7 +72,7 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   value: bit.toString(),
 }));
 
-/** List view filters*/
+/** List view filters */
 export const DATE_SELECTION = [
   { name: "today", value: "today" },
   { name: "last 7d", value: "7" },
