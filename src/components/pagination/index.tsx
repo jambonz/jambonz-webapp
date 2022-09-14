@@ -15,6 +15,7 @@ type PaginationProps = {
 
 const nextTo = 1;
 const jumpNum = 3;
+const showMin = 4; // hard coded and tested for now, if we want something more sophisticated, sure
 
 export const Pagination = ({
   pageNumber,
@@ -46,7 +47,10 @@ export const Pagination = ({
             num === 1 ||
             num === maxPageNumber ||
             (pageNumber > num && pageNumber <= num + nextTo) ||
-            (pageNumber < num && pageNumber >= num - nextTo)
+            (pageNumber < num && pageNumber >= num - nextTo) ||
+            (pageNumber <= showMin && num <= showMin) ||
+            (maxPageNumber - pageNumber + 1 <= showMin &&
+              maxPageNumber - num + 1 <= showMin)
           ) {
             return (
               <button
@@ -63,7 +67,11 @@ export const Pagination = ({
             );
           }
 
-          if (num === pageNumber + nextTo + 1) {
+          if (
+            pageNumber >= showMin
+              ? num === pageNumber + nextTo + 1
+              : num === showMin + 1
+          ) {
             return (
               <button
                 key="jump_right"
@@ -77,7 +85,11 @@ export const Pagination = ({
             );
           }
 
-          if (num === pageNumber - nextTo - 1) {
+          if (
+            maxPageNumber - pageNumber + 1 >= showMin
+              ? num === pageNumber - nextTo - 1
+              : maxPageNumber - num + 1 === showMin + 1
+          ) {
             return (
               <button
                 key="jump_left"
