@@ -10,8 +10,14 @@ import {
 } from "src/api";
 import { toastSuccess, toastError } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
-import { AccountFilter, Icons, Section, Spinner } from "src/components";
-import { hasLength, hasValue } from "src/utils";
+import {
+  AccountFilter,
+  Icons,
+  Section,
+  Spinner,
+  SearchFilter,
+} from "src/components";
+import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
@@ -23,6 +29,7 @@ export const Carriers = () => {
   const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
+  const [filter, setFilter] = useState("");
 
   const carriersFiltered = useMemo(() => {
     return carriers
@@ -31,6 +38,11 @@ export const Carriers = () => {
         )
       : [];
   }, [accountSid, carriers]);
+
+  const filteredCarriers = useFilteredResults<Carrier>(
+    filter,
+    carriersFiltered
+  );
 
   const handleDelete = () => {
     if (carrier) {
@@ -88,7 +100,11 @@ export const Carriers = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters filters--ender">
+      <section className="filters filters--spaced">
+        <SearchFilter
+          placeholder="Filter carriers"
+          filter={[filter, setFilter]}
+        />
         <AccountFilter
           account={[accountSid, setAccountSid]}
           accounts={accounts}
@@ -96,11 +112,11 @@ export const Carriers = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(carriersFiltered) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredCarriers) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(carriers) && <Spinner />}
-          {hasLength(carriersFiltered) ? (
-            carriersFiltered.map((carrier) => (
+          {hasLength(filteredCarriers) ? (
+            filteredCarriers.map((carrier) => (
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">
@@ -150,7 +166,7 @@ export const Carriers = () => {
               </div>
             ))
           ) : (
-            <M>No Carriers yet.</M>
+            <M>No Carriers.</M>
           )}
         </div>
       </Section>

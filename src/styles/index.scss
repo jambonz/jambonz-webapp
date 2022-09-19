@@ -159,6 +159,10 @@ details {
     justify-content: flex-end;
   }
 
+  &--spaced {
+    justify-content: space-between;
+  }
+
   &--multi {
     overflow-x: auto;
     white-space: nowrap;

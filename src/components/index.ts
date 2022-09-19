@@ -12,6 +12,7 @@ import { AccountFilter } from "./account-filter";
 import { SelectFilter } from "./select-filter";
 import { Pagination } from "./pagination";
 import { ApplicationFilter } from "./application-filter";
+import { SearchFilter } from "./search-filter";
 
 export {
   Icons,
@@ -30,4 +31,5 @@ export {
   SelectFilter,
   Pagination,
   ApplicationFilter,
+  SearchFilter,
 };

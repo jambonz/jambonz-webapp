@@ -8,10 +8,16 @@ import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
 } from "src/router/routes";
-import { Icons, Section, Spinner, AccountFilter } from "src/components";
+import {
+  Icons,
+  Section,
+  Spinner,
+  AccountFilter,
+  SearchFilter,
+} from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { hasLength, hasValue } from "src/utils";
+import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
 
@@ -19,8 +25,14 @@ export const Applications = () => {
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
-  const [applications, setApplications] = useState<Application[] | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
+  const [applications, setApplications] = useState<Application[]>();
+  const [filter, setFilter] = useState("");
+
+  const filteredApplications = useFilteredResults<Application>(
+    filter,
+    applications
+  );
 
   const getApplications = () => {
     getFetch<Application[]>(`${API_ACCOUNTS}/${accountSid}/Applications`)
@@ -59,7 +71,7 @@ export const Applications = () => {
   useEffect(() => {
     return function cleanup() {
       setAccountSid("");
-      setApplications(null);
+      setApplications(undefined);
     };
   }, [currentServiceProvider]);
 
@@ -78,17 +90,21 @@ export const Applications = () => {
           </Link>
         )}
       </section>
-      <section className="filters filters--ender">
+      <section className="filters filters--spaced">
+        <SearchFilter
+          placeholder="Filter applications"
+          filter={[filter, setFilter]}
+        />
         <AccountFilter
           account={[accountSid, setAccountSid]}
           accounts={accounts}
         />
       </section>
-      <Section {...(hasLength(applications) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredApplications) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(applications) && <Spinner />}
-          {hasLength(applications) ? (
-            applications.map((application) => {
+          {hasLength(filteredApplications) ? (
+            filteredApplications.map((application) => {
               return (
                 <div className="item" key={application.application_sid}>
                   <div className="item__info">
@@ -142,7 +158,7 @@ export const Applications = () => {
               );
             })
           ) : accountSid ? (
-            <M>No applications yet.</M>
+            <M>No applications.</M>
           ) : (
             <M>
               You must{" "}

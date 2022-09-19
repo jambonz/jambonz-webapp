@@ -3,6 +3,7 @@ import { useMobileMedia } from "../utils/use-mobile-media";
 import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
 import { useRedirect } from "./use-redirect";
+import { useFilteredResults } from "./use-filtered-results";
 import {
   FQDN,
   FQDN_TOP_LEVEL,
@@ -24,6 +25,11 @@ export const hasLength = <Type>(
   minlength = 0
 ): variable is NonNullable<Type[]> => {
   return hasValue(variable) && variable.length > minlength;
+};
+
+export const isObject = (obj: unknown) => {
+  /** null | undefined | Array will be "object" so exclude them */
+  return typeof obj === "object" && hasValue(obj) && !Array.isArray(obj);
 };
 
 export const isValidPasswd = (password: string) => {
@@ -120,4 +126,5 @@ export {
   withAccessControl,
   withSelectState,
   useRedirect,
+  useFilteredResults,
 };

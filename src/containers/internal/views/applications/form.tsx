@@ -442,13 +442,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                   options={
                     synthesis[synthVendor as keyof SynthesisVendors]
                       .filter((lang: VoiceLanguage) => lang.code === synthLang)
-                      .map((lang: VoiceLanguage) =>
+                      .flatMap((lang: VoiceLanguage) =>
                         lang.voices.map((voice: Voice) => ({
                           name: voice.name,
                           value: voice.value,
                         }))
-                      )
-                      .flat() as Voice[]
+                      ) as Voice[]
                   }
                   onChange={(e) => setSynthVoice(e.target.value)}
                 />

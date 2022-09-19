@@ -4,16 +4,19 @@ import { Link } from "react-router-dom";
 
 import { useServiceProviderData, deleteAccount } from "src/api";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
-import { Section, Icons, Spinner } from "src/components";
+import { Section, Icons, Spinner, SearchFilter } from "src/components";
 import { DeleteAccount } from "./delete";
 import { toastError, toastSuccess } from "src/store";
-import { hasLength, hasValue } from "src/utils";
+import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { Account } from "src/api/types";
 
 export const Accounts = () => {
   const [accounts, refetch] = useServiceProviderData<Account[]>("Accounts");
   const [account, setAccount] = useState<Account | null>(null);
+  const [filter, setFilter] = useState("");
+
+  const filteredAccounts = useFilteredResults<Account>(filter, accounts);
 
   const handleDelete = () => {
     if (account) {
@@ -43,11 +46,17 @@ export const Accounts = () => {
           </Icon>
         </Link>
       </section>
-      <Section {...(hasLength(accounts) ? { slim: true } : {})}>
+      <section className="filters filters--spaced">
+        <SearchFilter
+          placeholder="Filter accounts"
+          filter={[filter, setFilter]}
+        />
+      </section>
+      <Section {...(hasLength(filteredAccounts) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(accounts) && <Spinner />}
-          {hasLength(accounts) ? (
-            accounts.map((account) => {
+          {hasLength(filteredAccounts) ? (
+            filteredAccounts.map((account) => {
               return (
                 <div className="item" key={account.account_sid}>
                   <div className="item__info">
@@ -85,7 +94,7 @@ export const Accounts = () => {
               );
             })
           ) : (
-            <M>No Accounts yet.</M>
+            <M>No Accounts.</M>
           )}
         </div>
       </Section>

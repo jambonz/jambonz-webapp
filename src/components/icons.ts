@@ -17,6 +17,7 @@ import {
   Server,
   Trash2,
   GitHub,
+  Filter,
   XCircle,
   Settings,
   FilePlus,
@@ -30,12 +31,12 @@ import {
   ChevronDown,
   AlertCircle,
   CheckCircle,
-  MessageCircle,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
+  MessageCircle,
   PhoneOutgoing,
   PhoneIncoming,
+  MoreHorizontal,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -63,6 +64,7 @@ export const Icons: IconMap = {
   Server,
   Trash2,
   GitHub,
+  Filter,
   XCircle,
   Settings,
   FilePlus,
@@ -76,10 +78,10 @@ export const Icons: IconMap = {
   ChevronDown,
   AlertCircle,
   CheckCircle,
-  MessageCircle,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
+  MessageCircle,
   PhoneOutgoing,
   PhoneIncoming,
+  MoreHorizontal,
 };

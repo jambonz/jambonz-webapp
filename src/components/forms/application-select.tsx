@@ -53,19 +53,17 @@ export const ApplicationSelect = forwardRef<
           name={id}
           required={required}
           value={applicationSid}
-          options={
+          options={(defaultOption
+            ? [{ name: defaultOption, value: "" }]
+            : []
+          ).concat(
             hasLength(applications)
-              ? (defaultOption
-                  ? [{ name: defaultOption, value: "" }]
-                  : []
-                ).concat(
-                  applications.map((application) => ({
-                    name: application.name,
-                    value: application.application_sid,
-                  }))
-                )
+              ? applications.map((application) => ({
+                  name: application.name,
+                  value: application.application_sid,
+                }))
               : []
-          }
+          )}
           onChange={(e) => setApplicationSid(e.target.value)}
           {...restProps}
         />

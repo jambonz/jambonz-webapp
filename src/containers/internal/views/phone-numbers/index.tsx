@@ -8,13 +8,24 @@ import {
   useServiceProviderData,
 } from "src/api";
 import { toastError, toastSuccess } from "src/store";
-import { Icons, Section, Spinner, ApplicationFilter } from "src/components";
+import {
+  Icons,
+  Section,
+  Spinner,
+  ApplicationFilter,
+  SearchFilter,
+} from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import { hasLength, hasValue, formatPhoneNumber } from "src/utils";
+import {
+  hasLength,
+  hasValue,
+  formatPhoneNumber,
+  useFilteredResults,
+} from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
@@ -32,6 +43,12 @@ export const PhoneNumbers = () => {
   const [applicationSid, setApplicationSid] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [applyMassEdit, setApplyMassEdit] = useState(false);
+  const [filter, setFilter] = useState("");
+
+  const filteredPhoneNumbers = useFilteredResults<PhoneNumber>(
+    filter,
+    phoneNumbers
+  );
 
   const handleMassEdit = () => {
     Promise.all(
@@ -89,10 +106,16 @@ export const PhoneNumbers = () => {
           </Link>
         )}
       </section>
-      <Section {...(hasLength(phoneNumbers) ? { slim: true } : {})}>
+      <section className="filters filters--spaced">
+        <SearchFilter
+          placeholder="Filter phone numbers"
+          filter={[filter, setFilter]}
+        />
+      </section>
+      <Section {...(hasLength(filteredPhoneNumbers) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(phoneNumbers) && <Spinner />}
-          {hasLength(phoneNumbers) ? (
+          {hasLength(filteredPhoneNumbers) ? (
             <>
               <div className="item">
                 <div className="mass-edit">
@@ -104,7 +127,7 @@ export const PhoneNumbers = () => {
                       onChange={(e) => {
                         if (e.target.checked) {
                           setSelectAll(true);
-                          setSelectedPhoneNumbers(phoneNumbers);
+                          setSelectedPhoneNumbers(filteredPhoneNumbers);
                         } else {
                           setSelectAll(false);
                           setSelectedPhoneNumbers([]);
@@ -144,7 +167,7 @@ export const PhoneNumbers = () => {
                   </div>
                 )}
               </div>
-              {phoneNumbers.map((phoneNumber) => {
+              {filteredPhoneNumbers.map((phoneNumber) => {
                 return (
                   <div className="item" key={phoneNumber.phone_number_sid}>
                     <div className="item__info">
@@ -249,7 +272,7 @@ export const PhoneNumbers = () => {
             </>
           ) : hasLength(accounts) ? (
             hasLength(carriers) ? (
-              <div>No phone numbers yet.</div>
+              <div>No phone numbers.</div>
             ) : (
               <div>
                 You must{" "}

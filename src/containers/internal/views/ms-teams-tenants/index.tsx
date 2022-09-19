@@ -3,9 +3,14 @@ import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { deleteMsTeamsTenant, useApiData } from "src/api";
-import { hasLength, hasValue, withAccessControl } from "src/utils";
+import {
+  hasLength,
+  hasValue,
+  withAccessControl,
+  useFilteredResults,
+} from "src/utils";
 import { toastError, toastSuccess } from "src/store";
-import { Icons, Section, Spinner } from "src/components";
+import { Icons, Section, Spinner, SearchFilter } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
@@ -24,6 +29,12 @@ export const MSTeamsTenants = () => {
   );
   const [accounts] = useApiData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
+  const [filter, setFilter] = useState("");
+
+  const filteredMsTeamsTenants = useFilteredResults<MSTeamsTenant>(
+    filter,
+    msTeamsTenants
+  );
 
   const handleDelete = () => {
     if (msTeamsTenant) {
@@ -59,11 +70,17 @@ export const MSTeamsTenants = () => {
           </Link>
         )}
       </section>
-      <Section {...(hasLength(msTeamsTenants) ? { slim: true } : {})}>
+      <section className="filters filters--spaced">
+        <SearchFilter
+          placeholder="Filter ms teams tenants"
+          filter={[filter, setFilter]}
+        />
+      </section>
+      <Section {...(hasLength(filteredMsTeamsTenants) ? { slim: true } : {})}>
         <div className="list">
           {!hasValue(msTeamsTenants) && <Spinner />}
-          {hasLength(msTeamsTenants) ? (
-            msTeamsTenants.map((msTeamsTenant) => {
+          {hasLength(filteredMsTeamsTenants) ? (
+            filteredMsTeamsTenants.map((msTeamsTenant) => {
               return (
                 <div className="item" key={msTeamsTenant.ms_teams_tenant_sid}>
                   <div className="item__info">
@@ -134,7 +151,7 @@ export const MSTeamsTenants = () => {
               );
             })
           ) : hasLength(accounts) ? (
-            <M>No Microsoft Teams Tenant yet.</M>
+            <M>No Microsoft Teams Tenant.</M>
           ) : (
             <div>
               You must{" "}
