@@ -72,7 +72,7 @@ export const MSTeamsTenants = () => {
       </section>
       <section className="filters filters--spaced">
         <SearchFilter
-          placeholder="Filter ms teams tenants"
+          placeholder="Filter tenants"
           filter={[filter, setFilter]}
         />
       </section>

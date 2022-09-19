@@ -161,6 +161,12 @@ details {
 
   &--spaced {
     justify-content: space-between;
+
+    @include mixins.small() {
+      overflow-x: auto;
+      white-space: nowrap;
+      grid-gap: ui-vars.$px02;
+    }
   }
 
   &--multi {

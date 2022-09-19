@@ -108,7 +108,7 @@ export const PhoneNumbers = () => {
       </section>
       <section className="filters filters--spaced">
         <SearchFilter
-          placeholder="Filter phone numbers"
+          placeholder="Filter numbers"
           filter={[filter, setFilter]}
         />
       </section>
