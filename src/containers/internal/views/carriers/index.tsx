@@ -33,8 +33,10 @@ export const Carriers = () => {
 
   const carriersFiltered = useMemo(() => {
     return carriers
-      ? carriers.filter(
-          (carrier) => !accountSid || carrier.account_sid === accountSid
+      ? carriers.filter((carrier) =>
+          accountSid
+            ? carrier.account_sid === accountSid
+            : carrier.account_sid === null
         )
       : [];
   }, [accountSid, carriers]);

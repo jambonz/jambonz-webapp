@@ -574,7 +574,9 @@ export const CarrierForm = ({
             </div>
             {hasLength(predefinedCarriers) && !carrier && (
               <div className="sel sel--preset">
-                <label htmlFor="predefined_select">Presets</label>
+                <label htmlFor="predefined_select">
+                  Select a predefined carrier
+                </label>
                 <Selector
                   id="predefined_select"
                   name="predefined_select"
