@@ -33,7 +33,7 @@ export const useFilteredResults = <Type>(
       });
     }
 
-    return [];
+    return rawCollection;
   }, [rawCollection, splitFilter]);
 
   return filteredCollection;
