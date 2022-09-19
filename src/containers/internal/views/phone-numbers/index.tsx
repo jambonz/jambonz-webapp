@@ -117,7 +117,7 @@ export const PhoneNumbers = () => {
           {!hasValue(phoneNumbers) && <Spinner />}
           {hasLength(filteredPhoneNumbers) ? (
             <>
-              <div className="item">
+              <div className="item item--actions">
                 <div className="mass-edit">
                   <label htmlFor="select_mass" className="chk">
                     <input

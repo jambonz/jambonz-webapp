@@ -15,6 +15,16 @@
   align-items: center;
   justify-content: space-between;
 
+  &--actions {
+    overflow-x: auto;
+    white-space: nowrap;
+    grid-gap: ui-vars.$px02;
+
+    .btns {
+      flex-wrap: nowrap;
+    }
+  }
+
   @include mixins.small() {
     padding: ui-vars.$px02;
   }
