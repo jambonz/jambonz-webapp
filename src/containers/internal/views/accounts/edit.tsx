@@ -7,12 +7,15 @@ import { useApiData } from "src/api";
 import { toastError } from "src/store";
 import { AccountForm } from "./form";
 
-import type { Account, Application } from "src/api/types";
+import type { Account, Application, Limit } from "src/api/types";
 
 export const EditAccount = () => {
   const params = useParams();
   const [data, refetch, error] = useApiData<Account>(
     `Accounts/${params.account_sid}`
+  );
+  const [limitsData, refetchLimits] = useApiData<Limit[]>(
+    `Accounts/${params.account_sid}/Limits`
   );
   const [apps] = useApiData<Application[]>("Applications");
 
@@ -26,7 +29,11 @@ export const EditAccount = () => {
   return (
     <>
       <H1 className="h2">Edit account</H1>
-      <AccountForm apps={apps} account={{ data, refetch, error }} />
+      <AccountForm
+        apps={apps}
+        account={{ data, refetch, error }}
+        limits={{ data: limitsData, refetch: refetchLimits }}
+      />
       <ApiKeys
         path={`Accounts/${params.account_sid}/ApiKeys`}
         post={{ account_sid: params.account_sid }}

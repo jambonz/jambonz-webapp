@@ -8,6 +8,8 @@ export type CredentialStatus = "ok" | "fail" | "not tested";
 
 export type IpType = "ip" | "fqdn" | "fqdn-top-level" | "invalid";
 
+export type LimitCategories = "api_rate" | "voice_call_session" | "device";
+
 /** Status codes */
 
 export enum StatusCodes {
@@ -74,6 +76,11 @@ export interface CredentialTestResult {
   tts: CredentialTest;
 }
 
+export interface LimitField {
+  label: string;
+  category: LimitCategories;
+}
+
 /** API responses/payloads */
 
 export interface User {
@@ -100,6 +107,15 @@ export interface ServiceProvider {
   name: string;
   ms_teams_fqdn: null | string;
   service_provider_sid: string;
+}
+
+export interface Limit {
+  category: LimitCategories;
+  quantity: number;
+  account_sid?: string;
+  account_limits_sid?: string;
+  service_provider_sid?: string;
+  service_provider_limits_sid?: string;
 }
 
 export interface ApiKey {

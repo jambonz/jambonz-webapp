@@ -8,6 +8,7 @@ import {
   postAccount,
   getAccountWebhook,
   useApiData,
+  postAccountLimits,
 } from "src/api";
 import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
 import {
@@ -18,8 +19,9 @@ import {
   ApplicationSelect,
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
-import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
+import { DEFAULT_WEBHOOK, WEBHOOK_METHODS, LIMITS } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
+import { hasLength } from "src/utils";
 
 import type {
   WebHook,
@@ -27,14 +29,16 @@ import type {
   Application,
   WebhookMethod,
   UseApiDataMap,
+  Limit,
 } from "src/api/types";
 
 type AccountFormProps = {
   apps?: Application[];
+  limits?: UseApiDataMap<Limit[]>;
   account?: UseApiDataMap<Account>;
 };
 
-export const AccountForm = ({ apps, account }: AccountFormProps) => {
+export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
@@ -48,6 +52,7 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
   const [message, setMessage] = useState("");
   const [initialRegHook, setInitialRegHook] = useState(false);
   const [initialQueueHook, setInitialQueueHook] = useState(false);
+  const [localLimits, setLocalLimits] = useState<Limit[]>();
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -107,6 +112,24 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
     }
   };
 
+  const updateLimits = (sid: string) => {
+    if (localLimits) {
+      Promise.all(
+        localLimits.map((limit) => {
+          return postAccountLimits(sid, limit);
+        })
+      )
+        .then(() => {
+          if (limits) {
+            limits.refetch();
+          }
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -150,6 +173,8 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
         .catch((error) => {
           toastError(error.msg);
         });
+
+      updateLimits(account.data.account_sid);
     } else if (currentServiceProvider) {
       postAccount({
         name,
@@ -161,6 +186,7 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
         .then(({ json }) => {
           toastSuccess("Account created successfully");
           navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${json.sid}/edit`);
+          updateLimits(json.sid);
         })
         .catch((error) => {
           toastError(error.msg);
@@ -211,7 +237,18 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
         }
       }
     }
-  }, [account]);
+
+    if (limits && limits.data && hasLength(limits.data)) {
+      setLocalLimits(limits.data);
+    } else {
+      setLocalLimits(
+        LIMITS.map(({ category }) => ({
+          category,
+          quantity: 0,
+        }))
+      );
+    }
+  }, [account, limits]);
 
   return (
     <>
@@ -243,6 +280,35 @@ export const AccountForm = ({ apps, account }: AccountFormProps) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+          </fieldset>
+          <fieldset>
+            {LIMITS.map(({ category, label }) => {
+              return (
+                <React.Fragment key={category}>
+                  <label htmlFor={category}>{label}</label>
+                  <input
+                    id={category}
+                    type="number"
+                    name={category}
+                    placeholder={category}
+                    min="0"
+                    value={
+                      localLimits?.find((l) => l.category === category)
+                        ?.quantity
+                    }
+                    onChange={(e) => {
+                      setLocalLimits(
+                        localLimits?.map((l) =>
+                          l.category === category
+                            ? { ...l, quantity: Number(e.target.value) }
+                            : l
+                        )
+                      );
+                    }}
+                  />
+                </React.Fragment>
+              );
+            })}
           </fieldset>
           <fieldset>
             <label htmlFor="sip_realm">SIP realm</label>

@@ -572,7 +572,7 @@ export const CarrierForm = ({
                 onChange={(e) => setCarrierName(e.target.value)}
               />
             </div>
-            {hasLength(predefinedCarriers) && !carrier && (
+            {!carrier && (
               <div className="sel sel--preset">
                 <label htmlFor="predefined_select">
                   Select a predefined carrier
@@ -587,10 +587,14 @@ export const CarrierForm = ({
                       value: "",
                     },
                   ].concat(
-                    predefinedCarriers?.map((carrier: PredefinedCarriers) => ({
-                      name: carrier.name,
-                      value: carrier.name,
-                    }))
+                    predefinedCarriers
+                      ? predefinedCarriers.map(
+                          (carrier: PredefinedCarriers) => ({
+                            name: carrier.name,
+                            value: carrier.name,
+                          })
+                        )
+                      : []
                   )}
                   onChange={(e) => setPredefinedName(e.target.value)}
                 />

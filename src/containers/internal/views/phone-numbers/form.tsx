@@ -154,44 +154,48 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
               disabled={phoneNumber ? true : false}
             ></input>
           </fieldset>
-          {carriers && (
-            <fieldset>
-              <label htmlFor="sip_trunk">
-                SIP Trunk <span>*</span>
-              </label>
-              <Selector
-                id="sip_trunk"
-                name="sip_trunk"
-                required
-                value={sipTrunkSid}
-                options={carriers.map((trunk) => ({
-                  name: trunk.name,
-                  value: trunk.voip_carrier_sid,
-                }))}
-                onChange={(e) => {
-                  setSipTrunkSid(e.target.value);
-                }}
-                disabled={phoneNumber ? true : false}
-              />
-            </fieldset>
-          )}
+          <fieldset>
+            <label htmlFor="sip_trunk">
+              SIP Trunk <span>*</span>
+            </label>
+            <Selector
+              id="sip_trunk"
+              name="sip_trunk"
+              required
+              value={sipTrunkSid}
+              options={
+                carriers
+                  ? carriers.map((trunk) => ({
+                      name: trunk.name,
+                      value: trunk.voip_carrier_sid,
+                    }))
+                  : []
+              }
+              onChange={(e) => {
+                setSipTrunkSid(e.target.value);
+              }}
+              disabled={phoneNumber ? true : false}
+            />
+          </fieldset>
           <fieldset>
             <AccountSelect
               accounts={accounts}
               account={[accountSid, setAccountSid]}
             />
           </fieldset>
-          {applications && accountSid && (
-            <fieldset>
-              <ApplicationSelect
-                defaultOption="Choose application"
-                application={[applicationSid, setApplicationSid]}
-                applications={applications.filter(
-                  (application) => application.account_sid === accountSid
-                )}
-              />
-            </fieldset>
-          )}
+          <fieldset>
+            <ApplicationSelect
+              defaultOption="Choose application"
+              application={[applicationSid, setApplicationSid]}
+              applications={
+                applications
+                  ? applications.filter(
+                      (application) => application.account_sid === accountSid
+                    )
+                  : []
+              }
+            />
+          </fieldset>
           {message && <fieldset>{<Message message={message} />}</fieldset>}
           <fieldset>
             <ButtonGroup left>

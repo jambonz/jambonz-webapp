@@ -2,14 +2,20 @@ import React, { useState, useEffect } from "react";
 import { H1, P, Button, ButtonGroup, MS } from "jambonz-ui";
 
 import { useDispatch, toastSuccess, toastError } from "src/store";
-import { hasLength, withSelectState } from "src/utils";
-import { putServiceProvider, deleteServiceProvider } from "src/api";
+import { hasLength, hasValue, withSelectState } from "src/utils";
+import {
+  putServiceProvider,
+  deleteServiceProvider,
+  useServiceProviderData,
+  postServiceProviderLimits,
+} from "src/api";
 import { Modal, Section } from "src/components";
 import { Checkzone } from "src/components/forms";
 import { ApiKeys } from "src/containers/internal/api-keys";
 
-import type { ServiceProvider } from "src/api/types";
+import type { Limit, ServiceProvider } from "src/api/types";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
+import { LIMITS } from "src/api/constants";
 
 type SettingsProps = {
   serviceProviders: ServiceProvider[];
@@ -21,11 +27,13 @@ export const Settings = ({
   currentServiceProvider,
 }: SettingsProps) => {
   const dispatch = useDispatch();
+  const [limits, refetchLimits] = useServiceProviderData<Limit[]>("Limits");
   const [name, setName] = useState("");
   const [temp, setTemp] = useState("");
   const [teams, setTeams] = useState("");
   const [initialCheck, setInitialCheck] = useState(false);
   const [modal, setModal] = useState(false);
+  const [localLimits, setLocalLimits] = useState<Limit[]>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +50,23 @@ export const Settings = ({
         .catch((error) => {
           toastError(error.msg);
         });
+
+      if (localLimits) {
+        Promise.all(
+          localLimits.map((limit) => {
+            return postServiceProviderLimits(
+              currentServiceProvider.service_provider_sid,
+              limit
+            );
+          })
+        )
+          .then(() => {
+            refetchLimits();
+          })
+          .catch((error) => {
+            toastError(error.msg);
+          });
+      }
     }
   };
 
@@ -97,7 +122,20 @@ export const Settings = ({
         setInitialCheck(false);
       }
     }
-  }, [currentServiceProvider]);
+
+    if (hasValue(limits)) {
+      if (hasLength(limits)) {
+        setLocalLimits(limits);
+      } else {
+        setLocalLimits(
+          LIMITS.map(({ category }) => ({
+            category,
+            quantity: 0,
+          }))
+        );
+      }
+    }
+  }, [currentServiceProvider, limits]);
 
   return (
     <>
@@ -120,6 +158,35 @@ export const Settings = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+          </fieldset>
+          <fieldset>
+            {LIMITS.map(({ category, label }) => {
+              return (
+                <React.Fragment key={category}>
+                  <label htmlFor={category}>{label}</label>
+                  <input
+                    id={category}
+                    type="number"
+                    name={category}
+                    placeholder={category}
+                    min="0"
+                    value={
+                      localLimits?.find((l) => l.category === category)
+                        ?.quantity
+                    }
+                    onChange={(e) => {
+                      setLocalLimits(
+                        localLimits?.map((l) =>
+                          l.category === category
+                            ? { ...l, quantity: Number(e.target.value) }
+                            : l
+                        )
+                      );
+                    }}
+                  />
+                </React.Fragment>
+              );
+            })}
           </fieldset>
           <fieldset>
             <Checkzone

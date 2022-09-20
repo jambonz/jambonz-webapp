@@ -53,6 +53,7 @@ import type {
   TotalResponse,
   CallQuery,
   PageQuery,
+  Limit,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -250,11 +251,11 @@ export const postApplication = (payload: Partial<Application>) => {
 };
 
 export const postSpeechService = (
-  service_provider_sid: string,
+  sid: string,
   payload: Partial<SpeechCredential>
 ) => {
   return postFetch<SidResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials`,
+    `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`,
     payload
   );
 };
@@ -273,12 +274,9 @@ export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
   );
 };
 
-export const postCarrier = (
-  service_provider_sid: string,
-  payload: Partial<Carrier>
-) => {
+export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
   return postFetch<SidResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/VoipCarriers/`,
+    `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
     payload
   );
 };
@@ -293,6 +291,24 @@ export const postSmppGateway = (payload: Partial<SmppGateway>) => {
     payload
   );
 };
+
+export const postServiceProviderLimits = (
+  sid: string,
+  payload: Partial<Limit>
+) => {
+  return postFetch<SidResponse, Partial<Limit>>(
+    `${API_SERVICE_PROVIDERS}/${sid}/Limits`,
+    payload
+  );
+};
+
+export const postAccountLimits = (sid: string, payload: Partial<Limit>) => {
+  return postFetch<SidResponse, Partial<Limit>>(
+    `${API_ACCOUNTS}/${sid}/Limits`,
+    payload
+  );
+};
+
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: UserUpdatePayload) => {
@@ -327,12 +343,12 @@ export const putApplication = (sid: string, payload: Partial<Application>) => {
 };
 
 export const putSpeechService = (
-  service_provider_sid: string,
-  sid: string,
+  sid1: string,
+  sid2: string,
   payload: Partial<SpeechCredential>
 ) => {
   return putFetch<EmptyResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`,
+    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
     payload
   );
 };
@@ -355,12 +371,12 @@ export const putPhoneNumber = (sid: string, payload: Partial<PhoneNumber>) => {
 };
 
 export const putCarrier = (
-  service_provider_sid: string,
-  sid: string,
+  sid1: string,
+  sid2: string,
   payload: Partial<Carrier>
 ) => {
   return putFetch<EmptyResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/VoipCarriers/${sid}`,
+    `${API_SERVICE_PROVIDERS}/${sid1}/VoipCarriers/${sid2}`,
     payload
   );
 };
@@ -397,12 +413,9 @@ export const deleteApplication = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_APPLICATIONS}/${sid}`);
 };
 
-export const deleteSpeechService = (
-  service_provider_sid: string,
-  sid: string
-) => {
+export const deleteSpeechService = (sid1: string, sid2: string) => {
   return deleteFetch<EmptyResponse>(
-    `${API_SERVICE_PROVIDERS}/${service_provider_sid}/SpeechCredentials/${sid}`
+    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`
   );
 };
 
