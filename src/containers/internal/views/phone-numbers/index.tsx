@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, ButtonGroup, H1, Icon } from "jambonz-ui";
+import React, { useMemo, useState } from "react";
+import { Button, ButtonGroup, H1, Icon, MS } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import {
@@ -14,6 +14,7 @@ import {
   Spinner,
   ApplicationFilter,
   SearchFilter,
+  AccountFilter,
 } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -44,10 +45,19 @@ export const PhoneNumbers = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [applyMassEdit, setApplyMassEdit] = useState(false);
   const [filter, setFilter] = useState("");
+  const [accountSid, setAccountSid] = useState("");
+
+  const phoneNumbersFiltered = useMemo(() => {
+    return phoneNumbers
+      ? phoneNumbers.filter(
+          (phoneNumber) => !accountSid || phoneNumber.account_sid === accountSid
+        )
+      : [];
+  }, [accountSid, phoneNumbers]);
 
   const filteredPhoneNumbers = useFilteredResults<PhoneNumber>(
     filter,
-    phoneNumbers
+    phoneNumbersFiltered
   );
 
   const handleMassEdit = () => {
@@ -111,6 +121,11 @@ export const PhoneNumbers = () => {
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}
         />
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+          defaultOption
+        />
       </section>
       <Section {...(hasLength(filteredPhoneNumbers) ? { slim: true } : {})}>
         <div className="list">
@@ -118,53 +133,62 @@ export const PhoneNumbers = () => {
           {hasLength(filteredPhoneNumbers) ? (
             <>
               <div className="item item--actions">
-                <div className="mass-edit">
-                  <label htmlFor="select_mass" className="chk">
-                    <input
-                      id="select_mass"
-                      name="select_mass"
-                      type="checkbox"
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectAll(true);
-                          setSelectedPhoneNumbers(filteredPhoneNumbers);
-                        } else {
-                          setSelectAll(false);
-                          setSelectedPhoneNumbers([]);
-                        }
-                      }}
-                      checked={selectAll}
-                    />
-                    <div>Select all</div>
-                  </label>
-                </div>
-                {hasLength(selectedPhoneNumbers) && !applyMassEdit && (
-                  <ButtonGroup>
-                    <ApplicationFilter
-                      application={[applicationSid, setApplicationSid]}
-                      applications={applications}
-                      defaultOption="None"
-                    />
-                    <Button
-                      small
-                      onClick={() => {
-                        handleMassEdit();
-                        setSelectAll(false);
-                        setApplyMassEdit(true);
-                        setSelectedPhoneNumbers([]);
-                      }}
-                    >
-                      Apply
-                    </Button>
-                  </ButtonGroup>
-                )}
-                {applyMassEdit && (
-                  <div className="ispin">
-                    <Spinner small />
-                    <span className="ms txt--dark">
-                      Updating number routing...
-                    </span>
-                  </div>
+                {accountSid ? (
+                  <>
+                    <div className="mass-edit">
+                      <label htmlFor="select_mass" className="chk">
+                        <input
+                          id="select_mass"
+                          name="select_mass"
+                          type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectAll(true);
+                              setSelectedPhoneNumbers(filteredPhoneNumbers);
+                            } else {
+                              setSelectAll(false);
+                              setSelectedPhoneNumbers([]);
+                            }
+                          }}
+                          checked={selectAll}
+                        />
+                        <div>Select all</div>
+                      </label>
+                    </div>
+                    {hasLength(selectedPhoneNumbers) && !applyMassEdit && (
+                      <ButtonGroup>
+                        <ApplicationFilter
+                          application={[applicationSid, setApplicationSid]}
+                          applications={applications?.filter(
+                            (application) =>
+                              application.account_sid === accountSid
+                          )}
+                          defaultOption="None"
+                        />
+                        <Button
+                          small
+                          onClick={() => {
+                            handleMassEdit();
+                            setSelectAll(false);
+                            setApplyMassEdit(true);
+                            setSelectedPhoneNumbers([]);
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      </ButtonGroup>
+                    )}
+                    {applyMassEdit && (
+                      <div className="ispin">
+                        <Spinner small />
+                        <span className="ms txt--dark">
+                          Updating number routing...
+                        </span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <MS>Select an account to assign applications.</MS>
                 )}
               </div>
               {filteredPhoneNumbers.map((phoneNumber) => {
@@ -172,37 +196,39 @@ export const PhoneNumbers = () => {
                   <div className="item" key={phoneNumber.phone_number_sid}>
                     <div className="item__info">
                       <div className="item__title">
-                        <input
-                          id="select_item"
-                          name="select_item"
-                          type="checkbox"
-                          checked={
-                            selectAll ||
-                            selectedPhoneNumbers.find(
-                              (phone) =>
-                                phone.phone_number_sid ===
-                                phoneNumber.phone_number_sid
-                            )
-                              ? true
-                              : false
-                          }
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedPhoneNumbers((curr) => [
-                                ...curr,
-                                phoneNumber,
-                              ]);
-                            } else {
-                              setSelectedPhoneNumbers((curr) =>
-                                curr.filter(
-                                  (phone) =>
-                                    phone.phone_number_sid !==
-                                    phoneNumber.phone_number_sid
-                                )
-                              );
+                        {accountSid && (
+                          <input
+                            id="select_item"
+                            name="select_item"
+                            type="checkbox"
+                            checked={
+                              selectAll ||
+                              selectedPhoneNumbers.find(
+                                (phone) =>
+                                  phone.phone_number_sid ===
+                                  phoneNumber.phone_number_sid
+                              )
+                                ? true
+                                : false
                             }
-                          }}
-                        />
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedPhoneNumbers((curr) => [
+                                  ...curr,
+                                  phoneNumber,
+                                ]);
+                              } else {
+                                setSelectedPhoneNumbers((curr) =>
+                                  curr.filter(
+                                    (phone) =>
+                                      phone.phone_number_sid !==
+                                      phoneNumber.phone_number_sid
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                        )}
                         <Link
                           to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.phone_number_sid}/edit`}
                           title="Edit phone number"
