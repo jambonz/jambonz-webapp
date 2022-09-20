@@ -1,4 +1,10 @@
-import type { SipGateway, SmppGateway, WebHook, WebhookOption } from "./types";
+import type {
+  LimitField,
+  SipGateway,
+  SmppGateway,
+  WebHook,
+  WebhookOption,
+} from "./types";
 
 /** This window object is serialized and injected at docker runtime */
 /** The API url is constructed with the docker containers `ip:port` */
@@ -95,6 +101,23 @@ export const WEBHOOK_METHODS: WebhookOption[] = [
   {
     name: "GET",
     value: "GET",
+  },
+];
+
+/** Various system limits */
+/** For now we are only supporting `voice_call_session` */
+export const LIMITS: LimitField[] = [
+  // {
+  //   label: "Max registered devices",
+  //   category: "device",
+  // },
+  // {
+  //   label: "Max api calls per minute",
+  //   category: "api_rate",
+  // },
+  {
+    label: "Max concurrent calls",
+    category: "voice_call_session",
   },
 ];
 
