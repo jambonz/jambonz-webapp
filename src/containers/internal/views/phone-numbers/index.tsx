@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button, ButtonGroup, H1, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
@@ -14,6 +14,7 @@ import {
   Spinner,
   ApplicationFilter,
   SearchFilter,
+  AccountFilter,
 } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -32,10 +33,13 @@ import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
 
 export const PhoneNumbers = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
-  const [applications] = useServiceProviderData<Application[]>("Applications");
+  const [applications, setApplications] = useState<Application[]>();
+  const [fetchedApplications] =
+    useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumber | null>(null);
-  const [phoneNumbers, refetch] =
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>();
+  const [fetchedPhoneNumbers, refetch] =
     useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
   const [selectedPhoneNumbers, setSelectedPhoneNumbers] = useState<
     PhoneNumber[]
@@ -44,6 +48,7 @@ export const PhoneNumbers = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [applyMassEdit, setApplyMassEdit] = useState(false);
   const [filter, setFilter] = useState("");
+  const [accountSid, setAccountSid] = useState("");
 
   const filteredPhoneNumbers = useFilteredResults<PhoneNumber>(
     filter,
@@ -91,6 +96,26 @@ export const PhoneNumbers = () => {
     }
   };
 
+  useMemo(() => {
+    setPhoneNumbers(
+      fetchedPhoneNumbers
+        ? accountSid
+          ? fetchedPhoneNumbers.filter((n) => n.account_sid === accountSid)
+          : fetchedPhoneNumbers
+        : undefined
+    );
+  }, [fetchedPhoneNumbers, accountSid]);
+
+  useMemo(() => {
+    setApplications(
+      fetchedApplications
+        ? accountSid
+          ? fetchedApplications.filter((a) => a.account_sid === accountSid)
+          : fetchedApplications
+        : undefined
+    );
+  }, [fetchedApplications, accountSid]);
+
   return (
     <>
       <section className="mast">
@@ -110,6 +135,10 @@ export const PhoneNumbers = () => {
         <SearchFilter
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}
+        />
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
         />
       </section>
       <Section {...(hasLength(filteredPhoneNumbers) ? { slim: true } : {})}>
