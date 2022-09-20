@@ -160,37 +160,33 @@ export const Settings = ({
             />
           </fieldset>
           <fieldset>
-            {hasLength(localLimits) && (
-              <>
-                {LIMITS.map(({ category, label }) => {
-                  return (
-                    <React.Fragment key={category}>
-                      <label htmlFor={category}>{label}</label>
-                      <input
-                        id={category}
-                        type="number"
-                        name={category}
-                        placeholder={category}
-                        min="0"
-                        value={
-                          localLimits.find((l) => l.category === category)
-                            ?.quantity
-                        }
-                        onChange={(e) => {
-                          setLocalLimits(
-                            localLimits.map((l) =>
-                              l.category === category
-                                ? { ...l, quantity: Number(e.target.value) }
-                                : l
-                            )
-                          );
-                        }}
-                      />
-                    </React.Fragment>
-                  );
-                })}
-              </>
-            )}
+            {LIMITS.map(({ category, label }) => {
+              return (
+                <React.Fragment key={category}>
+                  <label htmlFor={category}>{label}</label>
+                  <input
+                    id={category}
+                    type="number"
+                    name={category}
+                    placeholder={category}
+                    min="0"
+                    value={
+                      localLimits?.find((l) => l.category === category)
+                        ?.quantity
+                    }
+                    onChange={(e) => {
+                      setLocalLimits(
+                        localLimits?.map((l) =>
+                          l.category === category
+                            ? { ...l, quantity: Number(e.target.value) }
+                            : l
+                        )
+                      );
+                    }}
+                  />
+                </React.Fragment>
+              );
+            })}
           </fieldset>
           <fieldset>
             <Checkzone

@@ -139,14 +139,12 @@ export const MsTeamsTenantForm = ({
             account={[accountSid, setAccountSid]}
           />
         </fieldset>
-        {applications && (
-          <fieldset>
-            <ApplicationSelect
-              application={[applicationSid, setApplicationSid]}
-              applications={applications}
-            />
-          </fieldset>
-        )}
+        <fieldset>
+          <ApplicationSelect
+            application={[applicationSid, setApplicationSid]}
+            applications={applications}
+          />
+        </fieldset>
         {message && <fieldset>{<Message message={message} />}</fieldset>}
         <fieldset>
           <ButtonGroup left>
