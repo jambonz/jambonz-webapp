@@ -47,19 +47,17 @@ export const AccountSelect = forwardRef<SelectorRef, AccountSelectProps>(
           name="account_sid"
           required={required}
           value={accountSid}
-          options={
+          options={(defaultOption
+            ? [{ name: "All accounts", value: "" }]
+            : []
+          ).concat(
             hasLength(accounts)
-              ? (defaultOption
-                  ? [{ name: "All accounts", value: "" }]
-                  : []
-                ).concat(
-                  accounts.map((account) => ({
-                    name: account.name,
-                    value: account.account_sid,
-                  }))
-                )
+              ? accounts.map((account) => ({
+                  name: account.name,
+                  value: account.account_sid,
+                }))
               : []
-          }
+          )}
           onChange={(e) => setAccountSid(e.target.value)}
           {...restProps}
         />
