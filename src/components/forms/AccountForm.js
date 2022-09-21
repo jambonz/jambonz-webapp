@@ -22,7 +22,7 @@ import CopyableText from '../elements/CopyableText';
 import Span from '../elements/Span';
 import handleErrors from "../../helpers/handleErrors";
 import styled from 'styled-components/macro';
-import { APP_API_BASE_URL } from "../../constants";
+import { APP_API_BASE_URL, LIMITS } from "../../constants";
 
 const StyledInputGroup = styled(InputGroup)`
   position: relative;
@@ -94,6 +94,7 @@ const AccountForm = props => {
   const [ sbcs, setSbcs ] = useState([]);
   const [ subspaceSipRealmOtherValue, setSubspaceSipRealmOtherValue ] = useState('');
   const [ subspaceEnable, setSubspaceEnable ] = useState(false);
+  const [localLimits, setLocalLimits] = useState([]);
 
   // Invalid form inputs
   const [ invalidName,          setInvalidName       ] = useState(false);
@@ -319,6 +320,16 @@ const AccountForm = props => {
             },
           });
           promiseList.push(applicationsPromise);
+
+          const limitsPromise = axios({
+            method: 'get',
+            baseURL: APP_API_BASE_URL,
+            url: `/Accounts/${[props.account_sid]}/Limits`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+          promiseList.push(limitsPromise);
         }
 
         const sbcsPromise = await axios({
@@ -337,13 +348,16 @@ const AccountForm = props => {
         setAccounts(accountsData);
 
         if (props.type === 'edit') {
+          // Application Data
           const allApplications = (promiseAllValues[1] && promiseAllValues[1].data) || [];
           const accountApplicationsData = allApplications.filter(app => {
             return app.account_sid === props.account_sid;
           });
           setAccountApplications(accountApplicationsData);
+          // Limits Data
+          setLocalLimits(promiseAllValues[2]?.data);
         }
-        setSbcs(promiseAllValues[2]?.data); 
+        setSbcs(promiseAllValues[3]?.data); 
 
         if (props.type === 'setup' && accountsData.length > 1) {
           history.push('/internal/accounts');
@@ -567,6 +581,20 @@ const AccountForm = props => {
         },
         data: axiosData,
       });
+      // Update Limits
+      if (props.type === 'edit') {
+        for (const limit of localLimits) {
+          await axios({
+            method: 'post',
+            baseURL: APP_API_BASE_URL,
+            url: `/Accounts/${props.account_sid}/Limits`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+            data: limit,
+          });
+        }
+      }
 
       if (props.type === 'setup') {
         isMounted = false;
@@ -633,6 +661,34 @@ const AccountForm = props => {
     },
   ];
 
+  const limitElements = [];
+  LIMITS.forEach(({ label, category }) => {
+    limitElements.push(<Label htmlFor={category}>{label}</Label>);
+    limitElements.push(
+      <Input
+        name={category}
+        id={category}
+        type="number"
+        min="0"
+        value={localLimits?.find(l => l.category === category)?.quantity}
+        onChange={e => {
+          let isLimitExisted = false;
+          const newLimits = localLimits?.map(l => {
+            if (l.category === category) {
+              isLimitExisted = true;
+              return { ...l, quantity: Number(e.target.value) };
+            } else {
+              return l;
+            }
+          });
+          if(!isLimitExisted) {
+            newLimits.push(({category, quantity: e.target.value}));
+          }
+          setLocalLimits(newLimits);
+        }}
+      />);
+  });
+
   return (
     showLoader
     ? <Loader
@@ -686,6 +742,7 @@ const AccountForm = props => {
           autoFocus={props.type === 'setup'}
           ref={refSipRealm}
         />
+        {props.type === 'edit' && limitElements}
         <Label htmlFor="webhookSecret">Webhook Secret</Label>
         <StyledInputGroup>
           <Label>{webhookSecret || "None"}</Label>

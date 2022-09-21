@@ -16,7 +16,7 @@ import Loader from '../blocks/Loader';
 import Modal from '../blocks/Modal';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import handleErrors from "../../helpers/handleErrors";
-import { APP_API_BASE_URL } from "../../constants";
+import { APP_API_BASE_URL, LIMITS } from "../../constants";
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -60,6 +60,22 @@ const SettingsForm = () => {
   const [serviceProviderSid, setServiceProviderSid] = useState('');
   const [serviceProviders, setServiceProviders] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [localLimits, setLocalLimits] = useState([]);
+
+  const callApi = async (path, method, data) => {
+    let obj = {
+      method: method,
+      baseURL: APP_API_BASE_URL,
+      url: path,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    };
+    if(data) {
+      obj = {...obj, data};
+    }
+    return await axios(obj);
+  };
 
   useEffect(() => {
     const getSettingsData = async () => {
@@ -74,14 +90,7 @@ const SettingsForm = () => {
           return;
         }
 
-        const serviceProvidersResponse = await axios({
-          method: 'get',
-          baseURL: APP_API_BASE_URL,
-          url: `/ServiceProviders`,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const serviceProvidersResponse = await callApi(`/ServiceProviders`, 'get');
 
         const sps = serviceProvidersResponse.data;
         const sp = sps.find(s => s.service_provider_sid === currentServiceProvider);
@@ -91,6 +100,12 @@ const SettingsForm = () => {
         setServiceProviderSid(sp.service_provider_sid || '');
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
+
+        // Fetch Service provider Limits
+        if (sp.service_provider_sid) {
+          const serviceProvidersLimitsResponse = await callApi(`/ServiceProviders/${sp.service_provider_sid}/Limits`, 'get');
+          setLocalLimits(serviceProvidersLimitsResponse.data);
+        }
       } catch (err) {
         handleErrors({ err, history, dispatch });
       } finally {
@@ -208,15 +223,10 @@ const SettingsForm = () => {
         name: serviceProviderName.trim(),
       };
 
-      await axios({
-        method: 'put',
-        baseURL: APP_API_BASE_URL,
-        url: `/ServiceProviders/${serviceProviderSid}`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        data,
-      });
+      await callApi(`/ServiceProviders/${serviceProviderSid}`, 'put', data);
+      for (const limit of localLimits) {
+        await callApi(`/ServiceProviders/${serviceProviderSid}/Limits`, 'post', limit);
+      }
 
       refreshMsTeamsData();
 
@@ -253,6 +263,34 @@ const SettingsForm = () => {
     }
   };
 
+  const limitElements = [];
+  LIMITS.forEach(({ label, category }) => {
+    limitElements.push(<Label htmlFor={category}>{label}</Label>);
+    limitElements.push(
+      <Input
+        name={category}
+        id={category}
+        type="number"
+        min="0"
+        value={localLimits?.find(l => l.category === category)?.quantity}
+        onChange={e => {
+          let isLimitExisted = false;
+          const newLimits = localLimits?.map(l => {
+            if (l.category === category) {
+              isLimitExisted = true;
+              return { ...l, quantity: Number(e.target.value) };
+            } else {
+              return l;
+            }
+          });
+          if(!isLimitExisted) {
+            newLimits.push(({category, quantity: e.target.value}));
+          }
+          setLocalLimits(newLimits);
+        }}
+      />);
+  });
+
   return (
     showLoader
       ? <Loader height="365px" />
@@ -272,6 +310,7 @@ const SettingsForm = () => {
               invalid={invalidServiceProviderName}
               ref={refServiceProviderName}
             />
+
             <div>{/* needed for CSS grid layout */}</div>
             <Checkbox
               noLeftMargin
@@ -296,6 +335,8 @@ const SettingsForm = () => {
               disabled={!enableMsTeams}
               title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
             />
+
+            {limitElements}
 
             {errorMessage && !confirmDelete && (
               <FormError grid message={errorMessage} />
