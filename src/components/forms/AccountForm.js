@@ -950,6 +950,7 @@ const AccountForm = props => {
           </Button>
         )}
 
+        {props.type === 'edit' && limitElements}
         { process.env.REACT_APP_ENABLE_SUBSPACE ? (
           <>
             <Label htmlFor="subspaceId">Subspace</Label>
@@ -1080,8 +1081,6 @@ const AccountForm = props => {
             )}
           </>
         ) : null }
-
-        {props.type === 'edit' && limitElements}
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}
