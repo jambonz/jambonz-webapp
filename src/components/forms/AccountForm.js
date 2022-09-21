@@ -744,7 +744,6 @@ const AccountForm = props => {
           autoFocus={props.type === 'setup'}
           ref={refSipRealm}
         />
-        {props.type === 'edit' && limitElements}
         <Label htmlFor="webhookSecret">Webhook Secret</Label>
         <StyledInputGroup>
           <Label>{webhookSecret || "None"}</Label>
@@ -1082,6 +1081,7 @@ const AccountForm = props => {
           </>
         ) : null }
 
+        {props.type === 'edit' && limitElements}
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}

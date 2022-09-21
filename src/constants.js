@@ -10,7 +10,7 @@ export const LIMITS = [
     //   category: "api_rate",
     // },
     {
-      label: "Max concurrent calls",
+      label: "Max concurrent calls (0=unlimited)",
       category: "voice_call_session",
     },
   ];
