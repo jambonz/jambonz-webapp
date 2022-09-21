@@ -263,36 +263,6 @@ const SettingsForm = () => {
     }
   };
 
-  const limitElements = [];
-  LIMITS.forEach(({ label, category }) => {
-    const quantity = localLimits?.find(l => l.category === category)?.quantity;
-    limitElements.push(<Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>);
-    limitElements.push(
-      <Input
-        name={`input-${category}`}
-        id={`input-${category}`}
-        key={`input-${category}`}
-        type="number"
-        min="0"
-        value={quantity ? quantity : 0}
-        onChange={e => {
-          let isLimitExisted = false;
-          const newLimits = localLimits?.map(l => {
-            if (l.category === category) {
-              isLimitExisted = true;
-              return { ...l, quantity: Number(e.target.value) };
-            } else {
-              return l;
-            }
-          });
-          if(!isLimitExisted) {
-            newLimits.push(({category, quantity: e.target.value}));
-          }
-          setLocalLimits(newLimits);
-        }}
-      />);
-  });
-
   return (
     showLoader
       ? <Loader height="365px" />
@@ -338,7 +308,35 @@ const SettingsForm = () => {
               title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
             />
 
-            {limitElements}
+            {LIMITS.map(({ label, category }) => {
+              const quantity = localLimits?.find(l => l.category === category)?.quantity;
+              return <React.Fragment key={`fragment-${category}`}>
+                <Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>
+                <Input
+                  name={`input-${category}`}
+                  id={`input-${category}`}
+                  key={`input-${category}`}
+                  type="number"
+                  min="0"
+                  value={quantity ? quantity : 0}
+                  onChange={e => {
+                    let isLimitExisted = false;
+                    const newLimits = localLimits?.map(l => {
+                      if (l.category === category) {
+                        isLimitExisted = true;
+                        return { ...l, quantity: Number(e.target.value) };
+                      } else {
+                        return l;
+                      }
+                    });
+                    if(!isLimitExisted) {
+                      newLimits.push(({category, quantity: e.target.value}));
+                    }
+                    setLocalLimits(newLimits);
+                  }}
+                />
+              </React.Fragment>;
+            })}
 
             {errorMessage && !confirmDelete && (
               <FormError grid message={errorMessage} />

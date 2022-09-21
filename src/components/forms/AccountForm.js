@@ -661,36 +661,6 @@ const AccountForm = props => {
     },
   ];
 
-  const limitElements = [];
-  LIMITS.forEach(({ label, category }) => {
-    const quantity = localLimits?.find(l => l.category === category)?.quantity;
-    limitElements.push(<Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>);
-    limitElements.push(
-      <Input
-        name={`input-${category}`}
-        id={`input-${category}`}
-        key={`input-${category}`}
-        type="number"
-        min="0"
-        value={quantity ? quantity : 0}
-        onChange={e => {
-          let isLimitExisted = false;
-          const newLimits = localLimits?.map(l => {
-            if (l.category === category) {
-              isLimitExisted = true;
-              return { ...l, quantity: Number(e.target.value) };
-            } else {
-              return l;
-            }
-          });
-          if(!isLimitExisted) {
-            newLimits.push(({category, quantity: e.target.value}));
-          }
-          setLocalLimits(newLimits);
-        }}
-      />);
-  });
-
   return (
     showLoader
     ? <Loader
@@ -950,7 +920,37 @@ const AccountForm = props => {
           </Button>
         )}
 
-        {props.type === 'edit' && limitElements}
+        {props.type === 'edit' && LIMITS.map(({ label, category }) => {
+          const quantity = localLimits?.find(l => l.category === category)?.quantity;
+          return <React.Fragment key={`fragment-${category}`}>
+            <Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>
+            <Input
+            name={`input-${category}`}
+            id={`input-${category}`}
+            key={`input-${category}`}
+            type="number"
+            min="0"
+            value={quantity ? quantity : 0}
+            onChange={e => {
+              let isLimitExisted = false;
+              const newLimits = localLimits?.map(l => {
+                if (l.category === category) {
+                  isLimitExisted = true;
+                  return { ...l, quantity: Number(e.target.value) };
+                } else {
+                  return l;
+                }
+              });
+              if(!isLimitExisted) {
+                newLimits.push(({category, quantity: e.target.value}));
+              }
+              setLocalLimits(newLimits);
+            }}
+            >
+            </Input>
+
+          </React.Fragment>;
+        })}
         { process.env.REACT_APP_ENABLE_SUBSPACE ? (
           <>
             <Label htmlFor="subspaceId">Subspace</Label>
