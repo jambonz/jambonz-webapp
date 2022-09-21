@@ -265,6 +265,7 @@ const SettingsForm = () => {
 
   const limitElements = [];
   LIMITS.forEach(({ label, category }) => {
+    const quantity = localLimits?.find(l => l.category === category)?.quantity;
     limitElements.push(<Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>);
     limitElements.push(
       <Input
@@ -273,7 +274,7 @@ const SettingsForm = () => {
         key={`input-${category}`}
         type="number"
         min="0"
-        value={localLimits?.find(l => l.category === category)?.quantity}
+        value={quantity ? quantity : 0}
         onChange={e => {
           let isLimitExisted = false;
           const newLimits = localLimits?.map(l => {
