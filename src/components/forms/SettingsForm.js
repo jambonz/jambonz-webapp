@@ -265,11 +265,12 @@ const SettingsForm = () => {
 
   const limitElements = [];
   LIMITS.forEach(({ label, category }) => {
-    limitElements.push(<Label htmlFor={category}>{label}</Label>);
+    limitElements.push(<Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>);
     limitElements.push(
       <Input
-        name={category}
-        id={category}
+        name={`input-${category}`}
+        id={`input-${category}`}
+        key={`input-${category}`}
         type="number"
         min="0"
         value={localLimits?.find(l => l.category === category)?.quantity}
