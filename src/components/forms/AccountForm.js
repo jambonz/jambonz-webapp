@@ -929,8 +929,9 @@ const AccountForm = props => {
             id={`input-${category}`}
             key={`input-${category}`}
             type="number"
+            placeholder={label}
             min="0"
-            value={quantity ? quantity : 0}
+            value={quantity ? quantity : ""}
             onChange={e => {
               let isLimitExisted = false;
               const newLimits = localLimits?.map(l => {
@@ -942,7 +943,7 @@ const AccountForm = props => {
                 }
               });
               if(!isLimitExisted) {
-                newLimits.push(({category, quantity: e.target.value}));
+                newLimits.push(({category, quantity: Number(e.target.value)}));
               }
               setLocalLimits(newLimits);
             }}
