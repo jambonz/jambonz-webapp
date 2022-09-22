@@ -1,0 +1,68 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+
+.search-filter {
+  position: relative;
+
+  &.appearance {
+    svg:last-child {
+      display: block;
+    }
+  }
+
+  &.focused {
+    svg:first-child {
+      color: ui-vars.$dark;
+    }
+  }
+
+  input[type="search"] {
+    @include ui-mixins.mxs();
+    font-family: inherit;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid ui-vars.$grey;
+    border-radius: ui-vars.$px01;
+    padding: ui-vars.$px00 ui-vars.$px01 ui-vars.$px00 32px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &::-webkit-search-cancel-button {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+    }
+
+    &::placeholder {
+      color: vars.$jeangrey;
+    }
+
+    &:focus {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
+  }
+
+  svg {
+    color: vars.$jeangrey;
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &:first-child {
+      left: ui-vars.$px01;
+    }
+
+    &:last-child {
+      right: ui-vars.$px01;
+      pointer-events: none;
+      display: none;
+    }
+  }
+}
