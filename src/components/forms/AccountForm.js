@@ -324,7 +324,7 @@ const AccountForm = props => {
           const limitsPromise = axios({
             method: 'get',
             baseURL: APP_API_BASE_URL,
-            url: `/Accounts/${[props.account_sid]}/Limits`,
+            url: `/Accounts/${props.account_sid}/Limits`,
             headers: {
               Authorization: `Bearer ${jwt}`,
             },
@@ -572,7 +572,7 @@ const AccountForm = props => {
         ? `/Accounts`
         : `/Accounts/${accountSid}`;
 
-      await axios({
+      const accountResp = await axios({
         method: props.type === 'add' ? 'post' : 'put',
         baseURL: APP_API_BASE_URL,
         url,
@@ -582,19 +582,22 @@ const AccountForm = props => {
         data: axiosData,
       });
       // Update Limits
-      if (props.type === 'edit') {
-        for (const limit of localLimits) {
-          await axios({
-            method: 'post',
+      const acc_sid = accountSid ? accountSid : accountResp.data.sid;
+      await Promise.all(
+        localLimits.map(l => {
+          const method = l.quantity ? 'post' : 'delete';
+          const limitUrl = l.quantity ? `/Accounts/${acc_sid}/Limits` : `/Accounts/${props.account_sid}/Limits?category=${l.category}`;
+          const obj = Object.assign({
+            method: method,
             baseURL: APP_API_BASE_URL,
-            url: `/Accounts/${props.account_sid}/Limits`,
+            url: limitUrl,
             headers: {
               Authorization: `Bearer ${jwt}`,
-            },
-            data: limit,
-          });
-        }
-      }
+            }
+          }, method === 'post' ? {data: l} : {});
+          return axios(obj);
+        })
+      );
 
       if (props.type === 'setup') {
         isMounted = false;
@@ -920,32 +923,25 @@ const AccountForm = props => {
           </Button>
         )}
 
-        {props.type === 'edit' && LIMITS.map(({ label, category }) => {
+        {LIMITS.map(({ label, category }) => {
           const quantity = localLimits?.find(l => l.category === category)?.quantity;
-          return <React.Fragment key={`fragment-${category}`}>
-            <Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>
+          return <React.Fragment key={category}>
+            <Label htmlFor={category}>{label}</Label>
             <Input
-            name={`input-${category}`}
-            id={`input-${category}`}
-            key={`input-${category}`}
+            name={category}
+            id={category}
             type="number"
-            placeholder={label}
+            placeholder="Enter Quantity (0=unlimited)"
             min="0"
-            value={quantity ? quantity : ""}
+            value={quantity >= 0 ? quantity : ""}
             onChange={e => {
-              let isLimitExisted = false;
-              const newLimits = localLimits?.map(l => {
-                if (l.category === category) {
-                  isLimitExisted = true;
-                  return { ...l, quantity: Number(e.target.value) };
-                } else {
-                  return l;
-                }
-              });
-              if(!isLimitExisted) {
-                newLimits.push(({category, quantity: Number(e.target.value)}));
+              const limit = localLimits.find(l => l.category === category);
+              const value = e.target.value ? Number(e.target.value) : "";
+              if (limit) {
+                setLocalLimits(localLimits.map(l => l.category === category ? {...l, quantity: value} : l));
+              } else {
+                setLocalLimits([...localLimits, {category, quantity: value}]);
               }
-              setLocalLimits(newLimits);
             }}
             >
             </Input>

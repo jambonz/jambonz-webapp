@@ -63,17 +63,14 @@ const SettingsForm = () => {
   const [localLimits, setLocalLimits] = useState([]);
 
   const callApi = async (path, method, data) => {
-    let obj = {
+    const obj = Object.assign({
       method: method,
       baseURL: APP_API_BASE_URL,
       url: path,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-    };
-    if(data) {
-      obj = {...obj, data};
-    }
+    }, data ? {data} : {});
     return await axios(obj);
   };
 
@@ -224,9 +221,11 @@ const SettingsForm = () => {
       };
 
       await callApi(`/ServiceProviders/${serviceProviderSid}`, 'put', data);
-      for (const limit of localLimits) {
-        await callApi(`/ServiceProviders/${serviceProviderSid}/Limits`, 'post', limit);
-      }
+      await Promise.all(
+        localLimits.map(l => l.quantity === "" ?
+          callApi(`/ServiceProviders/${serviceProviderSid}/Limits?category=${l.category}`, 'delete') : 
+          callApi(`/ServiceProviders/${serviceProviderSid}/Limits`, 'post', l))
+        );
 
       refreshMsTeamsData();
 
@@ -310,30 +309,23 @@ const SettingsForm = () => {
 
             {LIMITS.map(({ label, category }) => {
               const quantity = localLimits?.find(l => l.category === category)?.quantity;
-              return <React.Fragment key={`fragment-${category}`}>
-                <Label htmlFor={`label-${category}`} key={`label-${category}`}>{label}</Label>
+              return <React.Fragment key={category}>
+                <Label htmlFor={category}>{label}</Label>
                 <Input
-                  name={`input-${category}`}
-                  id={`input-${category}`}
-                  key={`input-${category}`}
+                  name={category}
+                  id={category}
                   type="number"
-                  placeholder={label}
+                  placeholder="Enter Quantity (0=unlimited)"
                   min="0"
-                  value={quantity ? quantity : ""}
+                  value={quantity >= 0 ? quantity : ""}
                   onChange={e => {
-                    let isLimitExisted = false;
-                    const newLimits = localLimits?.map(l => {
-                      if (l.category === category) {
-                        isLimitExisted = true;
-                        return { ...l, quantity: Number(e.target.value) };
-                      } else {
-                        return l;
-                      }
-                    });
-                    if(!isLimitExisted) {
-                      newLimits.push(({category, quantity: Number(e.target.value)}));
+                    const limit = localLimits.find(l => l.category === category);
+                    const value = e.target.value ? Number(e.target.value) : "";
+                    if (limit) {
+                      setLocalLimits(localLimits.map(l => l.category === category ? {...l, quantity: value} : l));
+                    } else {
+                      setLocalLimits([...localLimits, {category, quantity: value}]);
                     }
-                    setLocalLimits(newLimits);
                   }}
                 />
               </React.Fragment>;
