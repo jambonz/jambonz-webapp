@@ -265,11 +265,11 @@ export interface Carrier {
   smpp_enquire_link_interval: number;
 }
 
-export interface PredefinedCarriers extends Carrier {
+export interface PredefinedCarrier extends Carrier {
   requires_static_ip: boolean;
 }
 
-export interface ProtocolGateway {
+export interface Gateway {
   voip_carrier_sid: string;
   ipv4: string;
   port: number;
@@ -278,12 +278,12 @@ export interface ProtocolGateway {
   outbound: number;
 }
 
-export interface SipGateway extends ProtocolGateway {
+export interface SipGateway extends Gateway {
   sip_gateway_sid?: null | string;
   is_active: boolean;
 }
 
-export interface SmppGateway extends ProtocolGateway {
+export interface SmppGateway extends Gateway {
   smpp_gateway_sid?: null | string;
   is_primary: boolean;
   use_tls: boolean;

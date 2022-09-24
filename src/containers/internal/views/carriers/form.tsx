@@ -44,7 +44,7 @@ import type {
   Carrier,
   SipGateway,
   SmppGateway,
-  PredefinedCarriers,
+  PredefinedCarrier,
   Sbc,
   Smpp,
   Application,
@@ -74,7 +74,7 @@ export const CarrierForm = ({
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [predefinedCarriers] =
-    useApiData<PredefinedCarriers[]>("PredefinedCarriers");
+    useApiData<PredefinedCarrier[]>("PredefinedCarrier");
 
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
@@ -589,7 +589,7 @@ export const CarrierForm = ({
                   ].concat(
                     predefinedCarriers
                       ? predefinedCarriers.map(
-                          (carrier: PredefinedCarriers) => ({
+                          (carrier: PredefinedCarrier) => ({
                             name: carrier.name,
                             value: carrier.name,
                           })
