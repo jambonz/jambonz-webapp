@@ -6,7 +6,7 @@ import { hasLength } from "src/utils";
 import type { Limit, LimitCategories } from "src/api/types";
 
 type LocalLimitRef = {
-  [key in LimitCategories]: HTMLInputElement;
+  [key in LimitCategories]?: HTMLInputElement;
 };
 
 type LocalLimitsProps = {
@@ -17,7 +17,7 @@ type LocalLimitsProps = {
 
 /** Simple wrapper hook since this ref is so specific */
 export const useLocalLimitsRef = () => {
-  return useRef<LocalLimitRef>({} as LocalLimitRef);
+  return useRef<LocalLimitRef>({});
 };
 
 export const LocalLimits = ({
