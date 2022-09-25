@@ -585,17 +585,17 @@ const AccountForm = props => {
       const acc_sid = accountSid ? accountSid : accountResp.data.sid;
       await Promise.all(
         localLimits.map(l => {
-          const method = l.quantity ? 'post' : 'delete';
-          const limitUrl = l.quantity ? `/Accounts/${acc_sid}/Limits` : `/Accounts/${props.account_sid}/Limits?category=${l.category}`;
-          const obj = Object.assign({
+          const method = l.quantity === "" ? 'delete' : 'post';
+          const limitUrl = l.quantity === "" ? `/Accounts/${props.account_sid}/Limits?category=${l.category}` : `/Accounts/${acc_sid}/Limits`;
+          return axios({
             method: method,
             baseURL: APP_API_BASE_URL,
             url: limitUrl,
             headers: {
               Authorization: `Bearer ${jwt}`,
-            }
-          }, method === 'post' ? {data: l} : {});
-          return axios(obj);
+            },
+            data: method === 'post' ? l : undefined
+          });
         })
       );
 

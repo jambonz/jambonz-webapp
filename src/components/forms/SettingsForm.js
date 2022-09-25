@@ -63,15 +63,15 @@ const SettingsForm = () => {
   const [localLimits, setLocalLimits] = useState([]);
 
   const callApi = async (path, method, data) => {
-    const obj = Object.assign({
+    return await axios({
       method: method,
       baseURL: APP_API_BASE_URL,
       url: path,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-    }, data ? {data} : {});
-    return await axios(obj);
+      data: data ? data : undefined
+    });
   };
 
   useEffect(() => {
