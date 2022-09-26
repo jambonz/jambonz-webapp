@@ -105,7 +105,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     },
   ];
 
-  useRedirect(
+  useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
     "You must create an account before you can create an application."

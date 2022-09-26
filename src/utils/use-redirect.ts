@@ -4,10 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { toastError } from "src/store";
 
 import type { IMessage } from "src/store/types";
-import type { Account, Carrier } from "src/api/types";
 
-export const useRedirect = (
-  collection: Account[] | Carrier[] | undefined,
+export const useRedirect = <Type>(
+  collection: Type[] | undefined,
   redirect: string,
   message: IMessage
 ) => {

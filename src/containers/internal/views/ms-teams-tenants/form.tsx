@@ -46,7 +46,7 @@ export const MsTeamsTenantForm = ({
   const [applicationSid, setApplicationSid] = useState("");
   const [message, setMessage] = useState("");
 
-  useRedirect(
+  useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
     "You must create an account before you can create an Microsoft Teams Tenant."

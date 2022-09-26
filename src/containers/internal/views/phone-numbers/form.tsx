@@ -47,13 +47,13 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   const [applicationSid, setApplicationSid] = useState("");
   const [message, setMessage] = useState("");
 
-  useRedirect(
+  useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
     "You must create an account before you can create a phone number."
   );
 
-  useRedirect(
+  useRedirect<Carrier>(
     carriers,
     ROUTE_INTERNAL_CARRIERS,
     "You must create a SIP trunk before you can create a phone number."
