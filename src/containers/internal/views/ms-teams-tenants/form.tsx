@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { postMsTeamsTentant, putMsTeamsTenant, useApiData } from "src/api";
+import {
+  postMsTeamsTentant,
+  putMsTeamsTenant,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
 import { Section } from "src/components";
 import {
   Message,
@@ -33,8 +38,8 @@ export const MsTeamsTenantForm = ({
 }: MsTeamsTenantFormProps) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [accounts] = useApiData<Account[]>("Accounts");
-  const [applications] = useApiData<Application[]>("Applications");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [applications] = useServiceProviderData<Application[]>("Applications");
   const [msTeamsTenants] = useApiData<MSTeamsTenant[]>("MicrosoftTeamsTenants");
   const [domainName, setDomainName] = useState("");
   const [accountSid, setAccountSid] = useState("");
@@ -141,8 +146,15 @@ export const MsTeamsTenantForm = ({
         </fieldset>
         <fieldset>
           <ApplicationSelect
+            defaultOption="Choose application"
             application={[applicationSid, setApplicationSid]}
-            applications={applications}
+            applications={
+              applications
+                ? applications.filter(
+                    (application) => application.account_sid === accountSid
+                  )
+                : []
+            }
           />
         </fieldset>
         {message && <fieldset>{<Message message={message} />}</fieldset>}

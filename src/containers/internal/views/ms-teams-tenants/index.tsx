@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteMsTeamsTenant, useApiData } from "src/api";
+import {
+  deleteMsTeamsTenant,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
 import {
   hasLength,
   hasValue,
@@ -10,7 +14,13 @@ import {
   useFilteredResults,
 } from "src/utils";
 import { toastError, toastSuccess } from "src/store";
-import { Icons, Section, Spinner, SearchFilter } from "src/components";
+import {
+  Icons,
+  Section,
+  Spinner,
+  SearchFilter,
+  AccountFilter,
+} from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
@@ -27,13 +37,22 @@ export const MSTeamsTenants = () => {
   const [msTeamsTenants, refetch] = useApiData<MSTeamsTenant[]>(
     "MicrosoftTeamsTenants"
   );
-  const [accounts] = useApiData<Account[]>("Accounts");
-  const [applications] = useApiData<Application[]>("Applications");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [applications] = useServiceProviderData<Application[]>("Applications");
   const [filter, setFilter] = useState("");
+  const [accountSid, setAccountSid] = useState("");
+
+  const msTeamsTenantsFiltered = useMemo(() => {
+    return msTeamsTenants
+      ? msTeamsTenants.filter(
+          (mst) => !accountSid || mst.account_sid === accountSid
+        )
+      : [];
+  }, [accountSid, msTeamsTenants]);
 
   const filteredMsTeamsTenants = useFilteredResults<MSTeamsTenant>(
     filter,
-    msTeamsTenants
+    msTeamsTenantsFiltered
   );
 
   const handleDelete = () => {
@@ -74,6 +93,11 @@ export const MSTeamsTenants = () => {
         <SearchFilter
           placeholder="Filter ms teams tenants"
           filter={[filter, setFilter]}
+        />
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
+          defaultOption
         />
       </section>
       <Section {...(hasLength(filteredMsTeamsTenants) ? { slim: true } : {})}>

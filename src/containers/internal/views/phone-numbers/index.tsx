@@ -50,7 +50,7 @@ export const PhoneNumbers = () => {
   const phoneNumbersFiltered = useMemo(() => {
     return phoneNumbers
       ? phoneNumbers.filter(
-          (phoneNumber) => !accountSid || phoneNumber.account_sid === accountSid
+          (phn) => !accountSid || phn.account_sid === accountSid
         )
       : [];
   }, [accountSid, phoneNumbers]);
