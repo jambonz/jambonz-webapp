@@ -503,9 +503,9 @@ export const CarrierForm = ({
   };
 
   useEffect(() => {
-    if (predefinedName && predefinedCarriers && hasLength(predefinedCarriers)) {
+    if (predefinedName && hasLength(predefinedCarriers)) {
       setCarrierStates(
-        predefinedCarriers?.filter((a) => a.name === predefinedName)[0]
+        predefinedCarriers.filter((a) => a.name === predefinedName)[0]
       );
     }
   }, [predefinedName]);
