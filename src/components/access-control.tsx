@@ -4,7 +4,7 @@ import { useSelectState } from "src/store";
 
 import type { ACL } from "src/store/types";
 
-type ACLProps = {
+export type ACLProps = {
   acl: keyof ACL;
   children: React.ReactNode;
 };

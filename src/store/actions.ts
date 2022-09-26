@@ -1,4 +1,5 @@
 import { getUser, getServiceProviders } from "src/api";
+import { sortLocaleName } from "src/utils";
 
 import type { State, Action } from "./types";
 import type { ServiceProvider, User } from "src/api/types";
@@ -17,9 +18,7 @@ export const serviceProvidersAction = (
   action: Action<keyof State>
 ) => {
   // Sorts for consistent list view
-  action.payload = (<ServiceProvider[]>action.payload).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  action.payload = (<ServiceProvider[]>action.payload).sort(sortLocaleName);
 
   // Sets initial currentServiceProvider
   if (!state.currentServiceProvider) {

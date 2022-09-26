@@ -5,7 +5,7 @@
 npx lint-staged
 
 # run tests
-npm run test
+# npm run test
 
 # run build -- tsc
 # npm run build

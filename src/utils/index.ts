@@ -120,6 +120,11 @@ export const formatTime = (seconds: number) => {
   return `${minutes}m ${remainingSeconds}s`;
 };
 
+export const sortLocaleName = (
+  a: Required<{ name: string }>,
+  b: Required<{ name: string }>
+) => a.name.localeCompare(b.name);
+
 export {
   withSuspense,
   useMobileMedia,

@@ -29,6 +29,7 @@ with [typescript](https://www.typescriptlang.org/),
 [prettier](https://prettier.io/), [eslint](https://eslint.org/),
 [husky](https://typicode.github.io/husky/#/)
 and [lint-staged](https://www.npmjs.com/package/lint-staged).
+For testing we're using [cypress](https://docs.cypress.io/guides/component-testing/writing-your-first-component-test).
 
 ## :lock: Auth middleware
 
@@ -176,6 +177,17 @@ the `BEM` style we use:
   }
 }
 ```
+
+## :robot: Testing
+
+We're using [cypress](https://docs.cypress.io/guides/component-testing/writing-your-first-component-test)
+for component testing. Cypress is already configured and we're actively working on backfilling complete
+test coverage of the application. There are some issues open for this so you may refer to those to check
+out the progress.
+
+All new components should have tests written alongside them. For example, if you component is called
+`my-component.tsx` then you would also have a `my-component.cy.tsx` test file to go with it. You can
+refer to existing tests for some common patterns we use to write tests.
 
 ## :heart: Contributing
 
