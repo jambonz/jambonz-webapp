@@ -74,7 +74,7 @@ export const CarrierForm = ({
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [predefinedCarriers] =
-    useApiData<PredefinedCarrier[]>("PredefinedCarrier");
+    useApiData<PredefinedCarrier[]>("PredefinedCarriers");
 
   const [activeTab, setActiveTab] = useState("");
   const [predefinedName, setPredefinedName] = useState("");
