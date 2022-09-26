@@ -4,9 +4,9 @@ import { classNames } from "jambonz-ui";
 import { Icons } from "src/components/icons";
 
 import type { Account } from "src/api/types";
-import { hasLength } from "src/utils";
+import { hasLength, sortLocaleName } from "src/utils";
 
-type AccountFilterProps = {
+export type AccountFilterProps = {
   label?: string;
   account: [string, React.Dispatch<React.SetStateAction<string>>];
   accounts?: Account[];
@@ -54,15 +54,13 @@ export const AccountFilter = ({
             !accounts.length && <option value="">No accounts</option>
           )}
           {hasLength(accounts) &&
-            accounts
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((acct) => {
-                return (
-                  <option key={acct.account_sid} value={acct.account_sid}>
-                    {acct.name}
-                  </option>
-                );
-              })}
+            accounts.sort(sortLocaleName).map((acct) => {
+              return (
+                <option key={acct.account_sid} value={acct.account_sid}>
+                  {acct.name}
+                </option>
+              );
+            })}
         </select>
         <span>
           <Icons.ChevronUp />

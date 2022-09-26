@@ -25,3 +25,6 @@ yarn.lock
 
 # Jambonz
 /public/fonts
+
+# Cypress
+cypress/videos
