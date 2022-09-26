@@ -21,9 +21,20 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Cache cypress binary
+        id: cypress-cache
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.cache/Cypress
+          key: cypress-${{ hashFiles('package-lock.json') }}
+
       - name: Install node_modules
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm install
+
+      - name: Install cypress
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
+        run: npx cypress install
 
       - name: Run checks
         run: |
