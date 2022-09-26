@@ -127,10 +127,11 @@ export const PhoneNumbers = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(filteredPhoneNumbers) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
         <div className="list">
-          {!hasValue(phoneNumbers) && <Spinner />}
-          {hasLength(filteredPhoneNumbers) ? (
+          {!hasValue(phoneNumbers) ? (
+            <Spinner />
+          ) : hasLength(filteredPhoneNumbers) ? (
             <>
               <div className="item item--actions">
                 {accountSid ? (

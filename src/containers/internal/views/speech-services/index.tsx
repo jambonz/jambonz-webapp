@@ -88,10 +88,11 @@ export const SpeechServices = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(credentials) ? { slim: true } : {})}>
+      <Section {...(hasLength(credentials) && { slim: true })}>
         <div className="list">
-          {!hasValue(credentials) && <Spinner />}
-          {hasLength(credentials) ? (
+          {!hasValue(credentials) ? (
+            <Spinner />
+          ) : hasLength(credentials) ? (
             credentials.map((credential) => {
               return (
                 <div className="item" key={credential.speech_credential_sid}>

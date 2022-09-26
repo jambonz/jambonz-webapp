@@ -100,10 +100,11 @@ export const MSTeamsTenants = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(filteredMsTeamsTenants) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredMsTeamsTenants) && { slim: true })}>
         <div className="list">
-          {!hasValue(msTeamsTenants) && <Spinner />}
-          {hasLength(filteredMsTeamsTenants) ? (
+          {!hasValue(msTeamsTenants) ? (
+            <Spinner />
+          ) : hasLength(filteredMsTeamsTenants) ? (
             filteredMsTeamsTenants.map((msTeamsTenant) => {
               return (
                 <div className="item" key={msTeamsTenant.ms_teams_tenant_sid}>

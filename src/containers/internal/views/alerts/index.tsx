@@ -46,6 +46,7 @@ export const Alerts = () => {
       })
       .catch((error) => {
         toastError(error.msg);
+        setAlerts([]);
       });
   };
 
@@ -72,10 +73,11 @@ export const Alerts = () => {
           options={DATE_SELECTION.slice(0, 2)}
         />
       </section>
-      <Section {...(hasLength(alerts) ? { slim: true } : {})}>
+      <Section {...(hasLength(alerts) && { slim: true })}>
         <div className="list">
-          {!hasValue(alerts) && <Spinner />}
-          {hasLength(alerts) ? (
+          {!hasValue(alerts) ? (
+            <Spinner />
+          ) : hasLength(alerts) ? (
             alerts.map((alert) => (
               <div className="item" key={`${alert.alert_type}-${alert.time}`}>
                 <div className="item__info">

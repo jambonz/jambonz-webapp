@@ -62,6 +62,7 @@ export const RecentCalls = () => {
       })
       .catch((error) => {
         toastError(error.msg);
+        setCalls([]);
       });
   };
 
@@ -101,10 +102,11 @@ export const RecentCalls = () => {
           options={statusSelection}
         />
       </section>
-      <Section {...(hasLength(calls) ? { slim: true } : {})}>
+      <Section {...(hasLength(calls) && { slim: true })}>
         <div className="list">
-          {!hasValue(calls) && <Spinner />}
-          {hasLength(calls) ? (
+          {!hasValue(calls) ? (
+            <Spinner />
+          ) : hasLength(calls) ? (
             calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
           ) : (
             <M>No data</M>

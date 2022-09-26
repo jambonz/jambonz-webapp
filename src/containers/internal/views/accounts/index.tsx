@@ -52,10 +52,11 @@ export const Accounts = () => {
           filter={[filter, setFilter]}
         />
       </section>
-      <Section {...(hasLength(filteredAccounts) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredAccounts) && { slim: true })}>
         <div className="list">
-          {!hasValue(accounts) && <Spinner />}
-          {hasLength(filteredAccounts) ? (
+          {!hasValue(accounts) ? (
+            <Spinner />
+          ) : hasLength(filteredAccounts) ? (
             filteredAccounts.map((account) => {
               return (
                 <div className="item" key={account.account_sid}>

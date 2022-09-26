@@ -114,10 +114,11 @@ export const Carriers = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(filteredCarriers) ? { slim: true } : {})}>
+      <Section {...(hasLength(filteredCarriers) && { slim: true })}>
         <div className="list">
-          {!hasValue(carriers) && <Spinner />}
-          {hasLength(filteredCarriers) ? (
+          {!hasValue(carriers) ? (
+            <Spinner />
+          ) : hasLength(filteredCarriers) ? (
             filteredCarriers.map((carrier) => (
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
