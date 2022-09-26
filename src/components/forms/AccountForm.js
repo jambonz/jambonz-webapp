@@ -594,7 +594,7 @@ const AccountForm = props => {
             headers: {
               Authorization: `Bearer ${jwt}`,
             },
-            data: method === 'post' ? l : undefined
+            ...(method === 'post' && {data: l})
           });
         })
       );

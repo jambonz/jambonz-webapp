@@ -70,7 +70,7 @@ const SettingsForm = () => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      data: data ? data : undefined
+      ...(method === 'post' && {data: data})
     });
   };
 
