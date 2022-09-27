@@ -9,6 +9,7 @@ import {
   Selector,
   Passwd,
   AccountSelect,
+  Checkzone,
 } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -53,6 +54,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
+  const [customTtsCheck, setCustomTtsCheck] = useState(false);
+  const [customSttCheck, setCustomSttCheck] = useState(false);
+  const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
+  const [customSttEndpoint, setCustomSttEndpoint] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -93,6 +98,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         use_for_stt: sttCheck ? 1 : 0,
         aws_region: vendor === VENDOR_AWS ? region : null,
         region: vendor === VENDOR_MICROSOFT ? region : null,
+        use_custom_stt: customSttCheck ? 1 : 0,
+        use_custom_tts: customTtsCheck ? 1 : 0,
+        custom_stt_endpoint: customSttCheck ? customSttEndpoint || null : null,
+        custom_tts_endpoint: customTtsCheck ? customTtsEndpoint || null : null,
       };
 
       if (credential && credential.data) {
@@ -155,6 +164,26 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setTtsCheck(true);
       } else {
         setTtsCheck(false);
+      }
+
+      if (credential.data.use_custom_stt) {
+        setCustomSttCheck(true);
+      } else {
+        setCustomSttCheck(false);
+      }
+
+      if (credential.data.use_custom_tts) {
+        setCustomTtsCheck(true);
+      } else {
+        setCustomTtsCheck(false);
+      }
+
+      if (credential.data.custom_stt_endpoint) {
+        setCustomSttEndpoint(credential.data.custom_stt_endpoint);
+      }
+
+      if (credential.data.custom_tts_endpoint) {
+        setCustomTtsEndpoint(credential.data.custom_tts_endpoint);
       }
 
       if (credential.data.service_key) {
@@ -351,8 +380,45 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 },
               ].concat(regions[vendor as keyof RegionVendors])}
               onChange={(e) => setRegion(e.target.value)}
-              disabled={credential ? true : false}
             />
+          </fieldset>
+        )}
+        {vendor === VENDOR_MICROSOFT && (
+          <fieldset>
+            <Checkzone
+              hidden
+              name="use_custom_tts"
+              label="Use a custom voice"
+              initialCheck={customTtsCheck}
+              handleChecked={(e) => setCustomTtsCheck(e.target.checked)}
+            >
+              <input
+                id="custom_tts_endpoint"
+                required={customTtsCheck}
+                type="text"
+                name="custom_tts_endpoint"
+                placeholder="Custom voice endpoint"
+                value={customTtsEndpoint}
+                onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+              />
+            </Checkzone>
+            <Checkzone
+              hidden
+              name="use_custom_stt"
+              label="Use a custom speech model"
+              initialCheck={customSttCheck}
+              handleChecked={(e) => setCustomSttCheck(e.target.checked)}
+            >
+              <input
+                id="custom_stt_endpoint"
+                required={customSttCheck}
+                type="text"
+                name="custom_stt_endpoint"
+                placeholder="Custom speech endpoint"
+                value={customSttEndpoint}
+                onChange={(e) => setCustomSttEndpoint(e.target.value)}
+              />
+            </Checkzone>
           </fieldset>
         )}
         <fieldset>
