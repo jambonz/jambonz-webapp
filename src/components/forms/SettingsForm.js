@@ -16,7 +16,7 @@ import Loader from '../blocks/Loader';
 import Modal from '../blocks/Modal';
 import { ServiceProviderValueContext } from '../../contexts/ServiceProviderContext';
 import handleErrors from "../../helpers/handleErrors";
-import { APP_API_BASE_URL } from "../../constants";
+import { APP_API_BASE_URL, LIMITS } from "../../constants";
 
 const Td = styled.td`
   padding: 0.5rem 0;
@@ -60,6 +60,19 @@ const SettingsForm = () => {
   const [serviceProviderSid, setServiceProviderSid] = useState('');
   const [serviceProviders, setServiceProviders] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [localLimits, setLocalLimits] = useState([]);
+
+  const callApi = async (path, method, data) => {
+    return await axios({
+      method: method,
+      baseURL: APP_API_BASE_URL,
+      url: path,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      ...(data && {data})
+    });
+  };
 
   useEffect(() => {
     const getSettingsData = async () => {
@@ -74,14 +87,7 @@ const SettingsForm = () => {
           return;
         }
 
-        const serviceProvidersResponse = await axios({
-          method: 'get',
-          baseURL: APP_API_BASE_URL,
-          url: `/ServiceProviders`,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const serviceProvidersResponse = await callApi(`/ServiceProviders`, 'get');
 
         const sps = serviceProvidersResponse.data;
         const sp = sps.find(s => s.service_provider_sid === currentServiceProvider);
@@ -91,6 +97,12 @@ const SettingsForm = () => {
         setServiceProviderSid(sp.service_provider_sid || '');
         setEnableMsTeams(sp.ms_teams_fqdn ? true : false);
         setSbcDomainName(sp.ms_teams_fqdn || '');
+
+        // Fetch Service provider Limits
+        if (sp.service_provider_sid) {
+          const serviceProvidersLimitsResponse = await callApi(`/ServiceProviders/${sp.service_provider_sid}/Limits`, 'get');
+          setLocalLimits(serviceProvidersLimitsResponse.data);
+        }
       } catch (err) {
         handleErrors({ err, history, dispatch });
       } finally {
@@ -208,15 +220,12 @@ const SettingsForm = () => {
         name: serviceProviderName.trim(),
       };
 
-      await axios({
-        method: 'put',
-        baseURL: APP_API_BASE_URL,
-        url: `/ServiceProviders/${serviceProviderSid}`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        data,
-      });
+      await callApi(`/ServiceProviders/${serviceProviderSid}`, 'put', data);
+      await Promise.all(
+        localLimits.map(l => l.quantity === "" ?
+          callApi(`/ServiceProviders/${serviceProviderSid}/Limits?category=${l.category}`, 'delete') : 
+          callApi(`/ServiceProviders/${serviceProviderSid}/Limits`, 'post', l))
+        );
 
       refreshMsTeamsData();
 
@@ -272,6 +281,7 @@ const SettingsForm = () => {
               invalid={invalidServiceProviderName}
               ref={refServiceProviderName}
             />
+
             <div>{/* needed for CSS grid layout */}</div>
             <Checkbox
               noLeftMargin
@@ -296,6 +306,30 @@ const SettingsForm = () => {
               disabled={!enableMsTeams}
               title={(!enableMsTeams && "You must enable Microsoft Teams Direct Routing in order to provide an SBC Domain Name") || ""}
             />
+
+            {LIMITS.map(({ label, category }) => {
+              const quantity = localLimits?.find(l => l.category === category)?.quantity;
+              return <React.Fragment key={category}>
+                <Label htmlFor={category}>{label}</Label>
+                <Input
+                  name={category}
+                  id={category}
+                  type="number"
+                  placeholder="Enter Quantity (0=unlimited)"
+                  min="0"
+                  value={quantity >= 0 ? quantity : ""}
+                  onChange={e => {
+                    const limit = localLimits.find(l => l.category === category);
+                    const value = e.target.value ? Number(e.target.value) : "";
+                    if (limit) {
+                      setLocalLimits(localLimits.map(l => l.category === category ? {...l, quantity: value} : l));
+                    } else {
+                      setLocalLimits([...localLimits, {category, quantity: value}]);
+                    }
+                  }}
+                />
+              </React.Fragment>;
+            })}
 
             {errorMessage && !confirmDelete && (
               <FormError grid message={errorMessage} />

@@ -22,7 +22,7 @@ import CopyableText from '../elements/CopyableText';
 import Span from '../elements/Span';
 import handleErrors from "../../helpers/handleErrors";
 import styled from 'styled-components/macro';
-import { APP_API_BASE_URL } from "../../constants";
+import { APP_API_BASE_URL, LIMITS } from "../../constants";
 
 const StyledInputGroup = styled(InputGroup)`
   position: relative;
@@ -94,6 +94,7 @@ const AccountForm = props => {
   const [ sbcs, setSbcs ] = useState([]);
   const [ subspaceSipRealmOtherValue, setSubspaceSipRealmOtherValue ] = useState('');
   const [ subspaceEnable, setSubspaceEnable ] = useState(false);
+  const [localLimits, setLocalLimits] = useState([]);
 
   // Invalid form inputs
   const [ invalidName,          setInvalidName       ] = useState(false);
@@ -319,6 +320,16 @@ const AccountForm = props => {
             },
           });
           promiseList.push(applicationsPromise);
+
+          const limitsPromise = axios({
+            method: 'get',
+            baseURL: APP_API_BASE_URL,
+            url: `/Accounts/${props.account_sid}/Limits`,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+          promiseList.push(limitsPromise);
         }
 
         const sbcsPromise = await axios({
@@ -337,13 +348,16 @@ const AccountForm = props => {
         setAccounts(accountsData);
 
         if (props.type === 'edit') {
+          // Application Data
           const allApplications = (promiseAllValues[1] && promiseAllValues[1].data) || [];
           const accountApplicationsData = allApplications.filter(app => {
             return app.account_sid === props.account_sid;
           });
           setAccountApplications(accountApplicationsData);
+          // Limits Data
+          setLocalLimits(promiseAllValues[2]?.data);
         }
-        setSbcs(promiseAllValues[2]?.data); 
+        setSbcs(promiseAllValues[3]?.data); 
 
         if (props.type === 'setup' && accountsData.length > 1) {
           history.push('/internal/accounts');
@@ -558,7 +572,7 @@ const AccountForm = props => {
         ? `/Accounts`
         : `/Accounts/${accountSid}`;
 
-      await axios({
+      const accountResp = await axios({
         method: props.type === 'add' ? 'post' : 'put',
         baseURL: APP_API_BASE_URL,
         url,
@@ -567,6 +581,23 @@ const AccountForm = props => {
         },
         data: axiosData,
       });
+      // Update Limits
+      const acc_sid = accountSid ? accountSid : accountResp.data.sid;
+      await Promise.all(
+        localLimits.map(l => {
+          const method = l.quantity === "" ? 'delete' : 'post';
+          const limitUrl = l.quantity === "" ? `/Accounts/${props.account_sid}/Limits?category=${l.category}` : `/Accounts/${acc_sid}/Limits`;
+          return axios({
+            method: method,
+            baseURL: APP_API_BASE_URL,
+            url: limitUrl,
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+            ...(method === 'post' && {data: l})
+          });
+        })
+      );
 
       if (props.type === 'setup') {
         isMounted = false;
@@ -892,6 +923,31 @@ const AccountForm = props => {
           </Button>
         )}
 
+        {LIMITS.map(({ label, category }) => {
+          const quantity = localLimits?.find(l => l.category === category)?.quantity;
+          return <React.Fragment key={category}>
+            <Label htmlFor={category}>{label}</Label>
+            <Input
+            name={category}
+            id={category}
+            type="number"
+            placeholder="Enter Quantity (0=unlimited)"
+            min="0"
+            value={quantity >= 0 ? quantity : ""}
+            onChange={e => {
+              const limit = localLimits.find(l => l.category === category);
+              const value = e.target.value ? Number(e.target.value) : "";
+              if (limit) {
+                setLocalLimits(localLimits.map(l => l.category === category ? {...l, quantity: value} : l));
+              } else {
+                setLocalLimits([...localLimits, {category, quantity: value}]);
+              }
+            }}
+            >
+            </Input>
+
+          </React.Fragment>;
+        })}
         { process.env.REACT_APP_ENABLE_SUBSPACE ? (
           <>
             <Label htmlFor="subspaceId">Subspace</Label>
@@ -1022,7 +1078,6 @@ const AccountForm = props => {
             )}
           </>
         ) : null }
-
         {errorMessage && (
           <FormError grid message={errorMessage} />
         )}
