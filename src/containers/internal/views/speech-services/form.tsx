@@ -9,6 +9,7 @@ import {
   Selector,
   Passwd,
   AccountSelect,
+  Checkzone,
 } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -53,6 +54,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
+  const [useCustomTts, setUseCustomTts] = useState(false);
+  const [useCustomStt, setUseCustomStt] = useState(false);
+  const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
+  const [customSttEndpoint, setCustomSttEndpoint] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -91,8 +96,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           currentServiceProvider.service_provider_sid || null,
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
-        aws_region: vendor === VENDOR_AWS ? region : null,
-        region: vendor === VENDOR_MICROSOFT ? region : null,
+        ...(vendor === VENDOR_AWS && {
+          aws_region: region || null,
+        }),
+        ...(vendor === VENDOR_MICROSOFT && {
+          region: region || null,
+          use_custom_tts: useCustomTts ? 1 : 0,
+          custom_tts_endpoint: customTtsEndpoint || null,
+          use_custom_stt: useCustomStt ? 1 : 0,
+          custom_stt_endpoint: customSttEndpoint || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -180,6 +193,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.aws_region) {
         setRegion(credential.data.aws_region);
       }
+
+      setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
+      setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
+      setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
+      setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
     }
   }, [credential]);
 
@@ -354,6 +372,58 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               disabled={credential ? true : false}
             />
           </fieldset>
+        )}
+        {vendor === VENDOR_MICROSOFT && (
+          <React.Fragment>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="use_custom_tts"
+                label="Use for custom text-to-speech"
+                initialCheck={useCustomTts}
+                handleChecked={(e) => {
+                  setUseCustomTts(e.target.checked);
+                  if (!e.target.checked) {
+                    setCustomTtsEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_tts">Custom voice endpoint</label>
+                <input
+                  id="custom_tts_endpoint"
+                  type="text"
+                  name="custom_tts_endpoint"
+                  placeholder="Custom voice endpoint"
+                  value={customTtsEndpoint}
+                  onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="use_custom_stt"
+                label="Use for custom speech-to-text"
+                initialCheck={useCustomStt}
+                handleChecked={(e) => {
+                  setUseCustomStt(e.target.checked);
+                  if (!e.target.checked) {
+                    setCustomSttEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_stt">Custom speech endpoint</label>
+                <input
+                  id="custom_stt_endpoint"
+                  type="text"
+                  name="custom_stt_endpoint"
+                  placeholder="Custom speech endpoint"
+                  value={customSttEndpoint}
+                  onChange={(e) => setCustomSttEndpoint(e.target.value)}
+                />
+              </Checkzone>
+            </fieldset>
+          </React.Fragment>
         )}
         <fieldset>
           <ButtonGroup left>

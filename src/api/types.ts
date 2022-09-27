@@ -231,6 +231,10 @@ export interface SpeechCredential {
   access_key_id: null | string;
   secret_access_key: null | string;
   service_key: null | string;
+  use_custom_tts: number;
+  custom_tts_endpoint: null | string;
+  use_custom_stt: number;
+  custom_stt_endpoint: null | string;
 }
 
 export interface Alert {
