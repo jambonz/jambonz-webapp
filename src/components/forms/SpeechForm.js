@@ -376,9 +376,9 @@ const SpeechServicesAddEdit = (props) => {
           service_provider_sid: accountSid ? null : currentServiceProvider,
           account_sid: accountSid || null,
           use_custom_tts: useCustomTts ? 1 : 0,
-          custom_tts_endpoint: customTtsEndpoint,
+          custom_tts_endpoint: customTtsEndpoint || null,
           use_custom_stt : useCustomStt ? 1 : 0,
-          custom_stt_endpoint: customSttEndpoint
+          custom_stt_endpoint: customSttEndpoint || null
         }
       });
 
