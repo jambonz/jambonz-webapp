@@ -95,7 +95,7 @@ const SpeechServicesAddEdit = (props) => {
   const [apiKey, setApiKey] = useState('');
   const [region, setRegion] = useState('');
   const [awsregion, setAwsRegion] = useState('');
-  const [useACustomTts, setUseCustomTts] = useState(false);
+  const [useCustomTts, setUseCustomTts] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState('');
   const [customSttEndpoint, setCustomSttEndpoint] = useState('');
@@ -319,7 +319,7 @@ const SpeechServicesAddEdit = (props) => {
         }
       }
 
-      if (useACustomTts && !customTtsEndpoint) {
+      if (useCustomTts && !customTtsEndpoint) {
         errorMessages.push('Please provide a custom voice endpoint.');
         setInvalidUseCustomTts(true);
         if (!focusHasBeenSet) {
@@ -375,7 +375,7 @@ const SpeechServicesAddEdit = (props) => {
           use_for_stt: useForStt,
           service_provider_sid: accountSid ? null : currentServiceProvider,
           account_sid: accountSid || null,
-          use_custom_tts: useACustomTts ? 1 : 0,
+          use_custom_tts: useCustomTts ? 1 : 0,
           custom_tts_endpoint: customTtsEndpoint,
           use_custom_stt : useCustomStt ? 1 : 0,
           custom_stt_endpoint: customSttEndpoint
@@ -697,7 +697,7 @@ const SpeechServicesAddEdit = (props) => {
               name="useACustomVoice"
               id="useACustomVoice"
               label="Use a custom voice"
-              checked={useACustomTts}
+              checked={useCustomTts}
               onChange={e => setUseCustomTts(e.target.checked)}
               invalid={invalidUseCustomTts}
               ref={refUseCustomTts}
@@ -711,7 +711,7 @@ const SpeechServicesAddEdit = (props) => {
               placeholder="Custom voice endpoint"
               invalid={invalidUseCustomTts}
               ref={refUseCustomTts}
-              disabled={!useACustomTts}
+              disabled={!useCustomTts}
             />
             <div />
             <Checkbox
