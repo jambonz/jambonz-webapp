@@ -365,20 +365,29 @@ const SpeechServicesAddEdit = (props) => {
         },
         data: {
           vendor,
-          service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
-          access_key_id: vendor === 'aws' ? accessKeyId : null,
-          secret_access_key: vendor === 'aws' ? secretAccessKey : null,
-          aws_region: vendor === 'aws' ? awsregion : null,
-          api_key: ['microsoft', 'wellsaid'].includes(vendor) ? apiKey : null,
-          region: vendor === 'microsoft' ? region : null,
-          use_for_tts: useForTts,
-          use_for_stt: useForStt,
           service_provider_sid: accountSid ? null : currentServiceProvider,
           account_sid: accountSid || null,
-          use_custom_tts: useCustomTts ? 1 : 0,
-          custom_tts_endpoint: customTtsEndpoint || null,
-          use_custom_stt : useCustomStt ? 1 : 0,
-          custom_stt_endpoint: customSttEndpoint || null
+          use_for_tts: useForTts,
+          use_for_stt: useForStt,
+          ...(vendor === 'google' && method === 'post' && {
+            service_key: serviceKey ? JSON.stringify(serviceKey) : null,
+          }),
+          ...(vendor === 'aws' && {
+            ...(method === 'post' && {
+              access_key_id: accessKeyId || null,
+              secret_access_key: secretAccessKey || null}),
+            aws_region: awsregion || null
+          }),
+          ...(vendor === 'microsoft' && {
+            region: region || null,
+            use_custom_tts: useCustomTts ? 1 : 0,
+            use_custom_stt: useCustomStt ? 1 : 0,
+            custom_tts_endpoint: useCustomTts ? customTtsEndpoint || null : null,
+            custom_stt_endpoint: useCustomStt ? customSttEndpoint || null : null,
+          }),
+          ...(['wellsaid', 'microsoft'].includes(vendor) && method === 'post' && {
+            api_key: apiKey || null,
+          }),
         }
       });
 
