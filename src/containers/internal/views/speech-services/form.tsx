@@ -9,7 +9,6 @@ import {
   Selector,
   Passwd,
   AccountSelect,
-  Checkzone,
 } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -102,9 +101,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
           use_custom_tts: useCustomTts ? 1 : 0,
-          custom_tts_endpoint: customTtsEndpoint || null,
+          custom_tts_endpoint: useCustomTts ? customTtsEndpoint || null : null,
           use_custom_stt: useCustomStt ? 1 : 0,
-          custom_stt_endpoint: customSttEndpoint || null,
+          custom_stt_endpoint: useCustomStt ? customSttEndpoint || null : null,
         }),
       };
 
@@ -195,8 +194,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
-      setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
+      setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
     }
   }, [credential]);
@@ -376,52 +375,54 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor === VENDOR_MICROSOFT && (
           <React.Fragment>
             <fieldset>
-              <Checkzone
-                hidden
-                name="use_custom_tts"
-                label="Use for custom text-to-speech"
-                initialCheck={useCustomTts}
-                handleChecked={(e) => {
-                  setUseCustomTts(e.target.checked);
-                  if (!e.target.checked) {
-                    setCustomTtsEndpoint("");
-                  }
-                }}
-              >
-                <label htmlFor="use_custom_tts">Custom voice endpoint</label>
+              <label htmlFor="use_custom_tts" className="chk">
                 <input
-                  id="custom_tts_endpoint"
-                  type="text"
-                  name="custom_tts_endpoint"
-                  placeholder="Custom voice endpoint"
-                  value={customTtsEndpoint}
-                  onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+                  id="use_custom_tts"
+                  name="use_custom_tts"
+                  type="checkbox"
+                  onChange={(e) => setUseCustomTts(e.target.checked)}
+                  checked={useCustomTts}
                 />
-              </Checkzone>
+                <div>Use for Custom text-to-speech</div>
+              </label>
+              <label htmlFor="use_custom_tts">
+                Custom voice endpoint{useCustomTts && <span>*</span>}
+              </label>
+              <input
+                id="custom_tts_endpoint"
+                required={useCustomTts}
+                disabled={!useCustomTts}
+                type="text"
+                name="custom_tts_endpoint"
+                placeholder="Custom voice endpoint"
+                value={customTtsEndpoint}
+                onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+              />
             </fieldset>
             <fieldset>
-              <Checkzone
-                hidden
-                name="use_custom_stt"
-                label="Use for custom speech-to-text"
-                initialCheck={useCustomStt}
-                handleChecked={(e) => {
-                  setUseCustomStt(e.target.checked);
-                  if (!e.target.checked) {
-                    setCustomSttEndpoint("");
-                  }
-                }}
-              >
-                <label htmlFor="use_custom_stt">Custom speech endpoint</label>
+              <label htmlFor="use_custom_stt" className="chk">
                 <input
-                  id="custom_stt_endpoint"
-                  type="text"
-                  name="custom_stt_endpoint"
-                  placeholder="Custom speech endpoint"
-                  value={customSttEndpoint}
-                  onChange={(e) => setCustomSttEndpoint(e.target.value)}
+                  id="use_custom_stt"
+                  name="use_custom_stt"
+                  type="checkbox"
+                  onChange={(e) => setUseCustomStt(e.target.checked)}
+                  checked={useCustomStt}
                 />
-              </Checkzone>
+                <div>Use for Custom speech-to-text</div>
+              </label>
+              <label htmlFor="use_custom_stt">
+                Custom speech endpoint{useCustomStt && <span>*</span>}
+              </label>
+              <input
+                id="custom_stt_endpoint"
+                required={useCustomStt}
+                disabled={!useCustomStt}
+                type="text"
+                name="custom_stt_endpoint"
+                placeholder="Custom speech endpoint"
+                value={customSttEndpoint}
+                onChange={(e) => setCustomSttEndpoint(e.target.value)}
+              />
             </fieldset>
           </React.Fragment>
         )}
