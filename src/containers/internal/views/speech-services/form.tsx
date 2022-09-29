@@ -101,9 +101,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
           use_custom_tts: useCustomTts ? 1 : 0,
-          custom_tts_endpoint: useCustomTts ? customTtsEndpoint || null : null,
+          custom_tts_endpoint: customTtsEndpoint || null,
           use_custom_stt: useCustomStt ? 1 : 0,
-          custom_stt_endpoint: useCustomStt ? customSttEndpoint || null : null,
+          custom_stt_endpoint: customSttEndpoint || null,
         }),
       };
 
@@ -368,7 +368,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 },
               ].concat(regions[vendor as keyof RegionVendors])}
               onChange={(e) => setRegion(e.target.value)}
-              disabled={credential ? true : false}
             />
           </fieldset>
         )}
