@@ -209,9 +209,13 @@ fieldset {
     transform: translate3d(50%, 50%, 0);
 
     @include mixins.small() {
-      top: 0;
+      top: auto;
       bottom: auto;
-      transform: translate3d(50%, -50%, 0);
+      transform: none;
+      position: relative;
+      margin-top: ui-vars.$px02;
+      display: flex;
+      margin-left: auto;
     }
   }
 
@@ -220,7 +224,11 @@ fieldset {
       bottom: 25%;
 
       @include mixins.small() {
+        top: auto;
         bottom: auto;
+        transform: none;
+        position: relative;
+        margin-top: ui-vars.$px02;
       }
     }
   }
