@@ -14,7 +14,7 @@ export const Message = ({ message }: MsgProps) => {
   return (
     <div className="msg">
       <Icons.AlertCircle />
-      {message}
+      <span>{message}</span>
     </div>
   );
 };
