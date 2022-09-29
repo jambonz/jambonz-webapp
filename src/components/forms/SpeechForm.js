@@ -99,6 +99,8 @@ const SpeechServicesAddEdit = (props) => {
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState('');
   const [customSttEndpoint, setCustomSttEndpoint] = useState('');
+  const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] =  useState('');
+  const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState('');
 
   // Invalid form inputs
   const [invalidVendorGoogle, setInvalidVendorGoogle] = useState(false);
@@ -707,7 +709,17 @@ const SpeechServicesAddEdit = (props) => {
               id="useACustomVoice"
               label="Use a custom voice"
               checked={useCustomTts}
-              onChange={e => setUseCustomTts(e.target.checked)}
+              onChange={e => {
+                setUseCustomTts(e.target.checked);
+                if (e.target.checked && tmpCustomTtsEndpoint) {
+                  setCustomTtsEndpoint(tmpCustomTtsEndpoint);
+                }
+
+                if (!e.target.checked) {
+                  setTmpCustomTtsEndpoint(customTtsEndpoint);
+                  setCustomTtsEndpoint("");
+                }
+              }}
               invalid={invalidUseCustomTts}
               ref={refUseCustomTts}
             />
@@ -729,7 +741,17 @@ const SpeechServicesAddEdit = (props) => {
               id="useACustomSpeechModel"
               label="Use a custom speech model"
               checked={useCustomStt}
-              onChange={e => setUseCustomStt(e.target.checked)}
+              onChange={e => {
+                setUseCustomStt(e.target.checked);
+                if(e.target.checked && tmpCustomSttEndpoint) {
+                  setCustomSttEndpoint(tmpCustomSttEndpoint);
+                }
+
+                if(!e.target.checked) {
+                  setTmpCustomSttEndpoint(customSttEndpoint);
+                  setCustomSttEndpoint("");
+                }
+              }}
               invalid={invalidUseCustomStt}
               ref={refUseCustomStt}
             />
