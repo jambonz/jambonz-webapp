@@ -382,8 +382,8 @@ const SpeechServicesAddEdit = (props) => {
             region: region || null,
             use_custom_tts: useCustomTts ? 1 : 0,
             use_custom_stt: useCustomStt ? 1 : 0,
-            custom_tts_endpoint: useCustomTts ? customTtsEndpoint || null : null,
-            custom_stt_endpoint: useCustomStt ? customSttEndpoint || null : null,
+            custom_tts_endpoint: customTtsEndpoint || null,
+            custom_stt_endpoint: customSttEndpoint || null,
           }),
           ...(['wellsaid', 'microsoft'].includes(vendor) && method === 'post' && {
             api_key: apiKey || null,
