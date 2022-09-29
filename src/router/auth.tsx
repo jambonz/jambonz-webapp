@@ -25,7 +25,7 @@ interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
 }
 
-interface AuthStateContext {
+export interface AuthStateContext {
   token: string;
   signin: SignIn;
   signout: () => void;
