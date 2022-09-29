@@ -56,7 +56,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [useCustomTts, setUseCustomTts] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
+  const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] = useState("");
   const [customSttEndpoint, setCustomSttEndpoint] = useState("");
+  const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -379,7 +381,17 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   id="use_custom_tts"
                   name="use_custom_tts"
                   type="checkbox"
-                  onChange={(e) => setUseCustomTts(e.target.checked)}
+                  onChange={(e) => {
+                    setUseCustomTts(e.target.checked);
+                    if (e.target.checked && tmpCustomTtsEndpoint) {
+                      setCustomTtsEndpoint(tmpCustomTtsEndpoint);
+                    }
+
+                    if (!e.target.checked) {
+                      setTmpCustomTtsEndpoint(customTtsEndpoint);
+                      setCustomTtsEndpoint("");
+                    }
+                  }}
                   checked={useCustomTts}
                 />
                 <div>Use for Custom text-to-speech</div>
@@ -404,7 +416,17 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   id="use_custom_stt"
                   name="use_custom_stt"
                   type="checkbox"
-                  onChange={(e) => setUseCustomStt(e.target.checked)}
+                  onChange={(e) => {
+                    setUseCustomStt(e.target.checked);
+                    if (e.target.checked && tmpCustomSttEndpoint) {
+                      setCustomSttEndpoint(tmpCustomSttEndpoint);
+                    }
+
+                    if (!e.target.checked) {
+                      setTmpCustomSttEndpoint(customSttEndpoint);
+                      setCustomSttEndpoint("");
+                    }
+                  }}
                   checked={useCustomStt}
                 />
                 <div>Use for Custom speech-to-text</div>
