@@ -79,6 +79,8 @@ const SpeechServicesAddEdit = (props) => {
   const refApiKey = useRef(null);
   const refRegion = useRef(null);
   const refAwsRegion = useRef(null);
+  const refUseCustomTts = useRef(null);
+  const refUseCustomStt = useRef(null);
 
   // Form inputs
   const [vendor, setVendor] = useState('');
@@ -93,6 +95,12 @@ const SpeechServicesAddEdit = (props) => {
   const [apiKey, setApiKey] = useState('');
   const [region, setRegion] = useState('');
   const [awsregion, setAwsRegion] = useState('');
+  const [useCustomTts, setUseCustomTts] = useState(false);
+  const [useCustomStt, setUseCustomStt] = useState(false);
+  const [customTtsEndpoint, setCustomTtsEndpoint] = useState('');
+  const [customSttEndpoint, setCustomSttEndpoint] = useState('');
+  const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] =  useState('');
+  const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState('');
 
   // Invalid form inputs
   const [invalidVendorGoogle, setInvalidVendorGoogle] = useState(false);
@@ -106,6 +114,8 @@ const SpeechServicesAddEdit = (props) => {
   const [invalidApiKey, setInvalidApiKey] = useState(false);
   const [invalidRegion, setInvalidRegion] = useState(false);
   const [invalidAwsRegion, setInvalidAwsRegion] = useState(false);
+  const [invalidUseCustomTts, setInvalidUseCustomTts] = useState(false);
+  const [invalidUseCustomStt, setInvalidUseCustomStt] = useState(false);
 
   const [originalTtsValue, setOriginalTtsValue] = useState(null);
   const [originalSttValue, setOriginalSttValue] = useState(null);
@@ -162,6 +172,10 @@ const SpeechServicesAddEdit = (props) => {
           setUseForStt(speechCredential.data.use_for_stt || false);
           setOriginalTtsValue(speechCredential.data.use_for_tts || false);
           setOriginalSttValue(speechCredential.data.use_for_stt || false);
+          setUseCustomTts(speechCredential.data.use_custom_tts || false);
+          setCustomTtsEndpoint(speechCredential.data.custom_tts_endpoint || '');
+          setUseCustomStt(speechCredential.data.use_custom_stt || false);
+          setCustomSttEndpoint(speechCredential.data.custom_stt_endpoint || '');
         }
         setShowLoader(false);
       } catch (err) {
@@ -232,6 +246,8 @@ const SpeechServicesAddEdit = (props) => {
       setInvalidUseForTts(false);
       setInvalidUseForStt(false);
       setInvalidApiKey(false);
+      setInvalidUseCustomTts(false);
+      setInvalidUseCustomStt(false);
       let errorMessages = [];
       let focusHasBeenSet = false;
 
@@ -305,6 +321,24 @@ const SpeechServicesAddEdit = (props) => {
         }
       }
 
+      if (useCustomTts && !customTtsEndpoint) {
+        errorMessages.push('Please provide a custom voice endpoint.');
+        setInvalidUseCustomTts(true);
+        if (!focusHasBeenSet) {
+          refUseCustomTts.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
+      if (useCustomStt && !customSttEndpoint) {
+        errorMessages.push('Please provide a custom speech endpoint.');
+        setInvalidUseCustomStt(true);
+        if (!focusHasBeenSet) {
+          refUseCustomStt.current.focus();
+          focusHasBeenSet = true;
+        }
+      }
+
       if (errorMessages.length > 1) {
         setErrorMessage(errorMessages);
         return;
@@ -333,16 +367,29 @@ const SpeechServicesAddEdit = (props) => {
         },
         data: {
           vendor,
-          service_key: vendor === 'google' ? JSON.stringify(serviceKey) : null,
-          access_key_id: vendor === 'aws' ? accessKeyId : null,
-          secret_access_key: vendor === 'aws' ? secretAccessKey : null,
-          aws_region: vendor === 'aws' ? awsregion : null,
-          api_key: ['microsoft', 'wellsaid'].includes(vendor) ? apiKey : null,
-          region: vendor === 'microsoft' ? region : null,
-          use_for_tts: useForTts,
-          use_for_stt: useForStt,
           service_provider_sid: accountSid ? null : currentServiceProvider,
           account_sid: accountSid || null,
+          use_for_tts: useForTts,
+          use_for_stt: useForStt,
+          ...(vendor === 'google' && method === 'post' && {
+            service_key: serviceKey ? JSON.stringify(serviceKey) : null,
+          }),
+          ...(vendor === 'aws' && {
+            ...(method === 'post' && {
+              access_key_id: accessKeyId || null,
+              secret_access_key: secretAccessKey || null}),
+            aws_region: awsregion || null
+          }),
+          ...(vendor === 'microsoft' && {
+            region: region || null,
+            use_custom_tts: useCustomTts ? 1 : 0,
+            use_custom_stt: useCustomStt ? 1 : 0,
+            custom_tts_endpoint: customTtsEndpoint || null,
+            custom_stt_endpoint: customSttEndpoint || null,
+          }),
+          ...(['wellsaid', 'microsoft'].includes(vendor) && method === 'post' && {
+            api_key: apiKey || null,
+          }),
         }
       });
 
@@ -655,6 +702,70 @@ const SpeechServicesAddEdit = (props) => {
                 </option>
               ))}
             </Select>
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useACustomVoice"
+              id="useACustomVoice"
+              label="Use a custom voice"
+              checked={useCustomTts}
+              onChange={e => {
+                setUseCustomTts(e.target.checked);
+                if (e.target.checked && tmpCustomTtsEndpoint) {
+                  setCustomTtsEndpoint(tmpCustomTtsEndpoint);
+                }
+
+                if (!e.target.checked) {
+                  setTmpCustomTtsEndpoint(customTtsEndpoint);
+                  setCustomTtsEndpoint("");
+                }
+              }}
+              invalid={invalidUseCustomTts}
+              ref={refUseCustomTts}
+            />
+            <Label htmlFor="customVoiceEndpoint">Custom voice endpoint</Label>
+            <Input
+              name="customVoiceEndpoint"
+              id="customVoiceEndpoint"
+              value={customTtsEndpoint}
+              onChange={e => setCustomTtsEndpoint(e.target.value)}
+              placeholder="Custom voice endpoint"
+              invalid={invalidUseCustomTts}
+              ref={refUseCustomTts}
+              disabled={!useCustomTts}
+            />
+            <div />
+            <Checkbox
+              noLeftMargin
+              name="useACustomSpeechModel"
+              id="useACustomSpeechModel"
+              label="Use a custom speech model"
+              checked={useCustomStt}
+              onChange={e => {
+                setUseCustomStt(e.target.checked);
+                if(e.target.checked && tmpCustomSttEndpoint) {
+                  setCustomSttEndpoint(tmpCustomSttEndpoint);
+                }
+
+                if(!e.target.checked) {
+                  setTmpCustomSttEndpoint(customSttEndpoint);
+                  setCustomSttEndpoint("");
+                }
+              }}
+              invalid={invalidUseCustomStt}
+              ref={refUseCustomStt}
+            />
+            <Label htmlFor="customSpeechEndpoint">Custom speech endpoint</Label>
+            <Input
+              name="customSpeechEndpoint"
+              id="customSpeechEndpoint"
+              value={customSttEndpoint}
+              onChange={e => setCustomSttEndpoint(e.target.value)}
+              placeholder="Custom speech endpoint"
+              invalid={invalidUseCustomStt}
+              ref={refUseCustomStt}
+              disabled={!useCustomStt}
+            />
           </>
         ) : vendor === 'wellsaid' ? (
           <>
