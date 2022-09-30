@@ -21,7 +21,7 @@ import {
 
 import type { UserLogin } from "src/api/types";
 
-interface SignIn {
+export interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
 }
 

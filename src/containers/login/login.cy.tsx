@@ -2,6 +2,7 @@ import React from "react";
 import { AuthContext, AuthStateContext } from "src/router/auth";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Login from "./login";
+import { UserLogin } from "src/api/types";
 
 const LoginTestWrapper = (props: Partial<AuthStateContext>) => {
   return (
@@ -40,5 +41,19 @@ describe("<Login/>", () => {
     cy.get('input[name="username"]').should("not.exist");
     cy.get('input[name="password"').should("not.exist");
     cy.get("button.btn").should("not.exist");
+  });
+
+  it("not able to login", () => {
+    const signin = (u: string, p: string): Promise<UserLogin> => {
+      return new Promise<UserLogin>((resolve, error) => {
+        console.log(`${u}_${p}`);
+        error("wrong username and password");
+      });
+    };
+    cy.mount(<LoginTestWrapper signin={signin} authorized={false} />);
+    cy.get('input[name="username"]').type("username");
+    cy.get('input[name="password"]').type("password");
+    cy.get("button.btn").click();
+    cy.get("span").should("have.text", "wrong username and password");
   });
 });
