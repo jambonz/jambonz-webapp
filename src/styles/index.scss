@@ -3,6 +3,7 @@
 @use "./lists";
 @use "./smsel";
 @use "./inpbtn";
+@use "./filters";
 @use "jambonz-ui/src/styles/index";
 
 @use "./vars";
@@ -11,23 +12,11 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 /** Root custom vars */
-
 :root {
   --mobile-media: #{vars.$widthbreak};
 }
 
-/** Could go in jambonz-ui */
-
-.txt--dark {
-  color: ui-vars.$dark;
-}
-
-.txt--jean {
-  color: vars.$jeangrey;
-}
-
-/** Global things */
-
+/** Global elements */
 pre,
 code {
   @include mixins.code();
@@ -102,6 +91,15 @@ details {
   }
 }
 
+/** Could go in jambonz-ui */
+.txt--dark {
+  color: ui-vars.$dark;
+}
+
+.txt--jean {
+  color: vars.$jeangrey;
+}
+
 /** The idea is this is like [type="button"] generically */
 /** We need to prohibit some jambonz-ui buttons from submitting forms */
 /** Otherwise this selector would just be `button[type="button"] {...}` */
@@ -126,12 +124,14 @@ details {
   }
 }
 
+/** Small inline spinners */
 .ispin {
   display: flex;
   align-items: center;
   grid-gap: ui-vars.$px01;
 }
 
+/** Internal page titles */
 .mast {
   display: flex;
   align-items: center;
@@ -142,6 +142,7 @@ details {
   }
 }
 
+/** Used on phone numbers list */
 .mass-edit {
   padding: ui-vars.$px00 0;
 
@@ -150,41 +151,7 @@ details {
   }
 }
 
-.filters {
-  display: flex;
-  padding-top: ui-vars.$px03;
-  padding-bottom: ui-vars.$px03;
-
-  &--ender {
-    justify-content: flex-end;
-  }
-
-  &--spaced {
-    justify-content: space-between;
-
-    @include mixins.small() {
-      overflow-x: auto;
-      white-space: nowrap;
-      grid-gap: ui-vars.$px02;
-    }
-  }
-
-  &--multi {
-    overflow-x: auto;
-    white-space: nowrap;
-    grid-gap: ui-vars.$px02;
-
-    > :first-child {
-      margin-left: auto;
-    }
-  }
-
-  + * {
-    margin-top: 0;
-  }
-}
-
-/** Used for reccent-calls */
+/** Used for recent-calls */
 .pre-grid {
   @include mixins.code();
   display: grid;
