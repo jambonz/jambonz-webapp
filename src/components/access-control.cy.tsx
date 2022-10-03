@@ -1,7 +1,7 @@
 import React from "react";
 import { H1 } from "jambonz-ui";
 
-import { StateProvider } from "src/store";
+import { TestProvider } from "src/test";
 import { AccessControl } from "./access-control";
 
 import type { ACLProps } from "./access-control";
@@ -9,13 +9,13 @@ import type { ACLProps } from "./access-control";
 /** Wrapper to pass different ACLs */
 const AccessControlTestWrapper = (props: Partial<ACLProps>) => {
   return (
-    <StateProvider>
+    <TestProvider>
       <AccessControl acl={props.acl!}>
         <div className="acl-div">
           <H1>ACL: {props.acl}</H1>
         </div>
       </AccessControl>
-    </StateProvider>
+    </TestProvider>
   );
 };
 
