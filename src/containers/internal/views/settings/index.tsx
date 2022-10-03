@@ -3,8 +3,8 @@ import { H1, Tabs, Tab, MS } from "jambonz-ui";
 
 import { withSelectState } from "src/utils";
 import { ApiKeys } from "src/containers/internal/api-keys";
-import ServiceProviderSettings from "src/components/forms/service-provider-settings";
-import AdminSettings from "src/components/forms/admin-settings";
+import ServiceProviderSettings from "./service-provider-settings";
+import AdminSettings from "./admin-settings";
 import type { ServiceProvider } from "src/api/types";
 import { Section } from "src/components";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
