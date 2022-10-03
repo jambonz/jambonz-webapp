@@ -11,7 +11,7 @@ const RequireAuthTestWrapper = (props: Partial<AuthStateContext>) => {
   return (
     <TestProvider {...(props as AuthStateContext)}>
       <RequireAuth>
-        <div className="acl-div">
+        <div className="auth-div">
           <H1>Protected Route</H1>
         </div>
       </RequireAuth>
@@ -27,12 +27,12 @@ describe("<RequireAuth>", () => {
   it("is not authorized", () => {
     cy.mount(<RequireAuthTestWrapper />);
 
-    cy.get(".acl-div").should("not.exist");
+    cy.get(".auth-div").should("not.exist");
   });
 
   it("is authorized", () => {
     cy.mount(<RequireAuthTestWrapper authorized />);
 
-    cy.get(".acl-div").should("exist");
+    cy.get(".auth-div").should("exist");
   });
 });
