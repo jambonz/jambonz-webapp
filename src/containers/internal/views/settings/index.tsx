@@ -24,16 +24,14 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          <fieldset>
-            <Tabs active={[activeTab, setActiveTab]}>
-              <Tab id="admin" label="Admin">
-                <AdminSettings />
-              </Tab>
-              <Tab id="serviceProvider" label="Service Provider">
-                <ServiceProviderSettings />
-              </Tab>
-            </Tabs>
-          </fieldset>
+          <Tabs active={[activeTab, setActiveTab]}>
+            <Tab id="admin" label="Admin">
+              <AdminSettings />
+            </Tab>
+            <Tab id="serviceProvider" label="Service Provider">
+              <ServiceProviderSettings />
+            </Tab>
+          </Tabs>
         </form>
       </Section>
 
