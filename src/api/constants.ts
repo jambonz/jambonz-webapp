@@ -139,3 +139,4 @@ export const API_SERVICE_PROVIDERS = `${API_BASE_URL}/ServiceProviders`;
 export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
 export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
+export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;
