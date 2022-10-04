@@ -1,17 +1,13 @@
 import React from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { AuthContext, AuthStateContext } from "src/router/auth";
+import { AuthStateContext } from "src/router/auth";
+import { TestProvider } from "src/test";
 import NotFound from "./notfound";
 
 const NotFoundTestWrapper = (props: Partial<AuthStateContext>) => {
   return (
-    <AuthContext.Provider value={props as AuthStateContext}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthContext.Provider>
+    <TestProvider {...(props as AuthStateContext)}>
+      <NotFound />
+    </TestProvider>
   );
 };
 
