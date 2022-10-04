@@ -72,6 +72,11 @@ export const RecentCalls = () => {
     }
   }, [accountSid, pageNumber, dateFilter, directionFilter, statusFilter]);
 
+  /** Reset page number when filters change */
+  useEffect(() => {
+    setPageNumber(1);
+  }, [accountSid, dateFilter, directionFilter, statusFilter]);
+
   return (
     <>
       <section className="mast">
@@ -129,7 +134,6 @@ export const RecentCalls = () => {
             id="page_filter"
             filter={[perPageFilter, setPerPageFilter]}
             options={PER_PAGE_SELECTION}
-            handleSelect={() => setPageNumber(1)}
           />
         </ButtonGroup>
       </footer>

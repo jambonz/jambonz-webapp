@@ -56,6 +56,11 @@ export const Alerts = () => {
     }
   }, [accountSid, pageNumber, dateFilter]);
 
+  /** Reset page number when filters change */
+  useEffect(() => {
+    setPageNumber(1);
+  }, [accountSid, dateFilter]);
+
   return (
     <>
       <section className="mast">
@@ -118,7 +123,6 @@ export const Alerts = () => {
             id="page_filter"
             filter={[perPageFilter, setPerPageFilter]}
             options={PER_PAGE_SELECTION}
-            handleSelect={() => setPageNumber(1)}
           />
         </ButtonGroup>
       </footer>
