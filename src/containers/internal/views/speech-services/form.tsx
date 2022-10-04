@@ -53,6 +53,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
+  const [useCustomTts, setUseCustomTts] = useState(false);
+  const [useCustomStt, setUseCustomStt] = useState(false);
+  const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
+  const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] = useState("");
+  const [customSttEndpoint, setCustomSttEndpoint] = useState("");
+  const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -91,8 +97,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           currentServiceProvider.service_provider_sid || null,
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
-        aws_region: vendor === VENDOR_AWS ? region : null,
-        region: vendor === VENDOR_MICROSOFT ? region : null,
+        ...(vendor === VENDOR_AWS && {
+          aws_region: region || null,
+        }),
+        ...(vendor === VENDOR_MICROSOFT && {
+          region: region || null,
+          use_custom_tts: useCustomTts ? 1 : 0,
+          custom_tts_endpoint: customTtsEndpoint || null,
+          use_custom_stt: useCustomStt ? 1 : 0,
+          custom_stt_endpoint: customSttEndpoint || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -180,6 +194,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.aws_region) {
         setRegion(credential.data.aws_region);
       }
+
+      setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
+      setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
+      setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
+      setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
     }
   }, [credential]);
 
@@ -351,9 +370,82 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 },
               ].concat(regions[vendor as keyof RegionVendors])}
               onChange={(e) => setRegion(e.target.value)}
-              disabled={credential ? true : false}
             />
           </fieldset>
+        )}
+        {vendor === VENDOR_MICROSOFT && (
+          <React.Fragment>
+            <fieldset>
+              <label htmlFor="use_custom_tts" className="chk">
+                <input
+                  id="use_custom_tts"
+                  name="use_custom_tts"
+                  type="checkbox"
+                  onChange={(e) => {
+                    setUseCustomTts(e.target.checked);
+                    if (e.target.checked && tmpCustomTtsEndpoint) {
+                      setCustomTtsEndpoint(tmpCustomTtsEndpoint);
+                    }
+
+                    if (!e.target.checked) {
+                      setTmpCustomTtsEndpoint(customTtsEndpoint);
+                      setCustomTtsEndpoint("");
+                    }
+                  }}
+                  checked={useCustomTts}
+                />
+                <div>Use for Custom text-to-speech</div>
+              </label>
+              <label htmlFor="use_custom_tts">
+                Custom voice endpoint{useCustomTts && <span>*</span>}
+              </label>
+              <input
+                id="custom_tts_endpoint"
+                required={useCustomTts}
+                disabled={!useCustomTts}
+                type="text"
+                name="custom_tts_endpoint"
+                placeholder="Custom voice endpoint"
+                value={customTtsEndpoint}
+                onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+              />
+            </fieldset>
+            <fieldset>
+              <label htmlFor="use_custom_stt" className="chk">
+                <input
+                  id="use_custom_stt"
+                  name="use_custom_stt"
+                  type="checkbox"
+                  onChange={(e) => {
+                    setUseCustomStt(e.target.checked);
+                    if (e.target.checked && tmpCustomSttEndpoint) {
+                      setCustomSttEndpoint(tmpCustomSttEndpoint);
+                    }
+
+                    if (!e.target.checked) {
+                      setTmpCustomSttEndpoint(customSttEndpoint);
+                      setCustomSttEndpoint("");
+                    }
+                  }}
+                  checked={useCustomStt}
+                />
+                <div>Use for Custom speech-to-text</div>
+              </label>
+              <label htmlFor="use_custom_stt">
+                Custom speech endpoint{useCustomStt && <span>*</span>}
+              </label>
+              <input
+                id="custom_stt_endpoint"
+                required={useCustomStt}
+                disabled={!useCustomStt}
+                type="text"
+                name="custom_stt_endpoint"
+                placeholder="Custom speech endpoint"
+                value={customSttEndpoint}
+                onChange={(e) => setCustomSttEndpoint(e.target.value)}
+              />
+            </fieldset>
+          </React.Fragment>
         )}
         <fieldset>
           <ButtonGroup left>
