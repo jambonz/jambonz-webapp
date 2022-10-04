@@ -397,7 +397,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                   checked={useCustomTts}
                 />
-                <div>Use for Custom text-to-speech</div>
+                <div>Use for custom text-to-speech</div>
               </label>
               <label htmlFor="use_custom_tts">
                 Custom voice endpoint{useCustomTts && <span>*</span>}
@@ -433,10 +433,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                   checked={useCustomStt}
                 />
-                <div>Use for Custom speech-to-text</div>
+                <div>Use for custom speech-to-text</div>
               </label>
               <label htmlFor="use_custom_stt">
-                Custom speech endpoint{useCustomStt && <span>*</span>}
+                Custom speech endpoint id{useCustomStt && <span>*</span>}
               </label>
               <input
                 id="custom_stt_endpoint"
@@ -444,7 +444,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 disabled={!useCustomStt}
                 type="text"
                 name="custom_stt_endpoint"
-                placeholder="Custom speech endpoint"
+                placeholder="Custom speech endpoint id"
                 value={customSttEndpoint}
                 onChange={(e) => setCustomSttEndpoint(e.target.value)}
               />
