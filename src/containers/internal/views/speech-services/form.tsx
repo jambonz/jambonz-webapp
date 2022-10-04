@@ -199,6 +199,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
       setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
+      setTmpCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
+      setTmpCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
     }
   }, [credential]);
 
@@ -383,6 +385,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   type="checkbox"
                   onChange={(e) => {
                     setUseCustomTts(e.target.checked);
+
                     if (e.target.checked && tmpCustomTtsEndpoint) {
                       setCustomTtsEndpoint(tmpCustomTtsEndpoint);
                     }
@@ -418,6 +421,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   type="checkbox"
                   onChange={(e) => {
                     setUseCustomStt(e.target.checked);
+
                     if (e.target.checked && tmpCustomSttEndpoint) {
                       setCustomSttEndpoint(tmpCustomSttEndpoint);
                     }
