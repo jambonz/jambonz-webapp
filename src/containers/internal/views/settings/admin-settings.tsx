@@ -6,7 +6,7 @@ import { PasswordSettings } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
-import { PASSWORD_LENGTHS } from "src/api/constants";
+import { PASSWORD_LENGTHS_OPTIONS } from "src/api/constants";
 
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
@@ -53,7 +53,7 @@ export const AdminSettings = () => {
           id="min_password_length"
           name="min_password_length"
           value={minPasswordLength}
-          options={PASSWORD_LENGTHS}
+          options={PASSWORD_LENGTHS_OPTIONS}
           onChange={(e) => setMinPasswordLength(Number(e.target.value))}
         />
         <label htmlFor="require_digit" className="chk">
