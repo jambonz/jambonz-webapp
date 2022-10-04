@@ -5,29 +5,23 @@
 
 .msg {
   @include ui-mixins.ms();
-  padding: ui-vars.$px01 ui-vars.$px02 ui-vars.$px01 56px;
+  padding: ui-vars.$px01 ui-vars.$px03 ui-vars.$px01 ui-vars.$px02;
   border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$jambonz;
   background-color: ui-vars.$pink;
   color: ui-vars.$jambonz;
-  text-align: center;
+  text-align: left;
   position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: max-content;
 
   @include mixins.mobile() {
     text-align: left;
   }
 
   > svg {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  > svg:first-child {
-    left: ui-vars.$px02;
-  }
-
-  > svg:last-child {
-    right: ui-vars.$px02;
+    margin-right: ui-vars.$px02;
   }
 }
