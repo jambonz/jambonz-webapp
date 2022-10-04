@@ -4,66 +4,75 @@ import { ButtonGroup, Button } from "jambonz-ui";
 import { useApiData, postPasswordSettings } from "src/api";
 import { PasswordSettings } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
+import { Selector } from "src/components/forms";
+import { hasValue } from "src/utils";
 
 export const AdminSettings = () => {
-  const [localPasswordSettings, setLocalPasswordSettings] =
-    useState<Partial<PasswordSettings>>();
   const [passwordSettings, passwordSettingsFetcher] =
-    useApiData<Partial<PasswordSettings>>("/PasswordSettings");
+    useApiData<PasswordSettings>("PasswordSettings");
+  // Min value is 8
+  const [minPasswordLength, setMinPasswordLength] = useState(8);
+  const [requireDigit, setRequireDigit] = useState(false);
+  const [requireSpecialCharacter, setRequireSpecialCharacter] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (localPasswordSettings) {
-      postPasswordSettings(localPasswordSettings)
-        .then(() => {
-          passwordSettingsFetcher();
-          toastSuccess("Password settings was successfully updated");
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
-    }
+    const payload: Partial<PasswordSettings> = {
+      min_password_length: minPasswordLength,
+      require_digit: requireDigit ? 1 : 0,
+      require_special_character: requireSpecialCharacter ? 1 : 0,
+    };
+    postPasswordSettings(payload)
+      .then(() => {
+        passwordSettingsFetcher();
+        toastSuccess("Password settings was successfully updated");
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
   };
 
   useEffect(() => {
-    setLocalPasswordSettings(passwordSettings);
+    setRequireDigit(
+      hasValue(passwordSettings) && passwordSettings.require_digit > 0
+        ? true
+        : false
+    );
+    setRequireSpecialCharacter(
+      hasValue(passwordSettings) &&
+        passwordSettings.require_special_character > 0
+        ? true
+        : false
+    );
+    if (passwordSettings?.min_password_length) {
+      setMinPasswordLength(passwordSettings.min_password_length);
+    }
   }, [passwordSettings]);
 
   return (
     <>
       <fieldset>
         <label htmlFor="min_password_length">Min Password Length</label>
-        <input
+        <Selector
           id="min_password_length"
-          type="number"
-          min={0}
           name="min_password_length"
-          placeholder="Min Password Length (0 = unlimited)"
-          value={localPasswordSettings?.min_password_length || ""}
-          onChange={(e) =>
-            setLocalPasswordSettings({
-              ...localPasswordSettings,
-              min_password_length: Number(e.target.value),
-            })
-          }
+          value={minPasswordLength}
+          options={Array(13)
+            .fill(8)
+            .map((i, j) => ({
+              name: (i + j).toString(),
+              value: (i + j).toString(),
+            }))}
+          onChange={(e) => setMinPasswordLength(Number(e.target.value))}
         />
-
         <label htmlFor="require_digit" className="chk">
           <input
             id="require_digit"
             name="require_digit"
             type="checkbox"
-            checked={
-              localPasswordSettings?.require_digit &&
-              localPasswordSettings?.require_digit > 0
-                ? true
-                : false
-            }
+            checked={requireDigit}
             onChange={(e) => {
-              setLocalPasswordSettings({
-                ...localPasswordSettings,
-                require_digit: e.target.checked ? 1 : 0,
-              });
+              setRequireDigit(e.target.checked);
             }}
           />
           <div>Password Require Digit</div>
@@ -74,17 +83,9 @@ export const AdminSettings = () => {
             id="require_special_character"
             name="require_special_character"
             type="checkbox"
-            checked={
-              localPasswordSettings?.require_special_character &&
-              localPasswordSettings?.require_special_character > 0
-                ? true
-                : false
-            }
+            checked={requireSpecialCharacter}
             onChange={(e) => {
-              setLocalPasswordSettings({
-                ...localPasswordSettings,
-                require_special_character: e.target.checked ? 1 : 0,
-              });
+              setRequireSpecialCharacter(e.target.checked);
             }}
           />
           <div>Password Require Special Character</div>
