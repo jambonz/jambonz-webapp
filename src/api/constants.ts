@@ -73,6 +73,13 @@ export const NETMASK_BITS = Array(32)
   .map((_, index) => index + 1)
   .reverse();
 
+export const PASSWORD_LENGTHS = Array(13)
+  .fill(8)
+  .map((i, j) => ({
+    name: (i + j).toString(),
+    value: (i + j).toString(),
+  }));
+
 export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   name: bit.toString(),
   value: bit.toString(),

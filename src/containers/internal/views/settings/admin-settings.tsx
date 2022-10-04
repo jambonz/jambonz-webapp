@@ -6,6 +6,7 @@ import { PasswordSettings } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
+import { PASSWORD_LENGTHS } from "src/api/constants";
 
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
@@ -25,7 +26,7 @@ export const AdminSettings = () => {
     postPasswordSettings(payload)
       .then(() => {
         passwordSettingsFetcher();
-        toastSuccess("Password settings was successfully updated");
+        toastSuccess("Password settings successfully updated");
       })
       .catch((error) => {
         toastError(error.msg);
@@ -33,19 +34,14 @@ export const AdminSettings = () => {
   };
 
   useEffect(() => {
-    setRequireDigit(
-      hasValue(passwordSettings) && passwordSettings.require_digit > 0
-        ? true
-        : false
-    );
-    setRequireSpecialCharacter(
-      hasValue(passwordSettings) &&
-        passwordSettings.require_special_character > 0
-        ? true
-        : false
-    );
-    if (passwordSettings?.min_password_length) {
-      setMinPasswordLength(passwordSettings.min_password_length);
+    if (hasValue(passwordSettings)) {
+      setRequireDigit(passwordSettings.require_digit > 0 ? true : false);
+      setRequireSpecialCharacter(
+        passwordSettings.require_special_character > 0 ? true : false
+      );
+      if (passwordSettings.min_password_length) {
+        setMinPasswordLength(passwordSettings.min_password_length);
+      }
     }
   }, [passwordSettings]);
 
@@ -57,12 +53,7 @@ export const AdminSettings = () => {
           id="min_password_length"
           name="min_password_length"
           value={minPasswordLength}
-          options={Array(13)
-            .fill(8)
-            .map((i, j) => ({
-              name: (i + j).toString(),
-              value: (i + j).toString(),
-            }))}
+          options={PASSWORD_LENGTHS}
           onChange={(e) => setMinPasswordLength(Number(e.target.value))}
         />
         <label htmlFor="require_digit" className="chk">
@@ -71,9 +62,7 @@ export const AdminSettings = () => {
             name="require_digit"
             type="checkbox"
             checked={requireDigit}
-            onChange={(e) => {
-              setRequireDigit(e.target.checked);
-            }}
+            onChange={(e) => setRequireDigit(e.target.checked)}
           />
           <div>Password Require Digit</div>
         </label>
@@ -84,9 +73,7 @@ export const AdminSettings = () => {
             name="require_special_character"
             type="checkbox"
             checked={requireSpecialCharacter}
-            onChange={(e) => {
-              setRequireSpecialCharacter(e.target.checked);
-            }}
+            onChange={(e) => setRequireSpecialCharacter(e.target.checked)}
           />
           <div>Password Require Special Character</div>
         </label>
