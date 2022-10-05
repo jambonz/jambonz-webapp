@@ -331,7 +331,7 @@ const SpeechServicesAddEdit = (props) => {
       }
 
       if (useCustomStt && !customSttEndpoint) {
-        errorMessages.push('Please provide a custom speech endpoint.');
+        errorMessages.push('Please provide a custom speech endpoint Id.');
         setInvalidUseCustomStt(true);
         if (!focusHasBeenSet) {
           refUseCustomStt.current.focus();
@@ -755,13 +755,13 @@ const SpeechServicesAddEdit = (props) => {
               invalid={invalidUseCustomStt}
               ref={refUseCustomStt}
             />
-            <Label htmlFor="customSpeechEndpoint">Custom speech endpoint</Label>
+            <Label htmlFor="customSpeechEndpoint">Custom speech endpoint Id</Label>
             <Input
               name="customSpeechEndpoint"
               id="customSpeechEndpoint"
               value={customSttEndpoint}
               onChange={e => setCustomSttEndpoint(e.target.value)}
-              placeholder="Custom speech endpoint"
+              placeholder="Custom speech endpoint Id"
               invalid={invalidUseCustomStt}
               ref={refUseCustomStt}
               disabled={!useCustomStt}
