@@ -13,20 +13,19 @@ const NotFoundTestWrapper = (props: Partial<AuthStateContext>) => {
 
 describe("<NotFound>", () => {
   it("mounts", () => {
-    cy.mount(<NotFoundTestWrapper authorized={true} />);
+    cy.mount(<NotFoundTestWrapper authorized />);
   });
 
   it("authorized has h1, no login button", () => {
-    cy.mount(<NotFoundTestWrapper authorized={true} />);
-    cy.get("H1").should("have.text", "That page doesn't exist.");
-    cy.get("a").should("not.exist");
+    cy.mount(<NotFoundTestWrapper authorized />);
+    cy.get("h1.h2").should("exist");
+    cy.get("div.notfound--login").should("not.exist");
   });
 
   it("not authorized has h1 and login buttons", () => {
-    cy.mount(<NotFoundTestWrapper authorized={false} />);
+    cy.mount(<NotFoundTestWrapper />);
 
-    cy.get("H1").should("have.text", "That page doesn't exist.");
-    cy.get("a").should("have.text", "Log in");
-    cy.get("a").should("have.class", "btn btn--hollow btn--white");
+    cy.get("h1.h2").should("exist");
+    cy.get("div.notfound--login").should("exist");
   });
 });
