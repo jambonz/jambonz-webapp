@@ -79,12 +79,15 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
 }));
 
 /** Password Length options */
+
+export const PASSWORD_MIN = 8;
 export const PASSWORD_LENGTHS_OPTIONS = Array(13)
-  .fill(8)
+  .fill(PASSWORD_MIN)
   .map((i, j) => ({
     name: (i + j).toString(),
     value: (i + j).toString(),
   }));
+
 /** List view filters */
 export const DATE_SELECTION = [
   { name: "today", value: "today" },

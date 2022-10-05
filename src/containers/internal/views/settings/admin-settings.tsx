@@ -6,13 +6,13 @@ import { PasswordSettings } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
-import { PASSWORD_LENGTHS_OPTIONS } from "src/api/constants";
+import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
 
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
     useApiData<PasswordSettings>("PasswordSettings");
   // Min value is 8
-  const [minPasswordLength, setMinPasswordLength] = useState(8);
+  const [minPasswordLength, setMinPasswordLength] = useState(PASSWORD_MIN);
   const [requireDigit, setRequireDigit] = useState(false);
   const [requireSpecialCharacter, setRequireSpecialCharacter] = useState(false);
 
