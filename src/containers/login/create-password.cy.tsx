@@ -1,14 +1,12 @@
 import React from "react";
 import { CreatePassword } from "./create-password";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { TestProvider } from "src/test";
 
 const CreatePasswordTestWrapper = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="*" element={<CreatePassword />} />
-      </Routes>
-    </BrowserRouter>
+    <TestProvider>
+      <CreatePassword />
+    </TestProvider>
   );
 };
 
