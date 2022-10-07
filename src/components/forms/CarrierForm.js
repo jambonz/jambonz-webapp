@@ -221,6 +221,8 @@ const CarrierForm = (props) => {
   const refUsername = useRef(null);
   const refPassword = useRef(null);
   const refRealm = useRef(null);
+  const refFromUser = useRef(null);
+  const refFromDomain = useRef(null);
   const refIp = useRef([]);
   const refPort = useRef([]);
   const refInbound = useRef([]);
@@ -250,6 +252,8 @@ const CarrierForm = (props) => {
   const [ passwordInvalid, setPasswordInvalid ] = useState(false);
   const [ realm,           setRealm           ] = useState('');
   const [ realmInvalid,    setRealmInvalid    ] = useState(false);
+  const [ fromUser,        setFromUser        ] = useState('');
+  const [ fromDomain,      setFromDomain        ] = useState('');
   const [ sipGateways,     setSipGateways     ] = useState([
     {
       sip_gateway_sid: '',
@@ -276,6 +280,7 @@ const CarrierForm = (props) => {
   const [suportSIP, setSupportSIP] = useState(false);
   const [diversion, setDiversion] = useState("");
   const [carrierActive, setCarrierActive] = useState(true);
+  const [registerHasPublicIp, setRegisterHasPublicIp] = useState(false);
   const [predefinedCarriers, setPredefinedCarriers] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [sbcs, setSbcs] = useState([]);
@@ -438,6 +443,8 @@ const CarrierForm = (props) => {
           setUsername(carrier.register_username || '');
           setPassword(carrier.register_password || '');
           setRealm(carrier.register_sip_realm || '');
+          setFromUser(carrier.register_from_user || '');
+          setFromDomain(carrier.register_from_domain || '');
           setSipGateways(currentSipGateways.map(s => ({
             sip_gateway_sid: s.sip_gateway_sid,
             ip: s.ipv4,
@@ -473,6 +480,7 @@ const CarrierForm = (props) => {
           setSupportSIP(carrier.diversion ? true : false);
           setDiversion(carrier.diversion || '');
           setCarrierActive(carrier.is_active === 1);
+          setRegisterHasPublicIp(carrier.register_public_ip_in_contact === 1);
         } else {
           const result = await axios({
             method: 'get',
@@ -1028,6 +1036,9 @@ const CarrierForm = (props) => {
           register_username: username ? username.trim() : null,
           register_password: password ? password : null,
           register_sip_realm: register ? realm.trim() : null,
+          register_from_user: register && fromUser ? fromUser.trim() : null,
+          register_from_domain: register && fromDomain ? fromDomain.trim() : null,
+          register_public_ip_in_contact: register && registerHasPublicIp ? 1 : 0,
           tech_prefix: techPrefix ? techPrefix.trim() : null,
           diversion: diversion ? diversion.trim() : null,
           is_active: carrierActive ? 1 : 0,
@@ -1483,6 +1494,33 @@ const CarrierForm = (props) => {
                               placeholder="SIP realm for registration"
                               invalid={realmInvalid}
                               ref={refRealm}
+                            />
+                            <Label htmlFor="fromUser">SIP From User</Label>
+                            <Input
+                              name="fromUser"
+                              id="fromUser"
+                              value={fromUser}
+                              onChange={e => setFromUser(e.target.value)}
+                              placeholder="Optional: specify user part of SIP From header"
+                              ref={refFromUser}
+                            />
+                            <Label htmlFor="fromDomain">SIP From Domain</Label>
+                            <Input
+                              name="fromDomain"
+                              id="fromDomain"
+                              value={fromDomain}
+                              onChange={e => setFromDomain(e.target.value)}
+                              placeholder="Optional: specify host part of SIP From header"
+                              ref={refFromDomain}
+                            />
+                            <Label htmlFor="regPublicIp">Use Public IP in Contact</Label>
+                            <Checkbox
+                              noLeftMargin
+                              name="regPublicIp"
+                              id="regPublicIp"
+                              label=""
+                              checked={registerHasPublicIp}
+                              onChange={e => setRegisterHasPublicIp(e.target.checked)}
                             />
                           </>
                         ) : (
