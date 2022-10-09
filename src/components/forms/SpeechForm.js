@@ -99,6 +99,7 @@ const SpeechServicesAddEdit = (props) => {
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState('');
   const [customSttEndpoint, setCustomSttEndpoint] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] =  useState('');
   const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState('');
 
@@ -114,6 +115,7 @@ const SpeechServicesAddEdit = (props) => {
   const [invalidApiKey, setInvalidApiKey] = useState(false);
   const [invalidRegion, setInvalidRegion] = useState(false);
   const [invalidAwsRegion, setInvalidAwsRegion] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [invalidUseCustomTts, setInvalidUseCustomTts] = useState(false);
   const [invalidUseCustomStt, setInvalidUseCustomStt] = useState(false);
 
@@ -702,6 +704,7 @@ const SpeechServicesAddEdit = (props) => {
                 </option>
               ))}
             </Select>
+{/*
             <div />
             <Checkbox
               noLeftMargin
@@ -734,6 +737,7 @@ const SpeechServicesAddEdit = (props) => {
               ref={refUseCustomTts}
               disabled={!useCustomTts}
             />
+*/}
             <div />
             <Checkbox
               noLeftMargin
