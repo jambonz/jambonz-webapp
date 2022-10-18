@@ -4,6 +4,8 @@ import { MXS } from "jambonz-ui";
 
 import { Icons } from "src/components";
 
+import "./styles.scss";
+
 export const Layout = () => (
   <main className="login bg--dark">
     <header>
