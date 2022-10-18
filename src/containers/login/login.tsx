@@ -11,8 +11,6 @@ import {
   ROUTE_CREATE_PASSWORD,
 } from "src/router/routes";
 
-import "./styles.scss";
-
 export const Login = () => {
   const { signin, authorized } = useAuth();
   const location = useLocation();
