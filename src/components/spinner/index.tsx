@@ -15,10 +15,10 @@ export const Spinner = ({ small = false }: SpinnerProps) => {
 
   return (
     <div className={classNames(classes)}>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+      <div />
+      <div />
+      <div />
+      <div />
     </div>
   );
 };
