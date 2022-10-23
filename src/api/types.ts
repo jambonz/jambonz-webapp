@@ -256,8 +256,11 @@ export interface Carrier {
   e164_leading_plus: boolean;
   requires_register: boolean;
   register_username: null | string;
-  register_sip_realm: null | string;
   register_password: null | string;
+  register_sip_realm: null | string;
+  register_from_user: null | string;
+  register_from_domain: null | string;
+  register_public_ip_in_contact: boolean;
   tech_prefix: null | string;
   diversion: null | string;
   inbound_auth_username: string;
