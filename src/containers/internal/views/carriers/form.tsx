@@ -778,18 +778,18 @@ export const CarrierForm = ({
                       placeholder="Optional: specify host part of SIP From header"
                       onChange={(e) => setFromDomain(e.target.value)}
                     />
-                    <label htmlFor="regPublicIpInContact">
-                      Use Public IP in Contact
+                    <label htmlFor="regPublicIpInContact" className="chk">
+                      <input
+                        id="reg_public_ip_in_contact"
+                        name="reg_public_ip_in_contact"
+                        type="checkbox"
+                        checked={regPublicIpInContact}
+                        onChange={(e) =>
+                          setRegPublicIpInContact(e.target.checked)
+                        }
+                      />
+                      <div>Use Public IP in Contact</div>
                     </label>
-                    <input
-                      id="reg_public_ip_in_contact"
-                      name="reg_public_ip_in_contact"
-                      type="checkbox"
-                      checked={regPublicIpInContact}
-                      onChange={(e) =>
-                        setRegPublicIpInContact(e.target.checked)
-                      }
-                    />
                   </>
                 )}
               </Checkzone>
