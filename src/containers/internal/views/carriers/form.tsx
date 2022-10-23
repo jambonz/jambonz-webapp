@@ -474,8 +474,7 @@ export const CarrierForm = ({
         register_from_user: sipRegister && fromUser ? fromUser.trim() : null,
         register_from_domain:
           sipRegister && fromDomain ? fromDomain.trim() : null,
-        register_public_ip_in_contact:
-          sipRegister && regPublicIpInContact ? true : false,
+        register_public_ip_in_contact: sipRegister && regPublicIpInContact,
         tech_prefix: prefix.trim() || null,
         diversion: diversion.trim() || null,
         is_active: isActive,
@@ -760,7 +759,7 @@ export const CarrierForm = ({
                       required={sipRegister}
                       onChange={(e) => setSipRealm(e.target.value)}
                     />
-                    <label htmlFor="fromUser">SIP From User</label>
+                    <label htmlFor="from_user">SIP From User</label>
                     <input
                       id="from_user"
                       name="from_user"
@@ -769,7 +768,7 @@ export const CarrierForm = ({
                       placeholder="Optional: specify user part of SIP From header"
                       onChange={(e) => setFromUser(e.target.value)}
                     />
-                    <label htmlFor="sipFromDomain">SIP From Domain</label>
+                    <label htmlFor="from_domain">SIP From Domain</label>
                     <input
                       id="from_domain"
                       name="from_domain"
@@ -778,7 +777,7 @@ export const CarrierForm = ({
                       placeholder="Optional: specify host part of SIP From header"
                       onChange={(e) => setFromDomain(e.target.value)}
                     />
-                    <label htmlFor="regPublicIpInContact" className="chk">
+                    <label htmlFor="reg_public_ip_in_contact" className="chk">
                       <input
                         id="reg_public_ip_in_contact"
                         name="reg_public_ip_in_contact"
