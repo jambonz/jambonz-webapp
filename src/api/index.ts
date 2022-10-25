@@ -16,6 +16,7 @@ import {
   API_CARRIERS,
   API_SMPP_GATEWAY,
   API_SIP_GATEWAY,
+  API_PASSWORD_SETTINGS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -55,6 +56,7 @@ import type {
   PageQuery,
   Limit,
   LimitCategories,
+  PasswordSettings,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -310,6 +312,12 @@ export const postAccountLimit = (sid: string, payload: Partial<Limit>) => {
   );
 };
 
+export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
+  return postFetch<EmptyResponse, Partial<PasswordSettings>>(
+    API_PASSWORD_SETTINGS,
+    payload
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: UserUpdatePayload) => {

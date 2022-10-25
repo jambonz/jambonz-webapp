@@ -78,6 +78,16 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   value: bit.toString(),
 }));
 
+/** Password Length options */
+
+export const PASSWORD_MIN = 8;
+export const PASSWORD_LENGTHS_OPTIONS = Array(13)
+  .fill(PASSWORD_MIN)
+  .map((i, j) => ({
+    name: (i + j).toString(),
+    value: (i + j).toString(),
+  }));
+
 /** List view filters */
 export const DATE_SELECTION = [
   { name: "today", value: "today" },
@@ -139,3 +149,4 @@ export const API_SERVICE_PROVIDERS = `${API_BASE_URL}/ServiceProviders`;
 export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
 export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
+export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;

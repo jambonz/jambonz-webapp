@@ -81,6 +81,12 @@ export interface LimitField {
   category: LimitCategories;
 }
 
+export interface PasswordSettings {
+  min_password_length: number;
+  require_digit: number;
+  require_special_character: number;
+}
+
 /** API responses/payloads */
 
 export interface User {
