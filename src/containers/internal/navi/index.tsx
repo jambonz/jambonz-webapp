@@ -108,6 +108,7 @@ export const Navi = ({
 
   /** Fetch service providers */
   useEffect(() => {
+    dispatch({ type: "user" });
     dispatch({ type: "serviceProviders" });
   }, []);
 
@@ -166,12 +167,12 @@ export const Navi = ({
             <Icons.PlusCircle />
           </button>
         </div>
-        {/* Until we have the APIs this initial UI is not accessible */}
-        {user && (
+        {/* Intentionally hiding this as we will need to work this out as we go... */}
+        {/* ACL component will need to be updated for new user scope/permissions handling */}
+        {false && user && (
           <div className="navi__user">
-            {/* Seed should be user sid when we have the APIs for it... */}
             <Blockies
-              seed="jambonz"
+              seed={user!.user_sid}
               size={6}
               scale={6}
               color={getCssVar("--jambonz")}

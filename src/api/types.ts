@@ -10,6 +10,22 @@ export type IpType = "ip" | "fqdn" | "fqdn-top-level" | "invalid";
 
 export type LimitCategories = "api_rate" | "voice_call_session" | "device";
 
+/** User roles / permissions */
+
+export type UserScopes = "admin" | "service_provider" | "account";
+
+export type UserPermissions =
+  | "VIEW_ONLY"
+  | "PROVISION_SERVICES"
+  | "PROVISION_USERS";
+
+// We'll want something like this for actual permissions implementation...
+// export enum UserPermissions {
+//   VIEW_ONLY = 0,
+//   PROVISION_SERVICES = 1,
+//   PROVISION_USERS = 2,
+// }
+
 /** Status codes */
 
 export enum StatusCodes {
@@ -90,12 +106,13 @@ export interface PasswordSettings {
 /** API responses/payloads */
 
 export interface User {
+  scope: UserScopes;
   user_sid: string;
+  permissions: UserPermissions[];
 }
 
-export interface UserLogin {
+export interface UserLogin extends User {
   token: string;
-  user_sid: string;
   force_change: boolean;
 }
 
