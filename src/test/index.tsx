@@ -6,6 +6,7 @@ import { AuthContext } from "src/router/auth";
 import { MSG_SOMETHING_WRONG } from "src/constants";
 
 import type { AuthStateContext } from "src/router/auth";
+import type { UserLogin } from "src/api/types";
 
 import userLogin from "../../cypress/fixtures/userLogin.json";
 
@@ -19,7 +20,7 @@ type LayoutProviderProps = TestProviderProps & {
 };
 
 export const signinError = () => Promise.reject(MSG_SOMETHING_WRONG);
-export const signinSuccess = () => Promise.resolve(userLogin);
+export const signinSuccess = () => Promise.resolve(userLogin as UserLogin);
 export const signout = () => undefined;
 export const authProps: AuthStateContext = {
   token: "",

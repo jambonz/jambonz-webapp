@@ -1,5 +1,6 @@
-import { getUser, getServiceProviders } from "src/api";
+import { getServiceProviders } from "src/api";
 import { sortLocaleName } from "src/utils";
+import { getToken, parseJwt } from "src/router/auth";
 
 import type { State, Action } from "./types";
 import type { ServiceProvider, User } from "src/api/types";
@@ -61,8 +62,9 @@ export const currentServiceProviderAction = (
 };
 
 export const userAsyncAction = async (): Promise<User> => {
-  const response = await getUser("user_sid");
-  return response.json;
+  const token = getToken();
+  const { user_sid, permissions, scope } = parseJwt(token);
+  return { user_sid, permissions, scope };
 };
 
 export const serviceProvidersAsyncAction = async (): Promise<
