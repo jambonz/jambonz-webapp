@@ -22,6 +22,7 @@ import {
   VENDOR_AWS,
   VENDOR_GOOGLE,
   VENDOR_MICROSOFT,
+  VENDOR_NUANCE,
   VENDOR_WELLSAID,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -51,6 +52,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [apiKey, setApiKey] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [secretKey, setSecretKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
   const [useCustomTts, setUseCustomTts] = useState(false);
@@ -137,6 +140,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_MICROSOFT || vendor === VENDOR_WELLSAID
               ? apiKey
               : null,
+          client_id: vendor === VENDOR_NUANCE ? clientId : null,
+          secret: vendor === VENDOR_NUANCE ? secretKey : null,
         })
           .then(({ json }) => {
             toastSuccess("Speech credential created successfully");
@@ -193,6 +198,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.aws_region) {
         setRegion(credential.data.aws_region);
+      }
+
+      if (credential.data.client_id) {
+        setClientId(credential.data.client_id);
+      }
+
+      if (credential.data.secret) {
+        setSecretKey(credential.data.secret);
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
@@ -303,6 +316,35 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               </fieldset>
             )}
           </>
+        )}
+        {vendor === VENDOR_NUANCE && (
+          <fieldset>
+            <label htmlFor="nuance_client_id">
+              Client ID<span>*</span>
+            </label>
+            <input
+              id="nuance_client_id"
+              required
+              type="text"
+              name="nuance_client_id"
+              placeholder="Client ID"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="aws_secret_key">
+              Secret<span>*</span>
+            </label>
+            <Passwd
+              id="nuance_secret"
+              required
+              name="nuance_secret"
+              placeholder="Secret Key"
+              value={secretKey ? getObscuredSecret(secretKey) : secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
