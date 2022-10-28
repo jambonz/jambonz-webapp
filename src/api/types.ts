@@ -111,7 +111,8 @@ export interface User {
   permissions: UserPermissions[];
 }
 
-export interface UserLogin extends User {
+export interface UserLogin {
+  user_sid: string;
   token: string;
   force_change: boolean;
 }

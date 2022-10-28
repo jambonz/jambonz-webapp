@@ -95,10 +95,9 @@ export const useProvideAuth = (): AuthStateContext => {
           if (response.status === StatusCodes.OK) {
             token = response.json.token;
             setToken(token);
-            const { force_change, user_sid } = parseJwt(token);
 
-            if (force_change) {
-              sessionStorage.setItem(SESS_USER_SID, user_sid);
+            if (response.json.force_change) {
+              sessionStorage.setItem(SESS_USER_SID, response.json.user_sid);
               sessionStorage.setItem(SESS_OLD_PASSWORD, password);
               navigate(ROUTE_CREATE_PASSWORD);
             } else {
