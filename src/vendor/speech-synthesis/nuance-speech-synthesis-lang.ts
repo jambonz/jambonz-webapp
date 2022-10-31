@@ -6,17 +6,17 @@ export const languages: VoiceLanguage[] = [
     name: "Arabic (Worldwide)",
     voices: [
       {
-        value: "laila - standard",
+        value: "Laila - standard",
         name: "Laila (standard)",
         model: "standard",
       },
       {
-        value: "tarik - standard",
+        value: "Tarik - standard",
         name: "Tarik (standard)",
         model: "standard",
       },
       {
-        value: "miriam - standard",
+        value: "Miriam - standard",
         name: "Miriam (standard)",
         model: "standard",
       },
@@ -25,20 +25,20 @@ export const languages: VoiceLanguage[] = [
   {
     code: "eu-ES",
     name: "Basque (Spain)",
-    voices: [{ value: "laila", name: "Miren (standard)", model: "standard" }],
+    voices: [{ value: "Miren", name: "Miren (standard)", model: "standard" }],
   },
   {
     code: "bn-IN",
     name: "Bengali (India)",
     voices: [
-      { value: "paya - standard", name: "Paya (standard)", model: "standard" },
+      { value: "Paya - standard", name: "Paya (standard)", model: "standard" },
     ],
   },
   {
     code: "bho-IN",
     name: "Bhojpuri (India)",
     voices: [
-      { value: "jaya - standard", name: "Jaya (standard)", model: "standard" },
+      { value: "Jaya - standard", name: "Jaya (standard)", model: "standard" },
     ],
   },
   {
@@ -46,7 +46,7 @@ export const languages: VoiceLanguage[] = [
     name: "Bulgarian (Bulgaria)",
     voices: [
       {
-        value: "daria - standard",
+        value: "Daria - standard",
         name: "Daria (standard)",
         model: "standard",
       },
@@ -57,7 +57,7 @@ export const languages: VoiceLanguage[] = [
     name: "Cantonese (Hong Kong)",
     voices: [
       {
-        value: "sinji-ml - standard",
+        value: "Sinji-Ml - standard",
         name: "Sinji-Ml (standard)",
         model: "standard",
       },
@@ -68,12 +68,12 @@ export const languages: VoiceLanguage[] = [
     name: "Catalan (Spain)",
     voices: [
       {
-        value: "jordi - standard",
+        value: "Jordi - standard",
         name: "Jordi (standard)",
         model: "standard",
       },
       {
-        value: "montserrat - standard",
+        value: "Montserrat - standard",
         name: "Montserrat (standard)",
         model: "enhanced",
       },
@@ -83,7 +83,7 @@ export const languages: VoiceLanguage[] = [
     code: "yue-HK",
     name: "Croatian (Croatia)",
     voices: [
-      { value: "lana - standard", name: "Lana (standard)", model: "standard" },
+      { value: "Lana - standard", name: "Lana (standard)", model: "standard" },
     ],
   },
   {
@@ -91,17 +91,17 @@ export const languages: VoiceLanguage[] = [
     name: "Czech (Czech Republic)",
     voices: [
       {
-        value: "iveta - standard",
+        value: "Iveta - standard",
         name: "Iveta (standard)",
         model: "standard",
       },
       {
-        value: "zuzana - standard",
+        value: "Zuzana - standard",
         name: "Zuzana (standard)",
         model: "standard",
       },
       {
-        value: "zuzana-ml - enhanced",
+        value: "Zuzana-ml - enhanced",
         name: "Zuzana (enhanced)",
         model: "enhanced",
       },
@@ -112,11 +112,11 @@ export const languages: VoiceLanguage[] = [
     name: "Danish (Denmark)",
     voices: [
       {
-        value: "magnus - standard",
+        value: "Magnus - standard",
         name: "Magnus (standard)",
         model: "standard",
       },
-      { value: "sara - standard", name: "Sara (standard)", model: "standard" },
+      { value: "Sara - standard", name: "Sara (standard)", model: "standard" },
     ],
   },
   {
@@ -124,7 +124,7 @@ export const languages: VoiceLanguage[] = [
     name: "Dutch (Belgium)",
     voices: [
       {
-        value: "ellen - standard",
+        value: "Ellen - standard",
         name: "Ellen (standard)",
         model: "standard",
       },
@@ -135,12 +135,12 @@ export const languages: VoiceLanguage[] = [
     name: "Dutch (Belgium)",
     voices: [
       {
-        value: "claire-ml - standard",
+        value: "Claire-Ml - standard",
         name: "Claire-Ml (standard)",
         model: "standard",
       },
       {
-        value: "xander - standard",
+        value: "Xander - standard",
         name: "Xander (standard)",
         model: "standard",
       },
@@ -151,13 +151,13 @@ export const languages: VoiceLanguage[] = [
     name: "English (Australia)",
     voices: [
       {
-        value: "karen - standard",
+        value: "Karen - standard",
         name: "Karen (standard)",
         model: "standard",
       },
-      { value: "lee - standard", name: "Lee (standard)", model: "standard" },
+      { value: "Lee - standard", name: "Lee (standard)", model: "standard" },
       {
-        value: "matilda - enhanced",
+        value: "Matilda - enhanced",
         name: "Matilda (enhanced)",
         model: "enhanced",
       },
@@ -168,27 +168,27 @@ export const languages: VoiceLanguage[] = [
     name: "English (India)",
     voices: [
       {
-        value: "isha-ml - enhanced",
+        value: "Isha-Ml - enhanced",
         name: "Isha-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "rishi - standard",
+        value: "Rishi - standard",
         name: "Rishi (standard)",
         model: "standard",
       },
       {
-        value: "rishi-Ml - standard",
+        value: "Rishi-Ml - standard",
         name: "Rishi-Ml (standard)",
         model: "standard",
       },
       {
-        value: "sangeeta - standard",
+        value: "Sangeeta - standard",
         name: "Sangeeta (standard)",
         model: "standard",
       },
       {
-        value: "veena - standard",
+        value: "Veena - standard",
         name: "Veena (standard)",
         model: "standard",
       },
@@ -199,7 +199,7 @@ export const languages: VoiceLanguage[] = [
     name: "English (Ireland)",
     voices: [
       {
-        value: "moira - standard",
+        value: "Moira - standard",
         name: "Moira (standard)",
         model: "standard",
       },
@@ -210,7 +210,7 @@ export const languages: VoiceLanguage[] = [
     name: "English (Scotland)",
     voices: [
       {
-        value: "fiona - standard",
+        value: "Fiona - standard",
         name: "Fiona (standard)",
         model: "standard",
       },
@@ -221,7 +221,7 @@ export const languages: VoiceLanguage[] = [
     name: "English (South Africa)",
     voices: [
       {
-        value: "tessa - standard",
+        value: "Tessa - standard",
         name: "Tessa (standard)",
         model: "standard",
       },
@@ -232,33 +232,33 @@ export const languages: VoiceLanguage[] = [
     name: "English (United Kingdom)",
     voices: [
       {
-        value: "daniel - standard",
+        value: "Daniel - standard",
         name: "Daniel (standard)",
         model: "standard",
       },
-      { value: "kate - standard", name: "Kate (standard)", model: "standard" },
+      { value: "Kate - standard", name: "Kate (standard)", model: "standard" },
       {
-        value: "malcolm - standard",
+        value: "Malcolm - standard",
         name: "Malcolm (standard)",
         model: "standard",
       },
       {
-        value: "oliver - standard",
+        value: "Oliver - standard",
         name: "Oliver (standard)",
         model: "standard",
       },
       {
-        value: "serena - enhanced",
-        name: "Malcolm (enhanced)",
+        value: "Serena - enhanced",
+        name: "Serena (enhanced)",
         model: "enhanced",
       },
       {
-        value: "simon - standard",
+        value: "Simon - standard",
         name: "Simon (standard)",
         model: "standard",
       },
       {
-        value: "stephanie - standard",
+        value: "Stephanie - standard",
         name: "Stephanie (standard)",
         model: "standard",
       },
@@ -269,49 +269,49 @@ export const languages: VoiceLanguage[] = [
     name: "English (United States)",
     voices: [
       {
-        value: "allison - standard",
+        value: "Allison - standard",
         name: "Allison (standard)",
         model: "standard",
       },
       {
-        value: "ava-ml - enhanced",
+        value: "Ava-Ml - enhanced",
         name: "Ava-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "chloe - standard",
+        value: "Chloe - standard",
         name: "Chloe (standard)",
         model: "standard",
       },
-      { value: "evan - enhanced", name: "Evan (enhanced)", model: "enhanced" },
+      { value: "Evan - enhanced", name: "Evan (enhanced)", model: "enhanced" },
       {
-        value: "nathan - enhanced",
+        value: "Nathan - enhanced",
         name: "Nathan (enhanced)",
         model: "enhanced",
       },
       {
-        value: "evelyn - standard",
+        value: "Evelyn - standard",
         name: "Evelyn (standard)",
         model: "standard",
       },
       {
-        value: "nolan - standard",
+        value: "Nolan - standard",
         name: "Nolan (standard)",
         model: "standard",
       },
       {
-        value: "samantha - standard",
+        value: "Samantha - standard",
         name: "Samantha (standard)",
         model: "standard",
       },
       {
-        value: "susan - standard",
+        value: "Susan - standard",
         name: "Susan (standard)",
         model: "standard",
       },
-      { value: "tom - standard", name: "Tom (standard)", model: "standard" },
+      { value: "Tom - standard", name: "Tom (standard)", model: "standard" },
       {
-        value: "zoe-ml - enhanced",
+        value: "Zoe-Ml - enhanced",
         name: "Zoe-Ml (enhanced)",
         model: "enhanced",
       },
@@ -321,15 +321,15 @@ export const languages: VoiceLanguage[] = [
     code: "fi-FI",
     name: "Finnish (Finland)",
     voices: [
-      { value: "onni - standard", name: "Onni (standard)", model: "standard" },
-      { value: "satu - standard", name: "Satu (standard)", model: "standard" },
+      { value: "Onni - standard", name: "Onni (standard)", model: "standard" },
+      { value: "Satu - standard", name: "Satu (standard)", model: "standard" },
     ],
   },
   {
     code: "fr-BE",
     name: "French (Belgium)",
     voices: [
-      { value: "aude - standard", name: "Aude (standard)", model: "standard" },
+      { value: "Aude - standard", name: "Aude (standard)", model: "standard" },
     ],
   },
   {
@@ -337,17 +337,17 @@ export const languages: VoiceLanguage[] = [
     name: "French (Canada)",
     voices: [
       {
-        value: "amelie-ml - enhanced",
+        value: "Amelie-Ml - enhanced",
         name: "Amelie-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "chantal - standard",
+        value: "Chantal - standard",
         name: "Chantal (standard)",
         model: "standard",
       },
       {
-        value: "nicolas - standard",
+        value: "Nicolas - standard",
         name: "Nicolas (standard)",
         model: "standard",
       },
@@ -358,17 +358,17 @@ export const languages: VoiceLanguage[] = [
     name: "French (France)",
     voices: [
       {
-        value: "audrey-ml - enhanced",
+        value: "Audrey-Ml - enhanced",
         name: "Audrey-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "aurelie - standard",
+        value: "Aurelie - standard",
         name: "Aurelie (standard)",
         model: "standard",
       },
       {
-        value: "thomas - standard",
+        value: "Thomas - standard",
         name: "Thomas (standard)",
         model: "standard",
       },
@@ -379,7 +379,7 @@ export const languages: VoiceLanguage[] = [
     name: "Galician (Spain)",
     voices: [
       {
-        value: "aarmela - standard",
+        value: "Carmela - standard",
         name: "Carmela (standard)",
         model: "standard",
       },
@@ -390,27 +390,27 @@ export const languages: VoiceLanguage[] = [
     name: "German (Germany)",
     voices: [
       {
-        value: "anna-ml - enhanced",
+        value: "Anna-Ml - enhanced",
         name: "Anna-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "markus - standard",
+        value: "Markus - standard",
         name: "Markus (standard)",
         model: "standard",
       },
       {
-        value: "petra-Ml - enhanced",
+        value: "Petra-Ml - enhanced",
         name: "Petra-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "viktor - standard",
+        value: "Viktor - standard",
         name: "Viktor (standard)",
         model: "standard",
       },
       {
-        value: "yannick - standard",
+        value: "Yannick - standard",
         name: "Yannick (standard)",
         model: "standard",
       },
@@ -421,12 +421,12 @@ export const languages: VoiceLanguage[] = [
     name: "Greek (Greece)",
     voices: [
       {
-        value: "melina - standard",
+        value: "Melina - standard",
         name: "Melina (standard)",
         model: "standard",
       },
       {
-        value: "nikos - standard",
+        value: "Nikos - standard",
         name: "Nikos (standard)",
         model: "standard",
       },
@@ -437,7 +437,7 @@ export const languages: VoiceLanguage[] = [
     name: "Hebrew (Israel)",
     voices: [
       {
-        value: "carmit - standard",
+        value: "Carmit - standard",
         name: "Carmit (standard)",
         model: "standard",
       },
@@ -448,18 +448,18 @@ export const languages: VoiceLanguage[] = [
     name: "Hindi (India)",
     voices: [
       {
-        value: "miyara-ml - enhanced",
+        value: "Kiyara-Ml - enhanced",
         name: "Kiyara-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "lekha - standard",
+        value: "Lekha - standard",
         name: "Lekha (standard)",
         model: "standard",
       },
       { value: "neel - standard", name: "Neel (standard)", model: "standard" },
       {
-        value: "neel-ml - standard",
+        value: "Neel-Ml - standard",
         name: "Neel-Ml (standard)",
         model: "standard",
       },
@@ -470,7 +470,7 @@ export const languages: VoiceLanguage[] = [
     name: "Hungarian (Hungary)",
     voices: [
       {
-        value: "mariska - standard",
+        value: "Mariska - standard",
         name: "Mariska (standard)",
         model: "standard",
       },
@@ -481,7 +481,7 @@ export const languages: VoiceLanguage[] = [
     name: "Indonesian (Indonesia)",
     voices: [
       {
-        value: "damayanti - standard",
+        value: "Damayanti - standard",
         name: "Damayanti (standard)",
         model: "standard",
       },
@@ -491,20 +491,20 @@ export const languages: VoiceLanguage[] = [
     code: "it-IT",
     name: "Italian (Italy)",
     voices: [
-      { value: "emma - enhanced", name: "Emma (enhanced)", model: "enhanced" },
+      { value: "Emma - enhanced", name: "Emma (enhanced)", model: "enhanced" },
       {
-        value: "federica-ml - standard",
+        value: "Federica-Ml - standard",
         name: "Federica-Ml (standard)",
         model: "standard",
       },
-      { value: "luca - standard", name: "Luca (standard)", model: "standard" },
+      { value: "Luca - standard", name: "Luca (standard)", model: "standard" },
       {
-        value: "neel-ml - standard",
+        value: "Neel-Ml - standard",
         name: "Neel-Ml (standard)",
         model: "standard",
       },
       {
-        value: "paola - standard",
+        value: "Paola - standard",
         name: "Paola (standard)",
         model: "standard",
       },
@@ -515,47 +515,47 @@ export const languages: VoiceLanguage[] = [
     name: "Japanese (Japan)",
     voices: [
       {
-        value: "ayane - standard",
+        value: "Ayane - standard",
         name: "Ayane (standard)",
         model: "standard",
       },
       {
-        value: "daisuke - standard",
+        value: "Daisuke - standard",
         name: "Daisuke (standard)",
         model: "standard",
       },
       {
-        value: "ichiro - standard",
+        value: "Ichiro - standard",
         name: "Ichiro (standard)",
         model: "standard",
       },
       {
-        value: "koharu - standard",
+        value: "Koharu - standard",
         name: "Koharu (standard)",
         model: "standard",
       },
       {
-        value: "kyoko - standard",
+        value: "Kyoko - standard",
         name: "Kyoko (standard)",
         model: "standard",
       },
       {
-        value: "mizuki - standard",
+        value: "Mizuki - standard",
         name: "Mizuki (standard)",
         model: "standard",
       },
       {
-        value: "otoya - standard",
+        value: "Otoya - standard",
         name: "Otoya (standard)",
         model: "standard",
       },
       {
-        value: "sakura - standard",
+        value: "Sakura - standard",
         name: "Sakura (standard)",
         model: "standard",
       },
       {
-        value: "seiji - standard",
+        value: "Seiji - standard",
         name: "Seiji (standard)",
         model: "standard",
       },
@@ -566,7 +566,7 @@ export const languages: VoiceLanguage[] = [
     name: "Kannada (India)",
     voices: [
       {
-        value: "alpana - standard",
+        value: "Alpana - standard",
         name: "Alpana (standard)",
         model: "standard",
       },
@@ -576,11 +576,11 @@ export const languages: VoiceLanguage[] = [
     code: "ko-KR",
     name: "Korean (South Korea)",
     voices: [
-      { value: "jina - enhanced", name: "Jina (enhanced)", model: "enhanced" },
-      { value: "sora - standard", name: "Sora (standard)", model: "standard" },
-      { value: "yuna - standard", name: "Yuna (standard)", model: "standard" },
+      { value: "Jina - enhanced", name: "Jina (enhanced)", model: "enhanced" },
+      { value: "Sora - standard", name: "Sora (standard)", model: "standard" },
+      { value: "Yuna - standard", name: "Yuna (standard)", model: "standard" },
       {
-        value: "yuna-ml - enhanced",
+        value: "Yuna-Ml - enhanced",
         name: "Yuna-Ml (enhanced)",
         model: "enhanced",
       },
@@ -591,7 +591,7 @@ export const languages: VoiceLanguage[] = [
     name: "Malay (Malaysia)",
     voices: [
       {
-        value: "amira - standard",
+        value: "Amira - standard",
         name: "Amira (standard)",
         model: "standard",
       },
@@ -602,32 +602,32 @@ export const languages: VoiceLanguage[] = [
     name: "Mandarin (China)",
     voices: [
       {
-        value: "lili-ml - enhanced",
+        value: "Lili-Ml - enhanced",
         name: "Lili-Ml (enhanced)",
         model: "enhanced",
       },
       {
-        value: "binbin-ml - standard",
+        value: "Binbin-Ml - standard",
         name: "Binbin-Ml (standard)",
         model: "standard",
       },
       {
-        value: "lilian-ml - standard",
+        value: "Lilian-Ml - standard",
         name: "Lilian-Ml (standard)",
         model: "standard",
       },
       {
-        value: "lisheng-ml - standard",
+        value: "Lisheng-Ml - standard",
         name: "Lisheng-Ml (standard)",
         model: "standard",
       },
       {
-        value: "tiantian-ml - standard",
+        value: "Tiantian-Ml - standard",
         name: "Tiantian-Ml (standard)",
         model: "standard",
       },
       {
-        value: "tingting-ml - standard",
+        value: "Tingting-Ml - standard",
         name: "Tingting-Ml (standard)",
         model: "standard",
       },
@@ -638,7 +638,7 @@ export const languages: VoiceLanguage[] = [
     name: "Mandarin (Taiwan)",
     voices: [
       {
-        value: "meijia-ml - standard",
+        value: "Meijia-Ml - standard",
         name: "Meijia-Ml (standard)",
         model: "standard",
       },
@@ -649,7 +649,7 @@ export const languages: VoiceLanguage[] = [
     name: "Marathi (India)",
     voices: [
       {
-        value: "ananya - standard",
+        value: "Ananya - standard",
         name: "Ananya (standard)",
         model: "standard",
       },
@@ -660,25 +660,25 @@ export const languages: VoiceLanguage[] = [
     name: "Norwegian Bokmål (Norway)",
     voices: [
       {
-        value: "henrik - standard",
+        value: "Henrik - standard",
         name: "Henrik (standard)",
         model: "standard",
       },
-      { value: "nora - standard", name: "Nora (standard)", model: "standard" },
+      { value: "Nora - standard", name: "Nora (standard)", model: "standard" },
     ],
   },
   {
     code: "pl-PL",
     name: "Polish (Poland)",
     voices: [
-      { value: "ewa - enhanced", name: "Ewa (enhanced)", model: "enhanced" },
+      { value: "Ewa - enhanced", name: "Ewa (enhanced)", model: "enhanced" },
       {
-        value: "krzysztof - standard",
+        value: "Krzysztof - standard",
         name: "Krzysztof (standard)",
         model: "standard",
       },
       {
-        value: "zosia - standard",
+        value: "Zosia - standard",
         name: "Zosia (standard)",
         model: "standard",
       },
@@ -694,12 +694,12 @@ export const languages: VoiceLanguage[] = [
         model: "enhanced",
       },
       {
-        value: "fernanda - standard",
+        value: "Fernanda - standard",
         name: "Fernanda (standard)",
         model: "standard",
       },
       {
-        value: "felipe - standard",
+        value: "Felipe - standard",
         name: "Felipe (standard)",
         model: "standard",
       },
@@ -710,17 +710,17 @@ export const languages: VoiceLanguage[] = [
     name: "Portuguese (Portugal)",
     voices: [
       {
-        value: "catarina - standard",
+        value: "Catarina - standard",
         name: "Catarina (standard)",
         model: "standard",
       },
       {
-        value: "joana - standard",
+        value: "Joana - standard",
         name: "Joana (standard)",
         model: "standard",
       },
       {
-        value: "joaquim - standard",
+        value: "Joaquim - standard",
         name: "Joaquim (standard)",
         model: "standard",
       },
@@ -731,7 +731,7 @@ export const languages: VoiceLanguage[] = [
     name: "Romanian (Romania)",
     voices: [
       {
-        value: "ioana - standard",
+        value: "Ioana - standard",
         name: "Ioana (standard)",
         model: "standard",
       },
@@ -742,17 +742,17 @@ export const languages: VoiceLanguage[] = [
     name: "Russian (Russia)",
     voices: [
       {
-        value: "katya - standard",
+        value: "Katya - standard",
         name: "Katya (standard)",
         model: "standard",
       },
       {
-        value: "katya-ml - standard",
+        value: "Katya-Ml - standard",
         name: "Katya-Ml (standard)",
         model: "standard",
       },
       {
-        value: "milena - standard",
+        value: "Milena - standard",
         name: "Milena (standard)",
         model: "standard",
       },
@@ -764,7 +764,7 @@ export const languages: VoiceLanguage[] = [
     name: "Slovak (Slovakia)",
     voices: [
       {
-        value: "laura - standard",
+        value: "Laura - standard",
         name: "Laura (standard)",
         model: "standard",
       },
@@ -775,12 +775,12 @@ export const languages: VoiceLanguage[] = [
     name: "Spanish (Argentina)",
     voices: [
       {
-        value: "diego - standard",
+        value: "Diego - standard",
         name: "Diego (standard)",
         model: "standard",
       },
       {
-        value: "isabela - standard",
+        value: "Isabela - standard",
         name: "Isabela (standard)",
         model: "standard",
       },
@@ -791,7 +791,7 @@ export const languages: VoiceLanguage[] = [
     name: "Spanish (Chile)",
     voices: [
       {
-        value: "francisca - standard",
+        value: "Francisca - standard",
         name: "Francisca (standard)",
         model: "standard",
       },
@@ -802,17 +802,17 @@ export const languages: VoiceLanguage[] = [
     name: "Spanish (Colombia)",
     voices: [
       {
-        value: "carlos - standard",
+        value: "Carlos - standard",
         name: "Carlos (standard)",
         model: "standard",
       },
       {
-        value: "soledad - standard",
+        value: "Soledad - standard",
         name: "Soledad (standard)",
         model: "standard",
       },
       {
-        value: "ximena - standard",
+        value: "Ximena - standard",
         name: "Ximena (standard)",
         model: "standard",
       },
@@ -823,18 +823,18 @@ export const languages: VoiceLanguage[] = [
     name: "Spanish (Mexico)",
     voices: [
       {
-        value: "angelica - standard",
+        value: "Angelica - standard",
         name: "Angelica (standard)",
         model: "standard",
       },
       {
-        value: "javier - standard",
+        value: "Javier - standard",
         name: "Javier (standard)",
         model: "standard",
       },
-      { value: "juan - standard", name: "Juan (standard)", model: "standard" },
+      { value: "Juan - standard", name: "Juan (standard)", model: "standard" },
       {
-        value: "paulina-ml - enhanced",
+        value: "Paulina-Ml - enhanced",
         name: "Paulina-Ml (enhanced)",
         model: "enhanced",
       },
@@ -845,17 +845,17 @@ export const languages: VoiceLanguage[] = [
     name: "Spanish (Spain)",
     voices: [
       {
-        value: "jorge - standard",
+        value: "Jorge - standard",
         name: "Jorge (standard)",
         model: "standard",
       },
       {
-        value: "marisol-ml - standard",
+        value: "Marisol-Ml - standard",
         name: "Marisol-Ml (standard)",
         model: "standard",
       },
       {
-        value: "monica-ml - standard",
+        value: "Monica-Ml - standard",
         name: "Monica-Ml (standard)",
         model: "standard",
       },
@@ -865,14 +865,14 @@ export const languages: VoiceLanguage[] = [
     code: "sv-SE",
     name: "Swedish (Sweden)",
     voices: [
-      { value: "alva - standard", name: "Alva (standard)", model: "standard" },
+      { value: "Alva - standard", name: "Alva (standard)", model: "standard" },
       {
-        value: "klara - standard",
+        value: "Klara - standard",
         name: "Klara (standard)",
         model: "standard",
       },
       {
-        value: "oskar - standard",
+        value: "Oskar - standard",
         name: "Oskar (standard)",
         model: "standard",
       },
@@ -882,7 +882,7 @@ export const languages: VoiceLanguage[] = [
     code: "ta-IN",
     name: "Tamil (India)",
     voices: [
-      { value: "vani - standard", name: "Vani (standard)", model: "standard" },
+      { value: "Vani - standard", name: "Vani (standard)", model: "standard" },
     ],
   },
   {
@@ -890,7 +890,7 @@ export const languages: VoiceLanguage[] = [
     name: "Telugu (India)",
     voices: [
       {
-        value: "geeta - standard",
+        value: "Geeta - standard",
         name: "Geeta (standard)",
         model: "standard",
       },
@@ -901,12 +901,12 @@ export const languages: VoiceLanguage[] = [
     name: "Thai (Thailand)",
     voices: [
       {
-        value: "kanya - enhanced",
+        value: "Kanya - enhanced",
         name: "Kanya (enhanced)",
         model: "enhanced",
       },
       {
-        value: "narisa - standard",
+        value: "Narisa - standard",
         name: "Narisa (standard)",
         model: "standard",
       },
@@ -917,12 +917,12 @@ export const languages: VoiceLanguage[] = [
     name: "Turkish (Turkey)",
     voices: [
       {
-        value: "cem-ml - standard",
+        value: "Cem-Ml - standard",
         name: "Cem-Ml (standard)",
         model: "standard",
       },
       {
-        value: "yelda - standard",
+        value: "Yelda - standard",
         name: "Yelda (standard)",
         model: "standard",
       },
@@ -933,7 +933,7 @@ export const languages: VoiceLanguage[] = [
     name: "Ukrainian (Ukraine)",
     voices: [
       {
-        value: "lesya - standard",
+        value: "Lesya - standard",
         name: "Lesya (standard)",
         model: "standard",
       },
@@ -944,7 +944,7 @@ export const languages: VoiceLanguage[] = [
     name: "Valencian (Spain)",
     voices: [
       {
-        value: "empar - standard",
+        value: "Empar - standard",
         name: "Empar (standard)",
         model: "standard",
       },
@@ -954,7 +954,7 @@ export const languages: VoiceLanguage[] = [
     code: "vi-VN",
     name: "Vietnamese (Vietnam)",
     voices: [
-      { value: "linh - standard", name: "Linh (standard)", model: "standard" },
+      { value: "Linh - standard", name: "Linh (standard)", model: "standard" },
     ],
   },
 ];
