@@ -704,7 +704,6 @@ const SpeechServicesAddEdit = (props) => {
                 </option>
               ))}
             </Select>
-{/*
             <div />
             <Checkbox
               noLeftMargin
@@ -726,7 +725,7 @@ const SpeechServicesAddEdit = (props) => {
               invalid={invalidUseCustomTts}
               ref={refUseCustomTts}
             />
-            <Label htmlFor="customVoiceEndpoint">Custom voice endpoint</Label>
+            <Label htmlFor="customVoiceEndpoint">Custom voice endpoint Id</Label>
             <Input
               name="customVoiceEndpoint"
               id="customVoiceEndpoint"
@@ -737,7 +736,6 @@ const SpeechServicesAddEdit = (props) => {
               ref={refUseCustomTts}
               disabled={!useCustomTts}
             />
-*/}
             <div />
             <Checkbox
               noLeftMargin
