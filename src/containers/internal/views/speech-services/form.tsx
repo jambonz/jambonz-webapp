@@ -332,7 +332,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               onChange={(e) => setClientId(e.target.value)}
               disabled={credential ? true : false}
             />
-            <label htmlFor="aws_secret_key">
+            <label htmlFor="nuance_secret">
               Secret<span>*</span>
             </label>
             <Passwd
