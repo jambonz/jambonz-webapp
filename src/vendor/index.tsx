@@ -13,6 +13,7 @@ export const VENDOR_GOOGLE = "google";
 export const VENDOR_AWS = "aws";
 export const VENDOR_MICROSOFT = "microsoft";
 export const VENDOR_WELLSAID = "wellsaid";
+export const VENDOR_NUANCE = "nuance";
 
 export const vendors: VendorOptions[] = [
   {
@@ -30,6 +31,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "WellSaid",
     value: VENDOR_WELLSAID,
+  },
+  {
+    name: "Nuance",
+    value: VENDOR_NUANCE,
   },
 ];
 
@@ -72,19 +77,23 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/aws-speech-recognizer-lang"),
       import("./speech-recognizer/google-speech-recognizer-lang"),
       import("./speech-recognizer/ms-speech-recognizer-lang"),
+      import("./speech-recognizer/nuance-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
+      import("./speech-synthesis/nuance-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
         { default: googleRecognizer },
         { default: msRecognizer },
+        { default: nuanceRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
         { default: wellsaidSynthesis },
+        { default: nuanceSynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -93,11 +102,13 @@ export const useSpeechVendors = () => {
               google: googleSynthesis,
               microsoft: msSynthesis,
               wellsaid: wellsaidSynthesis,
+              nuance: nuanceSynthesis,
             },
             recognizers: {
               aws: awsRecognizer,
               google: googleRecognizer,
               microsoft: msRecognizer,
+              nuance: nuanceRecognizer,
             },
           });
         }

@@ -38,8 +38,12 @@ export const getStatus = (
       cred.use_for_stt &&
       testResult.tts.status === CRED_OK &&
       testResult.stt.status === CRED_OK) ||
-    (cred.use_for_tts && testResult.tts.status === CRED_OK) ||
-    (cred.use_for_stt && testResult.stt.status === CRED_OK)
+    (cred.use_for_tts &&
+      testResult.tts.status === CRED_OK &&
+      testResult.stt.status === CRED_NOT_TESTED) ||
+    (cred.use_for_stt &&
+      testResult.stt.status === CRED_OK &&
+      testResult.tts.status === CRED_NOT_TESTED)
   ) {
     return CRED_OK;
   }
