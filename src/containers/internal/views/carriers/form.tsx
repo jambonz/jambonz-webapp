@@ -13,6 +13,7 @@ import {
   putSmppGateway,
   useApiData,
   useServiceProviderData,
+  postPredefinedCarrierTemplate,
 } from "src/api";
 import {
   DEFAULT_SIP_GATEWAY,
@@ -523,23 +524,25 @@ export const CarrierForm = ({
 
   useEffect(() => {
     if (predefinedName && hasLength(predefinedCarriers)) {
-      setCarrierStates(
-        predefinedCarriers.filter((a) => a.name === predefinedName)[0]
-      );
-
       const currentServiceProviderSid =
         currentServiceProvider?.service_provider_sid;
-      const predefinedCarrierSid = predefinedCarriers?.filter(
-        (a) => a.name === predefinedName
-      )[0].predefined_carrier_sid;
-      const [predefinedSipGateways] = useApiData<SipGateway[]>(
+      const predefinedCarrierSid =
+        predefinedName.length !== 0
+          ? predefinedCarriers?.filter((a) => a.name === predefinedName)[0]
+              .predefined_carrier_sid
+          : null;
+
+      postPredefinedCarrierTemplate(
         `ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
-      );
-      if (predefinedSipGateways) {
-        setSipGateways(predefinedSipGateways);
-      }
+      )
+        .then(({ json }) => {
+          navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
     }
-  }, [predefinedName, sipGateways]);
+  }, [predefinedName]);
 
   useEffect(() => {
     if (carrier && carrier.data) {

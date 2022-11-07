@@ -284,6 +284,13 @@ export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
   );
 };
 
+export const postPredefinedCarrierTemplate = (
+  apiPath: string,
+  payload: void
+) => {
+  return postFetch<SidResponse, void>(`${API_BASE_URL}/${apiPath}`, payload);
+};
+
 export const postSipGateway = (payload: Partial<SipGateway>) => {
   return postFetch<SidResponse, Partial<SipGateway>>(API_SIP_GATEWAY, payload);
 };
@@ -532,7 +539,6 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
 
   useEffect(() => {
     let ignore = false;
-
     getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
       .then(({ json }) => {
         if (!ignore) {
