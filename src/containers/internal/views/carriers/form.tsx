@@ -526,8 +526,20 @@ export const CarrierForm = ({
       setCarrierStates(
         predefinedCarriers.filter((a) => a.name === predefinedName)[0]
       );
+
+      const currentServiceProviderSid =
+        currentServiceProvider?.service_provider_sid;
+      const predefinedCarrierSid = predefinedCarriers?.filter(
+        (a) => a.name === predefinedName
+      )[0].predefined_carrier_sid;
+      const [predefinedSipGateways] = useApiData<SipGateway[]>(
+        `ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
+      );
+      if (predefinedSipGateways) {
+        setSipGateways(predefinedSipGateways);
+      }
     }
-  }, [predefinedName]);
+  }, [predefinedName, sipGateways]);
 
   useEffect(() => {
     if (carrier && carrier.data) {

@@ -299,6 +299,7 @@ export interface Carrier {
 
 export interface PredefinedCarrier extends Carrier {
   requires_static_ip: boolean;
+  predefined_carrier_sid: string;
 }
 
 export interface Gateway {
