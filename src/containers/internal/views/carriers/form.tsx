@@ -524,10 +524,9 @@ export const CarrierForm = ({
 
   useEffect(() => {
     if (predefinedName && hasLength(predefinedCarriers)) {
-      const predefinedCarrierSid = predefinedName
-        ? predefinedCarriers.find((a) => a.name === predefinedName)
-            ?.predefined_carrier_sid
-        : null;
+      const predefinedCarrierSid = predefinedCarriers.find(
+        (a) => a.name === predefinedName
+      )?.predefined_carrier_sid;
 
       if (currentServiceProvider && predefinedCarrierSid) {
         postPredefinedCarrierTemplate(
