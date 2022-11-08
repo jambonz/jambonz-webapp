@@ -197,7 +197,7 @@ export const getFetch = <Type>(url: string) => {
 export const postFetch = <Type, Payload>(url: string, payload: Payload) => {
   return fetchTransport<Type>(url, {
     method: "POST",
-    body: payload ? JSON.stringify(payload) : null,
+    ...(payload && { body: JSON.stringify(payload) }),
     headers: getAuthHeaders(),
   });
 };
