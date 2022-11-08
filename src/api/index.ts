@@ -197,7 +197,7 @@ export const getFetch = <Type>(url: string) => {
 export const postFetch = <Type, Payload>(url: string, payload: Payload) => {
   return fetchTransport<Type>(url, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: payload ? JSON.stringify(payload) : null,
     headers: getAuthHeaders(),
   });
 };
@@ -285,10 +285,14 @@ export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
 };
 
 export const postPredefinedCarrierTemplate = (
-  apiPath: string,
+  currentServiceProviderSid: string,
+  predefinedCarrierSid: string,
   payload: void
 ) => {
-  return postFetch<SidResponse, void>(`${API_BASE_URL}/${apiPath}`, payload);
+  return postFetch<SidResponse, void>(
+    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`,
+    payload
+  );
 };
 
 export const postSipGateway = (payload: Partial<SipGateway>) => {
@@ -539,6 +543,7 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
 
   useEffect(() => {
     let ignore = false;
+
     getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
       .then(({ json }) => {
         if (!ignore) {

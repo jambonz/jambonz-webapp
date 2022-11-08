@@ -524,23 +524,23 @@ export const CarrierForm = ({
 
   useEffect(() => {
     if (predefinedName && hasLength(predefinedCarriers)) {
-      const currentServiceProviderSid =
-        currentServiceProvider?.service_provider_sid;
-      const predefinedCarrierSid =
-        predefinedName.length !== 0
-          ? predefinedCarriers?.filter((a) => a.name === predefinedName)[0]
-              .predefined_carrier_sid
-          : null;
+      const predefinedCarrierSid = predefinedName
+        ? predefinedCarriers.find((a) => a.name === predefinedName)
+            ?.predefined_carrier_sid
+        : null;
 
-      postPredefinedCarrierTemplate(
-        `ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
-      )
-        .then(({ json }) => {
-          navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
+      if (currentServiceProvider && predefinedCarrierSid) {
+        postPredefinedCarrierTemplate(
+          currentServiceProvider.service_provider_sid,
+          predefinedCarrierSid
+        )
+          .then(({ json }) => {
+            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+          })
+          .catch((error) => {
+            toastError(error.msg);
+          });
+      }
     }
   }, [predefinedName]);
 
