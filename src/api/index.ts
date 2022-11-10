@@ -194,9 +194,9 @@ export const getFetch = <Type>(url: string) => {
   });
 };
 
-export const postFetch = <Type, Payload>(
+export const postFetch = <Type, Payload = undefined>(
   url: string,
-  payload: Payload | undefined
+  payload?: Payload
 ) => {
   return fetchTransport<Type>(url, {
     method: "POST",
@@ -291,9 +291,8 @@ export const postPredefinedCarrierTemplate = (
   currentServiceProviderSid: string,
   predefinedCarrierSid: string
 ) => {
-  return postFetch<SidResponse, undefined>(
-    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`,
-    undefined
+  return postFetch<SidResponse>(
+    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
   );
 };
 
