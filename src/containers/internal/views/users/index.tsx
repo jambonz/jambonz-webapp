@@ -4,17 +4,19 @@ import { Link } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+
 // import { toastError, toastSuccess } from "src/store";
 import {
   Section,
   Icons,
+  Spinner,
   SearchFilter,
   AccountFilter,
   SelectFilter,
   ServiceProviderFilter,
 } from "src/components";
 // import { DeleteUser } from "./delete";
-import { hasLength } from "src/utils";
+import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { ServiceProvider, Account, User } from "src/api/types";
 
@@ -28,20 +30,23 @@ const scopeSelection = [
 export const Users = () => {
   const [users] = useApiData<User[]>("Users");
   const [filter, setFilter] = useState("");
+  const [scopeFilter, setScopeFilter] = useState("all");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [serviceProviders] = useApiData<ServiceProvider[]>("ServiceProviders");
   const [accountSid, setAccountSid] = useState("");
   const [serviceProviderSid, setServiceProviderSid] = useState("");
-  const [scopeFilter, setScopeFilter] = useState("all");
-  //const [statusFilter, setStatusFilter] = useState("all");
-
-  // console.log(users);
 
   // const [pageNumber, setPageNumber] = useState(1);
   // const [perPageFilter, setPerPageFilter] = useState("25");
   // const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  //const filteredUsers = useFilteredResults<User>(filter, users);
+  const filteredUsers = useFilteredResults<User>(filter, users);
+
+  // const getUsers = () => {
+  //   const users = useApiData<User[]>("Users");
+  //   setUsers(users as any);
+  //   return users;
+  // }
 
   // const handleDelete = () => {
   //   if (user) {
@@ -62,13 +67,31 @@ export const Users = () => {
   // };
 
   // const handleFilterChange = () => {
-  //   const payload: Partial<CallQuery> = {
-  //     page: pageNumber,
-  //     count: Number(perPageFilter),
-  //     ...(statusFilter !== "all" && { answered: statusFilter }),
-  //     ...(scopeFilter !== "all" && { scope: scopeFilter }),
-  //   };
+  //     const filteredUsers = users?.filter((e) => {
+  //       e.account_sid === acco
+  //     })
   // };
+
+  // const handleSelect = () => {
+  //   const result = users?.filter((e)=> {
+  //     e.account_sid === accountSid && e.service_provider_sid
+  //   });
+  //   setUsers(result);
+  // };
+
+  // useEffect(() => {
+  //   if(!users){
+  //     getUsers();
+  //     console.log("users", users)
+  //   }
+  //   console.log(users)
+  //   if (serviceProviderSid || accountSid || scopeFilter) {
+  //     //handleFilterChange();
+  //     handleSelect();
+  //   }
+
+  //   console.log(users)
+  // }, [users, serviceProviderSid, accountSid, scopeFilter]);
 
   return (
     <>
@@ -103,7 +126,7 @@ export const Users = () => {
         />
       </section>
 
-      <Section slim>
+      <Section {...(hasLength(filteredUsers) && { slim: true })}>
         <div className="grid grid--col4">
           <div className="grid__row grid__th">
             <div>Users</div>
@@ -111,8 +134,10 @@ export const Users = () => {
             <div>SID</div>
             <div>&nbsp;</div>
           </div>
-          {hasLength(users) ? (
-            users.map((user) => {
+          {!hasValue(users) ? (
+            <Spinner />
+          ) : hasLength(filteredUsers) ? (
+            filteredUsers.map((user) => {
               return (
                 <div className="grid__row" key={user.name}>
                   <div>{user.name}</div>

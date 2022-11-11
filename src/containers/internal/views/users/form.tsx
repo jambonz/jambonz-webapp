@@ -10,12 +10,13 @@ import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { API_USERS } from "src/api/constants";
 
-import type { UserSidResponse, User } from "src/api/types";
+import type { UserSidResponse, User, PasswordSettings } from "src/api/types";
 import { IMessage } from "src/store/types";
 
 export const UserForm = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
   const [user, refetch] = useApiData<User>(`Users/${params.user_sid}`);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,8 +58,26 @@ export const UserForm = () => {
     return;
   };
 
+  const isValidPasswd = (password: string) => {
+    let result;
+    if (pwdSettings) {
+      result =
+        password.length >= pwdSettings?.min_password_length &&
+        (pwdSettings?.require_digit ? /\d/.test(password) : true) &&
+        (pwdSettings?.require_special_character
+          ? /[!@#$%^&*(),.?"';:{}|<>+~]/.test(password)
+          : true);
+    }
+    return result;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValidPasswd(initialPassword)) {
+      toastError("Invalid password");
+      return;
+    }
 
     if (!user) {
       postFetch<UserSidResponse, Partial<User>>(API_USERS, {
@@ -193,12 +212,14 @@ export const UserForm = () => {
             </label>
           </fieldset>
           <fieldset>
-            <ButtonGroup>
-              <Button small subStyle="dark" onClick={() => setModal(true)}>
-                {" "}
-                Delete User
-              </Button>
-            </ButtonGroup>
+            {!window.location.href.includes("/add") && (
+              <ButtonGroup>
+                <Button small subStyle="dark" onClick={() => setModal(true)}>
+                  {" "}
+                  Delete User
+                </Button>
+              </ButtonGroup>
+            )}
             <ButtonGroup left>
               <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_USERS}>
                 Cancel

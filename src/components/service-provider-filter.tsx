@@ -13,8 +13,8 @@ export type ServiceProviderFilterProps = {
   defaultOption?: boolean;
 };
 
-/** This will apply the selected account SID so you can filter local data */
-/** Currently used by: Applications, Recent Calls, Alerts, Carriers and Speech index views */
+/** This will apply the selected service_provider SID so you can filter local data */
+/** Currently used by: Users view */
 export const ServiceProviderFilter = ({
   label = "Service Provider",
   serviceProvider: [serviceProviderSid, setServiceProviderSid],
