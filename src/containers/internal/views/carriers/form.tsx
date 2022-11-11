@@ -13,6 +13,7 @@ import {
   putSmppGateway,
   useApiData,
   useServiceProviderData,
+  postPredefinedCarrierTemplate,
 } from "src/api";
 import {
   DEFAULT_SIP_GATEWAY,
@@ -523,9 +524,22 @@ export const CarrierForm = ({
 
   useEffect(() => {
     if (predefinedName && hasLength(predefinedCarriers)) {
-      setCarrierStates(
-        predefinedCarriers.filter((a) => a.name === predefinedName)[0]
-      );
+      const predefinedCarrierSid = predefinedCarriers.find(
+        (a) => a.name === predefinedName
+      )?.predefined_carrier_sid;
+
+      if (currentServiceProvider && predefinedCarrierSid) {
+        postPredefinedCarrierTemplate(
+          currentServiceProvider.service_provider_sid,
+          predefinedCarrierSid
+        )
+          .then(({ json }) => {
+            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+          })
+          .catch((error) => {
+            toastError(error.msg);
+          });
+      }
     }
   }, [predefinedName]);
 
