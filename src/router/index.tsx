@@ -11,6 +11,9 @@ import { NotFound } from "src/containers/notfound";
 import CreatePassword from "src/containers/login/create-password";
 
 /** Top navi */
+import Users from "src/containers/internal/views/users";
+import UserAdd from "src/containers/internal/views/users/add";
+import UserEdit from "src/containers/internal/views/users/edit";
 import Settings from "src/containers/internal/views/settings";
 import Accounts from "src/containers/internal/views/accounts";
 import AccountAdd from "src/containers/internal/views/accounts/add";
@@ -66,6 +69,9 @@ export const Router = () => {
               <Routes>
                 <Route path="*" element={<InternalLayout />}>
                   {/* Top navi */}
+                  <Route path="users" element={<Users />} />
+                  <Route path="users/add" element={<UserAdd />} />
+                  <Route path="users/:user_sid/edit" element={<UserEdit />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="accounts" element={<Accounts />} />
                   <Route path="accounts/add" element={<AccountAdd />} />

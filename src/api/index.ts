@@ -320,8 +320,8 @@ export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
 };
 /** Named wrappers for `putFetch` */
 
-export const putUser = (sid: string, payload: UserUpdatePayload) => {
-  return putFetch<EmptyResponse, UserUpdatePayload>(
+export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
+  return putFetch<EmptyResponse, Partial<UserUpdatePayload>>(
     `${API_USERS}/${sid}`,
     payload
   );
@@ -406,6 +406,10 @@ export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
 
 /** Named wrappers for `deleteFetch` */
 
+export const deleteUser = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_USERS}/${sid}`);
+};
+
 export const deleteServiceProvider = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_SERVICE_PROVIDERS}/${sid}`);
 };
@@ -465,7 +469,6 @@ export const deleteAccountLimit = (sid: string, cat: LimitCategories) => {
 
 /** Named wrappers for `getFetch` */
 
-/** This is not a functioning API at the moment... */
 export const getUser = (sid: string) => {
   return getFetch<User>(`${API_USERS}/${sid}`);
 };
