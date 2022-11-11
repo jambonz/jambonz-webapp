@@ -194,10 +194,13 @@ export const getFetch = <Type>(url: string) => {
   });
 };
 
-export const postFetch = <Type, Payload>(url: string, payload: Payload) => {
+export const postFetch = <Type, Payload = undefined>(
+  url: string,
+  payload?: Payload
+) => {
   return fetchTransport<Type>(url, {
     method: "POST",
-    body: JSON.stringify(payload),
+    ...(payload && { body: JSON.stringify(payload) }),
     headers: getAuthHeaders(),
   });
 };
@@ -281,6 +284,15 @@ export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
   return postFetch<SidResponse, Partial<Carrier>>(
     `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
     payload
+  );
+};
+
+export const postPredefinedCarrierTemplate = (
+  currentServiceProviderSid: string,
+  predefinedCarrierSid: string
+) => {
+  return postFetch<SidResponse>(
+    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
   );
 };
 
