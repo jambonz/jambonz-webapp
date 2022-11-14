@@ -15,13 +15,11 @@ export const DeleteUser = ({
   handleSubmit,
 }: DeleteProps) => {
   return (
-    <>
-      <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
-        <P>
-          Are you sure you want to delete the user <strong>{user.name}</strong>?
-        </P>
-      </Modal>
-    </>
+    <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
+      <P>
+        Are you sure you want to delete the user <strong>{user.name}</strong>?
+      </P>
+    </Modal>
   );
 };
 

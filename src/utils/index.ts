@@ -12,7 +12,7 @@ import {
   TCP_MAX_PORT,
 } from "src/api/constants";
 
-import type { IpType } from "src/api/types";
+import type { IpType, PasswordSettings, User } from "src/api/types";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -32,10 +32,20 @@ export const isObject = (obj: unknown) => {
   return typeof obj === "object" && hasValue(obj) && !Array.isArray(obj);
 };
 
-export const isValidPasswd = (password: string) => {
-  return (
-    password.length >= 6 && /\d/.test(password) && /[a-zA-Z]/.test(password)
-  );
+export const isValidPasswd = (
+  password: string,
+  passwordSettings: PasswordSettings
+) => {
+  if (passwordSettings) {
+    return (
+      password.length >= passwordSettings?.min_password_length &&
+      (passwordSettings?.require_digit ? /\d/.test(password) : true) &&
+      (passwordSettings?.require_special_character
+        ? /[!@#$%^&*(),.?"';:{}|<>+~]/.test(password)
+        : true)
+    );
+  }
+  return false;
 };
 
 export const isValidPort = (port: number) => {
@@ -132,4 +142,14 @@ export {
   withSelectState,
   useRedirect,
   useFilteredResults,
+};
+
+export const getUserScope = (user: User) => {
+  if (user.account_sid) {
+    return "account";
+  } else if (user.service_provider_sid) {
+    return "service_provider";
+  } else {
+    return "admin";
+  }
 };

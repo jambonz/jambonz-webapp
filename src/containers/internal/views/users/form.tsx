@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
 import { deleteUser, postFetch, putUser, useApiData } from "src/api";
@@ -9,19 +9,28 @@ import { ClipBoard, Section } from "src/components";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { API_USERS } from "src/api/constants";
+import { isValidPasswd, getUserScope } from "src/utils";
 
-import type { UserSidResponse, User, PasswordSettings } from "src/api/types";
-import { IMessage } from "src/store/types";
+import type {
+  UserSidResponse,
+  User,
+  PasswordSettings,
+  UserScopes,
+  UseApiDataMap,
+} from "src/api/types";
+import type { IMessage } from "src/store/types";
 
-export const UserForm = () => {
-  const params = useParams();
+type UserFormProps = {
+  user?: UseApiDataMap<User>;
+};
+
+export const UserForm = ({ user }: UserFormProps) => {
   const navigate = useNavigate();
   const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
-  const [user, refetch] = useApiData<User>(`Users/${params.user_sid}`);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
-  const [scope, setScope] = useState("");
+  const [scope, setScope] = useState<UserScopes>();
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
@@ -31,13 +40,13 @@ export const UserForm = () => {
   };
 
   const handleDelete = () => {
-    if (user) {
-      deleteUser(user.user_sid)
+    if (user && user.data) {
+      deleteUser(user.data.user_sid)
         .then(() => {
           navigate(ROUTE_INTERNAL_USERS);
           toastSuccess(
             <>
-              Deleted account <strong>{user.name}</strong>
+              Deleted user <strong>{user?.data?.name}</strong>
             </>
           );
         })
@@ -47,35 +56,15 @@ export const UserForm = () => {
     }
   };
 
-  const getScope = (user: User) => {
-    if (!user.account_sid && !user.service_provider_sid) {
-      setScope("admin");
-    } else if (user.service_provider_sid) {
-      setScope("service_provider");
-    } else {
-      setScope("account");
-    }
-    return;
-  };
-
-  const isValidPasswd = (password: string) => {
-    let result;
-    if (pwdSettings) {
-      result =
-        password.length >= pwdSettings?.min_password_length &&
-        (pwdSettings?.require_digit ? /\d/.test(password) : true) &&
-        (pwdSettings?.require_special_character
-          ? /[!@#$%^&*(),.?"';:{}|<>+~]/.test(password)
-          : true);
-    }
-    return result;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isValidPasswd(initialPassword)) {
-      toastError("Invalid password");
+    if (modal) {
+      return;
+    }
+
+    if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
+      toastError("Invalid password.");
       return;
     }
 
@@ -88,7 +77,6 @@ export const UserForm = () => {
         is_active: isActive,
       })
         .then(({ json }) => {
-          refetch();
           toastSuccess("User created successfully");
           navigate(`${ROUTE_INTERNAL_USERS}/${json.user_sid}/edit`);
         })
@@ -97,16 +85,16 @@ export const UserForm = () => {
         });
     }
 
-    if (user && !modal) {
-      putUser(user.user_sid, {
-        name: name || user.name,
-        email: email || user.email,
+    if (user && user.data) {
+      putUser(user.data.user_sid, {
+        name: name || user.data.name,
+        email: email || user.data.email,
         initial_password: initialPassword || null,
-        force_change: forceChange || !!user.force_change,
-        is_active: isActive || !!user.is_active,
+        force_change: forceChange || !!user.data.force_change,
+        is_active: isActive || !!user.data.is_active,
       })
         .then(() => {
-          refetch();
+          user.refetch();
           toastSuccess("User updated successfully");
           navigate(ROUTE_INTERNAL_USERS);
         })
@@ -118,12 +106,12 @@ export const UserForm = () => {
 
   /** Set current user data values if applicable -- e.g. "edit mode" */
   useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setForceChange(!!user.force_change);
-      getScope(user);
-      setIsActive(!!user.is_active);
-      setEmail(user.email);
+    if (user && user.data) {
+      setName(user.data.name);
+      setForceChange(!!user.data.force_change);
+      setIsActive(!!user.data.is_active);
+      setEmail(user.data.email);
+      setScope(getUserScope(user.data));
     }
   }, [user]);
 
@@ -134,10 +122,10 @@ export const UserForm = () => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          {user && (
+          {user && user.data && (
             <fieldset>
               <div className="item__sid">
-                {window.location.href.includes("/edit") && (
+                {user && (
                   <strong>
                     {" "}
                     Scope: <code>{scope}</code>
@@ -145,7 +133,11 @@ export const UserForm = () => {
                 )}
               </div>
               <label htmlFor="user_sid">User SID</label>
-              <ClipBoard id="user_sid" name="user_sid" text={user.user_sid} />
+              <ClipBoard
+                id="user_sid"
+                name="user_sid"
+                text={user.data.user_sid}
+              />
               <label htmlFor="is_active" className="chk">
                 <input
                   id="is_active"
@@ -179,7 +171,7 @@ export const UserForm = () => {
             <input
               id="email"
               required
-              type="text"
+              type="email"
               name="email"
               placeholder="User Email"
               value={email}
@@ -187,9 +179,9 @@ export const UserForm = () => {
             />
           </fieldset>
           <fieldset>
-            <label htmlFor="initialPassword">
+            <label htmlFor="initial_password">
               Temporary password
-              {window.location.href.includes("/add") && <span>*</span>}
+              {!user && <span>*</span>}
             </label>
             <input
               id="initial_password"
@@ -197,7 +189,7 @@ export const UserForm = () => {
               name="initial_password"
               placeholder="Temporary password"
               value={initialPassword}
-              required={window.location.href.includes("/add")}
+              required={!user}
               onChange={(e) => setInitialPassword(e.target.value)}
             />
             <label htmlFor="force_change" className="chk">
@@ -212,18 +204,17 @@ export const UserForm = () => {
             </label>
           </fieldset>
           <fieldset>
-            {!window.location.href.includes("/add") && (
-              <ButtonGroup>
-                <Button small subStyle="dark" onClick={() => setModal(true)}>
-                  {" "}
-                  Delete User
-                </Button>
-              </ButtonGroup>
-            )}
             <ButtonGroup left>
               <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_USERS}>
                 Cancel
               </Button>
+              {user && (
+                <ButtonGroup>
+                  <Button small subStyle="dark" onClick={() => setModal(true)}>
+                    Delete User
+                  </Button>
+                </ButtonGroup>
+              )}
               <Button type="submit" small>
                 Save
               </Button>
@@ -231,9 +222,9 @@ export const UserForm = () => {
           </fieldset>
         </form>
       </Section>
-      {user && modal && (
+      {user && user.data && modal && (
         <DeleteUser
-          user={user}
+          user={user.data}
           handleCancel={handleCancel}
           handleSubmit={handleDelete}
         />

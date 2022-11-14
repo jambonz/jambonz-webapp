@@ -25,7 +25,7 @@ export const ServiceProviderFilter = ({
   const classes = {
     smsel: true,
     "smsel--filter": true,
-    "account-filter": true,
+    "service-provider-filter": true,
     focused: focus,
   };
 
@@ -37,21 +37,23 @@ export const ServiceProviderFilter = ({
 
   return (
     <div className={classNames(classes)}>
-      <label htmlFor="account_filter">{label}:</label>
+      <label htmlFor="service-provider-filter">{label}:</label>
       <div>
         <select
-          id="account_filter"
-          name="account_filter"
+          id="service-provider-filter"
+          name="service-provider-filter"
           value={serviceProviderSid}
           onChange={(e) => setServiceProviderSid(e.target.value)}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
         >
           {defaultOption ? (
-            <option value="">All Users</option>
+            <option value="">All Service Providers</option>
           ) : (
             serviceProviders &&
-            !serviceProviders.length && <option value="">No users</option>
+            !serviceProviders.length && (
+              <option value="">No Service Providers</option>
+            )
           )}
           {hasLength(serviceProviders) &&
             serviceProviders.sort(sortLocaleName).map((acct) => {

@@ -4,6 +4,7 @@
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
 input[type="text"],
+input[type="email"],
 input[type="number"],
 input[type="password"] {
   @include ui-mixins.m();
@@ -154,6 +155,7 @@ fieldset {
   }
 
   input[type="text"],
+  input[type="email"],
   input[type="number"],
   input[type="password"] {
     width: 100%;
@@ -167,6 +169,15 @@ fieldset {
 
   input {
     margin: 0 ui-vars.$px01 0 0;
+  }
+
+  &--filter {
+    font-size: var(--ms-size);
+    padding: 0 ui-vars.$px01 0 0;
+
+    input {
+      margin: 0 0 0 ui-vars.$px01;
+    }
   }
 }
 

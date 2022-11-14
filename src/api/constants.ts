@@ -102,6 +102,13 @@ export const PER_PAGE_SELECTION = [
   { name: "100 / page", value: "100" },
 ];
 
+export const USER_SCOPE_SELECTION = [
+  { name: "All Scopes", value: "all" },
+  { name: "Admin", value: "admin" },
+  { name: "Service Provider", value: "service_provider" },
+  { name: "Account", value: "account" },
+];
+
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [
   {

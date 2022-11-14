@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { H1, Button, Icon } from "jambonz-ui";
+import React, { useEffect, useMemo, useState } from "react";
+import { H1, Button, Icon, ButtonGroup } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { useApiData, useServiceProviderData } from "src/api";
+import { useApiData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import { PER_PAGE_SELECTION } from "src/api/constants";
 
 // import { toastError, toastSuccess } from "src/store";
 import {
@@ -14,84 +15,73 @@ import {
   AccountFilter,
   SelectFilter,
   ServiceProviderFilter,
+  Pagination,
 } from "src/components";
 // import { DeleteUser } from "./delete";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { ServiceProvider, Account, User } from "src/api/types";
 
-const scopeSelection = [
-  { name: "all", value: "all" },
-  { name: "admin", value: "admin" },
-  { name: "service_provider", value: "service_provider" },
-  { name: "account", value: "account" },
-];
-
 export const Users = () => {
   const [users] = useApiData<User[]>("Users");
   const [filter, setFilter] = useState("");
-  const [scopeFilter, setScopeFilter] = useState("all");
-  const [accounts] = useServiceProviderData<Account[]>("Accounts");
-  const [serviceProviders] = useApiData<ServiceProvider[]>("ServiceProviders");
+  const [scopeFilter, setScopeFilter] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [serviceProviderSid, setServiceProviderSid] = useState("");
+  const [serviceProviders] = useApiData<ServiceProvider[]>(`ServiceProviders`);
+  const [accounts] = useApiData<Account[]>(
+    `ServiceProviders/${serviceProviderSid}/Accounts`
+  );
 
-  // const [pageNumber, setPageNumber] = useState(1);
-  // const [perPageFilter, setPerPageFilter] = useState("25");
-  // const [maxPageNumber, setMaxPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+  const [filterResult, setFilterResult] = useState<User[]>([]);
 
   const filteredUsers = useFilteredResults<User>(filter, users);
 
-  // const getUsers = () => {
-  //   const users = useApiData<User[]>("Users");
-  //   setUsers(users as any);
-  //   return users;
-  // }
+  /** Reset page number when filters change */
+  useEffect(() => {
+    setPageNumber(1);
+  }, [accountSid, scopeFilter, serviceProviderSid]);
 
-  // const handleDelete = () => {
-  //   if (user) {
-  //     deleteUser(user.user_sid)
-  //       .then(() => {
-  //         refetch();
-  //         setUser(null);
-  //         toastSuccess(
-  //           <>
-  //             Deleted account <strong>{user.name}</strong>
-  //           </>
-  //         );
-  //       })
-  //       .catch((error) => {
-  //         toastError(error.msg);
-  //       });
-  //   }
-  // };
+  useMemo(() => {
+    if (users && filteredUsers) {
+      setFilterResult(filteredUsers);
 
-  // const handleFilterChange = () => {
-  //     const filteredUsers = users?.filter((e) => {
-  //       e.account_sid === acco
-  //     })
-  // };
+      if (scopeFilter)
+        setFilterResult(
+          filterResult.filter((e) => {
+            return e.scope === "admin";
+          })
+        );
 
-  // const handleSelect = () => {
-  //   const result = users?.filter((e)=> {
-  //     e.account_sid === accountSid && e.service_provider_sid
-  //   });
-  //   setUsers(result);
-  // };
+      if (serviceProviderSid)
+        setFilterResult(
+          filterResult.filter((e) => {
+            return serviceProviderSid === e.service_provider_sid;
+          })
+        );
 
-  // useEffect(() => {
-  //   if(!users){
-  //     getUsers();
-  //     console.log("users", users)
-  //   }
-  //   console.log(users)
-  //   if (serviceProviderSid || accountSid || scopeFilter) {
-  //     //handleFilterChange();
-  //     handleSelect();
-  //   }
+      if (accountSid)
+        setFilterResult(
+          filterResult.filter((e) => {
+            return accountSid === e.account_sid;
+          })
+        );
 
-  //   console.log(users)
-  // }, [users, serviceProviderSid, accountSid, scopeFilter]);
+      setMaxPageNumber(Math.ceil(users.length / Number(perPageFilter)));
+    }
+  }, [
+    users,
+    filteredUsers,
+    scopeFilter,
+    accountSid,
+    serviceProviderSid,
+    pageNumber,
+    serviceProviders,
+    accounts,
+  ]);
 
   return (
     <>
@@ -110,23 +100,31 @@ export const Users = () => {
             filter={[filter, setFilter]}
           />
         </section>
-        <SelectFilter
-          id="scope"
-          label="Scope"
-          filter={[scopeFilter, setScopeFilter]}
-          options={scopeSelection}
-        />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-        />
+        <label htmlFor="is_active" className="chk chk--filter">
+          <div>Admin users</div>
+          <input
+            id="is_active"
+            name="is_active"
+            type="checkbox"
+            checked={scopeFilter}
+            onChange={(e) => setScopeFilter(e.target.checked)}
+          />
+        </label>
         <ServiceProviderFilter
           serviceProvider={[serviceProviderSid, setServiceProviderSid]}
           serviceProviders={serviceProviders}
+          defaultOption={true}
         />
+        {serviceProviderSid && (
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            defaultOption={true}
+          />
+        )}
       </section>
 
-      <Section {...(hasLength(filteredUsers) && { slim: true })}>
+      <Section {...(hasLength(filterResult) && { slim: true })}>
         <div className="grid grid--col4">
           <div className="grid__row grid__th">
             <div>Users</div>
@@ -136,10 +134,10 @@ export const Users = () => {
           </div>
           {!hasValue(users) ? (
             <Spinner />
-          ) : hasLength(filteredUsers) ? (
-            filteredUsers.map((user) => {
+          ) : hasLength(filterResult) ? (
+            filterResult.map((user) => {
               return (
-                <div className="grid__row" key={user.name}>
+                <div className="grid__row" key={user.user_sid}>
                   <div>{user.name}</div>
                   <div>{user.email}</div>
                   <div>{user.user_sid}</div>
@@ -164,6 +162,22 @@ export const Users = () => {
           Add user
         </Button>
       </Section>
+      <footer>
+        <ButtonGroup>
+          {hasLength(users) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
     </>
   );
 };
