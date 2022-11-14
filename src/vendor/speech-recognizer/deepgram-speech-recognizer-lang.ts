@@ -2,46 +2,130 @@ import type { Language } from "../types";
 
 export const languages: Language[] = [
   {
-    name: "Chinese - general - base",
+    name: "Chinese - general",
     code: "zh",
     model: "general",
     tier: "base",
   },
   {
-    name: "Chinese (China) - general - base",
+    name: "Chinese (China)",
     code: "zh-CN",
-    model: "general",
-    tier: "base",
   },
   {
-    name: "Chinese (Taiwan) - general - base",
+    name: "Chinese (Taiwan)",
     code: "zh-TW",
-    model: "general",
-    tier: "base",
   },
   {
-    name: "Dutsch - general - base",
+    name: "Dutch - general",
     code: "nl",
-    model: "general",
-    tier: "base",
   },
   {
-    name: "Dutsch - general - enhanced",
-    code: "nl-enhanced",
-    model: "general",
-    tier: "enhanced",
-  },
-  {
-    name: "English - general - base",
+    name: "English - general",
     code: "en",
-    model: "general",
-    tier: "base",
   },
   {
-    name: "English - general - enhanced",
-    code: "en-enhanced",
-    model: "general",
-    tier: "enhanced",
+    name: "English (Australia)",
+    code: "en-AU",
+  },
+  {
+    name: "English (United Kingdom)",
+    code: "en-GB",
+  },
+  {
+    name: "English (India)",
+    code: "en-IN",
+  },
+  {
+    name: "English (New Zealand)",
+    code: "en-NZ",
+  },
+  {
+    name: "English (United States)",
+    code: "en-US",
+  },
+  {
+    name: "Flemish - general",
+    code: "nl",
+  },
+  {
+    name: "French - general",
+    code: "fr",
+  },
+  {
+    name: "French (Canada)",
+    code: "fr-CA",
+  },
+  {
+    name: "German - general",
+    code: "de",
+  },
+  {
+    name: "Hindi - general",
+    code: "hi",
+  },
+  {
+    name: "Hindi (Roman Script)",
+    code: "hi-Latin",
+  },
+  {
+    name: "Indonesian - general",
+    code: "in",
+  },
+  {
+    name: "Italian - general",
+    code: "it",
+  },
+  {
+    name: "Japanese - general",
+    code: "ja",
+  },
+  {
+    name: "Korean - general",
+    code: "ko",
+  },
+  {
+    name: "Norwegian - general",
+    code: "no",
+  },
+  {
+    name: "Polish - general",
+    code: "pl",
+  },
+  {
+    name: "Portuguese - general",
+    code: "pt",
+  },
+  {
+    name: "Portuguese (Brazil)",
+    code: "pt-BR",
+  },
+  {
+    name: "Portuguese (Portugal)",
+    code: "pt-PT",
+  },
+  {
+    name: "Russian - general",
+    code: "ru",
+  },
+  {
+    name: "Spanish - general",
+    code: "es",
+  },
+  {
+    name: "Spanish (Latin America)",
+    code: "es-419",
+  },
+  {
+    name: "Swedish - general",
+    code: "sv",
+  },
+  {
+    name: "Turkish - general",
+    code: "tr",
+  },
+  {
+    name: "Ukrainian - general",
+    code: "uk",
   },
 ];
 
