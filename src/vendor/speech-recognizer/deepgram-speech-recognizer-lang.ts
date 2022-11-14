@@ -4,8 +4,6 @@ export const languages: Language[] = [
   {
     name: "Chinese - general",
     code: "zh",
-    model: "general",
-    tier: "base",
   },
   {
     name: "Chinese (China)",

@@ -26,15 +26,6 @@ export interface Language {
   name: string;
   code: string;
   codeMix?: string;
-  model?:
-    | "general"
-    | "meeting"
-    | "phonecall"
-    | "voicemail"
-    | "finance"
-    | "conversationalai"
-    | "video";
-  tier?: "base" | "enhanced";
 }
 
 export interface VoiceLanguage extends Language {
