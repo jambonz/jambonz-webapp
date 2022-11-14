@@ -24,6 +24,7 @@ import {
   VENDOR_MICROSOFT,
   VENDOR_NUANCE,
   VENDOR_WELLSAID,
+  VENDOR_DEEPGRAM,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { getObscuredSecret } from "src/utils";
@@ -137,7 +138,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
           secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
           api_key:
-            vendor === VENDOR_MICROSOFT || vendor === VENDOR_WELLSAID
+            vendor === VENDOR_MICROSOFT ||
+            vendor === VENDOR_WELLSAID ||
+            vendor === VENDOR_DEEPGRAM
               ? apiKey
               : null,
           client_id: vendor === VENDOR_NUANCE ? clientId : null,
@@ -264,26 +267,30 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            <label htmlFor="use_for_tts" className="chk">
-              <input
-                id="use_for_tts"
-                name="use_for_tts"
-                type="checkbox"
-                onChange={(e) => setTtsCheck(e.target.checked)}
-                defaultChecked={ttsCheck}
-              />
-              <div>Use for text-to-speech</div>
-            </label>
-            <label htmlFor="use_for_stt" className="chk">
-              <input
-                id="use_for_stt"
-                name="use_for_stt"
-                type="checkbox"
-                onChange={(e) => setSttCheck(e.target.checked)}
-                defaultChecked={sttCheck}
-              />
-              <div>Use for speech-to-text</div>
-            </label>
+            {vendor !== VENDOR_DEEPGRAM && (
+              <label htmlFor="use_for_tts" className="chk">
+                <input
+                  id="use_for_tts"
+                  name="use_for_tts"
+                  type="checkbox"
+                  onChange={(e) => setTtsCheck(e.target.checked)}
+                  defaultChecked={ttsCheck}
+                />
+                <div>Use for text-to-speech</div>
+              </label>
+            )}
+            {vendor !== VENDOR_WELLSAID && (
+              <label htmlFor="use_for_stt" className="chk">
+                <input
+                  id="use_for_stt"
+                  name="use_for_stt"
+                  type="checkbox"
+                  onChange={(e) => setSttCheck(e.target.checked)}
+                  defaultChecked={sttCheck}
+                />
+                <div>Use for speech-to-text</div>
+              </label>
+            )}
           </fieldset>
         )}
         {vendor === VENDOR_GOOGLE && (
@@ -379,8 +386,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {/* Single API key state var is used for both Microsoft and WellSaid */}
-        {(vendor === VENDOR_MICROSOFT || vendor === VENDOR_WELLSAID) && (
+        {/* Single API key state var is used for both Microsoft, WellSaid */}
+        {(vendor === VENDOR_MICROSOFT ||
+          vendor === VENDOR_WELLSAID ||
+          vendor === VENDOR_DEEPGRAM) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
               API Key<span>*</span>

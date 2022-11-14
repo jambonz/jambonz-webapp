@@ -1,4 +1,10 @@
-export type Vendor = "Google" | "AWS" | "Microsoft" | "WellSaid" | "Nuance";
+export type Vendor =
+  | "Google"
+  | "AWS"
+  | "Microsoft"
+  | "WellSaid"
+  | "Nuance"
+  | "deepgram";
 
 export interface VendorOptions {
   name: Vendor;
@@ -20,6 +26,15 @@ export interface Language {
   name: string;
   code: string;
   codeMix?: string;
+  model?:
+    | "general"
+    | "meeting"
+    | "phonecall"
+    | "voicemail"
+    | "finance"
+    | "conversationalai"
+    | "video";
+  tier?: "base" | "enhanced";
 }
 
 export interface VoiceLanguage extends Language {
@@ -50,6 +65,7 @@ export interface RecognizerVendors {
   google: Language[];
   microsoft: Language[];
   nuance: Language[];
+  deepgram: Language[];
 }
 
 export interface SynthesisVendors {

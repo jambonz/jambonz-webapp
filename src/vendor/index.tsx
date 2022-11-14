@@ -14,6 +14,7 @@ export const VENDOR_AWS = "aws";
 export const VENDOR_MICROSOFT = "microsoft";
 export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
+export const VENDOR_DEEPGRAM = "deepgram";
 
 export const vendors: VendorOptions[] = [
   {
@@ -35,6 +36,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Nuance",
     value: VENDOR_NUANCE,
+  },
+  {
+    name: "deepgram",
+    value: VENDOR_DEEPGRAM,
   },
 ];
 
@@ -83,6 +88,7 @@ export const useSpeechVendors = () => {
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
+      import("./speech-recognizer/deepgram-speech-recognizer-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -94,6 +100,7 @@ export const useSpeechVendors = () => {
         { default: msSynthesis },
         { default: wellsaidSynthesis },
         { default: nuanceSynthesis },
+        { default: deepgramRecognizer },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -109,6 +116,7 @@ export const useSpeechVendors = () => {
               google: googleRecognizer,
               microsoft: msRecognizer,
               nuance: nuanceRecognizer,
+              deepgram: deepgramRecognizer,
             },
           });
         }
