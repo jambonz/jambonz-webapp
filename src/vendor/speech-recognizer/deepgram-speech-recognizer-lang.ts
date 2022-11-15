@@ -42,10 +42,6 @@ export const languages: Language[] = [
     code: "en-US",
   },
   {
-    name: "Flemish - general",
-    code: "nl",
-  },
-  {
     name: "French - general",
     code: "fr",
   },
