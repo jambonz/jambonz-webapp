@@ -4,7 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess } from "src/store";
 import { deleteUser, postFetch, putUser, useApiData } from "src/api";
-import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import { ROUTE_INTERNAL_USERS, ROUTE_LOGIN } from "src/router/routes";
+import { parseJwt, getToken } from "src/router/auth";
+
 import { ClipBoard, Section } from "src/components";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
@@ -39,6 +41,15 @@ export const UserForm = ({ user }: UserFormProps) => {
     setModal(false);
   };
 
+  const handleSelfDetete = () => {
+    const decodedJwt = parseJwt(getToken());
+    if (user?.data?.user_sid === decodedJwt.user_sid) {
+      localStorage.clear();
+      sessionStorage.clear();
+      navigate(ROUTE_LOGIN);
+    }
+  };
+
   const handleDelete = () => {
     if (user && user.data) {
       deleteUser(user.data.user_sid)
@@ -49,6 +60,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               Deleted user <strong>{user?.data?.name}</strong>
             </>
           );
+          handleSelfDetete();
         })
         .catch((error) => {
           toastError(error.msg);
