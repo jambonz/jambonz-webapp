@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { H1, Button, Icon, ButtonGroup } from "jambonz-ui";
+import React, { useMemo, useState } from "react";
+import { H1, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { useApiData } from "src/api";
+import { useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
-import { PER_PAGE_SELECTION } from "src/api/constants";
+import { USER_SCOPE_SELECTION } from "src/api/constants";
 
-// import { toastError, toastSuccess } from "src/store";
 import {
   Section,
   Icons,
@@ -14,74 +13,48 @@ import {
   SearchFilter,
   AccountFilter,
   SelectFilter,
-  ServiceProviderFilter,
-  Pagination,
 } from "src/components";
-// import { DeleteUser } from "./delete";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
-import type { ServiceProvider, Account, User } from "src/api/types";
+import type { Account, User } from "src/api/types";
+import { useSelectState } from "src/store";
 
 export const Users = () => {
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [users] = useApiData<User[]>("Users");
   const [filter, setFilter] = useState("");
-  const [scopeFilter, setScopeFilter] = useState(false);
+  const [scopeFilter, setScopeFilter] = useState("all");
   const [accountSid, setAccountSid] = useState("");
-  const [serviceProviderSid, setServiceProviderSid] = useState("");
-  const [serviceProviders] = useApiData<ServiceProvider[]>(`ServiceProviders`);
-  const [accounts] = useApiData<Account[]>(
-    `ServiceProviders/${serviceProviderSid}/Accounts`
-  );
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
-  const [pageNumber, setPageNumber] = useState(1);
-  const [perPageFilter, setPerPageFilter] = useState("25");
-  const [maxPageNumber, setMaxPageNumber] = useState(1);
-  const [filterResult, setFilterResult] = useState<User[]>([]);
+  const usersFiltered = useMemo(() => {
+    const serviceProviderUsers = users?.filter((e) => {
+      return (
+        e.scope === "admin" ||
+        e.service_provider_sid ===
+          currentServiceProvider?.service_provider_sid ||
+        accounts?.every((account) => {
+          account.account_sid === e.account_sid;
+        })
+      );
+    });
 
-  const filteredUsers = useFilteredResults<User>(filter, users);
+    return serviceProviderUsers
+      ? serviceProviderUsers.filter((e) => {
+          return scopeFilter === "all" && !accountSid
+            ? serviceProviderUsers
+            : scopeFilter !== "all" && !accountSid
+            ? e.scope === scopeFilter
+            : scopeFilter !== "all" && accountSid
+            ? e.scope === scopeFilter && accountSid === e.account_sid
+            : scopeFilter === "all" && accountSid
+            ? e.account_sid === accountSid
+            : false;
+        })
+      : [];
+  }, [accountSid, scopeFilter, users, accounts]);
 
-  /** Reset page number when filters change */
-  useEffect(() => {
-    setPageNumber(1);
-  }, [accountSid, scopeFilter, serviceProviderSid]);
-
-  useMemo(() => {
-    if (users && filteredUsers) {
-      setFilterResult(filteredUsers);
-
-      if (scopeFilter)
-        setFilterResult(
-          filterResult.filter((e) => {
-            return e.scope === "admin";
-          })
-        );
-
-      if (serviceProviderSid)
-        setFilterResult(
-          filterResult.filter((e) => {
-            return serviceProviderSid === e.service_provider_sid;
-          })
-        );
-
-      if (accountSid)
-        setFilterResult(
-          filterResult.filter((e) => {
-            return accountSid === e.account_sid;
-          })
-        );
-
-      setMaxPageNumber(Math.ceil(users.length / Number(perPageFilter)));
-    }
-  }, [
-    users,
-    filteredUsers,
-    scopeFilter,
-    accountSid,
-    serviceProviderSid,
-    pageNumber,
-    serviceProviders,
-    accounts,
-  ]);
+  const filteredUsers = useFilteredResults<User>(filter, usersFiltered);
 
   return (
     <>
@@ -100,47 +73,36 @@ export const Users = () => {
             filter={[filter, setFilter]}
           />
         </section>
-        <label htmlFor="is_active" className="chk chk--filter">
-          <div>Admin users</div>
-          <input
-            id="is_active"
-            name="is_active"
-            type="checkbox"
-            checked={scopeFilter}
-            onChange={(e) => setScopeFilter(e.target.checked)}
-          />
-        </label>
-        <ServiceProviderFilter
-          serviceProvider={[serviceProviderSid, setServiceProviderSid]}
-          serviceProviders={serviceProviders}
+        <SelectFilter
+          id="scope"
+          label="Scope"
+          filter={[scopeFilter, setScopeFilter]}
+          options={USER_SCOPE_SELECTION}
+        />
+        <AccountFilter
+          account={[accountSid, setAccountSid]}
+          accounts={accounts}
           defaultOption={true}
         />
-        {serviceProviderSid && (
-          <AccountFilter
-            account={[accountSid, setAccountSid]}
-            accounts={accounts}
-            defaultOption={true}
-          />
-        )}
       </section>
 
-      <Section {...(hasLength(filterResult) && { slim: true })}>
+      <Section {...(hasLength(filteredUsers) && { slim: true })}>
         <div className="grid grid--col4">
           <div className="grid__row grid__th">
             <div>Users</div>
             <div>Email</div>
-            <div>SID</div>
+            <div>Scope</div>
             <div>&nbsp;</div>
           </div>
           {!hasValue(users) ? (
             <Spinner />
-          ) : hasLength(filterResult) ? (
-            filterResult.map((user) => {
+          ) : hasLength(filteredUsers) ? (
+            filteredUsers.map((user) => {
               return (
                 <div className="grid__row" key={user.user_sid}>
                   <div>{user.name}</div>
                   <div>{user.email}</div>
-                  <div>{user.user_sid}</div>
+                  <div>{user.scope}</div>
                   <Link
                     to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}
                     title="Edit user"
@@ -162,22 +124,6 @@ export const Users = () => {
           Add user
         </Button>
       </Section>
-      <footer>
-        <ButtonGroup>
-          {hasLength(users) && (
-            <Pagination
-              pageNumber={pageNumber}
-              setPageNumber={setPageNumber}
-              maxPageNumber={maxPageNumber}
-            />
-          )}
-          <SelectFilter
-            id="page_filter"
-            filter={[perPageFilter, setPerPageFilter]}
-            options={PER_PAGE_SELECTION}
-          />
-        </ButtonGroup>
-      </footer>
     </>
   );
 };

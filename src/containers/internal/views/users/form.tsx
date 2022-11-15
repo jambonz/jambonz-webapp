@@ -204,20 +204,18 @@ export const UserForm = ({ user }: UserFormProps) => {
             </label>
           </fieldset>
           <fieldset>
-            <ButtonGroup left>
+            <ButtonGroup className="btns--spaced">
               <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_USERS}>
                 Cancel
               </Button>
-              {user && (
-                <ButtonGroup>
-                  <Button small subStyle="dark" onClick={() => setModal(true)}>
-                    Delete User
-                  </Button>
-                </ButtonGroup>
-              )}
               <Button type="submit" small>
                 Save
               </Button>
+              {user && (
+                <Button small subStyle="grey" onClick={() => setModal(true)}>
+                  Delete User
+                </Button>
+              )}
             </ButtonGroup>
           </fieldset>
         </form>

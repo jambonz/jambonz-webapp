@@ -12,7 +12,7 @@ import {
   TCP_MAX_PORT,
 } from "src/api/constants";
 
-import type { IpType, PasswordSettings, User } from "src/api/types";
+import type { IpType, PasswordSettings, User, UserScopes } from "src/api/types";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -144,7 +144,7 @@ export {
   useFilteredResults,
 };
 
-export const getUserScope = (user: User) => {
+export const getUserScope = (user: User): UserScopes => {
   if (user.account_sid) {
     return "account";
   } else if (user.service_provider_sid) {

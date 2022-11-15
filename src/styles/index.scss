@@ -113,6 +113,12 @@ details {
   font-size: 0;
 }
 
+.btns--spaced {
+  > :nth-child(3) {
+    margin-left: auto;
+  }
+}
+
 /** 404 page (login & internal) */
 .notfound {
   .btn {

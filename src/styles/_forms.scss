@@ -170,15 +170,6 @@ fieldset {
   input {
     margin: 0 ui-vars.$px01 0 0;
   }
-
-  &--filter {
-    font-size: var(--ms-size);
-    padding: 0 ui-vars.$px01 0 0;
-
-    input {
-      margin: 0 0 0 ui-vars.$px01;
-    }
-  }
 }
 
 .multi {
