@@ -1,4 +1,10 @@
-export type Vendor = "Google" | "AWS" | "Microsoft" | "WellSaid" | "Nuance";
+export type Vendor =
+  | "Google"
+  | "AWS"
+  | "Microsoft"
+  | "WellSaid"
+  | "Nuance"
+  | "deepgram";
 
 export interface VendorOptions {
   name: Vendor;
@@ -50,6 +56,7 @@ export interface RecognizerVendors {
   google: Language[];
   microsoft: Language[];
   nuance: Language[];
+  deepgram: Language[];
 }
 
 export interface SynthesisVendors {

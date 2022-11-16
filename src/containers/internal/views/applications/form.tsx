@@ -19,6 +19,7 @@ import {
   VENDOR_AWS,
   VENDOR_WELLSAID,
   useSpeechVendors,
+  VENDOR_DEEPGRAM,
 } from "src/vendor";
 import {
   postApplication,
@@ -368,7 +369,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               id="synthesis_vendor"
               name="synthesis_vendor"
               value={synthVendor}
-              options={vendors}
+              options={vendors.filter(
+                (vendor) => vendor.value != VENDOR_DEEPGRAM
+              )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof SynthesisVendors;
                 setSynthVendor(vendor);
