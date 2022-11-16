@@ -83,24 +83,24 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/google-speech-recognizer-lang"),
       import("./speech-recognizer/ms-speech-recognizer-lang"),
       import("./speech-recognizer/nuance-speech-recognizer-lang"),
+      import("./speech-recognizer/deepgram-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
-      import("./speech-recognizer/deepgram-speech-recognizer-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
         { default: googleRecognizer },
         { default: msRecognizer },
         { default: nuanceRecognizer },
+        { default: deepgramRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
         { default: wellsaidSynthesis },
         { default: nuanceSynthesis },
-        { default: deepgramRecognizer },
       ]) => {
         if (!ignore) {
           setSpeech({

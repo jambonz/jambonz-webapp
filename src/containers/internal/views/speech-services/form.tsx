@@ -386,7 +386,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {/* Single API key state var is used for both Microsoft, WellSaid */}
         {(vendor === VENDOR_MICROSOFT ||
           vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_DEEPGRAM) && (
