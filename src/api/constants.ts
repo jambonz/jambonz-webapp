@@ -4,6 +4,7 @@ import type {
   SmppGateway,
   WebHook,
   WebhookOption,
+  UserScopeOption,
 } from "./types";
 
 /** This window object is serialized and injected at docker runtime */
@@ -102,7 +103,7 @@ export const PER_PAGE_SELECTION = [
   { name: "100 / page", value: "100" },
 ];
 
-export const USER_SCOPE_SELECTION = [
+export const USER_SCOPE_SELECTION: UserScopeOption[] = [
   { name: "All Scopes", value: "all" },
   { name: "Admin", value: "admin" },
   { name: "Service Provider", value: "service_provider" },

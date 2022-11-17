@@ -2,15 +2,22 @@ import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess } from "src/store";
-import { deleteUser, postFetch, putUser, useApiData } from "src/api";
-import { ROUTE_INTERNAL_USERS, ROUTE_LOGIN } from "src/router/routes";
-import { parseJwt, getToken } from "src/router/auth";
+import { toastError, toastSuccess, useSelectState } from "src/store";
+import {
+  deleteUser,
+  postFetch,
+  putUser,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
+import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import { useAuth } from "src/router/auth";
 
 import { ClipBoard, Section } from "src/components";
+import { AccountSelect, Passwd, Selector } from "src/components/forms";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { API_USERS } from "src/api/constants";
+import { API_USERS, USER_SCOPE_SELECTION } from "src/api/constants";
 import { isValidPasswd, getUserScope } from "src/utils";
 
 import type {
@@ -19,6 +26,7 @@ import type {
   PasswordSettings,
   UserScopes,
   UseApiDataMap,
+  Account,
 } from "src/api/types";
 import type { IMessage } from "src/store/types";
 
@@ -27,12 +35,19 @@ type UserFormProps = {
 };
 
 export const UserForm = ({ user }: UserFormProps) => {
+  const { signout } = useAuth();
   const navigate = useNavigate();
-  const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
+  const currentUser = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings") || {
+    min_password_length: 8,
+  };
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
-  const [scope, setScope] = useState<UserScopes>();
+  const [scope, setScope] = useState<UserScopes>("admin");
+  const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
@@ -41,12 +56,9 @@ export const UserForm = ({ user }: UserFormProps) => {
     setModal(false);
   };
 
-  const handleSelfDetete = () => {
-    const decodedJwt = parseJwt(getToken());
-    if (user?.data?.user_sid === decodedJwt.user_sid) {
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate(ROUTE_LOGIN);
+  const handleSelfDelete = () => {
+    if (currentUser && user?.data?.user_sid === currentUser.user_sid) {
+      signout();
     }
   };
 
@@ -60,7 +72,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               Deleted user <strong>{user?.data?.name}</strong>
             </>
           );
-          handleSelfDetete();
+          handleSelfDelete();
         })
         .catch((error) => {
           toastError(error.msg);
@@ -70,23 +82,30 @@ export const UserForm = ({ user }: UserFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (modal) {
       return;
     }
 
-    if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
-      toastError("Invalid password.");
-      return;
-    }
+    const passwdCheck = () => {
+      if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
+        toastError("Invalid password.");
+        return;
+      }
+    };
 
     if (!user) {
+      passwdCheck();
       postFetch<UserSidResponse, Partial<User>>(API_USERS, {
         name: name,
         email: email,
         initial_password: initialPassword,
         force_change: forceChange,
         is_active: isActive,
+        service_provider_sid:
+          scope === "admin" && currentUser?.scope === "admin"
+            ? null
+            : currentServiceProvider?.service_provider_sid,
+        account_sid: accountSid || null,
       })
         .then(({ json }) => {
           toastSuccess("User created successfully");
@@ -98,12 +117,21 @@ export const UserForm = ({ user }: UserFormProps) => {
     }
 
     if (user && user.data) {
+      if (initialPassword) {
+        passwdCheck();
+      }
+
       putUser(user.data.user_sid, {
         name: name || user.data.name,
         email: email || user.data.email,
         initial_password: initialPassword || null,
         force_change: forceChange || !!user.data.force_change,
         is_active: isActive || !!user.data.is_active,
+        service_provider_sid:
+          scope === "admin" && currentUser?.scope === "admin"
+            ? undefined
+            : currentServiceProvider?.service_provider_sid,
+        account_sid: accountSid || null,
       })
         .then(() => {
           user.refetch();
@@ -134,16 +162,37 @@ export const UserForm = ({ user }: UserFormProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
+          <fieldset>
+            {((!user && currentUser?.scope !== "account") ||
+              (user && currentUser?.scope !== "account")) && (
+              <>
+                <label htmlFor="scope">Scope:</label>
+                <Selector
+                  id="scope"
+                  name="scope"
+                  value={scope}
+                  options={
+                    currentUser?.scope === "service_provider"
+                      ? USER_SCOPE_SELECTION.slice(2)
+                      : USER_SCOPE_SELECTION.slice(1)
+                  }
+                  onChange={(e) => setScope(e.target.value as UserScopes)}
+                />
+              </>
+            )}
+
+            {accounts && scope === "account" && (
+              <>
+                <AccountSelect
+                  accounts={accounts}
+                  account={[accountSid, setAccountSid]}
+                />
+              </>
+            )}
+          </fieldset>
           {user && user.data && (
             <fieldset>
-              <div className="item__sid">
-                {user && (
-                  <strong>
-                    {" "}
-                    Scope: <code>{scope}</code>
-                  </strong>
-                )}
-              </div>
+              <div className="item__sid"></div>
               <label htmlFor="user_sid">User SID</label>
               <ClipBoard
                 id="user_sid"
@@ -195,14 +244,12 @@ export const UserForm = ({ user }: UserFormProps) => {
               Temporary password
               {!user && <span>*</span>}
             </label>
-            <input
-              id="initial_password"
-              type="text"
-              name="initial_password"
-              placeholder="Temporary password"
-              value={initialPassword}
+            <Passwd
               required={!user}
-              onChange={(e) => setInitialPassword(e.target.value)}
+              name="initial_password"
+              value={initialPassword}
+              placeholder="Temporary password"
+              setValue={setInitialPassword}
             />
             <label htmlFor="force_change" className="chk">
               <input

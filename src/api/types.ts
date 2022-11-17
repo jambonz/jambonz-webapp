@@ -77,6 +77,11 @@ export interface WebhookOption {
   value: WebhookMethod;
 }
 
+export interface UserScopeOption {
+  name: string;
+  value: UserScopes | "all";
+}
+
 export interface Pcap {
   data_url: string;
   file_name: string;
@@ -131,11 +136,13 @@ export interface UserLoginPayload {
 export interface UserUpdatePayload {
   old_password?: string;
   new_password?: string;
-  initial_password: string | null;
+  initial_password?: string | null;
   email: string;
   name: string;
   force_change: boolean;
   is_active: boolean;
+  account_sid: string | null;
+  service_provider_sid: string | null;
 }
 
 export interface ServiceProvider {

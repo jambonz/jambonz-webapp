@@ -145,7 +145,7 @@ export {
 };
 
 export const getUserScope = (user: User): UserScopes => {
-  if (user.account_sid) {
+  if (user.account_sid && user.service_provider_sid) {
     return "account";
   } else if (user.service_provider_sid) {
     return "service_provider";
