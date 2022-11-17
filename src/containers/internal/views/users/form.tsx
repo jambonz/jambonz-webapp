@@ -54,7 +54,7 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
-  console.log(user);
+
   const handleCancel = () => {
     setModal(false);
   };
@@ -105,7 +105,10 @@ export const UserForm = ({ user }: UserFormProps) => {
           scope === "admin" && currentUser?.scope === "admin"
             ? null
             : currentServiceProvider?.service_provider_sid,
-        account_sid: accountSid || null,
+        account_sid:
+          scope !== "account" && currentUser?.scope !== "account"
+            ? null
+            : accountSid,
       })
         .then(({ json }) => {
           toastSuccess("User created successfully");
