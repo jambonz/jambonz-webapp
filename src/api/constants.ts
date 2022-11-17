@@ -1,5 +1,6 @@
 import type {
   LimitField,
+  PasswordSettings,
   SipGateway,
   SmppGateway,
   WebHook,
@@ -137,6 +138,12 @@ export const LIMITS: LimitField[] = [
   //   category: "api_rate",
   // },
 ];
+
+export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
+  min_password_length: 6,
+  require_digit: 0,
+  require_special_character: 0,
+};
 
 /** Speech credential test result status values */
 export const CRED_OK = "ok";

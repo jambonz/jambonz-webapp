@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { H1, Button, Icon } from "jambonz-ui";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useApiData, useServiceProviderData } from "src/api";
+import { deleteUser, useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
 import { USER_SCOPE_SELECTION } from "src/api/constants";
 
@@ -17,15 +17,47 @@ import {
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { Account, User } from "src/api/types";
-import { useSelectState } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useAuth } from "src/router/auth";
+import DeleteUser from "./delete";
 
 export const Users = () => {
+  const navigate = useNavigate();
+  const { signout } = useAuth();
+  const currentUser = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [users] = useApiData<User[]>("Users");
+  const [users, refetch] = useApiData<User[]>("Users");
+  const [user, setUser] = useState<User | null>(null);
   const [filter, setFilter] = useState("");
   const [scopeFilter, setScopeFilter] = useState("all");
   const [accountSid, setAccountSid] = useState("");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
+
+  const handleSelfDetete = (userToDelete: User) => {
+    if (userToDelete.user_sid === currentUser?.user_sid) {
+      signout();
+    }
+  };
+
+  const handleDelete = () => {
+    if (user) {
+      deleteUser(user.user_sid)
+        .then(() => {
+          refetch();
+          setUser(null);
+          navigate(ROUTE_INTERNAL_USERS);
+          toastSuccess(
+            <>
+              Deleted user <strong>{user?.name}</strong>
+            </>
+          );
+          handleSelfDetete(user);
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  };
 
   const usersFiltered = useMemo(() => {
     const serviceProviderUsers = users?.filter((e) => {
@@ -33,25 +65,28 @@ export const Users = () => {
         e.scope === "admin" ||
         e.service_provider_sid ===
           currentServiceProvider?.service_provider_sid ||
-        accounts?.every((account) => {
-          account.account_sid === e.account_sid;
-        })
+        accounts?.every((account) => account.account_sid === e.account_sid)
       );
     });
 
-    return serviceProviderUsers
-      ? serviceProviderUsers.filter((e) => {
-          return scopeFilter === "all" && !accountSid
-            ? serviceProviderUsers
-            : scopeFilter !== "all" && !accountSid
-            ? e.scope === scopeFilter
-            : scopeFilter !== "all" && accountSid
-            ? e.scope === scopeFilter && accountSid === e.account_sid
-            : scopeFilter === "all" && accountSid
-            ? e.account_sid === accountSid
-            : false;
-        })
-      : [];
+    if (scopeFilter === "all" && !accountSid) {
+      return serviceProviderUsers;
+    }
+
+    if (scopeFilter !== "all" && !accountSid) {
+      return serviceProviderUsers?.filter((e) => e.scope === scopeFilter);
+    }
+
+    if (scopeFilter !== "all" && accountSid) {
+      return serviceProviderUsers?.filter(
+        (e) => e.scope === scopeFilter && accountSid === e.account_sid
+      );
+    }
+
+    if (scopeFilter === "all" && accountSid) {
+      return serviceProviderUsers?.filter((e) => e.account_sid === accountSid);
+    }
+    return [];
   }, [accountSid, scopeFilter, users, accounts]);
 
   const filteredUsers = useFilteredResults<User>(filter, usersFiltered);
@@ -86,10 +121,10 @@ export const Users = () => {
         />
       </section>
 
-      <Section {...(hasLength(filteredUsers) && { slim: true })}>
+      <Section slim>
         <div className="grid grid--col4">
           <div className="grid__row grid__th">
-            <div>Users</div>
+            <div>User Name</div>
             <div>Email</div>
             <div>Scope</div>
             <div>&nbsp;</div>
@@ -103,12 +138,22 @@ export const Users = () => {
                   <div>{user.name}</div>
                   <div>{user.email}</div>
                   <div>{user.scope}</div>
-                  <Link
-                    to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}
-                    title="Edit user"
-                  >
-                    <Icons.Edit3 />
-                  </Link>
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}
+                      title="Edit user"
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete User"
+                      onClick={() => setUser(user)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
                 </div>
               );
             })
@@ -124,6 +169,13 @@ export const Users = () => {
           Add user
         </Button>
       </Section>
+      {user && (
+        <DeleteUser
+          user={user}
+          handleCancel={() => setUser(null)}
+          handleSubmit={handleDelete}
+        />
+      )}
     </>
   );
 };

@@ -13,7 +13,6 @@ import { SelectFilter } from "./select-filter";
 import { Pagination } from "./pagination";
 import { ApplicationFilter } from "./application-filter";
 import { SearchFilter } from "./search-filter";
-import { ServiceProviderFilter } from "./service-provider-filter";
 
 export {
   Icons,
@@ -33,5 +32,4 @@ export {
   Pagination,
   ApplicationFilter,
   SearchFilter,
-  ServiceProviderFilter,
 };

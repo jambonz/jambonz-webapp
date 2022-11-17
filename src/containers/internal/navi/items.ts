@@ -25,7 +25,7 @@ export interface NaviItem {
 export const naviTop: NaviItem[] = [
   {
     label: "Users",
-    icon: Icons.Users,
+    icon: Icons.UserCheck,
     route: ROUTE_INTERNAL_USERS,
   },
   {

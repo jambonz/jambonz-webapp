@@ -8,8 +8,6 @@ import { getHumanDateTime, hasLength } from "src/utils";
 
 import type { ApiKey, TokenResponse } from "src/api/types";
 
-import "./styles.scss";
-
 type ApiKeyProps = {
   path: string;
   post: {

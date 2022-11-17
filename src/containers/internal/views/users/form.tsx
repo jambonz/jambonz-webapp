@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { deleteUser, postFetch, putUser, useApiData } from "src/api";
-import { ROUTE_INTERNAL_USERS, ROUTE_LOGIN } from "src/router/routes";
-import { parseJwt, getToken } from "src/router/auth";
+import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import { useAuth } from "src/router/auth";
 
 import { ClipBoard, Section } from "src/components";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { API_USERS } from "src/api/constants";
+import { API_USERS, DEFAULT_PSWD_SETTINGS } from "src/api/constants";
 import { isValidPasswd, getUserScope } from "src/utils";
 
 import type {
@@ -27,8 +27,11 @@ type UserFormProps = {
 };
 
 export const UserForm = ({ user }: UserFormProps) => {
+  const { signout } = useAuth();
   const navigate = useNavigate();
-  const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
+  const currentUser = useSelectState("user");
+  const [pwdSettings] =
+    useApiData<PasswordSettings>("PasswordSettings") || DEFAULT_PSWD_SETTINGS;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
@@ -42,11 +45,8 @@ export const UserForm = ({ user }: UserFormProps) => {
   };
 
   const handleSelfDetete = () => {
-    const decodedJwt = parseJwt(getToken());
-    if (user?.data?.user_sid === decodedJwt.user_sid) {
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate(ROUTE_LOGIN);
+    if (user?.data?.user_sid === currentUser?.user_sid) {
+      signout();
     }
   };
 
@@ -70,10 +70,6 @@ export const UserForm = ({ user }: UserFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (modal) {
-      return;
-    }
 
     if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
       toastError("Invalid password.");
@@ -224,7 +220,12 @@ export const UserForm = ({ user }: UserFormProps) => {
                 Save
               </Button>
               {user && (
-                <Button small subStyle="grey" onClick={() => setModal(true)}>
+                <Button
+                  small
+                  type="button"
+                  subStyle="grey"
+                  onClick={() => setModal(true)}
+                >
                   Delete User
                 </Button>
               )}
