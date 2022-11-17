@@ -115,7 +115,7 @@ details {
 }
 
 .btns--spaced {
-  > :nth-child(3) {
+  > :last-child {
     margin-left: auto;
   }
 }
