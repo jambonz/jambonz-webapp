@@ -269,7 +269,7 @@ export const UserForm = ({ user }: UserFormProps) => {
             </label>
           </fieldset>
           <fieldset>
-            <ButtonGroup left className="btns--spaced">
+            <ButtonGroup left className={user && "btns--spaced"}>
               <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_USERS}>
                 Cancel
               </Button>
