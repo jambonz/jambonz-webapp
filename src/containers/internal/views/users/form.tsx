@@ -17,7 +17,11 @@ import { ClipBoard, Section } from "src/components";
 import { AccountSelect, Passwd, Selector } from "src/components/forms";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { API_USERS, USER_SCOPE_SELECTION } from "src/api/constants";
+import {
+  API_USERS,
+  USER_SCOPE_SELECTION,
+  DEFAULT_PSWD_SETTINGS,
+} from "src/api/constants";
 import { isValidPasswd, getUserScope } from "src/utils";
 
 import type {
@@ -39,10 +43,9 @@ export const UserForm = ({ user }: UserFormProps) => {
   const navigate = useNavigate();
   const currentUser = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [pwdSettings] = useApiData<PasswordSettings>("PasswordSettings") || {
-    min_password_length: 8,
-  };
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [pwdSettings] =
+    useApiData<PasswordSettings>("PasswordSettings") || DEFAULT_PSWD_SETTINGS;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
@@ -51,13 +54,13 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
-
+  console.log(user);
   const handleCancel = () => {
     setModal(false);
   };
 
   const handleSelfDelete = () => {
-    if (currentUser && user?.data?.user_sid === currentUser.user_sid) {
+    if (user?.data?.user_sid === currentUser?.user_sid) {
       signout();
     }
   };
@@ -82,9 +85,6 @@ export const UserForm = ({ user }: UserFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (modal) {
-      return;
-    }
 
     const passwdCheck = () => {
       if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
@@ -129,9 +129,12 @@ export const UserForm = ({ user }: UserFormProps) => {
         is_active: isActive || !!user.data.is_active,
         service_provider_sid:
           scope === "admin" && currentUser?.scope === "admin"
-            ? undefined
+            ? null
             : currentServiceProvider?.service_provider_sid,
-        account_sid: accountSid || null,
+        account_sid:
+          scope !== "account" && currentUser?.scope !== "account"
+            ? null
+            : accountSid,
       })
         .then(() => {
           user.refetch();
@@ -271,7 +274,12 @@ export const UserForm = ({ user }: UserFormProps) => {
                 Save
               </Button>
               {user && (
-                <Button small subStyle="grey" onClick={() => setModal(true)}>
+                <Button
+                  small
+                  type="button"
+                  subStyle="grey"
+                  onClick={() => setModal(true)}
+                >
                   Delete User
                 </Button>
               )}
