@@ -136,6 +136,8 @@ export interface UserUpdatePayload {
   name: string;
   force_change: boolean;
   is_active: boolean;
+  service_provider_sid: string | null;
+  account_sid: string | null;
 }
 
 export interface ServiceProvider {

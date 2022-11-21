@@ -3,14 +3,24 @@ import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { deleteUser, postFetch, putUser, useApiData } from "src/api";
+import {
+  deleteUser,
+  postFetch,
+  putUser,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
 import { useAuth } from "src/router/auth";
 
 import { ClipBoard, Section } from "src/components";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { API_USERS, DEFAULT_PSWD_SETTINGS } from "src/api/constants";
+import {
+  API_USERS,
+  DEFAULT_PSWD_SETTINGS,
+  USER_SCOPE_SELECTION,
+} from "src/api/constants";
 import { isValidPasswd, getUserScope } from "src/utils";
 
 import type {
@@ -19,8 +29,10 @@ import type {
   PasswordSettings,
   UserScopes,
   UseApiDataMap,
+  Account,
 } from "src/api/types";
 import type { IMessage } from "src/store/types";
+import { AccountSelect, Passwd, Selector } from "src/components/forms";
 
 type UserFormProps = {
   user?: UseApiDataMap<User>;
@@ -30,8 +42,10 @@ export const UserForm = ({ user }: UserFormProps) => {
   const { signout } = useAuth();
   const navigate = useNavigate();
   const currentUser = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [pwdSettings] =
     useApiData<PasswordSettings>("PasswordSettings") || DEFAULT_PSWD_SETTINGS;
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
@@ -39,6 +53,7 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
+  const [accountSid, setAccountSid] = useState("");
 
   const handleCancel = () => {
     setModal(false);
@@ -68,21 +83,38 @@ export const UserForm = ({ user }: UserFormProps) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const passwdCheck = () => {
     if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
       toastError("Invalid password.");
       return;
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (scope === "account" && !accounts?.length) {
+      toastError("Cannot create an account. Service Provider has no accounts.");
+      return;
+    }
 
     if (!user) {
+      passwdCheck();
+
       postFetch<UserSidResponse, Partial<User>>(API_USERS, {
         name: name,
         email: email,
         initial_password: initialPassword,
         force_change: forceChange,
         is_active: isActive,
+        service_provider_sid:
+          scope === "admin" && currentUser?.scope === "admin"
+            ? null
+            : currentServiceProvider?.service_provider_sid,
+        account_sid:
+          scope !== "account" && currentUser?.scope !== "account"
+            ? null
+            : accountSid,
       })
         .then(({ json }) => {
           toastSuccess("User created successfully");
@@ -94,12 +126,24 @@ export const UserForm = ({ user }: UserFormProps) => {
     }
 
     if (user && user.data) {
+      if (initialPassword) {
+        passwdCheck();
+      }
+
       putUser(user.data.user_sid, {
         name: name || user.data.name,
         email: email || user.data.email,
         initial_password: initialPassword || null,
         force_change: forceChange || !!user.data.force_change,
         is_active: isActive || !!user.data.is_active,
+        service_provider_sid:
+          scope === "admin" && currentUser?.scope === "admin"
+            ? null
+            : currentServiceProvider?.service_provider_sid,
+        account_sid:
+          scope !== "account" && currentUser?.scope !== "account"
+            ? null
+            : accountSid,
       })
         .then(() => {
           user.refetch();
@@ -130,16 +174,49 @@ export const UserForm = ({ user }: UserFormProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
+          <fieldset>
+            {currentUser?.scope !== "account" && (
+              <>
+                <label htmlFor="scope">Scope:</label>
+                <Selector
+                  id="scope"
+                  name="scope"
+                  value={scope}
+                  options={
+                    currentUser?.scope === "service_provider"
+                      ? USER_SCOPE_SELECTION.slice(2)
+                      : USER_SCOPE_SELECTION.slice(1)
+                  }
+                  onChange={(e) => setScope(e.target.value as UserScopes)}
+                />
+              </>
+            )}
+
+            {accounts && accounts.length && scope === "account" ? (
+              <>
+                <AccountSelect
+                  accounts={accounts}
+                  account={[accountSid, setAccountSid]}
+                />
+              </>
+            ) : scope !== "account" ? null : (
+              <>
+                <label htmlFor="account">
+                  Account:<span>*</span>
+                </label>
+                <input
+                  id="account"
+                  required
+                  type="text"
+                  disabled
+                  name="account"
+                  value={"No accounts."}
+                />
+              </>
+            )}
+          </fieldset>
           {user && user.data && (
             <fieldset>
-              <div className="item__sid">
-                {user && (
-                  <strong>
-                    {" "}
-                    Scope: <code>{scope}</code>
-                  </strong>
-                )}
-              </div>
               <label htmlFor="user_sid">User SID</label>
               <ClipBoard
                 id="user_sid"
@@ -191,14 +268,12 @@ export const UserForm = ({ user }: UserFormProps) => {
               Temporary password
               {!user && <span>*</span>}
             </label>
-            <input
-              id="initial_password"
-              type="text"
-              name="initial_password"
-              placeholder="Temporary password"
-              value={initialPassword}
+            <Passwd
               required={!user}
-              onChange={(e) => setInitialPassword(e.target.value)}
+              name="initial_password"
+              value={initialPassword}
+              placeholder="Temporary password"
+              setValue={setInitialPassword}
             />
             <label htmlFor="force_change" className="chk">
               <input
