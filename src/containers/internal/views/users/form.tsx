@@ -20,8 +20,11 @@ import {
   API_USERS,
   DEFAULT_PSWD_SETTINGS,
   USER_SCOPE_SELECTION,
+  USER_ACCOUNT,
+  USER_ADMIN,
+  USER_SP,
 } from "src/api/constants";
-import { isValidPasswd, getUserScope } from "src/utils";
+import { isValidPasswd, getUserScope, hasLength } from "src/utils";
 
 import type {
   UserSidResponse,
@@ -86,14 +89,15 @@ export const UserForm = ({ user }: UserFormProps) => {
   const passwdCheck = () => {
     if (pwdSettings && !isValidPasswd(initialPassword, pwdSettings)) {
       toastError("Invalid password.");
-      return;
+      return false;
     }
+    return true;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (scope === "account" && !accounts?.length) {
+    if (scope === USER_ACCOUNT && !accounts?.length) {
       toastError("Cannot create an account. Service Provider has no accounts.");
       return;
     }
@@ -108,11 +112,11 @@ export const UserForm = ({ user }: UserFormProps) => {
         force_change: forceChange,
         is_active: isActive,
         service_provider_sid:
-          scope === "admin" && currentUser?.scope === "admin"
+          scope === USER_ADMIN && currentUser?.scope === USER_ADMIN
             ? null
             : currentServiceProvider?.service_provider_sid,
         account_sid:
-          scope !== "account" && currentUser?.scope !== "account"
+          scope !== USER_ACCOUNT && currentUser?.scope !== USER_ACCOUNT
             ? null
             : accountSid,
       })
@@ -128,6 +132,7 @@ export const UserForm = ({ user }: UserFormProps) => {
     if (user && user.data) {
       if (initialPassword) {
         passwdCheck();
+        return;
       }
 
       putUser(user.data.user_sid, {
@@ -137,11 +142,11 @@ export const UserForm = ({ user }: UserFormProps) => {
         force_change: forceChange || !!user.data.force_change,
         is_active: isActive || !!user.data.is_active,
         service_provider_sid:
-          scope === "admin" && currentUser?.scope === "admin"
+          scope === USER_ADMIN && currentUser?.scope === USER_ADMIN
             ? null
             : currentServiceProvider?.service_provider_sid,
         account_sid:
-          scope !== "account" && currentUser?.scope !== "account"
+          scope !== USER_ACCOUNT && currentUser?.scope !== USER_ACCOUNT
             ? null
             : accountSid,
       })
@@ -174,47 +179,48 @@ export const UserForm = ({ user }: UserFormProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          <fieldset>
-            {currentUser?.scope !== "account" && (
-              <>
-                <label htmlFor="scope">Scope:</label>
-                <Selector
-                  id="scope"
-                  name="scope"
-                  value={scope}
-                  options={
-                    currentUser?.scope === "service_provider"
-                      ? USER_SCOPE_SELECTION.slice(2)
-                      : USER_SCOPE_SELECTION.slice(1)
-                  }
-                  onChange={(e) => setScope(e.target.value as UserScopes)}
-                />
-              </>
-            )}
+          {currentUser?.scope !== USER_ACCOUNT && (
+            <fieldset>
+              <label htmlFor="scope">Scope:</label>
+              <Selector
+                id="scope"
+                name="scope"
+                value={scope}
+                options={
+                  currentUser?.scope === USER_SP
+                    ? USER_SCOPE_SELECTION.filter(
+                        (e) => e.value !== USER_ADMIN && e.value !== "all"
+                      )
+                    : USER_SCOPE_SELECTION.filter((e) => e.value !== "all")
+                }
+                onChange={(e) => setScope(e.target.value as UserScopes)}
+              />
 
-            {accounts && accounts.length && scope === "account" ? (
-              <>
-                <AccountSelect
-                  accounts={accounts}
-                  account={[accountSid, setAccountSid]}
-                />
-              </>
-            ) : scope !== "account" ? null : (
-              <>
-                <label htmlFor="account">
-                  Account:<span>*</span>
-                </label>
-                <input
-                  id="account"
-                  required
-                  type="text"
-                  disabled
-                  name="account"
-                  value={"No accounts."}
-                />
-              </>
-            )}
-          </fieldset>
+              {hasLength(accounts) && scope === USER_ACCOUNT && (
+                <>
+                  <AccountSelect
+                    accounts={accounts}
+                    account={[accountSid, setAccountSid]}
+                  />
+                </>
+              )}
+              {scope !== USER_ACCOUNT && !hasLength(accounts) && (
+                <>
+                  <label htmlFor="account">
+                    Account:<span>*</span>
+                  </label>
+                  <input
+                    id="account"
+                    required
+                    type="text"
+                    disabled
+                    name="account"
+                    value={"No accounts."}
+                  />
+                </>
+              )}
+            </fieldset>
+          )}
           {user && user.data && (
             <fieldset>
               <label htmlFor="user_sid">User SID</label>
@@ -269,6 +275,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               {!user && <span>*</span>}
             </label>
             <Passwd
+              id="initial_password"
               required={!user}
               name="initial_password"
               value={initialPassword}
@@ -294,7 +301,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               <Button type="submit" small>
                 Save
               </Button>
-              {user && (
+              {user && user.data && (
                 <Button
                   small
                   type="button"

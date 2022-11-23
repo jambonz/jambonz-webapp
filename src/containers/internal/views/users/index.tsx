@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
-import { USER_SCOPE_SELECTION } from "src/api/constants";
+import { USER_SCOPE_SELECTION, USER_ADMIN } from "src/api/constants";
 
 import {
   Section,
@@ -30,7 +30,7 @@ export const Users = () => {
   const usersFiltered = useMemo(() => {
     const serviceProviderUsers = users?.filter((e) => {
       return (
-        e.scope === "admin" ||
+        e.scope === USER_ADMIN ||
         e.service_provider_sid === currentServiceProvider?.service_provider_sid
       );
     });

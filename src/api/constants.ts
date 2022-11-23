@@ -145,6 +145,11 @@ export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
   require_special_character: 0,
 };
 
+/** User scope values values */
+export const USER_ADMIN = "admin";
+export const USER_SP = "service_provider";
+export const USER_ACCOUNT = "account";
+
 /** Speech credential test result status values */
 export const CRED_OK = "ok";
 export const CRED_FAIL = "fail";
