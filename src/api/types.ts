@@ -106,9 +106,16 @@ export interface PasswordSettings {
 /** API responses/payloads */
 
 export interface User {
-  scope: UserScopes;
+  scope?: UserScopes;
   user_sid: string;
-  permissions: UserPermissions[];
+  name: string;
+  email: string;
+  is_active: boolean;
+  force_change: boolean;
+  account_sid?: string | null;
+  service_provider_sid?: string | null;
+  initial_password?: string;
+  permissions?: UserPermissions;
 }
 
 export interface UserLogin extends User {
@@ -122,8 +129,15 @@ export interface UserLoginPayload {
 }
 
 export interface UserUpdatePayload {
-  old_password: string;
-  new_password: string;
+  old_password?: string;
+  new_password?: string;
+  initial_password: string | null;
+  email: string;
+  name: string;
+  force_change: boolean;
+  is_active: boolean;
+  service_provider_sid: string | null;
+  account_sid: string | null;
 }
 
 export interface ServiceProvider {
@@ -343,6 +357,10 @@ export interface PagedResponse<Type> {
 
 export interface SidResponse {
   sid: string;
+}
+
+export interface UserSidResponse {
+  user_sid: string;
 }
 
 export interface TokenResponse extends SidResponse {

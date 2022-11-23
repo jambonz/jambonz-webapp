@@ -1,5 +1,6 @@
 import type {
   LimitField,
+  PasswordSettings,
   SipGateway,
   SmppGateway,
   WebHook,
@@ -102,6 +103,13 @@ export const PER_PAGE_SELECTION = [
   { name: "100 / page", value: "100" },
 ];
 
+export const USER_SCOPE_SELECTION = [
+  { name: "All Scopes", value: "all" },
+  { name: "Admin", value: "admin" },
+  { name: "Service Provider", value: "service_provider" },
+  { name: "Account", value: "account" },
+];
+
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [
   {
@@ -130,6 +138,17 @@ export const LIMITS: LimitField[] = [
   //   category: "api_rate",
   // },
 ];
+
+export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
+  min_password_length: 6,
+  require_digit: 0,
+  require_special_character: 0,
+};
+
+/** User scope values values */
+export const USER_ADMIN = "admin";
+export const USER_SP = "service_provider";
+export const USER_ACCOUNT = "account";
 
 /** Speech credential test result status values */
 export const CRED_OK = "ok";

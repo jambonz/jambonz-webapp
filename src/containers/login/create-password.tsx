@@ -3,8 +3,8 @@ import { Button, H1, M } from "jambonz-ui";
 import { useNavigate } from "react-router-dom";
 
 import { isValidPasswd } from "src/utils";
-import { putUser } from "src/api";
-import { StatusCodes } from "src/api/types";
+import { putUser, useApiData } from "src/api";
+import { PasswordSettings, StatusCodes } from "src/api/types";
 import { Passwd, Message } from "src/components/forms";
 import { ROUTE_LOGIN, ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
@@ -19,6 +19,7 @@ import {
 import type { IMessage } from "src/store/types";
 
 export const CreatePassword = () => {
+  const [passwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState<IMessage>("");
@@ -42,7 +43,7 @@ export const CreatePassword = () => {
       return;
     }
 
-    if (!isValidPasswd(password)) {
+    if (passwdSettings && !isValidPasswd(password, passwdSettings)) {
       setMessage(MSG_PASSWD_CRITERIA);
       return;
     }

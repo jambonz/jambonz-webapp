@@ -1,6 +1,7 @@
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_SETTINGS,
+  ROUTE_INTERNAL_USERS,
   ROUTE_INTERNAL_ALERTS,
   ROUTE_INTERNAL_RECENT_CALLS,
   ROUTE_INTERNAL_APPLICATIONS,
@@ -22,6 +23,11 @@ export interface NaviItem {
 }
 
 export const naviTop: NaviItem[] = [
+  {
+    label: "Users",
+    icon: Icons.UserCheck,
+    route: ROUTE_INTERNAL_USERS,
+  },
   {
     label: "Settings",
     icon: Icons.Settings,

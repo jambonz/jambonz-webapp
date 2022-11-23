@@ -10,9 +10,12 @@ import {
   INVALID,
   IP,
   TCP_MAX_PORT,
+  USER_ACCOUNT,
+  USER_ADMIN,
+  USER_SP,
 } from "src/api/constants";
 
-import type { IpType } from "src/api/types";
+import type { IpType, PasswordSettings, User, UserScopes } from "src/api/types";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -32,10 +35,20 @@ export const isObject = (obj: unknown) => {
   return typeof obj === "object" && hasValue(obj) && !Array.isArray(obj);
 };
 
-export const isValidPasswd = (password: string) => {
-  return (
-    password.length >= 6 && /\d/.test(password) && /[a-zA-Z]/.test(password)
-  );
+export const isValidPasswd = (
+  password: string,
+  passwordSettings: PasswordSettings
+) => {
+  if (passwordSettings) {
+    return (
+      password.length >= passwordSettings?.min_password_length &&
+      (passwordSettings?.require_digit ? /\d/.test(password) : true) &&
+      (passwordSettings?.require_special_character
+        ? /[!@#$%^&*(),.?"';:{}|<>+~]/.test(password)
+        : true)
+    );
+  }
+  return false;
 };
 
 export const isValidPort = (port: number) => {
@@ -124,6 +137,16 @@ export const sortLocaleName = (
   a: Required<{ name: string }>,
   b: Required<{ name: string }>
 ) => a.name.localeCompare(b.name);
+
+export const getUserScope = (user: User): UserScopes => {
+  if (user.account_sid) {
+    return USER_ACCOUNT;
+  } else if (user.service_provider_sid) {
+    return USER_SP;
+  } else {
+    return USER_ADMIN;
+  }
+};
 
 export {
   withSuspense,

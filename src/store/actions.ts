@@ -63,8 +63,7 @@ export const currentServiceProviderAction = (
 
 export const userAsyncAction = async (): Promise<User> => {
   const token = getToken();
-  const { user_sid, permissions, scope } = parseJwt(token);
-  return { user_sid, permissions, scope };
+  return parseJwt(token);
 };
 
 export const serviceProvidersAsyncAction = async (): Promise<

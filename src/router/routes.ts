@@ -1,5 +1,6 @@
 export const ROUTE_LOGIN = "/";
 export const ROUTE_CREATE_PASSWORD = "/create-password";
+export const ROUTE_INTERNAL_USERS = "/internal/users";
 export const ROUTE_INTERNAL_SETTINGS = "/internal/settings";
 export const ROUTE_INTERNAL_ACCOUNTS = "/internal/accounts";
 export const ROUTE_INTERNAL_APPLICATIONS = "/internal/applications";
