@@ -103,7 +103,7 @@ export const UserForm = ({ user }: UserFormProps) => {
     }
 
     if (!user) {
-      passwdCheck();
+      if (!passwdCheck()) return;
 
       postFetch<UserSidResponse, Partial<User>>(API_USERS, {
         name: name,
@@ -130,8 +130,7 @@ export const UserForm = ({ user }: UserFormProps) => {
     }
 
     if (user && user.data) {
-      if (initialPassword) {
-        passwdCheck();
+      if (initialPassword && !passwdCheck()) {
         return;
       }
 
