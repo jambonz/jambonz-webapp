@@ -214,7 +214,7 @@ export const UserForm = ({ user }: UserFormProps) => {
                     type="text"
                     disabled
                     name="account"
-                    value={"No accounts."}
+                    value="No accounts."
                   />
                 </>
               )}

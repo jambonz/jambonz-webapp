@@ -10,6 +10,9 @@ import {
   INVALID,
   IP,
   TCP_MAX_PORT,
+  USER_ACCOUNT,
+  USER_ADMIN,
+  USER_SP,
 } from "src/api/constants";
 
 import type { IpType, PasswordSettings, User, UserScopes } from "src/api/types";
@@ -135,6 +138,16 @@ export const sortLocaleName = (
   b: Required<{ name: string }>
 ) => a.name.localeCompare(b.name);
 
+export const getUserScope = (user: User): UserScopes => {
+  if (user.account_sid) {
+    return USER_ACCOUNT;
+  } else if (user.service_provider_sid) {
+    return USER_SP;
+  } else {
+    return USER_ADMIN;
+  }
+};
+
 export {
   withSuspense,
   useMobileMedia,
@@ -142,14 +155,4 @@ export {
   withSelectState,
   useRedirect,
   useFilteredResults,
-};
-
-export const getUserScope = (user: User): UserScopes => {
-  if (user.account_sid) {
-    return "account";
-  } else if (user.service_provider_sid) {
-    return "service_provider";
-  } else {
-    return "admin";
-  }
 };
