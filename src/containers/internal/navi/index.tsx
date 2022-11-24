@@ -16,6 +16,7 @@ import { postServiceProviders } from "src/api";
 import type { NaviItem } from "./items";
 
 import "./styles.scss";
+import { ScopedAccess } from "src/components/scoped-access";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -149,7 +150,7 @@ export const Navi = ({
                     );
                   })
                 ) : (
-                  <option>&nbsp;</option>
+                  <option>currentServiceProvider.name</option>
                 )}
               </select>
               <span>
@@ -158,14 +159,16 @@ export const Navi = ({
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setModal(true)}
-            title="Add service provider"
-            className="btnty"
-          >
-            <Icons.PlusCircle />
-          </button>
+          <ScopedAccess enumScope={0}>
+            <button
+              type="button"
+              onClick={() => setModal(true)}
+              title="Add service provider"
+              className="btnty"
+            >
+              <Icons.PlusCircle />
+            </button>
+          </ScopedAccess>
         </div>
         {/* Intentionally hiding this as we will need to work this out as we go... */}
         {/* ACL component will need to be updated for new user scope/permissions handling */}

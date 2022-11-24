@@ -14,6 +14,12 @@ export interface ACL {
   hasMSTeamsFqdn: boolean;
 }
 
+export enum Scope {
+  "admin" = 0,
+  "service_provider" = 1,
+  "account" = 2,
+}
+
 export interface FeatureFlag {
   development: boolean;
 }
