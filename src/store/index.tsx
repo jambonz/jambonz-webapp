@@ -77,7 +77,7 @@ const middleware: MiddleWare = (dispatch) => {
   };
 };
 
-const StateContext = React.createContext<AppStateContext>(null!);
+export const StateContext = React.createContext<AppStateContext>(null!);
 
 /** This will let us make a hook so dispatch is accessible anywhere */
 let globalDispatch: GlobalDispatch;

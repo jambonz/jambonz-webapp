@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import Blockies from "react-blockies";
-import { classNames, getCssVar, M, Icon, Button } from "jambonz-ui";
+import { classNames, M, Icon, Button } from "jambonz-ui";
 import { Link, useLocation } from "react-router-dom";
 
-import { Icons, ModalForm, AccessControl } from "src/components";
+import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
 import {
   useSelectState,
@@ -17,6 +16,7 @@ import type { NaviItem } from "./items";
 
 import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -57,7 +57,6 @@ export const Navi = ({
   handleLogout,
 }: NaviProps) => {
   const dispatch = useDispatch();
-  const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -150,7 +149,7 @@ export const Navi = ({
                     );
                   })
                 ) : (
-                  <option>currentServiceProvider.name</option>
+                  <option>&nbsp;</option>
                 )}
               </select>
               <span>
@@ -159,7 +158,7 @@ export const Navi = ({
               </span>
             </div>
           </div>
-          <ScopedAccess enumScope={0}>
+          <ScopedAccess scope={Scope.admin}>
             <button
               type="button"
               onClick={() => setModal(true)}
@@ -170,26 +169,6 @@ export const Navi = ({
             </button>
           </ScopedAccess>
         </div>
-        {/* Intentionally hiding this as we will need to work this out as we go... */}
-        {/* ACL component will need to be updated for new user scope/permissions handling */}
-        {false && user && (
-          <div className="navi__user">
-            <Blockies
-              seed={user!.user_sid}
-              size={6}
-              scale={6}
-              color={getCssVar("--jambonz")}
-              bgColor={getCssVar("--pink")}
-              spotColor={getCssVar("--teal")}
-              className="avatar"
-            />
-            <AccessControl acl="hasAdminAuth">
-              <button type="button" className="btnty adduser" title="Add user">
-                <Icons.PlusCircle />
-              </button>
-            </AccessControl>
-          </div>
-        )}
         <div className="navi__routes">
           <ul>
             {naviTop.map((item) => (

@@ -1,6 +1,10 @@
 import React from "react";
 
-import type { User, ServiceProvider } from "src/api/types";
+import type {
+  ServiceProvider,
+  UserScopes,
+  UserPermissions,
+} from "src/api/types";
 
 export type IMessage = string | JSX.Element;
 
@@ -14,19 +18,32 @@ export interface ACL {
   hasMSTeamsFqdn: boolean;
 }
 
-export enum Scope {
-  "admin" = 0,
-  "service_provider" = 1,
-  "account" = 2,
-}
-
 export interface FeatureFlag {
   development: boolean;
 }
 
+export enum Scope {
+  "admin" = 2,
+  "service_provider" = 1,
+  "account" = 0,
+}
+
+export interface UserJWT {
+  scope: UserScopes;
+  user_sid: string;
+  force_change: boolean;
+  account_sid?: string | null;
+  service_provider_sid?: string | null;
+  permissions?: UserPermissions;
+}
+
+export interface ScopeAccess extends UserJWT {
+  scopeAccess: Scope;
+}
+
 export interface State {
   /** logged in user */
-  user?: User;
+  user?: ScopeAccess;
   /** global toast notifications  */
   toast?: Toast;
   /** feature flags from vite ENV */

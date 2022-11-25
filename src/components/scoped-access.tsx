@@ -5,24 +5,15 @@ import { useSelectState } from "src/store";
 import type { Scope } from "src/store/types";
 
 export type ScopedAccessProps = {
-  enumScope: Scope;
+  scope: Scope;
   children: React.ReactNode;
-  noAccessRender?: React.ReactNode;
 };
 
-export const ScopedAccess = ({
-  enumScope,
-  children,
-  noAccessRender,
-}: ScopedAccessProps) => {
+export const ScopedAccess = ({ scope, children }: ScopedAccessProps) => {
   const user = useSelectState("user");
 
-  if (user && user.enumScope <= enumScope) {
+  if (user && user.scopeAccess >= scope) {
     return <>{children}</>;
-  }
-
-  if (user && user.enumScope >= enumScope && noAccessRender) {
-    return <>{noAccessRender}</>;
   }
 
   return null;

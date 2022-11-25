@@ -1,5 +1,4 @@
 import type { Vendor } from "src/vendor/types";
-import type { Scope } from "src/store/types";
 
 /** Simple types */
 
@@ -117,7 +116,6 @@ export interface User {
   service_provider_sid?: string | null;
   initial_password?: string;
   permissions?: UserPermissions;
-  enumScope: Scope;
 }
 
 export interface UserLogin extends User {
