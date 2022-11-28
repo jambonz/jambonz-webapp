@@ -10,6 +10,7 @@ import {
   ROUTE_LOGIN,
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
 } from "./routes";
 import {
   SESS_OLD_PASSWORD,
@@ -18,6 +19,7 @@ import {
   MSG_SOMETHING_WRONG,
   MSG_SERVER_DOWN,
 } from "src/constants";
+import { USER_ACCOUNT } from "src/api/constants";
 
 import type { UserLogin } from "src/api/types";
 
@@ -101,7 +103,11 @@ export const useProvideAuth = (): AuthStateContext => {
               sessionStorage.setItem(SESS_OLD_PASSWORD, password);
               navigate(ROUTE_CREATE_PASSWORD);
             } else {
-              navigate(ROUTE_INTERNAL_ACCOUNTS);
+              navigate(
+                response.json.scope !== USER_ACCOUNT
+                  ? ROUTE_INTERNAL_ACCOUNTS
+                  : ROUTE_INTERNAL_APPLICATIONS
+              );
             }
 
             resolve(response.json);

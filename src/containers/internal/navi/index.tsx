@@ -3,6 +3,7 @@ import { classNames, M, Icon, Button } from "jambonz-ui";
 import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";
+import { ScopedAccess } from "src/components/scoped-access";
 import { naviTop, naviByo } from "./items";
 import {
   useSelectState,
@@ -15,8 +16,9 @@ import { postServiceProviders } from "src/api";
 import type { NaviItem } from "./items";
 
 import "./styles.scss";
-import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { USER_ACCOUNT } from "src/api/constants";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -57,6 +59,7 @@ export const Navi = ({
   handleLogout,
 }: NaviProps) => {
   const dispatch = useDispatch();
+  const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -171,9 +174,47 @@ export const Navi = ({
         </div>
         <div className="navi__routes">
           <ul>
-            {naviTop.map((item) => (
-              <Item key={item.label} item={item} handleMenu={handleMenu} />
-            ))}
+            {naviTop.map((item) => {
+              if (item.label === "Settings") {
+                return (
+                  <ScopedAccess scope={Scope.service_provider}>
+                    <Item
+                      key={item.label}
+                      item={item}
+                      handleMenu={handleMenu}
+                    />
+                  </ScopedAccess>
+                );
+              }
+              if (item.label === "Accounts" && user?.scope === USER_ACCOUNT) {
+                const accountNavItem = {
+                  label: "Account",
+                  icon: Icons.Activity,
+                  route: `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
+                };
+                return (
+                  <Item
+                    key={accountNavItem.label}
+                    item={accountNavItem}
+                    handleMenu={handleMenu}
+                  />
+                );
+              }
+              if (item.label === "Accounts") {
+                return (
+                  <ScopedAccess scope={Scope.service_provider}>
+                    <Item
+                      key={item.label}
+                      item={item}
+                      handleMenu={handleMenu}
+                    />
+                  </ScopedAccess>
+                );
+              }
+              return (
+                <Item key={item.label} item={item} handleMenu={handleMenu} />
+              );
+            })}
           </ul>
         </div>
         <div className="navi__byo">

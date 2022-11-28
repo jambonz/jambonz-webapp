@@ -6,7 +6,11 @@ import { isValidPasswd } from "src/utils";
 import { putUser, useApiData } from "src/api";
 import { PasswordSettings, StatusCodes } from "src/api/types";
 import { Passwd, Message } from "src/components/forms";
-import { ROUTE_LOGIN, ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import {
+  ROUTE_LOGIN,
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
+} from "src/router/routes";
 import {
   SESS_OLD_PASSWORD,
   SESS_USER_SID,
@@ -15,6 +19,7 @@ import {
   MSG_PASSWD_MATCH,
   MSG_PASSWD_CRITERIA,
 } from "src/constants";
+import { USER_ACCOUNT } from "src/api/constants";
 
 import type { IMessage } from "src/store/types";
 
@@ -65,7 +70,11 @@ export const CreatePassword = () => {
           if (response.status === StatusCodes.NO_CONTENT) {
             sessionStorage.clear();
 
-            navigate(ROUTE_INTERNAL_ACCOUNTS);
+            navigate(
+              response.json.scope !== USER_ACCOUNT
+                ? ROUTE_INTERNAL_ACCOUNTS
+                : ROUTE_INTERNAL_APPLICATIONS
+            );
           } else {
             setMessage(MSG_SOMETHING_WRONG);
           }

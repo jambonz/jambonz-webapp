@@ -24,6 +24,7 @@ import {
   NETMASK_OPTIONS,
   TCP_MAX_PORT,
   TECH_PREFIX_MINLENGTH,
+  USER_ACCOUNT,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
 import {
@@ -63,6 +64,7 @@ export const CarrierForm = ({
   carrierSmppGateways,
 }: CarrierFormProps) => {
   const navigate = useNavigate();
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
   const refSipIp = useRef<HTMLInputElement[]>([]);
@@ -437,6 +439,11 @@ export const CarrierForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+      toastError("You do not have permission to make changes to this Carrier");
+      return;
+    }
+
     setSipMessage("");
     setSmppInboundMessage("");
     setSmppOutboundMessage("");
@@ -467,7 +474,12 @@ export const CarrierForm = ({
         name: carrierName.trim(),
         e164_leading_plus: e164,
         application_sid: applicationSid || null,
-        account_sid: accountSid || null,
+        account_sid:
+          user?.scope === USER_ACCOUNT
+            ? user.account_sid
+            : accountSid
+            ? accountSid
+            : null,
         requires_register: sipRegister,
         register_username: sipUser.trim() || null,
         register_password: sipPass.trim() || null,
