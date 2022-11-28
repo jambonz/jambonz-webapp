@@ -9,7 +9,6 @@ import { Scope } from "src/store/types";
 
 /** Wrapper to pass different user scopes as enum values */
 const ScopedAccessTestWrapper = (props: Partial<ScopedAccessProps>) => {
-  console.log(props);
   return (
     <TestProvider>
       <ScopedAccess scope={props.scope!}>

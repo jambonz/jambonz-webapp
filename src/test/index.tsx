@@ -1,31 +1,18 @@
-import React, { useReducer } from "react";
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import {
-  initialState,
-  middleware,
-  reducer,
-  StateContext,
-  StateProvider,
-} from "src/store";
+import { StateProvider } from "src/store";
 import { AuthContext } from "src/router/auth";
 import { MSG_SOMETHING_WRONG } from "src/constants";
 
-import { AuthStateContext, parseJwt } from "src/router/auth";
+import type { AuthStateContext } from "src/router/auth";
 import type { UserLogin } from "src/api/types";
 
 import userLogin from "../../cypress/fixtures/userLogin.json";
-import {
-  Action,
-  AppStateContext,
-  GlobalDispatch,
-  State,
-} from "src/store/types";
 
-type TestProviderProps = Partial<AppStateContext> &
-  Partial<AuthStateContext> & {
-    children?: React.ReactNode;
-  };
+type TestProviderProps = Partial<AuthStateContext> & {
+  children?: React.ReactNode;
+};
 
 type LayoutProviderProps = TestProviderProps & {
   outlet: JSX.Element;
@@ -46,15 +33,8 @@ export const authProps: AuthStateContext = {
  * Use this when you simply need to wrap with state and auth
  */
 export const TestProvider = ({ children, ...restProps }: TestProviderProps) => {
-  const userJWT = parseJwt(userLogin.token);
-  const [state, dispatch]: [State, React.Dispatch<Action<keyof State>>] =
-    useReducer(reducer, { ...initialState, user: userJWT });
-
-  const globalDispatch: GlobalDispatch = middleware(dispatch);
-  const storeProps: AppStateContext = { state, dispatch: globalDispatch };
-
   return (
-    <StateContext.Provider value={storeProps}>
+    <StateProvider>
       <AuthContext.Provider
         value={{
           ...authProps,
@@ -67,7 +47,7 @@ export const TestProvider = ({ children, ...restProps }: TestProviderProps) => {
           </Routes>
         </BrowserRouter>
       </AuthContext.Provider>
-    </StateContext.Provider>
+    </StateProvider>
   );
 };
 
