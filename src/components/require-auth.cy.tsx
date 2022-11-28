@@ -1,37 +1,34 @@
 import React from "react";
 import { H1 } from "jambonz-ui";
 
-import { TestProvider } from "src/test";
 import { RequireAuth } from "./require-auth";
 
-import type { TestProviderProps } from "src/test";
-
 /** Wrapper to pass different auth contexts */
-const RequireAuthTestWrapper = (props: Partial<TestProviderProps>) => {
+const RequireAuthTestWrapper = () => {
   return (
-    <TestProvider {...props}>
-      <RequireAuth>
-        <div className="auth-div">
-          <H1>Protected Route</H1>
-        </div>
-      </RequireAuth>
-    </TestProvider>
+    <RequireAuth>
+      <div className="auth-div">
+        <H1>Protected Route</H1>
+      </div>
+    </RequireAuth>
   );
 };
 
 describe("<RequireAuth>", () => {
   it("mounts", () => {
-    cy.mount(<RequireAuthTestWrapper />);
+    cy.mountTestProvider(<RequireAuthTestWrapper />);
   });
 
   it("is not authorized", () => {
-    cy.mount(<RequireAuthTestWrapper />);
+    cy.mountTestProvider(<RequireAuthTestWrapper />);
 
     cy.get(".auth-div").should("not.exist");
   });
 
   it("is authorized", () => {
-    cy.mount(<RequireAuthTestWrapper authProps={{ authorized: true }} />);
+    cy.mountTestProvider(<RequireAuthTestWrapper />, {
+      authProps: { authorized: true },
+    });
 
     cy.get(".auth-div").should("exist");
   });

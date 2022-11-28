@@ -1,7 +1,6 @@
 import React from "react";
 import { H1 } from "jambonz-ui";
 
-import { TestProvider } from "src/test";
 import { ScopedAccess } from "./scoped-access";
 import { USER_SP, USER_ADMIN, USER_ACCOUNT } from "src/api/constants";
 
@@ -13,11 +12,9 @@ import { Scope } from "src/store/types";
 /** Wrapper to pass different user scopes as enum values */
 const ScopedAccessTestWrapper = (props: ScopedAccessProps) => {
   return (
-    <TestProvider>
-      <ScopedAccess {...props}>
-        <div className="scope-div">{props.children}</div>
-      </ScopedAccess>
-    </TestProvider>
+    <ScopedAccess {...props}>
+      <div className="scope-div">{props.children}</div>
+    </ScopedAccess>
   );
 };
 
@@ -29,7 +26,7 @@ describe("<ScopedAccess>", () => {
       access: Scope.admin,
     } as UserData;
 
-    cy.mount(
+    cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: admin</H1>
       </ScopedAccessTestWrapper>
@@ -44,7 +41,7 @@ describe("<ScopedAccess>", () => {
       access: Scope.service_provider,
     } as UserData;
 
-    cy.mount(
+    cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: service_provider</H1>
       </ScopedAccessTestWrapper>
@@ -59,7 +56,7 @@ describe("<ScopedAccess>", () => {
       access: Scope.account,
     } as UserData;
 
-    cy.mount(
+    cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: account</H1>
       </ScopedAccessTestWrapper>
