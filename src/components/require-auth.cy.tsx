@@ -4,12 +4,12 @@ import { H1 } from "jambonz-ui";
 import { TestProvider } from "src/test";
 import { RequireAuth } from "./require-auth";
 
-import type { AuthStateContext } from "src/router/auth";
+import type { TestProviderProps } from "src/test";
 
 /** Wrapper to pass different auth contexts */
-const RequireAuthTestWrapper = (props: Partial<AuthStateContext>) => {
+const RequireAuthTestWrapper = (props: Partial<TestProviderProps>) => {
   return (
-    <TestProvider {...(props as AuthStateContext)}>
+    <TestProvider {...props}>
       <RequireAuth>
         <div className="auth-div">
           <H1>Protected Route</H1>
@@ -31,7 +31,7 @@ describe("<RequireAuth>", () => {
   });
 
   it("is authorized", () => {
-    cy.mount(<RequireAuthTestWrapper authorized />);
+    cy.mount(<RequireAuthTestWrapper authProps={{ authorized: true }} />);
 
     cy.get(".auth-div").should("exist");
   });
