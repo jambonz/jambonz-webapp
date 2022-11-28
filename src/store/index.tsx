@@ -21,7 +21,7 @@ import type {
   ACL,
 } from "./types";
 
-const initialState: State = {
+export const initialState: State = {
   featureFlags: {
     /** Placeholder since we may need feature-flags in the future... */
     development: import.meta.env.DEV,
@@ -33,7 +33,10 @@ const initialState: State = {
   serviceProviders: [],
 };
 
-const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
+export const reducer: React.Reducer<State, Action<keyof State>> = (
+  state,
+  action
+) => {
   switch (action.type) {
     case "user":
     case "toast":
@@ -51,7 +54,7 @@ let toastTimeout: number;
 
 /** Async middlewares */
 /** Proxies dispatch to reducer */
-const middleware: MiddleWare = (dispatch) => {
+export const middleware: MiddleWare = (dispatch) => {
   /** This generic implementation enforces global dispatch type-safety */
   return <Type extends keyof State>(action: Action<Type>) => {
     switch (action.type) {
