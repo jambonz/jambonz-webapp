@@ -3,7 +3,6 @@ import { classNames, M, Icon, Button } from "jambonz-ui";
 import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";
-import { ScopedAccess } from "src/components/scoped-access";
 import { naviTop, naviByo } from "./items";
 import {
   useSelectState,
@@ -16,6 +15,7 @@ import { postServiceProviders } from "src/api";
 import type { NaviItem } from "./items";
 
 import "./styles.scss";
+import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { USER_ACCOUNT } from "src/api/constants";
