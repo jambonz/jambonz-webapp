@@ -1,5 +1,7 @@
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3NpZCI6IjFjNTc4MWQyLTY5MGItNDIwYy1iZDUzLTVkN2Y1NjMwMDVjOCIsInNjb3BlIjoiYWRtaW4iLCJmb3JjZV9jaGFuZ2UiOnRydWUsInBlcm1pc3Npb25zIjpbIlBST1ZJU0lPTl9VU0VSUyIsIlBST1ZJU0lPTl9TRVJWSUNFUyIsIlZJRVdfT05MWSJdLCJpYXQiOjE2NjY3OTgzMTEsImV4cCI6MTY2NjgwMTkxMX0.ZV3KnRit8WGpipfiiMAZ2AVLQ25csWje1-K6hdqxktE",
   "user_sid": "78131ad5-f041-4d5d-821c-47b2d8c6d015",
-  "force_change": false
+  "force_change": false,
+  "scope": "admin",
+  "permissions": ["VIEW_ONLY", "PROVISION_SERVICES", "PROVISION_USERS"]
 }

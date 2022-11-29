@@ -19,13 +19,6 @@ export type UserPermissions =
   | "PROVISION_SERVICES"
   | "PROVISION_USERS";
 
-// We'll want something like this for actual permissions implementation...
-// export enum UserPermissions {
-//   VIEW_ONLY = 0,
-//   PROVISION_SERVICES = 1,
-//   PROVISION_USERS = 2,
-// }
-
 /** Status codes */
 
 export enum StatusCodes {
@@ -106,21 +99,24 @@ export interface PasswordSettings {
 /** API responses/payloads */
 
 export interface User {
-  scope?: UserScopes;
+  scope: UserScopes;
   user_sid: string;
   name: string;
   email: string;
   is_active: boolean;
   force_change: boolean;
-  account_sid?: string | null;
-  service_provider_sid?: string | null;
+  account_sid: string | null;
+  service_provider_sid: string | null;
   initial_password?: string;
-  permissions?: UserPermissions;
+  permissions?: UserPermissions[];
 }
 
-export interface UserLogin extends User {
+export interface UserLogin {
   token: string;
   force_change: boolean;
+  scope: UserScopes;
+  user_sid: string;
+  permissions: UserPermissions[];
 }
 
 export interface UserLoginPayload {
@@ -138,6 +134,14 @@ export interface UserUpdatePayload {
   is_active: boolean;
   service_provider_sid: string | null;
   account_sid: string | null;
+}
+
+export interface UserJWT {
+  scope: UserScopes;
+  user_sid: string;
+  account_sid?: string | null;
+  service_provider_sid?: string | null;
+  permissions: UserPermissions[];
 }
 
 export interface ServiceProvider {

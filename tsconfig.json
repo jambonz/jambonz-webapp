@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["@types/react", "@types/react-dom", "@types/react-blockies"],
+    "types": ["@types/react", "@types/react-dom"],
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],

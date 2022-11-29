@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { User, ServiceProvider } from "src/api/types";
+import type { UserJWT, ServiceProvider } from "src/api/types";
 
 export type IMessage = string | JSX.Element;
 
@@ -18,9 +18,19 @@ export interface FeatureFlag {
   development: boolean;
 }
 
+export enum Scope {
+  "account" = 0,
+  "service_provider" = 1,
+  "admin" = 2,
+}
+
+export interface UserData extends UserJWT {
+  access: Scope;
+}
+
 export interface State {
   /** logged in user */
-  user?: User;
+  user?: UserData;
   /** global toast notifications  */
   toast?: Toast;
   /** feature flags from vite ENV */
@@ -53,6 +63,6 @@ export interface MiddleWare {
 export interface AppStateContext {
   /** Global data store */
   state: State;
-  /** Globsl dispatch method */
+  /** Global dispatch method */
   dispatch: GlobalDispatch;
 }

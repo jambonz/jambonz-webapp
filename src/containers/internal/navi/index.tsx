@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import Blockies from "react-blockies";
-import { classNames, getCssVar, M, Icon, Button } from "jambonz-ui";
+import { classNames, M, Icon, Button } from "jambonz-ui";
 import { Link, useLocation } from "react-router-dom";
 
-import { Icons, ModalForm, AccessControl } from "src/components";
+import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
 import {
   useSelectState,
@@ -16,6 +15,8 @@ import { postServiceProviders } from "src/api";
 import type { NaviItem } from "./items";
 
 import "./styles.scss";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -158,35 +159,17 @@ export const Navi = ({
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setModal(true)}
-            title="Add service provider"
-            className="btnty"
-          >
-            <Icons.PlusCircle />
-          </button>
+          <ScopedAccess scope={Scope.admin} user={user}>
+            <button
+              type="button"
+              onClick={() => setModal(true)}
+              title="Add service provider"
+              className="btnty"
+            >
+              <Icons.PlusCircle />
+            </button>
+          </ScopedAccess>
         </div>
-        {/* Intentionally hiding this as we will need to work this out as we go... */}
-        {/* ACL component will need to be updated for new user scope/permissions handling */}
-        {false && user && (
-          <div className="navi__user">
-            <Blockies
-              seed={user!.user_sid}
-              size={6}
-              scale={6}
-              color={getCssVar("--jambonz")}
-              bgColor={getCssVar("--pink")}
-              spotColor={getCssVar("--teal")}
-              className="avatar"
-            />
-            <AccessControl acl="hasAdminAuth">
-              <button type="button" className="btnty adduser" title="Add user">
-                <Icons.PlusCircle />
-              </button>
-            </AccessControl>
-          </div>
-        )}
         <div className="navi__routes">
           <ul>
             {naviTop.map((item) => (

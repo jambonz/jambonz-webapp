@@ -2,8 +2,9 @@ import { getServiceProviders } from "src/api";
 import { sortLocaleName } from "src/utils";
 import { getToken, parseJwt } from "src/router/auth";
 
-import type { State, Action } from "./types";
-import type { ServiceProvider, User } from "src/api/types";
+import type { State, Action, UserData } from "./types";
+import { Scope } from "./types";
+import { ServiceProvider } from "src/api/types";
 
 /** A generic action assumes action.type is ALWAYS our state key */
 /** Since this is how we're designing our state interface we cool */
@@ -61,9 +62,12 @@ export const currentServiceProviderAction = (
   return genericAction(state, action);
 };
 
-export const userAsyncAction = async (): Promise<User> => {
+export const userAsyncAction = async (): Promise<UserData> => {
   const token = getToken();
-  return parseJwt(token);
+  const userData = parseJwt(token);
+
+  // Add `access` as enum for client-side usage
+  return { ...userData, access: Scope[userData.scope] };
 };
 
 export const serviceProvidersAsyncAction = async (): Promise<
