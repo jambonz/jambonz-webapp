@@ -21,7 +21,7 @@ import type {
   ACL,
 } from "./types";
 
-const initialState: State = {
+export const initialState: State = {
   featureFlags: {
     /** Placeholder since we may need feature-flags in the future... */
     development: import.meta.env.DEV,

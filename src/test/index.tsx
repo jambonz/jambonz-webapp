@@ -10,19 +10,21 @@ import type { UserLogin } from "src/api/types";
 
 import userLogin from "../../cypress/fixtures/userLogin.json";
 
-type TestProviderProps = Partial<AuthStateContext> & {
+export type TestProviderProps = {
   children?: React.ReactNode;
+  authProps?: Partial<AuthStateContext>;
 };
 
-type LayoutProviderProps = TestProviderProps & {
+export type LayoutProviderProps = TestProviderProps & {
   outlet: JSX.Element;
   Layout: React.ElementType;
 };
 
 export const signinError = () => Promise.reject(MSG_SOMETHING_WRONG);
-export const signinSuccess = () => Promise.resolve(userLogin as UserLogin);
+export const signinSuccess = () =>
+  Promise.resolve(userLogin as unknown as UserLogin);
 export const signout = () => undefined;
-export const authProps: AuthStateContext = {
+export const defaultAuthProps: AuthStateContext = {
   token: "",
   signin: signinSuccess,
   signout,
@@ -32,13 +34,13 @@ export const authProps: AuthStateContext = {
 /**
  * Use this when you simply need to wrap with state and auth
  */
-export const TestProvider = ({ children, ...restProps }: TestProviderProps) => {
+export const TestProvider = ({ children, authProps }: TestProviderProps) => {
   return (
     <StateProvider>
       <AuthContext.Provider
         value={{
+          ...defaultAuthProps,
           ...authProps,
-          ...restProps,
         }}
       >
         <BrowserRouter>
@@ -57,14 +59,14 @@ export const TestProvider = ({ children, ...restProps }: TestProviderProps) => {
 export const LayoutProvider = ({
   Layout,
   outlet,
-  ...restProps
+  authProps,
 }: LayoutProviderProps) => {
   return (
     <StateProvider>
       <AuthContext.Provider
         value={{
+          ...defaultAuthProps,
           ...authProps,
-          ...restProps,
         }}
       >
         <BrowserRouter>
