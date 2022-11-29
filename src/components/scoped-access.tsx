@@ -1,18 +1,15 @@
 import React from "react";
 
-import { useSelectState } from "src/store";
-
-import type { Scope } from "src/store/types";
+import type { UserData, Scope } from "src/store/types";
 
 export type ScopedAccessProps = {
+  user?: UserData;
   scope: Scope;
   children: React.ReactNode;
 };
 
-export const ScopedAccess = ({ scope, children }: ScopedAccessProps) => {
-  const user = useSelectState("user");
-
-  if (user && user.scopeAccess >= scope) {
+export const ScopedAccess = ({ user, scope, children }: ScopedAccessProps) => {
+  if (user && user.access >= scope) {
     return <>{children}</>;
   }
 

@@ -161,7 +161,7 @@ export const Navi = ({
               </span>
             </div>
           </div>
-          <ScopedAccess scope={Scope.admin}>
+          <ScopedAccess scope={Scope.admin} user={user}>
             <button
               type="button"
               onClick={() => setModal(true)}

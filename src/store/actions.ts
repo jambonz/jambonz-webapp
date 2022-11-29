@@ -2,7 +2,7 @@ import { getServiceProviders } from "src/api";
 import { sortLocaleName } from "src/utils";
 import { getToken, parseJwt } from "src/router/auth";
 
-import type { State, Action, ScopeAccess } from "./types";
+import type { State, Action, UserData } from "./types";
 import { Scope } from "./types";
 import { ServiceProvider } from "src/api/types";
 
@@ -62,11 +62,12 @@ export const currentServiceProviderAction = (
   return genericAction(state, action);
 };
 
-export const userAsyncAction = async (): Promise<ScopeAccess> => {
+export const userAsyncAction = async (): Promise<UserData> => {
   const token = getToken();
   const userData = parseJwt(token);
 
-  return { ...userData, scopeAccess: Scope[userData.scope] };
+  // Add `access` as enum for client-side usage
+  return { ...userData, access: Scope[userData.scope] };
 };
 
 export const serviceProvidersAsyncAction = async (): Promise<
