@@ -290,11 +290,22 @@ export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
   );
 };
 
-export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
-  return postFetch<SidResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
-    payload
-  );
+export const postCarrier = (
+  user: UserData,
+  sid: string,
+  payload: Partial<Carrier>
+) => {
+  if (user.scope === USER_ACCOUNT) {
+    return postFetch<SidResponse, Partial<SpeechCredential>>(
+      `${API_ACCOUNTS}/${user.account_sid}/VoipCarriers/`,
+      payload
+    );
+  } else {
+    return postFetch<SidResponse, Partial<Carrier>>(
+      `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
+      payload
+    );
+  }
 };
 
 export const postPredefinedCarrierTemplate = (
