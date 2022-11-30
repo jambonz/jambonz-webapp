@@ -35,8 +35,7 @@ For testing we're using [cypress](https://docs.cypress.io/guides/component-testi
 
 We have auth middleware that was initially based on this [useAuth](https://usehooks.com/useAuth/)
 example but has been typed and modified to include a `RequireAuth` component for wrapping internal Routes.
-The main hook you'll use here is `useAuth`. This hook provides the `AuthStateContext` which has the
-following:
+The main hook you'll use here is `useAuth`. This hook provides the following:
 
 - `token`
 - `signin(user, pass)`
@@ -52,20 +51,12 @@ use at the component-level.
 
 ## :joystick: Application state
 
-`ui = fn(state)`
-
 The state for the application has two parts: the local state and the remote server state.
 The server state is the source of truth. We keep only the minimal amount of local state
 necessary: the current logged in user, the list of service providers and the actively selected
 current service provider. We also use local state for a basic permissions matrix and for the
-global toast notifications. That's it! Local state is easy.
+toast notifications.
 
-Because of this limited scope for local state we're **not using a third-party state manager**.
-We have a custom store implementation using vanilla React `useReducer` and context to provide
-the state to our application. There are many useful functions and hooks for working with state
-which include the following:
-
-- `useStateContext()`: returns the entire state object
 - `useSelectState(key)`: returns just the piece of state desired
 - `useDispatch()`: returns global dispatch method
 - `useAccessControl(acl)`: returns true/false for select ACL permissions
