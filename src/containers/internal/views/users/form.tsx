@@ -203,7 +203,7 @@ export const UserForm = ({ user }: UserFormProps) => {
                   />
                 </>
               )}
-              {scope !== USER_ACCOUNT && !hasLength(accounts) && (
+              {scope === USER_ACCOUNT && !hasLength(accounts) && (
                 <>
                   <label htmlFor="account">
                     Account:<span>*</span>
