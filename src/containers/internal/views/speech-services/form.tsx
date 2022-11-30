@@ -115,7 +115,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
       };
 
-      if (credential && credential.data) {
+      if (credential && credential.data && user) {
         if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
           toastError(
             "You do not have permissions to make changes to these Speech Credentials"
@@ -125,6 +125,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         /** The backend API returns obscured secrets now so we need to make sure we don't send them back */
         /** Fields not sent back via :PUT are `service_key`, `access_key_id`, `secret_access_key` and `api_key`  */
         putSpeechService(
+          user,
           currentServiceProvider.service_provider_sid,
           credential.data.speech_credential_sid,
           payload
@@ -139,28 +140,31 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             toastError(error.msg);
           });
       } else {
-        postSpeechService(currentServiceProvider.service_provider_sid, {
-          ...payload,
-          service_key:
-            vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
-          access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
-          secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
-          api_key:
-            vendor === VENDOR_MICROSOFT ||
-            vendor === VENDOR_WELLSAID ||
-            vendor === VENDOR_DEEPGRAM
-              ? apiKey
-              : null,
-          client_id: vendor === VENDOR_NUANCE ? clientId : null,
-          secret: vendor === VENDOR_NUANCE ? secretKey : null,
-        })
-          .then(({ json }) => {
-            toastSuccess("Speech credential created successfully");
-            navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
+        if (user)
+          postSpeechService(user, currentServiceProvider.service_provider_sid, {
+            ...payload,
+            service_key:
+              vendor === VENDOR_GOOGLE
+                ? JSON.stringify(googleServiceKey)
+                : null,
+            access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
+            secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+            api_key:
+              vendor === VENDOR_MICROSOFT ||
+              vendor === VENDOR_WELLSAID ||
+              vendor === VENDOR_DEEPGRAM
+                ? apiKey
+                : null,
+            client_id: vendor === VENDOR_NUANCE ? clientId : null,
+            secret: vendor === VENDOR_NUANCE ? secretKey : null,
           })
-          .catch((error) => {
-            toastError(error.msg);
-          });
+            .then(({ json }) => {
+              toastSuccess("Speech credential created successfully");
+              navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
       }
     }
   };

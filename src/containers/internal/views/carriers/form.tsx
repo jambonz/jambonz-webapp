@@ -14,6 +14,7 @@ import {
   useApiData,
   useServiceProviderData,
   postPredefinedCarrierTemplate,
+  postPredefinedCarrierTemplateAccount,
 } from "src/api";
 import {
   DEFAULT_SIP_GATEWAY,
@@ -536,16 +537,26 @@ export const CarrierForm = ({
       )?.predefined_carrier_sid;
 
       if (currentServiceProvider && predefinedCarrierSid) {
-        postPredefinedCarrierTemplate(
-          currentServiceProvider.service_provider_sid,
-          predefinedCarrierSid
-        )
-          .then(({ json }) => {
-            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
-          })
-          .catch((error) => {
-            toastError(error.msg);
-          });
+        if (user?.scope === USER_ACCOUNT) {
+          postPredefinedCarrierTemplateAccount(accountSid, predefinedCarrierSid)
+            .then(({ json }) => {
+              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
+        } else {
+          postPredefinedCarrierTemplate(
+            currentServiceProvider.service_provider_sid,
+            predefinedCarrierSid
+          )
+            .then(({ json }) => {
+              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
+        }
       }
     }
   }, [predefinedName]);
