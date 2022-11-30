@@ -40,7 +40,7 @@ export const SpeechServices = () => {
             : credentials.account_sid === null
         )
       : [];
-  }, [accountSid, accounts]);
+  }, [accountSid, accounts, credentials]);
 
   const filteredCredentials = useFilteredResults<SpeechCredential>(
     filter,
@@ -95,11 +95,10 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
-    if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
+    if (accountSid) {
       getSpeechCredentials(
         `${API_ACCOUNTS}/${user?.account_sid || accountSid}/SpeechCredentials`
       );
-      console.log(credentials);
     } else {
       if (currentServiceProvider) {
         getSpeechCredentials(

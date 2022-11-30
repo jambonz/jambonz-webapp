@@ -100,6 +100,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (user?.scope === USER_ACCOUNT && user.account_sid === accountSid) {
+      toastError(
+        "You do not have permissions to make changes to these Speech Credentials"
+      );
+      return;
+    }
+
     if (currentServiceProvider) {
       const payload: Partial<SpeechCredential> = {
         vendor,
@@ -132,12 +139,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       };
 
       if (credential && credential.data && user) {
-        if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
-          toastError(
-            "You do not have permissions to make changes to these Speech Credentials"
-          );
-          return;
-        }
         /** The backend API returns obscured secrets now so we need to make sure we don't send them back */
         /** Fields not sent back via :PUT are `service_key`, `access_key_id`, `secret_access_key` and `api_key`  */
         putSpeechService(

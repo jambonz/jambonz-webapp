@@ -493,7 +493,7 @@ export const CarrierForm = ({
         smpp_inbound_password: smppInboundPass.trim() || null,
       };
 
-      if (carrier && carrier.data) {
+      if (carrier && carrier.data && user) {
         putCarrier(
           currentServiceProvider.service_provider_sid,
           carrier.data.voip_carrier_sid,
@@ -512,20 +512,21 @@ export const CarrierForm = ({
             toastError(error.msg);
           });
       } else {
-        postCarrier(currentServiceProvider.service_provider_sid, {
-          ...carrierPayload,
-          service_provider_sid: currentServiceProvider.service_provider_sid,
-        })
-          .then(({ json }) => {
-            handleSipGatewayPutPost(json.sid);
-            handleSmppGatewayPutPost(json.sid);
-
-            toastSuccess("Carrier created successfully");
-            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+        if (user)
+          postCarrier(user, currentServiceProvider.service_provider_sid, {
+            ...carrierPayload,
+            service_provider_sid: currentServiceProvider.service_provider_sid,
           })
-          .catch((error) => {
-            toastError(error.msg);
-          });
+            .then(({ json }) => {
+              handleSipGatewayPutPost(json.sid);
+              handleSmppGatewayPutPost(json.sid);
+
+              toastSuccess("Carrier created successfully");
+              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
       }
     }
   };
