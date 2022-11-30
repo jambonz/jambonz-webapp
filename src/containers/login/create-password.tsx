@@ -22,8 +22,10 @@ import {
 import { USER_ACCOUNT } from "src/api/constants";
 
 import type { IMessage } from "src/store/types";
+import { useSelectState } from "src/store";
 
 export const CreatePassword = () => {
+  const user = useSelectState("user");
   const [passwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -71,7 +73,7 @@ export const CreatePassword = () => {
             sessionStorage.clear();
 
             navigate(
-              response.json.scope !== USER_ACCOUNT
+              user?.scope !== USER_ACCOUNT
                 ? ROUTE_INTERNAL_ACCOUNTS
                 : ROUTE_INTERNAL_APPLICATIONS
             );

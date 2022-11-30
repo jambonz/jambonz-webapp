@@ -440,7 +440,7 @@ export const CarrierForm = ({
     e.preventDefault();
 
     if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
-      toastError("You do not have permission to make changes to this Carrier");
+      toastError("You do not have permissions to make changes to this Carrier");
       return;
     }
 
@@ -689,11 +689,17 @@ export const CarrierForm = ({
                 <em>Prepend a leading + on origination attempts.</em>
               </MXS>
               <AccountSelect
-                accounts={accounts}
+                accounts={
+                  user?.scope === USER_ACCOUNT
+                    ? accounts?.filter(
+                        (acct) => user.account_sid === acct.account_sid
+                      )
+                    : accounts
+                }
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption
+                defaultOption={user?.scope !== USER_ACCOUNT}
               />
               {accountSid && hasLength(applications) && (
                 <>

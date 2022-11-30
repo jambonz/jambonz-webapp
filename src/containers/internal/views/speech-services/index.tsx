@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { API_ACCOUNTS, API_SERVICE_PROVIDERS } from "src/api/constants";
+import {
+  API_ACCOUNTS,
+  API_SERVICE_PROVIDERS,
+  USER_ACCOUNT,
+} from "src/api/constants";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
 import { getFetch, deleteSpeechService, useServiceProviderData } from "src/api";
@@ -15,6 +19,7 @@ import { CredentialStatus } from "./status";
 import type { SpeechCredential, Account } from "src/api/types";
 
 export const SpeechServices = () => {
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
@@ -33,6 +38,12 @@ export const SpeechServices = () => {
 
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
+      if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+        toastError(
+          "You do not have permissions to delete these Speech Credentials"
+        );
+        return;
+      }
       deleteSpeechService(
         currentServiceProvider.service_provider_sid,
         credential.speech_credential_sid

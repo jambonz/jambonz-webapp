@@ -8,7 +8,7 @@ import {
   getFetch,
   useServiceProviderData,
 } from "src/api";
-import { toastSuccess, toastError } from "src/store";
+import { toastSuccess, toastError, useSelectState } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import {
   AccountFilter,
@@ -18,13 +18,18 @@ import {
   SearchFilter,
 } from "src/components";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
-import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
+import {
+  API_SIP_GATEWAY,
+  API_SMPP_GATEWAY,
+  USER_ACCOUNT,
+} from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
 import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
 import { Gateways } from "./gateways";
 
 export const Carriers = () => {
+  const user = useSelectState("user");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
   const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -48,6 +53,11 @@ export const Carriers = () => {
 
   const handleDelete = () => {
     if (carrier) {
+      if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+        toastError("You do not have permissions to delete this Carrier");
+        return;
+      }
+
       deleteCarrier(carrier.voip_carrier_sid)
         .then(() => {
           Promise.all([
@@ -109,7 +119,13 @@ export const Carriers = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={accounts}
+          accounts={
+            user?.scope === USER_ACCOUNT
+              ? accounts?.filter(
+                  (acct) => acct.account_sid === user.account_sid
+                )
+              : accounts
+          }
           label="Used by"
           defaultOption
         />

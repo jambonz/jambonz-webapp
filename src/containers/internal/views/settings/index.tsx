@@ -29,7 +29,7 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          <ScopedAccess scope={Scope.admin}>
+          <ScopedAccess scope={Scope.admin} user={user}>
             <Tabs active={[activeTab, setActiveTab]}>
               <Tab id="admin" label="Admin">
                 <AdminSettings />
@@ -39,7 +39,7 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
               </Tab>
             </Tabs>
           </ScopedAccess>
-          <ScopedAccess scope={Scope.service_provider}>
+          <ScopedAccess scope={Scope.service_provider} user={user}>
             <ServiceProviderSettings />
           </ScopedAccess>
         </form>
