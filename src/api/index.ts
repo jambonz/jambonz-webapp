@@ -17,6 +17,7 @@ import {
   API_SMPP_GATEWAY,
   API_SIP_GATEWAY,
   API_PASSWORD_SETTINGS,
+  USER_ACCOUNT,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -58,6 +59,7 @@ import type {
   LimitCategories,
   PasswordSettings,
 } from "./types";
+import { UserData } from "../store/types";
 import { StatusCodes } from "./types";
 
 /** Wrap all requests to normalize response handling */
@@ -257,13 +259,21 @@ export const postApplication = (payload: Partial<Application>) => {
 };
 
 export const postSpeechService = (
+  user: UserData,
   sid: string,
   payload: Partial<SpeechCredential>
 ) => {
-  return postFetch<SidResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`,
-    payload
-  );
+  if (user.scope === USER_ACCOUNT) {
+    return postFetch<SidResponse, Partial<SpeechCredential>>(
+      `${API_ACCOUNTS}/${user.account_sid}/SpeechCredentials`,
+      payload
+    );
+  } else {
+    return postFetch<SidResponse, Partial<SpeechCredential>>(
+      `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`,
+      payload
+    );
+  }
 };
 
 export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {
@@ -293,6 +303,15 @@ export const postPredefinedCarrierTemplate = (
 ) => {
   return postFetch<SidResponse>(
     `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
+  );
+};
+
+export const postPredefinedCarrierTemplateAccount = (
+  accountSid: string,
+  predefinedCarrierSid: string
+) => {
+  return postFetch<SidResponse>(
+    `${API_BASE_URL}/Accounts/${accountSid}/PredefinedCarriers/${predefinedCarrierSid}`
   );
 };
 
@@ -364,14 +383,22 @@ export const putApplication = (sid: string, payload: Partial<Application>) => {
 };
 
 export const putSpeechService = (
+  user: UserData,
   sid1: string,
   sid2: string,
   payload: Partial<SpeechCredential>
 ) => {
-  return putFetch<EmptyResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
-    payload
-  );
+  if (user.scope === USER_ACCOUNT) {
+    return putFetch<EmptyResponse, Partial<SpeechCredential>>(
+      `${API_ACCOUNTS}/${user.account_sid}/SpeechCredentials/${sid2}`,
+      payload
+    );
+  } else {
+    return putFetch<EmptyResponse, Partial<SpeechCredential>>(
+      `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
+      payload
+    );
+  }
 };
 
 export const putMsTeamsTenant = (
