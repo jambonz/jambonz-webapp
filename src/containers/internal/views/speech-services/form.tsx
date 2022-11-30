@@ -33,6 +33,7 @@ import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
+import { USER_ACCOUNT } from "src/api/constants";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -40,6 +41,7 @@ type SpeechServiceFormProps = {
 
 export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const navigate = useNavigate();
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -114,6 +116,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       };
 
       if (credential && credential.data) {
+        if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+          toastError(
+            "You do not have permissions to make changes to these Speech Credentials"
+          );
+          return;
+        }
         /** The backend API returns obscured secrets now so we need to make sure we don't send them back */
         /** Fields not sent back via :PUT are `service_key`, `access_key_id`, `secret_access_key` and `api_key`  */
         putSpeechService(
@@ -258,10 +266,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={accounts}
+            accounts={
+              user?.scope === USER_ACCOUNT
+                ? accounts?.filter(
+                    (acct) => acct.account_sid === user.account_sid
+                  )
+                : accounts
+            }
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption
+            defaultOption={user?.scope !== USER_ACCOUNT}
             disabled={credential ? true : false}
           />
         </fieldset>

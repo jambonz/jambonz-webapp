@@ -6,7 +6,11 @@ import { isValidPasswd } from "src/utils";
 import { putUser, useApiData } from "src/api";
 import { PasswordSettings, StatusCodes } from "src/api/types";
 import { Passwd, Message } from "src/components/forms";
-import { ROUTE_LOGIN, ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import {
+  ROUTE_LOGIN,
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
+} from "src/router/routes";
 import {
   SESS_OLD_PASSWORD,
   SESS_USER_SID,
@@ -17,8 +21,11 @@ import {
 } from "src/constants";
 
 import type { IMessage } from "src/store/types";
+import { useSelectState } from "src/store";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const CreatePassword = () => {
+  const user = useSelectState("user");
   const [passwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -65,7 +72,11 @@ export const CreatePassword = () => {
           if (response.status === StatusCodes.NO_CONTENT) {
             sessionStorage.clear();
 
-            navigate(ROUTE_INTERNAL_ACCOUNTS);
+            navigate(
+              user?.scope !== USER_ACCOUNT
+                ? ROUTE_INTERNAL_ACCOUNTS
+                : ROUTE_INTERNAL_APPLICATIONS
+            );
           } else {
             setMessage(MSG_SOMETHING_WRONG);
           }
