@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,12 @@ import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
 import { getFetch, deleteSpeechService, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { getHumanDateTime, hasLength, hasValue } from "src/utils";
+import {
+  getHumanDateTime,
+  hasLength,
+  hasValue,
+  useFilteredResults,
+} from "src/utils";
 import DeleteSpeechService from "./delete";
 import { getUsage } from "./utils";
 import { CredentialStatus } from "./status";
@@ -25,6 +30,22 @@ export const SpeechServices = () => {
   const [accountSid, setAccountSid] = useState("");
   const [credential, setCredential] = useState<SpeechCredential | null>(null);
   const [credentials, setCredentials] = useState<SpeechCredential[]>();
+  const [filter] = useState("");
+
+  const credentialsFiltered = useMemo(() => {
+    return credentials
+      ? credentials.filter((credentials) =>
+          accountSid
+            ? credentials.account_sid === accountSid
+            : credentials.account_sid === null
+        )
+      : [];
+  }, [accountSid, accounts]);
+
+  const filteredCredentials = useFilteredResults<SpeechCredential>(
+    filter,
+    credentialsFiltered
+  );
 
   const getSpeechCredentials = (url: string) => {
     getFetch<SpeechCredential[]>(url)
@@ -78,6 +99,7 @@ export const SpeechServices = () => {
       getSpeechCredentials(
         `${API_ACCOUNTS}/${user?.account_sid || accountSid}/SpeechCredentials`
       );
+      console.log(credentials);
     } else {
       if (currentServiceProvider) {
         getSpeechCredentials(
@@ -105,12 +127,12 @@ export const SpeechServices = () => {
           defaultOption
         />
       </section>
-      <Section {...(hasLength(credentials) && { slim: true })}>
+      <Section {...(hasLength(filteredCredentials) && { slim: true })}>
         <div className="list">
-          {!hasValue(credentials) ? (
+          {!hasValue(filteredCredentials) ? (
             <Spinner />
-          ) : hasLength(credentials) ? (
-            credentials.map((credential) => {
+          ) : hasLength(filteredCredentials) ? (
+            filteredCredentials.map((credential) => {
               return (
                 <div className="item" key={credential.speech_credential_sid}>
                   <div className="item__info">
