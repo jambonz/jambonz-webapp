@@ -98,7 +98,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     if (currentServiceProvider) {
       const payload: Partial<SpeechCredential> = {
         vendor,
-        account_sid: accountSid || null,
+        account_sid:
+          user?.scope === USER_ACCOUNT
+            ? user?.account_sid
+            : accountSid
+            ? accountSid
+            : null,
         service_provider_sid:
           currentServiceProvider.service_provider_sid || null,
         use_for_tts: ttsCheck ? 1 : 0,
