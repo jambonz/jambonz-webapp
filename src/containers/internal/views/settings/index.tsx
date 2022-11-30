@@ -8,12 +8,16 @@ import AdminSettings from "./admin-settings";
 import type { ServiceProvider } from "src/api/types";
 import { Section } from "src/components";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
+import { useSelectState } from "src/store";
 
 type SettingsProps = {
   currentServiceProvider: ServiceProvider;
 };
 
 export const Settings = ({ currentServiceProvider }: SettingsProps) => {
+  const user = useSelectState("user");
   const [activeTab, setActiveTab] = useState("");
 
   return (
@@ -24,14 +28,19 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          <Tabs active={[activeTab, setActiveTab]}>
-            <Tab id="admin" label="Admin">
-              <AdminSettings />
-            </Tab>
-            <Tab id="serviceProvider" label="Service Provider">
-              <ServiceProviderSettings />
-            </Tab>
-          </Tabs>
+          <ScopedAccess scope={Scope.admin} user={user}>
+            <Tabs active={[activeTab, setActiveTab]}>
+              <Tab id="admin" label="Admin">
+                <AdminSettings />
+              </Tab>
+              <Tab id="serviceProvider" label="Service Provider">
+                <ServiceProviderSettings />
+              </Tab>
+            </Tabs>
+          </ScopedAccess>
+          <ScopedAccess scope={Scope.service_provider} user={user}>
+            <ServiceProviderSettings />
+          </ScopedAccess>
         </form>
       </Section>
 

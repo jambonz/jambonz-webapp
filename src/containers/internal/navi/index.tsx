@@ -17,6 +17,8 @@ import type { NaviItem } from "./items";
 import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import { USER_ACCOUNT } from "src/api/constants";
+import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -172,9 +174,47 @@ export const Navi = ({
         </div>
         <div className="navi__routes">
           <ul>
-            {naviTop.map((item) => (
-              <Item key={item.label} item={item} handleMenu={handleMenu} />
-            ))}
+            {naviTop.map((item) => {
+              if (item.label === "Settings") {
+                return (
+                  <ScopedAccess scope={Scope.service_provider} user={user}>
+                    <Item
+                      key={item.label}
+                      item={item}
+                      handleMenu={handleMenu}
+                    />
+                  </ScopedAccess>
+                );
+              }
+              if (item.label === "Accounts" && user?.scope === USER_ACCOUNT) {
+                const accountNavItem = {
+                  label: "Account",
+                  icon: Icons.Activity,
+                  route: `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
+                };
+                return (
+                  <Item
+                    key={accountNavItem.label}
+                    item={accountNavItem}
+                    handleMenu={handleMenu}
+                  />
+                );
+              }
+              if (item.label === "Accounts") {
+                return (
+                  <ScopedAccess scope={Scope.service_provider} user={user}>
+                    <Item
+                      key={item.label}
+                      item={item}
+                      handleMenu={handleMenu}
+                    />
+                  </ScopedAccess>
+                );
+              }
+              return (
+                <Item key={item.label} item={item} handleMenu={handleMenu} />
+              );
+            })}
           </ul>
         </div>
         <div className="navi__byo">
