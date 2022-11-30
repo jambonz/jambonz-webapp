@@ -104,7 +104,7 @@ export const useProvideAuth = (): AuthStateContext => {
               navigate(ROUTE_CREATE_PASSWORD);
             } else {
               navigate(
-                response.json.scope !== USER_ACCOUNT
+                parseJwt(token).scope !== USER_ACCOUNT
                   ? ROUTE_INTERNAL_ACCOUNTS
                   : ROUTE_INTERNAL_APPLICATIONS
               );

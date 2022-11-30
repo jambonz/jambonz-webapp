@@ -49,9 +49,11 @@ export const SpeechServices = () => {
         credential.speech_credential_sid
       )
         .then(() => {
-          if (accountSid) {
+          if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
             getSpeechCredentials(
-              `${API_ACCOUNTS}/${accountSid}/SpeechCredentials`
+              `${API_ACCOUNTS}/${
+                user?.account_sid || accountSid
+              }/SpeechCredentials`
             );
           } else {
             getSpeechCredentials(
@@ -72,14 +74,18 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
-    if (accountSid) {
-      getSpeechCredentials(`${API_ACCOUNTS}/${accountSid}/SpeechCredentials`);
-    } else if (currentServiceProvider) {
+    if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
       getSpeechCredentials(
-        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
+        `${API_ACCOUNTS}/${user?.account_sid || accountSid}/SpeechCredentials`
       );
+    } else {
+      if (currentServiceProvider) {
+        getSpeechCredentials(
+          `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
+        );
+      }
     }
-  }, [accountSid, currentServiceProvider]);
+  }, [user, accountSid, currentServiceProvider]);
 
   return (
     <>
