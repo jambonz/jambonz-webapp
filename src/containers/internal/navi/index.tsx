@@ -57,6 +57,7 @@ export const Navi = ({
   handleLogout,
 }: NaviProps) => {
   const dispatch = useDispatch();
+  const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
