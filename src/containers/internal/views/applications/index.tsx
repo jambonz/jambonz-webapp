@@ -3,7 +3,7 @@ import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
 import { deleteApplication, getFetch, useServiceProviderData } from "src/api";
-import { API_ACCOUNTS } from "src/api/constants";
+import { API_ACCOUNTS, USER_ACCOUNT } from "src/api/constants";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
@@ -22,6 +22,7 @@ import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import type { Application, Account } from "src/api/types";
 
 export const Applications = () => {
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
@@ -44,6 +45,12 @@ export const Applications = () => {
 
   const handleDelete = () => {
     if (application) {
+      if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+        toastError(
+          "You do not have permissions to make changes to this Application"
+        );
+        return;
+      }
       deleteApplication(application.application_sid)
         .then(() => {
           getApplications();
@@ -97,7 +104,13 @@ export const Applications = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={accounts}
+          accounts={
+            user?.scope === USER_ACCOUNT
+              ? accounts?.filter(
+                  (acct) => acct.account_sid === user.account_sid
+                )
+              : accounts
+          }
         />
       </section>
       <Section {...(hasLength(filteredApplications) && { slim: true })}>

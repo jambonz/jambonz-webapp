@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { ClipBoard, Section } from "src/components";
 import {
   Selector,
@@ -31,7 +31,11 @@ import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
 } from "src/router/routes";
-import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
+import {
+  DEFAULT_WEBHOOK,
+  USER_ACCOUNT,
+  WEBHOOK_METHODS,
+} from "src/api/constants";
 
 import type {
   RecognizerVendors,
@@ -58,6 +62,7 @@ type ApplicationFormProps = {
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
   const { synthesis, recognizers } = useSpeechVendors();
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
@@ -114,6 +119,13 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+      toastError(
+        "You do not have permissions to make changes to these Speech Credentials"
+      );
+      return;
+    }
 
     setMessage("");
 
@@ -266,7 +278,13 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={accounts}
+            accounts={
+              user?.scope === USER_ACCOUNT
+                ? accounts?.filter(
+                    (acct) => acct.account_sid === user.account_sid
+                  )
+                : accounts
+            }
             account={[accountSid, setAccountSid]}
           />
         </fieldset>
