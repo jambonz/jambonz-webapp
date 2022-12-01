@@ -100,7 +100,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user?.scope === USER_ACCOUNT && user.account_sid === accountSid) {
+    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
       toastError(
         "You do not have permissions to make changes to these Speech Credentials"
       );
@@ -110,12 +110,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     if (currentServiceProvider) {
       const payload: Partial<SpeechCredential> = {
         vendor,
-        account_sid:
-          user?.scope === USER_ACCOUNT
-            ? user?.account_sid
-            : accountSid
-            ? accountSid
-            : null,
+        account_sid: accountSid || null,
         service_provider_sid:
           currentServiceProvider.service_provider_sid || null,
         use_for_tts: ttsCheck ? 1 : 0,
@@ -184,6 +179,21 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             });
       }
     }
+  };
+
+  const checkOptions = () => {
+    if (user?.scope === USER_ACCOUNT) {
+      if (credential && credential.data?.account_sid) {
+        return false;
+      }
+      if (!credential) {
+        return false;
+      }
+      if (credential && !credential.data?.account_sid) {
+        return true;
+      }
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -312,7 +322,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             }
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption={user?.scope !== USER_ACCOUNT}
+            defaultOption={checkOptions()}
             disabled={credential ? true : false}
           />
         </fieldset>

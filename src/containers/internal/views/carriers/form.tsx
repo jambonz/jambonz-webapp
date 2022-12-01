@@ -602,6 +602,21 @@ export const CarrierForm = ({
     }
   }
 
+  const checkOptions = () => {
+    if (user?.scope === USER_ACCOUNT) {
+      if (carrier && carrier.data?.account_sid) {
+        return false;
+      }
+      if (!carrier) {
+        return false;
+      }
+      if (carrier && !carrier.data?.account_sid) {
+        return true;
+      }
+    }
+    return true;
+  };
+
   return (
     <Section slim>
       <form className="form form--internal" onSubmit={handleSubmit}>
@@ -706,7 +721,8 @@ export const CarrierForm = ({
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption={user?.scope !== USER_ACCOUNT}
+                defaultOption={checkOptions()}
+                disabled={!!checkOptions()}
               />
               {accountSid && hasLength(applications) && (
                 <>

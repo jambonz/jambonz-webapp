@@ -177,7 +177,11 @@ export const Navi = ({
             {naviTop.map((item) => {
               if (item.label === "Settings") {
                 return (
-                  <ScopedAccess scope={Scope.service_provider} user={user}>
+                  <ScopedAccess
+                    key={item.label}
+                    scope={Scope.service_provider}
+                    user={user}
+                  >
                     <Item
                       key={item.label}
                       item={item}
@@ -202,7 +206,11 @@ export const Navi = ({
               }
               if (item.label === "Accounts") {
                 return (
-                  <ScopedAccess scope={Scope.service_provider} user={user}>
+                  <ScopedAccess
+                    key={item.label}
+                    scope={Scope.service_provider}
+                    user={user}
+                  >
                     <Item
                       key={item.label}
                       item={item}
