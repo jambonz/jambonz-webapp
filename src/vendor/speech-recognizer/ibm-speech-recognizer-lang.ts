@@ -2,127 +2,83 @@ import type { Language } from "../types";
 
 export const languages: Language[] = [
   {
-    name: "Arabic (Modern Standard) - Telephony",
+    name: "Arabic (Modern Standard)",
     code: "ar-MS_Telephony",
   },
   {
-    name: "Chinese (Mandarin) - Telephony",
+    name: "Chinese (Mandarin)",
     code: "zh-CN_Telephony",
   },
   {
-    name: "Czech  - Telephony",
+    name: "Czech ",
     code: "cs-CZ_Telephony",
   },
   {
-    name: "Dutch (Belgian) - Telephony",
+    name: "Dutch (Belgian)",
     code: "nl-BE_Telephony",
   },
   {
-    name: "Dutch (Netherlands) - Telephony",
+    name: "Dutch (Netherlands)",
     code: "nl-NL_Telephony",
   },
   {
-    name: "English (all supported dialects) - Telephony",
+    name: "English (all supported dialects)",
     code: "en-WW_Medical_Telephony",
   },
   {
-    name: "English (Australian) - Telephony",
+    name: "English (Australian)",
     code: "en-AU_Telephony",
   },
   {
-    name: "English (Australian) - Multimedia",
-    code: "en-AU_Multimedia",
-  },
-  {
-    name: "English (Indian) - Telephony",
+    name: "English (Indian)",
     code: "en-IN_Telephony",
   },
   {
-    name: "English (United Kingdom) - Telephony",
+    name: "English (United Kingdom)",
     code: "en-GB_Telephony",
   },
   {
-    name: "English (United Kingdom)  - Multimedia",
-    code: "en-GB_Multimedia",
-  },
-  {
-    name: "English (United States) - Telephony",
+    name: "English (United States)",
     code: "en-US_Telephony",
   },
   {
-    name: "English (United States)  - Multimedia",
-    code: "en-US_Multimedia",
-  },
-  {
-    name: "French (Canadian) - Telephony",
+    name: "French (Canadian)",
     code: "fr-CA_Telephony",
   },
   {
-    name: "French (Canadian)  - Multimedia",
-    code: "fr-CA_Multimedia",
-  },
-  {
-    name: "French (France) - Telephony",
+    name: "French (France)",
     code: "fr-FR_Telephony",
   },
   {
-    name: "French (France)  - Multimedia",
-    code: "fr-FR_Multimedia",
-  },
-  {
     name: "German",
-    code: "de-DE_Telephony - Telephony",
+    code: "de-DE_Telephony",
   },
   {
-    name: "German  - Multimedia",
-    code: "de-DE_Multimedia",
-  },
-  {
-    name: "Hindi (Indian) - Telephony",
+    name: "Hindi (Indian)",
     code: "hi-IN_Telephony",
   },
   {
-    name: "Italian - Telephony",
+    name: "Italian",
     code: "it-IT_Telephony",
   },
   {
-    name: "Italian  - Multimedia",
-    code: "it-IT_Multimedia",
-  },
-  {
-    name: "Japanese  - Multimedia",
-    code: "ja-JP_Multimedia",
-  },
-  {
-    name: "Korean - Telephony",
+    name: "Korean",
     code: "ko-KR_Telephony",
   },
   {
-    name: "Korean  - Multimedia",
-    code: "ko-KR_Multimedia",
-  },
-  {
-    name: "Portuguese (Brazilian) - Telephony",
+    name: "Portuguese (Brazilian)",
     code: "pt-BR_Telephony",
   },
   {
-    name: "Portuguese (Brazilian)",
-    code: "pt-BR_Multimedia",
-  },
-  {
-    name: "Spanish (Mexican) - Telephony",
+    name: "Spanish (Mexican)",
     code: "es-LA_Telephony",
   },
   {
-    name: "Spanish (Castilian) - Telephony",
+    name: "Spanish (Castilian)",
     code: "es-ES_Telephony",
   },
   {
-    name: "Spanish (Castilian) - Multimedia",
-    code: "es-ES_Multimedia",
-  },
-  {
-    name: "Swedish  - Telephony",
+    name: "Swedish ",
     code: "sv-SE_Telephony",
   },
 ];
