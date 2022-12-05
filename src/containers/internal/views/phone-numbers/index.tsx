@@ -7,7 +7,7 @@ import {
   putPhoneNumber,
   useServiceProviderData,
 } from "src/api";
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   Icons,
   Section,
@@ -30,8 +30,10 @@ import {
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const PhoneNumbers = () => {
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
@@ -123,7 +125,13 @@ export const PhoneNumbers = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={accounts}
+          accounts={
+            user?.scope === USER_ACCOUNT
+              ? accounts?.filter(
+                  (acct) => acct.account_sid === user.account_sid
+                )
+              : accounts
+          }
           defaultOption
         />
       </section>

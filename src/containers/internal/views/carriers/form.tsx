@@ -440,7 +440,10 @@ export const CarrierForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+    if (
+      user?.scope === USER_ACCOUNT &&
+      (user.account_sid !== accountSid || !accountSid)
+    ) {
       toastError("You do not have permissions to make changes to this Carrier");
       return;
     }
@@ -722,7 +725,13 @@ export const CarrierForm = ({
                 label="Used By"
                 required={false}
                 defaultOption={checkOptions()}
-                disabled={!!checkOptions()}
+                disabled={
+                  user?.scope !== USER_ACCOUNT
+                    ? false
+                    : user.account_sid !== accountSid
+                    ? true
+                    : false
+                }
               />
               {accountSid && hasLength(applications) && (
                 <>
