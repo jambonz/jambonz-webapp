@@ -15,8 +15,6 @@ export const LIMITS = [
       category: "voice_call_session",
     }
   ];
-  console.log(`REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL}, APP_ENABLE_ACCOUNT_LIMITS_ALL: ${APP_ENABLE_ACCOUNT_LIMITS_ALL}`);
-  console.log(`typeof APP_ENABLE_ACCOUNT_LIMITS_ALL: ${typeof APP_ENABLE_ACCOUNT_LIMITS_ALL}`);
   if (APP_ENABLE_ACCOUNT_LIMITS_ALL || APP_ENABLE_ACCOUNT_LIMITS_ALL === "true") {
     LIMITS.push({
       label: "Licensed calls",
@@ -31,4 +29,3 @@ export const LIMITS = [
       category: "voice_call_minutes_license",
     });
   }
-  console.log(`LIMITS: ${JSON.stringify(LIMITS)}`);
