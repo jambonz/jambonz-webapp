@@ -21,11 +21,10 @@ import {
 } from "src/constants";
 
 import type { IMessage } from "src/store/types";
-import { useSelectState } from "src/store";
 import { USER_ACCOUNT } from "src/api/constants";
+import { getToken, parseJwt } from "src/router/auth";
 
 export const CreatePassword = () => {
-  const user = useSelectState("user");
   const [passwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -57,6 +56,7 @@ export const CreatePassword = () => {
 
     const userSid = sessionStorage.getItem(SESS_USER_SID);
     const oldPassword = sessionStorage.getItem(SESS_OLD_PASSWORD);
+    const token = getToken();
 
     if (!oldPassword) {
       navigate(ROUTE_LOGIN);
@@ -73,7 +73,7 @@ export const CreatePassword = () => {
             sessionStorage.clear();
 
             navigate(
-              user?.scope !== USER_ACCOUNT
+              parseJwt(token).scope !== USER_ACCOUNT
                 ? ROUTE_INTERNAL_ACCOUNTS
                 : ROUTE_INTERNAL_APPLICATIONS
             );
