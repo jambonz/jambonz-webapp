@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import {
@@ -19,6 +19,8 @@ import {
 } from "src/components";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import {
+  API_ACCOUNTS,
+  API_SERVICE_PROVIDERS,
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
   USER_ACCOUNT,
@@ -30,8 +32,9 @@ import { Gateways } from "./gateways";
 
 export const Carriers = () => {
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
+  const [carriers, setCarriers] = useState<Carrier[]>();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
@@ -44,12 +47,22 @@ export const Carriers = () => {
             : carrier.account_sid === null
         )
       : [];
-  }, [accountSid, carriers]);
+  }, [accountSid, carrier, carriers]);
 
   const filteredCarriers = useFilteredResults<Carrier>(
     filter,
     carriersFiltered
   );
+
+  const getCarriers = (url: string) => {
+    getFetch<Carrier[]>(url)
+      .then(({ json }) => {
+        setCarriers(json);
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleDelete = () => {
     if (carrier) {
@@ -87,7 +100,15 @@ export const Carriers = () => {
                   )
               );
           });
-          refetch();
+          if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
+            getCarriers(
+              `${API_ACCOUNTS}/${user?.account_sid || accountSid}/VoipCarriers`
+            );
+          } else {
+            getCarriers(
+              `${API_SERVICE_PROVIDERS}/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
+            );
+          }
           setCarrier(null);
           toastSuccess(
             <>
@@ -100,6 +121,20 @@ export const Carriers = () => {
         });
     }
   };
+
+  useEffect(() => {
+    if (accountSid) {
+      getCarriers(
+        `${API_ACCOUNTS}/${user?.account_sid || accountSid}/VoipCarriers`
+      );
+    } else {
+      if (currentServiceProvider) {
+        getCarriers(
+          `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/VoipCarriers`
+        );
+      }
+    }
+  }, [user, accountSid, currentServiceProvider]);
 
   return (
     <>

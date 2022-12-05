@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
-import { USER_SCOPE_SELECTION, USER_ADMIN } from "src/api/constants";
+import {
+  USER_SCOPE_SELECTION,
+  USER_ADMIN,
+  USER_ACCOUNT,
+} from "src/api/constants";
 
 import {
   Section,
@@ -20,6 +24,7 @@ import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
 
 export const Users = () => {
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [users] = useApiData<User[]>("Users");
   const [filter, setFilter] = useState("");
@@ -82,8 +87,14 @@ export const Users = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={accounts}
-          defaultOption={true}
+          accounts={
+            user?.scope === USER_ACCOUNT
+              ? accounts?.filter(
+                  (acct) => acct.account_sid === user.account_sid
+                )
+              : accounts
+          }
+          defaultOption
         />
       </section>
 

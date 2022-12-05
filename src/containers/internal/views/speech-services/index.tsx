@@ -121,7 +121,13 @@ export const SpeechServices = () => {
       <section className="filters filters--ender">
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={accounts}
+          accounts={
+            user?.scope === USER_ACCOUNT
+              ? accounts?.filter(
+                  (acct) => acct.account_sid === user.account_sid
+                )
+              : accounts
+          }
           label="Used by"
           defaultOption
         />
