@@ -1,6 +1,6 @@
 const { REACT_APP_API_BASE_URL, REACT_APP_ENABLE_ACCOUNT_LIMITS_ALL } = process.env;
 export const APP_API_BASE_URL = (window.JAMBONZ) ? window.JAMBONZ.APP_API_BASE_URL : REACT_APP_API_BASE_URL;
-export const APP_ENABLE_ACCOUNT_LIMITS_ALL = (window.JAMBONZ) ? window.JAMBONZ.REACT_APP_ENABLE_ACCOUNT_LIMITS_ALL : JSON.parse(REACT_APP_ENABLE_ACCOUNT_LIMITS_ALL);
+export const APP_ENABLE_ACCOUNT_LIMITS_ALL = (window.JAMBONZ) ? window.JAMBONZ.APP_ENABLE_ACCOUNT_LIMITS_ALL : JSON.parse(REACT_APP_ENABLE_ACCOUNT_LIMITS_ALL);
 export const LIMITS = [
     // {
     //   label: "Max registered devices (0=unlimited)",
@@ -32,4 +32,3 @@ export const LIMITS = [
     });
   }
   console.log(`LIMITS: ${JSON.stringify(LIMITS)}`);
-  
