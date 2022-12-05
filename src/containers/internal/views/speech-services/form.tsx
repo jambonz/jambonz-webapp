@@ -25,6 +25,7 @@ import {
   VENDOR_NUANCE,
   VENDOR_WELLSAID,
   VENDOR_DEEPGRAM,
+  VENDOR_IBM,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { getObscuredSecret } from "src/utils";
@@ -59,6 +60,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretKey, setSecretKey] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
+  const [sttRegion, setSttRegion] = useState("");
+  const [sttApiKey, setSttApiKey] = useState("");
+  const [ttsRegion, setTtsRegion] = useState("");
+  const [ttsApiKey, setTtsApiKey] = useState("");
   const [useCustomTts, setUseCustomTts] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
@@ -120,6 +125,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           use_custom_stt: useCustomStt ? 1 : 0,
           custom_stt_endpoint: customSttEndpoint || null,
         }),
+        ...(vendor === VENDOR_IBM && {
+          stt_api_key: sttApiKey || null,
+          stt_region: sttRegion || null,
+          tts_api_key: ttsApiKey || null,
+          tts_region: ttsRegion || null,
+        }),
       };
 
       if (credential && credential.data && user) {
@@ -158,6 +169,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 : null,
             client_id: vendor === VENDOR_NUANCE ? clientId : null,
             secret: vendor === VENDOR_NUANCE ? secretKey : null,
+            stt_api_key: sttApiKey || null,
+            stt_region: sttRegion || null,
+            tts_api_key: ttsApiKey || null,
+            tts_region: ttsRegion || null,
           })
             .then(({ json }) => {
               toastSuccess("Speech credential created successfully");
@@ -237,6 +252,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.secret) {
         setSecretKey(credential.data.secret);
+      }
+
+      if (credential.data.tts_api_key) {
+        setSttApiKey(credential.data.tts_api_key);
+      }
+
+      if (credential.data.tts_region) {
+        setTtsRegion(credential.data.tts_region);
+      }
+
+      if (credential.data.stt_api_key) {
+        setSttApiKey(credential.data.stt_api_key);
+      }
+
+      if (credential.data.stt_region) {
+        setSttRegion(credential.data.stt_region);
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
@@ -438,27 +469,90 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {/* Single region state var is used for both Microsoft and AWS */}
-        {regions && regions[vendor as keyof RegionVendors] && (
-          <fieldset>
-            <label htmlFor="region">
-              Region<span>*</span>
-            </label>
-            <Selector
-              id="region"
-              name="region"
-              value={region}
-              required
-              options={[
-                {
-                  name: "Select a region",
-                  value: "",
-                },
-              ].concat(regions[vendor as keyof RegionVendors])}
-              onChange={(e) => setRegion(e.target.value)}
-            />
-          </fieldset>
-        )}
+        {regions &&
+          regions[vendor as keyof RegionVendors] &&
+          vendor !== VENDOR_IBM && (
+            <fieldset>
+              <label htmlFor="region">
+                Region<span>*</span>
+              </label>
+              <Selector
+                id="region"
+                name="region"
+                value={region}
+                required
+                options={[
+                  {
+                    name: "Select a region",
+                    value: "",
+                  },
+                ].concat(regions[vendor as keyof RegionVendors])}
+                onChange={(e) => setRegion(e.target.value)}
+              />
+            </fieldset>
+          )}
+        {vendor === VENDOR_IBM &&
+          regions &&
+          regions[vendor as keyof RegionVendors] && (
+            <fieldset>
+              <label htmlFor="tts_region">
+                TTS Region {ttsCheck && <span>*</span>}
+              </label>
+              <Selector
+                id="tts_region"
+                name="tts_region"
+                value={ttsRegion}
+                required={ttsCheck}
+                options={[
+                  {
+                    name: "Select a region",
+                    value: "",
+                  },
+                ].concat(regions[vendor as keyof RegionVendors])}
+                onChange={(e) => setTtsRegion(e.target.value)}
+              />
+              <label htmlFor={`${vendor}_tts_apikey`}>
+                TTS API Key {ttsCheck && <span>*</span>}
+              </label>
+              <Passwd
+                id={`${vendor}_tts_apikey`}
+                required={ttsCheck}
+                name={`${vendor}_tts_apikey`}
+                placeholder="TTS API Key"
+                value={ttsApiKey ? getObscuredSecret(ttsApiKey) : ttsApiKey}
+                onChange={(e) => setTtsApiKey(e.target.value)}
+                disabled={credential ? true : false}
+              />
+              <label htmlFor="stt_region">
+                STT Region {sttCheck && <span>*</span>}
+              </label>
+              <Selector
+                id="stt_region"
+                name="stt_region"
+                value={sttRegion}
+                required={sttCheck}
+                options={[
+                  {
+                    name: "Select a region",
+                    value: "",
+                  },
+                ].concat(regions[vendor as keyof RegionVendors])}
+                onChange={(e) => setSttRegion(e.target.value)}
+              />
+              <label htmlFor={`${vendor}_sst_apikey`}>
+                SST API Key {sttCheck && <span>*</span>}
+              </label>
+              <Passwd
+                id={`${vendor}_stt_apikey`}
+                required={sttCheck}
+                name={`${vendor}_stt_apikey`}
+                placeholder="STT API Key"
+                value={sttApiKey ? getObscuredSecret(sttApiKey) : sttApiKey}
+                onChange={(e) => setSttApiKey(e.target.value)}
+                disabled={credential ? true : false}
+              />
+            </fieldset>
+          )}
         {vendor === VENDOR_MICROSOFT && (
           <React.Fragment>
             <fieldset>

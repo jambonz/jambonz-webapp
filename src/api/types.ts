@@ -278,6 +278,10 @@ export interface SpeechCredential {
   custom_stt_endpoint: null | string;
   client_id: null | string;
   secret: null | string;
+  tts_api_key: null | string;
+  tts_region: null | string;
+  stt_api_key: null | string;
+  stt_region: null | string;
 }
 
 export interface Alert {
