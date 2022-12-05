@@ -4,7 +4,8 @@ export type Vendor =
   | "Microsoft"
   | "WellSaid"
   | "Nuance"
-  | "deepgram";
+  | "deepgram"
+  | "IBM";
 
 export interface VendorOptions {
   name: Vendor;
@@ -49,6 +50,7 @@ export interface GoogleServiceKey {
 export interface RegionVendors {
   aws: Region[];
   microsoft: Region[];
+  ibm: Region[];
 }
 
 export interface RecognizerVendors {
@@ -57,6 +59,7 @@ export interface RecognizerVendors {
   microsoft: Language[];
   nuance: Language[];
   deepgram: Language[];
+  ibm: Language[];
 }
 
 export interface SynthesisVendors {
@@ -65,6 +68,7 @@ export interface SynthesisVendors {
   microsoft: VoiceLanguage[];
   wellsaid: VoiceLanguage[];
   nuance: VoiceLanguage[];
+  ibm: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

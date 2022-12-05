@@ -15,6 +15,7 @@ export const VENDOR_MICROSOFT = "microsoft";
 export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
+export const VENDOR_IBM = "ibm";
 
 export const vendors: VendorOptions[] = [
   {
@@ -41,6 +42,10 @@ export const vendors: VendorOptions[] = [
     name: "deepgram",
     value: VENDOR_DEEPGRAM,
   },
+  {
+    name: "IBM",
+    value: VENDOR_IBM,
+  },
 ];
 
 export const useRegionVendors = () => {
@@ -52,14 +57,22 @@ export const useRegionVendors = () => {
     Promise.all([
       import("./regions/aws-regions"),
       import("./regions/ms-azure-regions"),
-    ]).then(([{ default: awsRegions }, { default: msRegions }]) => {
-      if (!ignore) {
-        setRegions({
-          aws: awsRegions,
-          microsoft: msRegions,
-        });
+      import("./regions/ibm-regions"),
+    ]).then(
+      ([
+        { default: awsRegions },
+        { default: msRegions },
+        { default: ibmRegions },
+      ]) => {
+        if (!ignore) {
+          setRegions({
+            aws: awsRegions,
+            microsoft: msRegions,
+            ibm: ibmRegions,
+          });
+        }
       }
-    });
+    );
 
     return function cleanup() {
       ignore = true;
@@ -84,11 +97,13 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/ms-speech-recognizer-lang"),
       import("./speech-recognizer/nuance-speech-recognizer-lang"),
       import("./speech-recognizer/deepgram-speech-recognizer-lang"),
+      import("./speech-recognizer/ibm-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
+      import("./speech-synthesis/ibm-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -96,11 +111,13 @@ export const useSpeechVendors = () => {
         { default: msRecognizer },
         { default: nuanceRecognizer },
         { default: deepgramRecognizer },
+        { default: ibmRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
         { default: wellsaidSynthesis },
         { default: nuanceSynthesis },
+        { default: ibmSynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -110,6 +127,7 @@ export const useSpeechVendors = () => {
               microsoft: msSynthesis,
               wellsaid: wellsaidSynthesis,
               nuance: nuanceSynthesis,
+              ibm: ibmSynthesis,
             },
             recognizers: {
               aws: awsRecognizer,
@@ -117,6 +135,7 @@ export const useSpeechVendors = () => {
               microsoft: msRecognizer,
               nuance: nuanceRecognizer,
               deepgram: deepgramRecognizer,
+              ibm: ibmRecognizer,
             },
           });
         }
