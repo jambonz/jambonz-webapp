@@ -123,7 +123,6 @@ export const WEBHOOK_METHODS: WebhookOption[] = [
 ];
 
 /** Various system limits */
-/** For now we are only supporting `voice_call_session` */
 export const LIMITS: LimitField[] = [
   {
     label: "Max calls",
