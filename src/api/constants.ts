@@ -126,7 +126,7 @@ export const WEBHOOK_METHODS: WebhookOption[] = [
 /** For now we are only supporting `voice_call_session` */
 export const LIMITS: LimitField[] = [
   {
-    label: "Max concurrent calls (0=unlimited)",
+    label: "Max calls",
     category: "voice_call_session",
   },
   // {
@@ -137,6 +137,29 @@ export const LIMITS: LimitField[] = [
   //   label: "Max api calls per minute (0=unlimited)",
   //   category: "api_rate",
   // },
+  {
+    label: "Licensed calls",
+    category: "voice_call_session_license",
+  },
+  {
+    label: "Max minutes",
+    category: "voice_call_minutes",
+  },
+  {
+    label: "Licensed minutes",
+    category: "voice_call_minutes_license",
+  },
+];
+
+export const LIMIT_UNITS = [
+  {
+    name: "Sessions",
+    value: "sessions",
+  },
+  {
+    name: "Minutes",
+    value: "minutes",
+  },
 ];
 
 export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {

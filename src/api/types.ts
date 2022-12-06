@@ -8,7 +8,13 @@ export type CredentialStatus = "ok" | "fail" | "not tested";
 
 export type IpType = "ip" | "fqdn" | "fqdn-top-level" | "invalid";
 
-export type LimitCategories = "api_rate" | "voice_call_session" | "device";
+export type LimitCategories =
+  | "api_rate"
+  | "voice_call_session"
+  | "device"
+  | "voice_call_minutes_license"
+  | "voice_call_minutes"
+  | "voice_call_session_license";
 
 /** User roles / permissions */
 
