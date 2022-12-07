@@ -28,7 +28,7 @@ export const LocalLimits = ({
 }: LocalLimitsProps) => {
   const APP_ENABLE_ACCOUNT_LIMITS_ALL = import.meta.env
     .VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL;
-  const [unit, setUnit] = useState("session");
+  const [unit, setUnit] = useState("sessions");
 
   const updateLimitValue = (category: string) => {
     if (hasLength(localLimits)) {
@@ -59,7 +59,7 @@ export const LocalLimits = ({
         onChange={(e) => setUnit(e.target.value)}
       />
       {LIMITS.filter((limit) =>
-        unit === "session"
+        unit === "sessions"
           ? !limit.category.includes("minutes")
           : limit.category.includes("minutes")
       ).map(({ category, label }) => {
