@@ -125,7 +125,7 @@ export const RecentCalls = () => {
           ) : hasLength(calls) ? (
             calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
           ) : (
-            <M>No data</M>
+            <M>No data.</M>
           )}
         </div>
       </Section>

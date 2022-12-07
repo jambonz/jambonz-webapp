@@ -52,7 +52,9 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
-  const [scope, setScope] = useState<UserScopes>();
+  const [scope, setScope] = useState<UserScopes | null>(
+    currentUser?.scope || null
+  );
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
@@ -184,7 +186,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               <Selector
                 id="scope"
                 name="scope"
-                value={scope}
+                value={scope || currentUser?.scope}
                 options={
                   currentUser?.scope === USER_SP
                     ? USER_SCOPE_SELECTION.filter(

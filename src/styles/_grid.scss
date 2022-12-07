@@ -99,17 +99,16 @@
     }
   }
 
-  &--col4 {
+  &--col5 {
     .grid__row {
-      grid-template-columns: [col] 30% [col] 30% [col] 30% [col] 10%;
+      grid-template-columns: [col] 30% [col] 20% [col] 20% [col] 28% [col] 2%;
       grid-template-rows: [row] auto [row] auto [row] [row] auto;
       display: grid;
       justify-content: space-between;
 
       > div:last-child {
-        text-align: right;
+        text-align: left;
         padding-right: 0;
-        font-size: 0;
       }
     }
   }

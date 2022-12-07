@@ -114,7 +114,7 @@ export const Alerts = () => {
               </div>
             ))
           ) : (
-            <M>No data</M>
+            <M>No data.</M>
           )}
         </div>
       </Section>
