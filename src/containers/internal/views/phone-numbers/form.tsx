@@ -88,6 +88,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
         .then(() => {
           phoneNumber.refetch();
           toastSuccess("Phone number updated successfully");
+          navigate(ROUTE_INTERNAL_PHONE_NUMBERS);
         })
         .catch((error) => {
           toastError(error.msg);

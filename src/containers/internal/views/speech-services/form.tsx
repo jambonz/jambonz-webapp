@@ -146,6 +146,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             if (credential && credential.data) {
               toastSuccess("Speech credential updated successfully");
               credential.refetch();
+              navigate(ROUTE_INTERNAL_SPEECH);
             }
           })
           .catch((error) => {

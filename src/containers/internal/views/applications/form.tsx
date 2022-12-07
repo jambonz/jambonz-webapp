@@ -164,6 +164,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .then(() => {
           application.refetch();
           toastSuccess("Application updated successfully");
+          navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
         })
         .catch((error) => {
           toastError(error.msg);

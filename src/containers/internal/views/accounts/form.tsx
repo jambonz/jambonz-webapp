@@ -186,6 +186,9 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         .then(() => {
           account.refetch();
           toastSuccess("Account updated successfully");
+          if (user?.scope !== USER_ACCOUNT) {
+            navigate(ROUTE_INTERNAL_ACCOUNTS);
+          }
         })
         .catch((error) => {
           toastError(error.msg);

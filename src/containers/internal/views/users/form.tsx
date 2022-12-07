@@ -170,6 +170,7 @@ export const UserForm = ({ user }: UserFormProps) => {
       setIsActive(!!user.data.is_active);
       setEmail(user.data.email);
       setScope(getUserScope(user.data));
+      user.data.account_sid ? setAccountSid(user.data.account_sid) : false;
     }
   }, [user]);
 

@@ -110,17 +110,15 @@ export const Users = () => {
                 )
               : accounts
           }
-          defaultOption
+          defaultOption={user?.scope !== USER_ACCOUNT}
         />
       </section>
 
       <Section slim>
-        <div className="grid grid--col5">
+        <div className="grid grid--col3--users">
           <div className="grid__row grid__th">
             <div>User Name</div>
-            <div>Email</div>
-            <div>Scope</div>
-            <div>Access</div>
+            <div>Managed resource</div>
             <div>&nbsp;</div>
           </div>
           {!hasValue(users) ? (
@@ -129,13 +127,20 @@ export const Users = () => {
             filteredUsers.map((user) => {
               return (
                 <div className="grid__row" key={user.user_sid}>
-                  <div>{user.name}</div>
-                  <div>{user.email}</div>
-                  <div>{user.scope}</div>
+                  <div>
+                    <Link
+                      to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}
+                      title="Edit user"
+                    >
+                      <div>{user.name}</div>
+                    </Link>
+                  </div>
                   <div>
                     {user.scope === USER_ADMIN
-                      ? null
-                      : user.account_name || user.service_provider_name}
+                      ? "All"
+                      : user.account_name
+                      ? `Account: ${user.account_name}`
+                      : `Service Provider: ${user.service_provider_name}`}
                   </div>
                   <div className="item__actions">
                     <Link

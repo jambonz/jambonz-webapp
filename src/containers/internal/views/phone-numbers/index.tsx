@@ -132,7 +132,7 @@ export const PhoneNumbers = () => {
                 )
               : accounts
           }
-          defaultOption
+          defaultOption={user?.scope !== USER_ACCOUNT}
         />
       </section>
       <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
