@@ -17,6 +17,8 @@ import {
   Spinner,
   SearchFilter,
 } from "src/components";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Gateways } from "./gateways";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import {
   API_ACCOUNTS,
@@ -28,7 +30,7 @@ import {
 import { DeleteCarrier } from "./delete";
 
 import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
-import { Gateways } from "./gateways";
+import { Scope } from "src/store/types";
 
 export const Carriers = () => {
   const user = useSelectState("user");
@@ -174,14 +176,19 @@ export const Carriers = () => {
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">
-                    <Link
-                      to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                      title="Edit Carrier"
-                      className="i"
-                    >
+                    <ScopedAccess user={user} scope={Scope.service_provider}>
+                      <Link
+                        to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
+                        title="Edit Carrier"
+                        className="i"
+                      >
+                        <strong>{carrier.name}</strong>
+                        <Icons.ArrowRight />
+                      </Link>
+                    </ScopedAccess>
+                    {user?.scope === USER_ACCOUNT && (
                       <strong>{carrier.name}</strong>
-                      <Icons.ArrowRight />
-                    </Link>
+                    )}
                   </div>
                   <div className="item__meta">
                     <div>
@@ -201,22 +208,27 @@ export const Carriers = () => {
                     <Gateways carrier={carrier} />
                   </div>
                 </div>
-                <div className="item__actions">
-                  <Link
-                    to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                    title="Edit Carrier"
-                  >
-                    <Icons.Edit3 />
-                  </Link>
-                  <button
-                    type="button"
-                    title="Delete Carrier"
-                    onClick={() => setCarrier(carrier)}
-                    className="btnty"
-                  >
-                    <Icons.Trash />
-                  </button>
-                </div>
+                <ScopedAccess
+                  user={user}
+                  scope={!accountSid ? Scope.service_provider : Scope.account}
+                >
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
+                      title="Edit Carrier"
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete Carrier"
+                      onClick={() => setCarrier(carrier)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                </ScopedAccess>
               </div>
             ))
           ) : (

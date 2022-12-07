@@ -22,6 +22,8 @@ import { getUsage } from "./utils";
 import { CredentialStatus } from "./status";
 
 import type { SpeechCredential, Account } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 export const SpeechServices = () => {
   const user = useSelectState("user");
@@ -142,14 +144,24 @@ export const SpeechServices = () => {
                 <div className="item" key={credential.speech_credential_sid}>
                   <div className="item__info">
                     <div className="item__title">
-                      <Link
-                        to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
-                        title="Edit application"
-                        className="i"
+                      <ScopedAccess
+                        user={user}
+                        scope={
+                          !accountSid ? Scope.service_provider : Scope.account
+                        }
                       >
+                        <Link
+                          to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
+                          title="Edit application"
+                          className="i"
+                        >
+                          <strong>Vendor: {credential.vendor}</strong>
+                          <Icons.ArrowRight />
+                        </Link>
+                      </ScopedAccess>
+                      {user?.scope === USER_ACCOUNT && (
                         <strong>Vendor: {credential.vendor}</strong>
-                        <Icons.ArrowRight />
-                      </Link>
+                      )}
                     </div>
                     <div className="item__meta">
                       <div>
@@ -191,22 +203,27 @@ export const SpeechServices = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="item__actions">
-                    <Link
-                      to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
-                      title="Edit speech service"
-                    >
-                      <Icons.Edit3 />
-                    </Link>
-                    <button
-                      type="button"
-                      title="Delete speech service"
-                      onClick={() => setCredential(credential)}
-                      className="btnty"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
+                  <ScopedAccess
+                    user={user}
+                    scope={!accountSid ? Scope.service_provider : Scope.account}
+                  >
+                    <div className="item__actions">
+                      <Link
+                        to={`${ROUTE_INTERNAL_SPEECH}/${credential.speech_credential_sid}/edit`}
+                        title="Edit speech service"
+                      >
+                        <Icons.Edit3 />
+                      </Link>
+                      <button
+                        type="button"
+                        title="Delete speech service"
+                        onClick={() => setCredential(credential)}
+                        className="btnty"
+                      >
+                        <Icons.Trash />
+                      </button>
+                    </div>
+                  </ScopedAccess>
                 </div>
               );
             })

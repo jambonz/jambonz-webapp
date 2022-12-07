@@ -99,9 +99,9 @@
     }
   }
 
-  &--col5 {
+  &--col3--users {
     .grid__row {
-      grid-template-columns: [col] 30% [col] 20% [col] 20% [col] 28% [col] 2%;
+      grid-template-columns: [col] 40% [col] 58% [col] 2%;
       grid-template-rows: [row] auto [row] auto [row] [row] auto;
       display: grid;
       justify-content: space-between;
