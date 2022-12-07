@@ -36,6 +36,7 @@ import {
   AccountSelect,
   ApplicationSelect,
 } from "src/components/forms";
+import { ScopedAccess } from "src/components/scoped-access";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -52,6 +53,7 @@ import type {
   Smpp,
   Application,
 } from "src/api/types";
+import { Scope } from "src/store/types";
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
@@ -746,117 +748,122 @@ export const CarrierForm = ({
                 </>
               )}
             </fieldset>
-            <fieldset>
-              <Checkzone
-                hidden
-                name="sip_credentials"
-                label="Outbound Authentication"
-                initialCheck={initialRegister}
-                handleChecked={(e) => {
-                  if (!e.target.checked) {
-                    setSipUser("");
-                    setSipPass("");
-                    setSipRealm("");
-                    setSipRegister(false);
-                    setFromUser("");
-                    setFromDomain("");
-                    setRegPublicIpInContact(false);
-                  }
-                }}
-              >
-                <MS>
-                  Does your carrier require authentication on outbound calls?
-                </MS>
-                <label htmlFor="sip_username">
-                  Username {sipPass || sipRegister ? <span>*</span> : ""}
-                </label>
-                <input
-                  id="sip_username"
-                  name="sip_username"
-                  type="text"
-                  value={sipUser}
-                  placeholder="SIP username for authenticating outbound calls"
-                  required={sipRegister || sipPass.length > 0}
-                  onChange={(e) => {
-                    setSipUser(e.target.value);
+            <ScopedAccess
+              user={user}
+              scope={accountSid ? Scope.account : Scope.service_provider}
+            >
+              <fieldset>
+                <Checkzone
+                  hidden
+                  name="sip_credentials"
+                  label="Outbound Authentication"
+                  initialCheck={initialRegister}
+                  handleChecked={(e) => {
+                    if (!e.target.checked) {
+                      setSipUser("");
+                      setSipPass("");
+                      setSipRealm("");
+                      setSipRegister(false);
+                      setFromUser("");
+                      setFromDomain("");
+                      setRegPublicIpInContact(false);
+                    }
                   }}
-                />
-                <label htmlFor="sip_password">
-                  Password
-                  {sipUser || sipRegister ? <span>*</span> : ""}
-                </label>
-                <Passwd
-                  id="sip_password"
-                  name="sip_password"
-                  value={sipPass}
-                  placeholder="SIP password for authenticating outbound calls"
-                  required={sipRegister || sipUser.length > 0}
-                  onChange={(e) => {
-                    setSipPass(e.target.value);
-                  }}
-                />
-                <label htmlFor="sip_register" className="chk">
+                >
+                  <MS>
+                    Does your carrier require authentication on outbound calls?
+                  </MS>
+                  <label htmlFor="sip_username">
+                    Username {sipPass || sipRegister ? <span>*</span> : ""}
+                  </label>
                   <input
-                    id="sip_register"
-                    name="sip_register"
-                    type="checkbox"
-                    checked={sipRegister}
-                    onChange={(e) => setSipRegister(e.target.checked)}
+                    id="sip_username"
+                    name="sip_username"
+                    type="text"
+                    value={sipUser}
+                    placeholder="SIP username for authenticating outbound calls"
+                    required={sipRegister || sipPass.length > 0}
+                    onChange={(e) => {
+                      setSipUser(e.target.value);
+                    }}
                   />
-                  <div>Require SIP Register</div>
-                </label>
-                {sipRegister && (
-                  <>
-                    <MS>
-                      Carrier requires SIP Register before sending outbound
-                      calls.
-                    </MS>
-                    <label htmlFor="sip_realm">
-                      SIP Realm{sipRegister ? <span>*</span> : ""}
-                    </label>
+                  <label htmlFor="sip_password">
+                    Password
+                    {sipUser || sipRegister ? <span>*</span> : ""}
+                  </label>
+                  <Passwd
+                    id="sip_password"
+                    name="sip_password"
+                    value={sipPass}
+                    placeholder="SIP password for authenticating outbound calls"
+                    required={sipRegister || sipUser.length > 0}
+                    onChange={(e) => {
+                      setSipPass(e.target.value);
+                    }}
+                  />
+                  <label htmlFor="sip_register" className="chk">
                     <input
-                      id="sip_realm"
-                      name="sip_realm"
-                      type="text"
-                      value={sipRealm}
-                      placeholder="SIP realm for registration"
-                      required={sipRegister}
-                      onChange={(e) => setSipRealm(e.target.value)}
+                      id="sip_register"
+                      name="sip_register"
+                      type="checkbox"
+                      checked={sipRegister}
+                      onChange={(e) => setSipRegister(e.target.checked)}
                     />
-                    <label htmlFor="from_user">SIP From User</label>
-                    <input
-                      id="from_user"
-                      name="from_user"
-                      type="text"
-                      value={fromUser}
-                      placeholder="Optional: specify user part of SIP From header"
-                      onChange={(e) => setFromUser(e.target.value)}
-                    />
-                    <label htmlFor="from_domain">SIP From Domain</label>
-                    <input
-                      id="from_domain"
-                      name="from_domain"
-                      type="text"
-                      value={fromDomain}
-                      placeholder="Optional: specify host part of SIP From header"
-                      onChange={(e) => setFromDomain(e.target.value)}
-                    />
-                    <label htmlFor="reg_public_ip_in_contact" className="chk">
+                    <div>Require SIP Register</div>
+                  </label>
+                  {sipRegister && (
+                    <>
+                      <MS>
+                        Carrier requires SIP Register before sending outbound
+                        calls.
+                      </MS>
+                      <label htmlFor="sip_realm">
+                        SIP Realm{sipRegister ? <span>*</span> : ""}
+                      </label>
                       <input
-                        id="reg_public_ip_in_contact"
-                        name="reg_public_ip_in_contact"
-                        type="checkbox"
-                        checked={regPublicIpInContact}
-                        onChange={(e) =>
-                          setRegPublicIpInContact(e.target.checked)
-                        }
+                        id="sip_realm"
+                        name="sip_realm"
+                        type="text"
+                        value={sipRealm}
+                        placeholder="SIP realm for registration"
+                        required={sipRegister}
+                        onChange={(e) => setSipRealm(e.target.value)}
                       />
-                      <div>Use Public IP in Contact</div>
-                    </label>
-                  </>
-                )}
-              </Checkzone>
-            </fieldset>
+                      <label htmlFor="from_user">SIP From User</label>
+                      <input
+                        id="from_user"
+                        name="from_user"
+                        type="text"
+                        value={fromUser}
+                        placeholder="Optional: specify user part of SIP From header"
+                        onChange={(e) => setFromUser(e.target.value)}
+                      />
+                      <label htmlFor="from_domain">SIP From Domain</label>
+                      <input
+                        id="from_domain"
+                        name="from_domain"
+                        type="text"
+                        value={fromDomain}
+                        placeholder="Optional: specify host part of SIP From header"
+                        onChange={(e) => setFromDomain(e.target.value)}
+                      />
+                      <label htmlFor="reg_public_ip_in_contact" className="chk">
+                        <input
+                          id="reg_public_ip_in_contact"
+                          name="reg_public_ip_in_contact"
+                          type="checkbox"
+                          checked={regPublicIpInContact}
+                          onChange={(e) =>
+                            setRegPublicIpInContact(e.target.checked)
+                          }
+                        />
+                        <div>Use Public IP in Contact</div>
+                      </label>
+                    </>
+                  )}
+                </Checkzone>
+              </fieldset>
+            </ScopedAccess>
             <fieldset>
               <Checkzone
                 hidden
@@ -1021,49 +1028,61 @@ export const CarrierForm = ({
                         </label>
                       </div>
                     </div>
-                    <button
-                      className="btnty"
-                      title="Delete SIP Gateway"
-                      type="button"
-                      onClick={() => {
-                        setSipMessage("");
-
-                        if (sipGateways.length === 1) {
-                          setSipMessage(
-                            "You must provide at least one SIP Gateway."
-                          );
-                        } else {
-                          handleSipGatewayDelete(
-                            sipGateways.find((g2, i2) => i2 === i)
-                          );
-
-                          setSipGateways(
-                            sipGateways.filter((g2, i2) => i2 !== i)
-                          );
-                        }
-                      }}
+                    <ScopedAccess
+                      user={user}
+                      scope={
+                        accountSid ? Scope.account : Scope.service_provider
+                      }
                     >
-                      <Icon>
-                        <Icons.Trash2 />
-                      </Icon>
-                    </button>
+                      <button
+                        className="btnty"
+                        title="Delete SIP Gateway"
+                        type="button"
+                        onClick={() => {
+                          setSipMessage("");
+
+                          if (sipGateways.length === 1) {
+                            setSipMessage(
+                              "You must provide at least one SIP Gateway."
+                            );
+                          } else {
+                            handleSipGatewayDelete(
+                              sipGateways.find((g2, i2) => i2 === i)
+                            );
+
+                            setSipGateways(
+                              sipGateways.filter((g2, i2) => i2 !== i)
+                            );
+                          }
+                        }}
+                      >
+                        <Icon>
+                          <Icons.Trash2 />
+                        </Icon>
+                      </button>
+                    </ScopedAccess>
                   </div>
                 ))}
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  title="Add SIP Gateway"
-                  onClick={() => {
-                    setSipMessage("");
-                    addSipGateway();
-                  }}
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
+              <ScopedAccess
+                user={user}
+                scope={accountSid ? Scope.account : Scope.service_provider}
+              >
+                <ButtonGroup left>
+                  <button
+                    className="btnty"
+                    type="button"
+                    title="Add SIP Gateway"
+                    onClick={() => {
+                      setSipMessage("");
+                      addSipGateway();
+                    }}
+                  >
+                    <Icon subStyle="teal">
+                      <Icons.Plus />
+                    </Icon>
+                  </button>
+                </ButtonGroup>
+              </ScopedAccess>
             </fieldset>
           </Tab>
           <Tab id="smpp" label="SMS">
@@ -1085,27 +1104,32 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <label htmlFor="outbound_smpp">Outbound SMPP</label>
-              <label htmlFor="outbound_id">System ID</label>
-              <input
-                id="outbound_id"
-                name="outbound_id"
-                type="text"
-                value={smppSystemId}
-                placeholder="SMPP system ID to authenticate with"
-                onChange={(e) => {
-                  setSmppSystemId(e.target.value);
-                }}
-              />
-              <label htmlFor="outbound_pass">Password</label>
-              <Passwd
-                id="outbound_pass"
-                name="outbound_pass"
-                value={smppPass}
-                placeholder="SMPP password to authenticate with"
-                onChange={(e) => {
-                  setSmppPass(e.target.value);
-                }}
-              />
+              <ScopedAccess
+                user={user}
+                scope={accountSid ? Scope.account : Scope.service_provider}
+              >
+                <label htmlFor="outbound_id">System ID</label>
+                <input
+                  id="outbound_id"
+                  name="outbound_id"
+                  type="text"
+                  value={smppSystemId}
+                  placeholder="SMPP system ID to authenticate with"
+                  onChange={(e) => {
+                    setSmppSystemId(e.target.value);
+                  }}
+                />
+                <label htmlFor="outbound_pass">Password</label>
+                <Passwd
+                  id="outbound_pass"
+                  name="outbound_pass"
+                  value={smppPass}
+                  placeholder="SMPP password to authenticate with"
+                  onChange={(e) => {
+                    setSmppPass(e.target.value);
+                  }}
+                />
+              </ScopedAccess>
               <label htmlFor="outbound_smpp">
                 Carrier SMPP Gateways
                 <span>{smppSystemId || smppPass ? "*" : ""}</span>
@@ -1179,86 +1203,103 @@ export const CarrierForm = ({
                           </label>
                         </div>
                       </div>
-                      <button
-                        title="Delete Outbound SMPP Gateway"
-                        type="button"
-                        className="btnty"
-                        onClick={() => {
-                          setSmppOutboundMessage("");
-
-                          if (
-                            hasLength(smpps) &&
-                            smppGateways.filter((g) => g.outbound).length <=
-                              1 &&
-                            (smppSystemId || smppPass)
-                          ) {
-                            setSmppOutboundMessage(
-                              "You must provide at least one Outbound Gateway."
-                            );
-                          } else {
-                            handleSmppGatewayDelete(
-                              smppGateways.find((g2, i2) => i2 === i)
-                            );
-
-                            setSmppGateways(
-                              smppGateways.filter((g2, i2) => i2 !== i)
-                            );
-                          }
-                        }}
+                      <ScopedAccess
+                        user={user}
+                        scope={
+                          accountSid ? Scope.account : Scope.service_provider
+                        }
                       >
-                        <Icon>
-                          <Icons.Trash2 />
-                        </Icon>
-                      </button>
+                        <button
+                          title="Delete Outbound SMPP Gateway"
+                          type="button"
+                          className="btnty"
+                          onClick={() => {
+                            setSmppOutboundMessage("");
+
+                            if (
+                              hasLength(smpps) &&
+                              smppGateways.filter((g) => g.outbound).length <=
+                                1 &&
+                              (smppSystemId || smppPass)
+                            ) {
+                              setSmppOutboundMessage(
+                                "You must provide at least one Outbound Gateway."
+                              );
+                            } else {
+                              handleSmppGatewayDelete(
+                                smppGateways.find((g2, i2) => i2 === i)
+                              );
+
+                              setSmppGateways(
+                                smppGateways.filter((g2, i2) => i2 !== i)
+                              );
+                            }
+                          }}
+                        >
+                          <Icon>
+                            <Icons.Trash2 />
+                          </Icon>
+                        </button>
+                      </ScopedAccess>
                     </div>
                   ) : null;
                 })}
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  onClick={() => addSmppGateway({ inbound: 0, outbound: 1 })}
-                  title="Add Outbound SMPP Gateway"
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
+              <ScopedAccess
+                user={user}
+                scope={accountSid ? Scope.account : Scope.service_provider}
+              >
+                <ButtonGroup left>
+                  <button
+                    className="btnty"
+                    type="button"
+                    onClick={() => addSmppGateway({ inbound: 0, outbound: 1 })}
+                    title="Add Outbound SMPP Gateway"
+                  >
+                    <Icon subStyle="teal">
+                      <Icons.Plus />
+                    </Icon>
+                  </button>
+                </ButtonGroup>
+              </ScopedAccess>
             </fieldset>
             <fieldset>
               <label htmlFor="inbound_smpp">Inbound SMPP</label>
-              <label htmlFor="inbound_id">System ID</label>
-              <input
-                id="inbound_id"
-                name="inbound_id"
-                type="text"
-                value={smppInboundSystemId}
-                placeholder="SMPP system ID to authenticate with"
-                onChange={(e) => {
-                  setSmppInboundSystemId(e.target.value);
-                }}
-              />
-              <label htmlFor="inbound_pass">
-                Password
-                <span>{!hasEmptySmppGateways("inbound") ? "*" : ""}</span>
-              </label>
-              <MXS>
-                <em>
-                  Password is required if whitelisting carrier IP address(es)
-                  below.
-                </em>
-              </MXS>
-              <Passwd
-                id="inbound_pass"
-                name="inbound_pass"
-                value={smppInboundPass}
-                placeholder="SMPP password for authenticating inbound messages"
-                required={!hasEmptySmppGateways("inbound")}
-                onChange={(e) => {
-                  setSmppInboundPass(e.target.value);
-                }}
-              />
+              <ScopedAccess
+                user={user}
+                scope={accountSid ? Scope.account : Scope.service_provider}
+              >
+                <label htmlFor="inbound_id">System ID</label>
+                <input
+                  id="inbound_id"
+                  name="inbound_id"
+                  type="text"
+                  value={smppInboundSystemId}
+                  placeholder="SMPP system ID to authenticate with"
+                  onChange={(e) => {
+                    setSmppInboundSystemId(e.target.value);
+                  }}
+                />
+                <label htmlFor="inbound_pass">
+                  Password
+                  <span>{!hasEmptySmppGateways("inbound") ? "*" : ""}</span>
+                </label>
+                <MXS>
+                  <em>
+                    Password is required if whitelisting carrier IP address(es)
+                    below.
+                  </em>
+                </MXS>
+                <Passwd
+                  id="inbound_pass"
+                  name="inbound_pass"
+                  value={smppInboundPass}
+                  placeholder="SMPP password for authenticating inbound messages"
+                  required={!hasEmptySmppGateways("inbound")}
+                  onChange={(e) => {
+                    setSmppInboundPass(e.target.value);
+                  }}
+                />
+              </ScopedAccess>
               <label htmlFor="inbound_smpp">
                 Carrier IP Address(es) to whitelist
               </label>
@@ -1304,39 +1345,51 @@ export const CarrierForm = ({
                           />
                         </div>
                       </div>
-                      <button
-                        className="btnty"
-                        title="Delete Inbound SMPP Gateway"
-                        type="button"
-                        onClick={() => {
-                          handleSmppGatewayDelete(
-                            smppGateways.find((g2, i2) => i2 === i)
-                          );
-
-                          setSmppGateways(
-                            smppGateways.filter((g2, i2) => i2 !== i)
-                          );
-                        }}
+                      <ScopedAccess
+                        user={user}
+                        scope={
+                          accountSid ? Scope.account : Scope.service_provider
+                        }
                       >
-                        <Icon>
-                          <Icons.Trash2 />
-                        </Icon>
-                      </button>
+                        <button
+                          className="btnty"
+                          title="Delete Inbound SMPP Gateway"
+                          type="button"
+                          onClick={() => {
+                            handleSmppGatewayDelete(
+                              smppGateways.find((g2, i2) => i2 === i)
+                            );
+
+                            setSmppGateways(
+                              smppGateways.filter((g2, i2) => i2 !== i)
+                            );
+                          }}
+                        >
+                          <Icon>
+                            <Icons.Trash2 />
+                          </Icon>
+                        </button>
+                      </ScopedAccess>
                     </div>
                   ) : null;
                 })}
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  onClick={() => addSmppGateway({ outbound: 0, inbound: 1 })}
-                  title="Add Inbound SMPP Gateway"
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
+              <ScopedAccess
+                user={user}
+                scope={accountSid ? Scope.account : Scope.service_provider}
+              >
+                <ButtonGroup left>
+                  <button
+                    className="btnty"
+                    type="button"
+                    onClick={() => addSmppGateway({ outbound: 0, inbound: 1 })}
+                    title="Add Inbound SMPP Gateway"
+                  >
+                    <Icon subStyle="teal">
+                      <Icons.Plus />
+                    </Icon>
+                  </button>
+                </ButtonGroup>
+              </ScopedAccess>
             </fieldset>
           </Tab>
         </Tabs>

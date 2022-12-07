@@ -18,7 +18,12 @@ import {
   AccountFilter,
   SelectFilter,
 } from "src/components";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
+import {
+  hasLength,
+  hasValue,
+  sortAlphabetically,
+  useFilteredResults,
+} from "src/utils";
 
 import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
@@ -33,6 +38,15 @@ export const Users = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const usersFiltered = useMemo(() => {
+    //find and add account/sp names to user to improve fuzzy search
+    users?.forEach((user) => {
+      user.account_name =
+        accounts?.find((acct) => acct.account_sid === user.account_sid)?.name ||
+        null;
+      user.service_provider_name =
+        user.scope === USER_ADMIN ? null : currentServiceProvider?.name || null;
+    });
+
     const serviceProviderUsers = users?.filter((e) => {
       return (
         e.scope === USER_ADMIN ||
@@ -60,7 +74,9 @@ export const Users = () => {
     return [];
   }, [accountSid, scopeFilter, users, accounts, currentServiceProvider]);
 
-  const filteredUsers = useFilteredResults<User>(filter, usersFiltered);
+  const filteredUsers = useFilteredResults<User>(filter, usersFiltered)?.sort(
+    (a, b) => sortAlphabetically(a, b)
+  );
 
   return (
     <>
@@ -99,11 +115,12 @@ export const Users = () => {
       </section>
 
       <Section slim>
-        <div className="grid grid--col4">
+        <div className="grid grid--col5">
           <div className="grid__row grid__th">
             <div>User Name</div>
             <div>Email</div>
             <div>Scope</div>
+            <div>Access</div>
             <div>&nbsp;</div>
           </div>
           {!hasValue(users) ? (
@@ -115,6 +132,11 @@ export const Users = () => {
                   <div>{user.name}</div>
                   <div>{user.email}</div>
                   <div>{user.scope}</div>
+                  <div>
+                    {user.scope === USER_ADMIN
+                      ? null
+                      : user.account_name || user.service_provider_name}
+                  </div>
                   <div className="item__actions">
                     <Link
                       to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}

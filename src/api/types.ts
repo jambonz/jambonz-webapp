@@ -118,7 +118,9 @@ export interface User {
   is_active: boolean;
   force_change: boolean;
   account_sid: string | null;
+  account_name?: string | null;
   service_provider_sid: string | null;
+  service_provider_name?: string | null;
   initial_password?: string;
   permissions?: UserPermissions[];
 }
@@ -154,6 +156,7 @@ export interface UserJWT {
   account_sid?: string | null;
   service_provider_sid?: string | null;
   permissions: UserPermissions[];
+  name: string;
 }
 
 export interface ServiceProvider {
