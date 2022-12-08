@@ -118,7 +118,7 @@ export const Users = () => {
         <div className="grid grid--col3--users">
           <div className="grid__row grid__th">
             <div>User Name</div>
-            <div>Managed resource</div>
+            <div>Scope</div>
             <div>&nbsp;</div>
           </div>
           {!hasValue(users) ? (
