@@ -16,9 +16,7 @@ import type { NaviItem } from "./items";
 
 import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
-import { Scope } from "src/store/types";
-import { USER_ACCOUNT } from "src/api/constants";
-import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { Scope, UserData } from "src/store/types";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -32,16 +30,17 @@ type NaviProps = CommonProps & {
 
 type ItemProps = CommonProps & {
   item: NaviItem;
+  user?: UserData;
 };
 
-const Item = ({ item, handleMenu }: ItemProps) => {
+const Item = ({ item, user, handleMenu }: ItemProps) => {
   const location = useLocation();
-  const active = location.pathname.includes(item.route);
+  const active = location.pathname.includes(item.route(user));
 
   return (
     <li>
       <Link
-        to={item.route}
+        to={item.route(user)}
         className={classNames({ navi__link: true, "txt--jean": true, active })}
         onClick={handleMenu}
       >
@@ -72,6 +71,20 @@ export const Navi = ({
       (item) => !item.acl || (item.acl && accessControl[item.acl])
     );
   }, [accessControl, currentServiceProvider]);
+
+  const naviTopFiltered = useMemo(() => {
+    return naviTop.filter((item) => {
+      if (item.scope === undefined) {
+        return true;
+      } else if (user) {
+        if (item.restrict) {
+          return user.access === item.scope;
+        }
+
+        return user.access >= item.scope;
+      }
+    });
+  }, [user]);
 
   const handleSubmit = () => {
     postServiceProviders({ name })
@@ -174,53 +187,14 @@ export const Navi = ({
         </div>
         <div className="navi__routes">
           <ul>
-            {naviTop.map((item) => {
-              if (item.label === "Settings") {
-                return (
-                  <ScopedAccess
-                    key={item.label}
-                    scope={Scope.service_provider}
-                    user={user}
-                  >
-                    <Item
-                      key={item.label}
-                      item={item}
-                      handleMenu={handleMenu}
-                    />
-                  </ScopedAccess>
-                );
-              }
-              if (item.label === "Accounts" && user?.scope === USER_ACCOUNT) {
-                const accountNavItem = {
-                  label: "Account",
-                  icon: Icons.Activity,
-                  route: `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
-                };
-                return (
-                  <Item
-                    key={accountNavItem.label}
-                    item={accountNavItem}
-                    handleMenu={handleMenu}
-                  />
-                );
-              }
-              if (item.label === "Accounts") {
-                return (
-                  <ScopedAccess
-                    key={item.label}
-                    scope={Scope.service_provider}
-                    user={user}
-                  >
-                    <Item
-                      key={item.label}
-                      item={item}
-                      handleMenu={handleMenu}
-                    />
-                  </ScopedAccess>
-                );
-              }
+            {naviTopFiltered.map((item) => {
               return (
-                <Item key={item.label} item={item} handleMenu={handleMenu} />
+                <Item
+                  key={item.label}
+                  user={user}
+                  item={item}
+                  handleMenu={handleMenu}
+                />
               );
             })}
           </ul>
@@ -231,7 +205,12 @@ export const Navi = ({
         <div className="navi__routes">
           <ul>
             {naviByoFiltered.map((item) => (
-              <Item key={item.label} item={item} handleMenu={handleMenu} />
+              <Item
+                key={item.label}
+                user={user}
+                item={item}
+                handleMenu={handleMenu}
+              />
             ))}
           </ul>
         </div>
