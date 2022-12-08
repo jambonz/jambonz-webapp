@@ -16,8 +16,14 @@ export type LimitCategories =
   | "voice_call_minutes"
   | "voice_call_session_license";
 
-/** User roles / permissions */
+export type LimitUnit = "Sessions" | "Minutes";
 
+export interface LimitUnitOption {
+  name: LimitUnit;
+  value: Lowercase<LimitUnit>;
+}
+
+/** User roles / permissions */
 export type UserScopes = "admin" | "service_provider" | "account";
 
 export type UserPermissions =

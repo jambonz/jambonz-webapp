@@ -1,5 +1,6 @@
 import type {
   LimitField,
+  LimitUnitOption,
   PasswordSettings,
   SipGateway,
   SmppGateway,
@@ -150,14 +151,17 @@ export const LIMITS: LimitField[] = [
   },
 ];
 
-export const LIMIT_UNITS = [
+export const LIMIT_MINS = "minutes";
+export const LIMIT_SESS = "sessions";
+
+export const LIMIT_UNITS: LimitUnitOption[] = [
   {
     name: "Sessions",
-    value: "sessions",
+    value: LIMIT_SESS,
   },
   {
     name: "Minutes",
-    value: "minutes",
+    value: LIMIT_MINS,
   },
 ];
 
