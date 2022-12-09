@@ -12,11 +12,11 @@ import { MSG_LOGGED_OUT } from "src/constants";
 import "./styles.scss";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
 import { useApiData } from "src/api";
-import { User } from "src/api/types";
+import { CurrentUserData } from "src/api/types";
 
 export const Layout = () => {
   const user = useSelectState("user");
-  const [userData] = useApiData<User>("Users/me");
+  const [userData] = useApiData<CurrentUserData>("Users/me");
   const [active, setActive] = useState(false);
   const { signout } = useAuth();
   const mobile = useMobileMedia();
@@ -56,7 +56,7 @@ export const Layout = () => {
                   to={`${ROUTE_INTERNAL_USERS}/${user?.user_sid}/edit`}
                   title="Edit user"
                 >
-                  <strong>{userData?.name}</strong>
+                  <strong>{userData?.user.name}</strong>
                 </Link>
               </div>
               <div>
