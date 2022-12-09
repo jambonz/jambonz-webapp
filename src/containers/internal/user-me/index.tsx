@@ -8,6 +8,8 @@ import { useSelectState } from "src/store";
 
 import type { CurrentUserData } from "src/api/types";
 
+import "./styles.scss";
+
 export const UserMe = () => {
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
