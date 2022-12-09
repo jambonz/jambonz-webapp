@@ -147,6 +147,10 @@ export interface UserJWT {
   name: string;
 }
 
+export interface CurrentUserData {
+  user: User;
+}
+
 export interface ServiceProvider {
   name: string;
   ms_teams_fqdn: null | string;

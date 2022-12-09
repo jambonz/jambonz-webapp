@@ -11,6 +11,8 @@ import { hasLength, hasValue, useFilteredResults } from "src/utils";
 
 import type { Account } from "src/api/types";
 import { USER_ACCOUNT } from "src/api/constants";
+// import { useScopedRedirect } from "src/utils/use-scoped-redirect";
+// import { Scope } from "src/store/types";
 
 export const Accounts = () => {
   const user = useSelectState("user");
@@ -19,6 +21,12 @@ export const Accounts = () => {
   const [filter, setFilter] = useState("");
 
   const filteredAccounts = useFilteredResults<Account>(filter, accounts);
+
+  // useScopedRedirect(
+  //   user,
+  //   Scope.service_provider,
+  //   `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`
+  // );
 
   const handleDelete = () => {
     if (account) {
