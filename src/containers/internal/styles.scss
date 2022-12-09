@@ -10,7 +10,6 @@
   header {
     padding: ui-vars.$px03;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
 
     @include mixins.mobile() {
@@ -29,6 +28,10 @@
       @include mixins.mobile() {
         display: flex;
       }
+    }
+
+    .btn {
+      margin-left: auto;
     }
   }
 
@@ -55,6 +58,44 @@
       padding-bottom: ui-vars.$px02;
       position: sticky;
       bottom: 0;
+    }
+  }
+}
+
+/** User layout **/
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: ui-vars.$mxs-size;
+  line-height: 0.4rem;
+
+  @include mixins.mobile() {
+    padding-left: ui-vars.$px01;
+  }
+
+  &__icon {
+    color: ui-vars.$jambonz;
+    width: ui-vars.$h3-size;
+    height: ui-vars.$h3-size;
+    padding-right: ui-vars.$px00;
+
+    .navi & {
+      color: ui-vars.$white;
+    }
+  }
+
+  &__name {
+    .navi & {
+      color: ui-vars.$white;
+    }
+  }
+
+  &__scope {
+    padding-top: ui-vars.$px01;
+
+    .navi & {
+      color: vars.$jeangrey;
     }
   }
 }

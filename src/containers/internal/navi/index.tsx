@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
+import { UserMe } from "../user-me";
 import {
   useSelectState,
   useDispatch,
@@ -136,6 +137,7 @@ export const Navi = ({
             <Icon subStyle="white" onClick={handleMenu}>
               <Icons.X />
             </Icon>
+            <UserMe />
             <Button
               small
               mainStyle="hollow"
