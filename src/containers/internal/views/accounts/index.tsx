@@ -7,12 +7,16 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { Section, Icons, Spinner, SearchFilter } from "src/components";
 import { DeleteAccount } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
-
-import type { Account } from "src/api/types";
+import {
+  hasLength,
+  hasValue,
+  useFilteredResults,
+  useScopedRedirect,
+} from "src/utils";
 import { USER_ACCOUNT } from "src/api/constants";
-// import { useScopedRedirect } from "src/utils/use-scoped-redirect";
-// import { Scope } from "src/store/types";
+
+import { Scope } from "src/store/types";
+import type { Account } from "src/api/types";
 
 export const Accounts = () => {
   const user = useSelectState("user");
@@ -22,11 +26,12 @@ export const Accounts = () => {
 
   const filteredAccounts = useFilteredResults<Account>(filter, accounts);
 
-  // useScopedRedirect(
-  //   user,
-  //   Scope.service_provider,
-  //   `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`
-  // );
+  useScopedRedirect(
+    Scope.service_provider,
+    `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
+    user,
+    "You do not have permissions to manage all accounts"
+  );
 
   const handleDelete = () => {
     if (account) {

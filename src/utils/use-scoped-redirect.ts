@@ -6,15 +6,15 @@ import { toastError } from "src/store";
 import type { IMessage, Scope, UserData } from "src/store/types";
 
 export const useScopedRedirect = (
-  user: UserData,
   access: Scope,
   redirect: string,
+  user?: UserData,
   message?: IMessage
 ) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (access >= user.access) {
+    if (user && access >= user.access) {
       if (message) toastError(message);
 
       navigate(redirect);

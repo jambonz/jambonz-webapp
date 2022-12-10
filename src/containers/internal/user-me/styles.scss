@@ -1,23 +1,42 @@
-@use "./vars";
-@use "./mixins";
+@use "src/styles/vars";
+@use "src/styles/mixins";
 @use "jambonz-ui/src/styles/vars" as ui-vars;
 @use "jambonz-ui/src/styles/mixins" as ui-mixins;
 
+/** User layout **/
 .user {
-  padding: ui-vars.$px03;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: ui-vars.$mxs-size;
   line-height: 0.4rem;
 
-  &--icon {
+  @include mixins.mobile() {
+    padding-left: ui-vars.$px01;
+  }
+
+  &__icon {
     color: ui-vars.$jambonz;
     width: ui-vars.$h3-size;
     height: ui-vars.$h3-size;
     padding-right: ui-vars.$px00;
+
+    .navi & {
+      color: ui-vars.$white;
+    }
   }
-  &--txt {
+
+  &__name {
+    .navi & {
+      color: ui-vars.$white;
+    }
+  }
+
+  &__scope {
     padding-top: ui-vars.$px01;
+
+    .navi & {
+      color: vars.$jeangrey;
+    }
   }
 }

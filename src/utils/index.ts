@@ -4,6 +4,7 @@ import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
 import { useRedirect } from "./use-redirect";
 import { useFilteredResults } from "./use-filtered-results";
+import { useScopedRedirect } from "./use-scoped-redirect";
 import {
   FQDN,
   FQDN_TOP_LEVEL,
@@ -169,4 +170,5 @@ export {
   withSelectState,
   useRedirect,
   useFilteredResults,
+  useScopedRedirect,
 };
