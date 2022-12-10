@@ -58,6 +58,10 @@
     .ico {
       @include mixins.icosize();
     }
+
+    .btn {
+      margin-left: auto;
+    }
   }
 
   &__sps {

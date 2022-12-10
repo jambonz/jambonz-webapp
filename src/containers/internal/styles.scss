@@ -10,7 +10,6 @@
   header {
     padding: ui-vars.$px03;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
 
     @include mixins.mobile() {
@@ -29,6 +28,10 @@
       @include mixins.mobile() {
         display: flex;
       }
+    }
+
+    .btn {
+      margin-left: auto;
     }
   }
 

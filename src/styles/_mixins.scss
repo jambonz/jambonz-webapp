@@ -22,7 +22,6 @@
 @mixin icosize {
   height: ui-vars.$h3-size;
   width: ui-vars.$h3-size;
-  margin-right: auto;
   cursor: pointer;
 
   svg {
