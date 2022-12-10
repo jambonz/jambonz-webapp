@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import { LIMITS } from "src/api/constants";
+import { LIMITS, LIMIT_MINS, LIMIT_SESS, LIMIT_UNITS } from "src/api/constants";
 import { hasLength } from "src/utils";
 
-import type { Limit, LimitCategories } from "src/api/types";
+import type { Limit, LimitCategories, LimitUnit } from "src/api/types";
+import { Selector } from "./selector";
 
 type LocalLimitRef = {
   [key in LimitCategories]?: HTMLInputElement;
@@ -25,6 +26,8 @@ export const LocalLimits = ({
   limits: [localLimits, setLocalLimits],
   inputRef,
 }: LocalLimitsProps) => {
+  const [unit, setUnit] = useState<Lowercase<LimitUnit>>(LIMIT_SESS);
+
   const updateLimitValue = (category: string) => {
     if (hasLength(localLimits)) {
       const limit = localLimits.find((l) => l.category === category);
@@ -34,6 +37,18 @@ export const LocalLimits = ({
 
     return "";
   };
+
+  const filteredLimits = import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL
+    ? LIMITS.filter((limit) =>
+        unit === LIMIT_SESS
+          ? !limit.category.includes(LIMIT_MINS)
+          : limit.category.includes(LIMIT_MINS)
+      )
+    : LIMITS.filter(
+        (limit) =>
+          !limit.category.includes("license") &&
+          !limit.category.includes(LIMIT_MINS)
+      );
 
   useEffect(() => {
     if (hasLength(data)) {
@@ -45,7 +60,19 @@ export const LocalLimits = ({
 
   return (
     <>
-      {LIMITS.map(({ category, label }) => {
+      {import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL && (
+        <>
+          <label htmlFor="units">Units</label>
+          <Selector
+            id="units"
+            name="units"
+            value={unit}
+            options={LIMIT_UNITS}
+            onChange={(e) => setUnit(e.target.value as Lowercase<LimitUnit>)}
+          />
+        </>
+      )}
+      {filteredLimits.map(({ category, label }) => {
         return (
           <React.Fragment key={category}>
             <label htmlFor={category}>{label}</label>

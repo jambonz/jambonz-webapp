@@ -8,10 +8,22 @@ export type CredentialStatus = "ok" | "fail" | "not tested";
 
 export type IpType = "ip" | "fqdn" | "fqdn-top-level" | "invalid";
 
-export type LimitCategories = "api_rate" | "voice_call_session" | "device";
+export type LimitCategories =
+  | "api_rate"
+  | "voice_call_session"
+  | "device"
+  | "voice_call_minutes_license"
+  | "voice_call_minutes"
+  | "voice_call_session_license";
+
+export type LimitUnit = "Sessions" | "Minutes";
+
+export interface LimitUnitOption {
+  name: LimitUnit;
+  value: Lowercase<LimitUnit>;
+}
 
 /** User roles / permissions */
-
 export type UserScopes = "admin" | "service_provider" | "account";
 
 export type UserPermissions =

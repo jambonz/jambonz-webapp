@@ -1,5 +1,6 @@
 import type {
   LimitField,
+  LimitUnitOption,
   PasswordSettings,
   SipGateway,
   SmppGateway,
@@ -123,10 +124,9 @@ export const WEBHOOK_METHODS: WebhookOption[] = [
 ];
 
 /** Various system limits */
-/** For now we are only supporting `voice_call_session` */
 export const LIMITS: LimitField[] = [
   {
-    label: "Max concurrent calls (0=unlimited)",
+    label: "Max calls",
     category: "voice_call_session",
   },
   // {
@@ -137,6 +137,32 @@ export const LIMITS: LimitField[] = [
   //   label: "Max api calls per minute (0=unlimited)",
   //   category: "api_rate",
   // },
+  {
+    label: "Licensed calls",
+    category: "voice_call_session_license",
+  },
+  {
+    label: "Max minutes",
+    category: "voice_call_minutes",
+  },
+  {
+    label: "Licensed minutes",
+    category: "voice_call_minutes_license",
+  },
+];
+
+export const LIMIT_MINS = "minutes";
+export const LIMIT_SESS = "sessions";
+
+export const LIMIT_UNITS: LimitUnitOption[] = [
+  {
+    name: "Sessions",
+    value: LIMIT_SESS,
+  },
+  {
+    name: "Minutes",
+    value: LIMIT_MINS,
+  },
 ];
 
 export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
