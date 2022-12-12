@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
-import { useNavigate, useParams } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";
 import { toastError, useSelectState } from "src/store";
@@ -11,6 +10,7 @@ import { USER_ACCOUNT } from "src/api/constants";
 import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const EditSpeechService = () => {
   const params = useParams();

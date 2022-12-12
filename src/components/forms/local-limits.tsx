@@ -53,6 +53,11 @@ export const LocalLimits = ({
   useEffect(() => {
     if (hasLength(data)) {
       setLocalLimits(data);
+      setUnit(() => {
+        return data.find((l) => l.category.includes(LIMIT_MINS))
+          ? LIMIT_MINS
+          : LIMIT_SESS;
+      });
     } else {
       setLocalLimits([]);
     }
@@ -99,6 +104,7 @@ export const LocalLimits = ({
                     )
                   );
                 } else {
+                  console.log([...localLimits, { category, quantity: value }]);
                   setLocalLimits([
                     ...localLimits,
                     { category, quantity: value },
