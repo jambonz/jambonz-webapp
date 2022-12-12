@@ -159,7 +159,7 @@ export const SpeechServices = () => {
                           <Icons.ArrowRight />
                         </Link>
                       </ScopedAccess>
-                      {user?.scope === USER_ACCOUNT && (
+                      {!accountSid && user?.scope === USER_ACCOUNT && (
                         <strong>Vendor: {credential.vendor}</strong>
                       )}
                     </div>

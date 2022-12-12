@@ -1,7 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Account,
+  Application,
+  Carrier,
+  SpeechCredential,
+  User,
+} from "src/api/types";
 
-import { toastError } from "src/store";
+import { toastError, useSelectState } from "src/store";
 
 import type { IMessage, Scope, UserData } from "src/store/types";
 
@@ -9,15 +16,32 @@ export const useScopedRedirect = (
   access: Scope,
   redirect: string,
   user?: UserData,
-  message?: IMessage
+  message?: IMessage,
+  data?: Account | User | Application | Carrier | SpeechCredential
 ) => {
   const navigate = useNavigate();
+  const currentServiceProvider = useSelectState("currentServiceProvider");
 
   useEffect(() => {
-    if (user && access >= user.access) {
+    if (data && user?.access === 0 && data?.account_sid !== user?.account_sid) {
+      toastError("You do not have access.");
+      navigate(redirect);
+    }
+
+    if (
+      data &&
+      user?.access === 1 &&
+      currentServiceProvider?.service_provider_sid !==
+        user?.service_provider_sid
+    ) {
+      toastError("You do not have access.");
+      navigate(redirect);
+    }
+
+    if (user && access > user.access) {
       if (message) toastError(message);
 
       navigate(redirect);
     }
-  }, [user]);
+  }, [user, currentServiceProvider, data]);
 };

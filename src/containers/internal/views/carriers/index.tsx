@@ -176,7 +176,12 @@ export const Carriers = () => {
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">
-                    <ScopedAccess user={user} scope={Scope.service_provider}>
+                    <ScopedAccess
+                      user={user}
+                      scope={
+                        !accountSid ? Scope.service_provider : Scope.account
+                      }
+                    >
                       <Link
                         to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
                         title="Edit Carrier"
@@ -186,7 +191,7 @@ export const Carriers = () => {
                         <Icons.ArrowRight />
                       </Link>
                     </ScopedAccess>
-                    {user?.scope === USER_ACCOUNT && (
+                    {!accountSid && user?.scope === USER_ACCOUNT && (
                       <strong>{carrier.name}</strong>
                     )}
                   </div>

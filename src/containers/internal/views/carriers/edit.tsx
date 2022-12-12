@@ -1,15 +1,20 @@
 import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useApiData } from "src/api";
-import { toastError } from "src/store";
+import { toastError, useSelectState } from "src/store";
 import { CarrierForm } from "./form";
 
 import { Carrier, SipGateway, SmppGateway } from "src/api/types";
+import { useScopedRedirect } from "src/utils/use-scoped-redirect";
+import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
+import { Scope } from "src/store/types";
 
 export const EditCarrier = () => {
   const params = useParams();
+  const navigate = useNavigate();
+  const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Carrier>(
     `VoipCarriers/${params.voip_carrier_sid}`
   );
@@ -20,9 +25,18 @@ export const EditCarrier = () => {
     `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`
   );
 
+  useScopedRedirect(
+    Scope.account,
+    ROUTE_INTERNAL_CARRIERS,
+    user,
+    "You do not have access to this resource",
+    data
+  );
+
   useEffect(() => {
     if (error) {
-      toastError(error.msg);
+      toastError(error.msg || "No access.");
+      navigate(ROUTE_INTERNAL_CARRIERS);
     }
   }, [error]);
 
