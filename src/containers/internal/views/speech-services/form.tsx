@@ -227,7 +227,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
 
       if (credential.data.tts_api_key) {
-        setSttApiKey(credential.data.tts_api_key);
+        setTtsApiKey(credential.data.tts_api_key);
       }
 
       if (credential.data.tts_region) {
