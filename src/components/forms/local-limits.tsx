@@ -104,7 +104,6 @@ export const LocalLimits = ({
                     )
                   );
                 } else {
-                  console.log([...localLimits, { category, quantity: value }]);
                   setLocalLimits([
                     ...localLimits,
                     { category, quantity: value },
