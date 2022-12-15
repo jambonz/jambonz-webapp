@@ -86,7 +86,7 @@ export const languages: VoiceLanguage[] = [
       { value: "en-GB_JamesV3Voice", name: "James (Male)" },
       { value: "en-GB_KateVoice", name: "Kate (Female)" },
       { value: "en-GB_KateV3Voice", name: "Kate 2 (Female)" },
-      { value: "en-GB_CharlotteV3Voice", name: "Kate (Female)" },
+      { value: "en-GB_CharlotteV3Voice", name: "Charlotte (Female)" },
     ],
   },
   {
