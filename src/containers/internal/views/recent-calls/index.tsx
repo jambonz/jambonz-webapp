@@ -3,11 +3,7 @@ import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import { getRecentCalls, useServiceProviderData } from "src/api";
-import {
-  DATE_SELECTION,
-  PER_PAGE_SELECTION,
-  USER_ACCOUNT,
-} from "src/api/constants";
+import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
 import { toastError, useSelectState } from "src/store";
 import {
   Section,
@@ -16,7 +12,7 @@ import {
   Pagination,
   SelectFilter,
 } from "src/components";
-import { hasLength, hasValue } from "src/utils";
+import { getUserAccounts, hasLength, hasValue } from "src/utils";
 import { DetailsItem } from "./details";
 
 import type { Account, CallQuery, RecentCall } from "src/api/types";
@@ -91,13 +87,7 @@ export const RecentCalls = () => {
       <section className="filters filters--multi">
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={
-            user?.scope === USER_ACCOUNT
-              ? accounts?.filter(
-                  (acct) => acct.account_sid === user.account_sid
-                )
-              : accounts
-          }
+          accounts={user && accounts && getUserAccounts(user, accounts)}
         />
         <SelectFilter
           id="date_filter"

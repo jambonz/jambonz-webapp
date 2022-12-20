@@ -16,7 +16,17 @@ import {
   USER_SP,
 } from "src/api/constants";
 
-import type { IpType, PasswordSettings, User, UserScopes } from "src/api/types";
+import type {
+  Account,
+  Carrier,
+  IpType,
+  PasswordSettings,
+  SpeechCredential,
+  UseApiDataMap,
+  User,
+  UserScopes,
+} from "src/api/types";
+import type { UserData } from "src/store/types";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -149,9 +159,37 @@ export const getUserScope = (user: User): UserScopes => {
   }
 };
 
-export const sortAlphabetically = (a: User, b: User) => {
-  const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-  const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+export const hasAccountAccess = (user: UserData, accountSid: string) => {
+  return user?.scope === USER_ACCOUNT && user.account_sid !== accountSid;
+};
+
+export const getUserAccounts = (user: UserData, accounts: Account[]) => {
+  return user?.scope === USER_ACCOUNT
+    ? accounts?.filter((acct) => acct.account_sid === user.account_sid)
+    : accounts;
+};
+
+export const checkSelectOptions = (
+  user: UserData,
+  resource?: UseApiDataMap<SpeechCredential> | UseApiDataMap<Carrier>
+) => {
+  if (user?.scope === USER_ACCOUNT) {
+    if (!resource) {
+      return false;
+    }
+    if (resource && resource.data?.account_sid) {
+      return false;
+    }
+    if (resource && !resource.data?.account_sid) {
+      return true;
+    }
+  }
+  return true;
+};
+
+export const sortUsersAlpha = (a: User, b: User) => {
+  const nameA = a.name.toLowerCase();
+  const nameB = b.name.toLowerCase();
   if (nameA < nameB) {
     return -1;
   }
@@ -159,7 +197,6 @@ export const sortAlphabetically = (a: User, b: User) => {
     return 1;
   }
 
-  // names must be equal
   return 0;
 };
 

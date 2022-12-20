@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { ApiKeys } from "src/containers/internal/api-keys";
 import { useApiData } from "src/api";
@@ -17,7 +17,6 @@ import { Scope } from "src/store/types";
 
 export const EditAccount = () => {
   const params = useParams();
-  const navigate = useNavigate();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Account>(
     `Accounts/${params.account_sid}`
@@ -29,7 +28,9 @@ export const EditAccount = () => {
 
   useScopedRedirect(
     Scope.account,
-    user?.access !== 0 ? ROUTE_INTERNAL_ACCOUNTS : ROUTE_INTERNAL_APPLICATIONS,
+    user?.access !== Scope.account
+      ? ROUTE_INTERNAL_ACCOUNTS
+      : ROUTE_INTERNAL_APPLICATIONS,
     user,
     "You do not have access to this resource",
     data
@@ -38,8 +39,7 @@ export const EditAccount = () => {
   /** Handle error toast at top level... */
   useEffect(() => {
     if (error) {
-      toastError(error.msg || "No access.");
-      navigate(ROUTE_INTERNAL_APPLICATIONS);
+      toastError(error.msg);
     }
   }, [error, data]);
 

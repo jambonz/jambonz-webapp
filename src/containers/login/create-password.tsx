@@ -57,6 +57,7 @@ export const CreatePassword = () => {
     const userSid = sessionStorage.getItem(SESS_USER_SID);
     const oldPassword = sessionStorage.getItem(SESS_OLD_PASSWORD);
     const token = getToken();
+    const userData = parseJwt(token);
 
     if (!oldPassword) {
       navigate(ROUTE_LOGIN);
@@ -73,7 +74,7 @@ export const CreatePassword = () => {
             sessionStorage.clear();
 
             navigate(
-              parseJwt(token).scope !== USER_ACCOUNT
+              userData.scope !== USER_ACCOUNT
                 ? ROUTE_INTERNAL_ACCOUNTS
                 : ROUTE_INTERNAL_APPLICATIONS
             );

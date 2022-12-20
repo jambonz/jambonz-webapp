@@ -10,7 +10,7 @@ import {
 
 import { toastError, useSelectState } from "src/store";
 
-import type { IMessage, Scope, UserData } from "src/store/types";
+import { IMessage, Scope, UserData } from "src/store/types";
 
 export const useScopedRedirect = (
   access: Scope,
@@ -23,7 +23,11 @@ export const useScopedRedirect = (
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
   useEffect(() => {
-    if (data && user?.access === 0 && data?.account_sid !== user?.account_sid) {
+    if (
+      data &&
+      user?.access === Scope.account &&
+      data?.account_sid !== user?.account_sid
+    ) {
       toastError("You do not have access.");
       navigate(redirect);
     }

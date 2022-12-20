@@ -26,6 +26,7 @@ import {
   hasValue,
   formatPhoneNumber,
   useFilteredResults,
+  getUserAccounts,
 } from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 
@@ -125,13 +126,7 @@ export const PhoneNumbers = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={
-            user?.scope === USER_ACCOUNT
-              ? accounts?.filter(
-                  (acct) => acct.account_sid === user.account_sid
-                )
-              : accounts
-          }
+          accounts={user && accounts && getUserAccounts(user, accounts)}
           defaultOption={user?.scope !== USER_ACCOUNT}
         />
       </section>

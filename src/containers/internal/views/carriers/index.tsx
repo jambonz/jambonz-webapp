@@ -6,6 +6,7 @@ import {
   deleteSipGateway,
   deleteSmppGateway,
   getFetch,
+  useApiData,
   useServiceProviderData,
 } from "src/api";
 import { toastSuccess, toastError, useSelectState } from "src/store";
@@ -19,10 +20,14 @@ import {
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Gateways } from "./gateways";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import {
-  API_ACCOUNTS,
-  API_SERVICE_PROVIDERS,
+  getUserAccounts,
+  hasAccountAccess,
+  hasLength,
+  hasValue,
+  useFilteredResults,
+} from "src/utils";
+import {
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
   USER_ACCOUNT,
@@ -35,11 +40,20 @@ import { Scope } from "src/store/types";
 export const Carriers = () => {
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [url, setUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, setCarriers] = useState<Carrier[]>();
+  const [carriers, refetch, error] = useApiData<Carrier[]>(
+    `ServiceProviders/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
+  );
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
+
+  const getUrlForCarriers = () => {
+    if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
+      setUrl(`Accounts/${user?.account_sid || accountSid}/VoipCarriers`);
+    }
+  };
 
   const carriersFiltered = useMemo(() => {
     return carriers
@@ -56,19 +70,9 @@ export const Carriers = () => {
     carriersFiltered
   );
 
-  const getCarriers = (url: string) => {
-    getFetch<Carrier[]>(url)
-      .then(({ json }) => {
-        setCarriers(json);
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
-  };
-
   const handleDelete = () => {
     if (carrier) {
-      if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+      if (user && hasAccountAccess(user, accountSid)) {
         toastError("You do not have permissions to delete this Carrier");
         return;
       }
@@ -102,16 +106,9 @@ export const Carriers = () => {
                   )
               );
           });
-          if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
-            getCarriers(
-              `${API_ACCOUNTS}/${user?.account_sid || accountSid}/VoipCarriers`
-            );
-          } else {
-            getCarriers(
-              `${API_SERVICE_PROVIDERS}/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
-            );
-          }
+          getUrlForCarriers();
           setCarrier(null);
+          refetch();
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
@@ -125,18 +122,11 @@ export const Carriers = () => {
   };
 
   useEffect(() => {
-    if (accountSid) {
-      getCarriers(
-        `${API_ACCOUNTS}/${user?.account_sid || accountSid}/VoipCarriers`
-      );
-    } else {
-      if (currentServiceProvider) {
-        getCarriers(
-          `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/VoipCarriers`
-        );
-      }
+    getUrlForCarriers();
+    if (error) {
+      toastError(error.msg);
     }
-  }, [user, accountSid, currentServiceProvider]);
+  }, [user, url, accountSid]);
 
   return (
     <>
@@ -156,13 +146,7 @@ export const Carriers = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={
-            user?.scope === USER_ACCOUNT
-              ? accounts?.filter(
-                  (acct) => acct.account_sid === user.account_sid
-                )
-              : accounts
-          }
+          accounts={user && accounts && getUserAccounts(user, accounts)}
           label="Used by"
           defaultOption
         />

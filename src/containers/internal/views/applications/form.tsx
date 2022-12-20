@@ -31,11 +31,7 @@ import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
 } from "src/router/routes";
-import {
-  DEFAULT_WEBHOOK,
-  USER_ACCOUNT,
-  WEBHOOK_METHODS,
-} from "src/api/constants";
+import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
 
 import type {
   RecognizerVendors,
@@ -53,7 +49,7 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { useRedirect } from "src/utils";
+import { getUserAccounts, hasAccountAccess, useRedirect } from "src/utils";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -120,7 +116,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+    if (user && hasAccountAccess(user, accountSid)) {
       toastError(
         "You do not have permissions to make changes to these Speech Credentials"
       );
@@ -164,16 +160,18 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .then(() => {
           application.refetch();
           toastSuccess("Application updated successfully");
-          navigate(`${ROUTE_INTERNAL_APPLICATIONS}`);
+          navigate(
+            `${ROUTE_INTERNAL_APPLICATIONS}/${application.data?.application_sid}/edit`
+          );
         })
         .catch((error) => {
           toastError(error.msg);
         });
     } else {
       postApplication(payload)
-        .then(({ json }) => {
+        .then(() => {
           toastSuccess("Application created successfully");
-          navigate(`${ROUTE_INTERNAL_APPLICATIONS}/${json.sid}/edit`);
+          navigate(ROUTE_INTERNAL_APPLICATIONS);
         })
         .catch((error) => {
           toastError(error.msg);
@@ -279,13 +277,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={
-              user?.scope === USER_ACCOUNT
-                ? accounts?.filter(
-                    (acct) => acct.account_sid === user.account_sid
-                  )
-                : accounts
-            }
+            accounts={user && accounts && getUserAccounts(user, accounts)}
             account={[accountSid, setAccountSid]}
           />
         </fieldset>

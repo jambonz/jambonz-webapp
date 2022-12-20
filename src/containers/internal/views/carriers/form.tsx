@@ -39,7 +39,13 @@ import {
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { getIpValidationType, hasLength, isValidPort } from "src/utils";
+import {
+  checkSelectOptions,
+  getIpValidationType,
+  hasAccountAccess,
+  hasLength,
+  isValidPort,
+} from "src/utils";
 
 import type {
   Account,
@@ -441,8 +447,8 @@ export const CarrierForm = ({
     e.preventDefault();
 
     if (
-      user?.scope === USER_ACCOUNT &&
-      (user.account_sid !== accountSid || !accountSid)
+      (user && hasAccountAccess(user, accountSid)) ||
+      (user?.scope === USER_ACCOUNT && !accountSid)
     ) {
       toastError("You do not have permissions to make changes to this Carrier");
       return;
@@ -496,7 +502,7 @@ export const CarrierForm = ({
         smpp_inbound_password: smppInboundPass.trim() || null,
       };
 
-      if (carrier && carrier.data && user) {
+      if (carrier && carrier.data) {
         putCarrier(
           currentServiceProvider.service_provider_sid,
           carrier.data.voip_carrier_sid,
@@ -510,27 +516,28 @@ export const CarrierForm = ({
 
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
-            navigate(ROUTE_INTERNAL_CARRIERS);
+            navigate(
+              `${ROUTE_INTERNAL_CARRIERS}/${carrier.data?.voip_carrier_sid}/edit`
+            );
           })
           .catch((error) => {
             toastError(error.msg);
           });
       } else {
-        if (user)
-          postCarrier(user, currentServiceProvider.service_provider_sid, {
-            ...carrierPayload,
-            service_provider_sid: currentServiceProvider.service_provider_sid,
-          })
-            .then(({ json }) => {
-              handleSipGatewayPutPost(json.sid);
-              handleSmppGatewayPutPost(json.sid);
+        postCarrier(currentServiceProvider.service_provider_sid, {
+          ...carrierPayload,
+          service_provider_sid: currentServiceProvider.service_provider_sid,
+        })
+          .then(({ json }) => {
+            handleSipGatewayPutPost(json.sid);
+            handleSmppGatewayPutPost(json.sid);
 
-              toastSuccess("Carrier created successfully");
-              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
+            toastSuccess("Carrier created successfully");
+            navigate(ROUTE_INTERNAL_CARRIERS);
+          })
+          .catch((error) => {
+            toastError(error.msg);
+          });
       }
     }
   };
@@ -542,26 +549,24 @@ export const CarrierForm = ({
       )?.predefined_carrier_sid;
 
       if (currentServiceProvider && predefinedCarrierSid) {
-        if (user?.scope === USER_ACCOUNT) {
-          postPredefinedCarrierTemplateAccount(accountSid, predefinedCarrierSid)
-            .then(({ json }) => {
-              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
-        } else {
-          postPredefinedCarrierTemplate(
-            currentServiceProvider.service_provider_sid,
-            predefinedCarrierSid
-          )
-            .then(({ json }) => {
-              navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
-        }
+        const postPredefinedCarrier =
+          user?.scope === USER_ACCOUNT
+            ? postPredefinedCarrierTemplateAccount(
+                accountSid,
+                predefinedCarrierSid
+              )
+            : postPredefinedCarrierTemplate(
+                currentServiceProvider.service_provider_sid,
+                predefinedCarrierSid
+              );
+
+        postPredefinedCarrier
+          .then(({ json }) => {
+            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+          })
+          .catch((error) => {
+            toastError(error.msg);
+          });
       }
     }
   }, [predefinedName]);
@@ -605,21 +610,6 @@ export const CarrierForm = ({
       addSmppGateway({ outbound: 1, inbound: 0 });
     }
   }
-
-  const checkOptions = () => {
-    if (user?.scope === USER_ACCOUNT) {
-      if (carrier && carrier.data?.account_sid) {
-        return false;
-      }
-      if (!carrier) {
-        return false;
-      }
-      if (carrier && !carrier.data?.account_sid) {
-        return true;
-      }
-    }
-    return true;
-  };
 
   return (
     <Section slim>
@@ -725,7 +715,7 @@ export const CarrierForm = ({
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption={checkOptions()}
+                defaultOption={user && checkSelectOptions(user, carrier)}
                 disabled={
                   user?.scope !== USER_ACCOUNT
                     ? false

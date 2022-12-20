@@ -2,17 +2,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import {
-  API_ACCOUNTS,
-  API_SERVICE_PROVIDERS,
-  USER_ACCOUNT,
-} from "src/api/constants";
+import { USER_ACCOUNT } from "src/api/constants";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
-import { getFetch, deleteSpeechService, useServiceProviderData } from "src/api";
+import {
+  deleteSpeechService,
+  useServiceProviderData,
+  useApiData,
+} from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import {
   getHumanDateTime,
+  getUserAccounts,
+  hasAccountAccess,
   hasLength,
   hasValue,
   useFilteredResults,
@@ -28,18 +30,19 @@ import { Scope } from "src/store/types";
 export const SpeechServices = () => {
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [url, setUrl] = useState("");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [credential, setCredential] = useState<SpeechCredential | null>(null);
-  const [credentials, setCredentials] = useState<SpeechCredential[]>();
+  const [credentials, refetch, error] = useApiData<SpeechCredential[]>(url);
   const [filter] = useState("");
 
   const credentialsFiltered = useMemo(() => {
     return credentials
-      ? credentials.filter((credentials) =>
+      ? credentials.filter((credential) =>
           accountSid
-            ? credentials.account_sid === accountSid
-            : credentials.account_sid === null
+            ? credential.account_sid === accountSid
+            : credential.account_sid === null
         )
       : [];
   }, [accountSid, accounts, credentials]);
@@ -49,19 +52,19 @@ export const SpeechServices = () => {
     credentialsFiltered
   );
 
-  const getSpeechCredentials = (url: string) => {
-    getFetch<SpeechCredential[]>(url)
-      .then(({ json }) => {
-        setCredentials(json);
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
+  const getSpeechUrl = () => {
+    if (accountSid) {
+      setUrl(`Accounts/${user?.account_sid || accountSid}/SpeechCredentials`);
+    } else {
+      setUrl(
+        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
+      );
+    }
   };
 
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
-      if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+      if (user && hasAccountAccess(user, accountSid)) {
         toastError(
           "You do not have permissions to delete these Speech Credentials"
         );
@@ -72,18 +75,9 @@ export const SpeechServices = () => {
         credential.speech_credential_sid
       )
         .then(() => {
-          if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
-            getSpeechCredentials(
-              `${API_ACCOUNTS}/${
-                user?.account_sid || accountSid
-              }/SpeechCredentials`
-            );
-          } else {
-            getSpeechCredentials(
-              `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
-            );
-          }
+          getSpeechUrl();
           setCredential(null);
+          refetch();
           toastSuccess(
             <>
               Deleted speech service <strong>{credential.vendor}</strong>
@@ -97,18 +91,13 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
-    if (accountSid) {
-      getSpeechCredentials(
-        `${API_ACCOUNTS}/${user?.account_sid || accountSid}/SpeechCredentials`
-      );
-    } else {
-      if (currentServiceProvider) {
-        getSpeechCredentials(
-          `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/SpeechCredentials`
-        );
-      }
+    getSpeechUrl();
+    if (error) {
+      toastError(error.msg);
     }
-  }, [user, accountSid, currentServiceProvider]);
+
+    refetch();
+  }, [user, url, accountSid]);
 
   return (
     <>
@@ -123,13 +112,7 @@ export const SpeechServices = () => {
       <section className="filters filters--ender">
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={
-            user?.scope === USER_ACCOUNT
-              ? accounts?.filter(
-                  (acct) => acct.account_sid === user.account_sid
-                )
-              : accounts
-          }
+          accounts={user && accounts && getUserAccounts(user, accounts)}
           label="Used by"
           defaultOption
         />

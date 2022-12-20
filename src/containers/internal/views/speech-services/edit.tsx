@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { H1 } from "jambonz-ui";
 
-import { useApiData, useServiceProviderData } from "src/api";
+import { useApiData } from "src/api";
 import { toastError, useSelectState } from "src/store";
 import { SpeechServiceForm } from "./form";
 
@@ -10,21 +10,14 @@ import { USER_ACCOUNT } from "src/api/constants";
 import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export const EditSpeechService = () => {
   const params = useParams();
-  const navigate = useNavigate();
   const user = useSelectState("user");
-
-  const [data, refetch, error] =
-    user && user.scope !== USER_ACCOUNT
-      ? useServiceProviderData<SpeechCredential>(
-          `SpeechCredentials/${params.speech_credential_sid}`
-        )
-      : useApiData<SpeechCredential>(
-          `Accounts/${user?.account_sid}/SpeechCredentials/${params.speech_credential_sid}`
-        );
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [url, setUrl] = useState("");
+  const [data, refetch, error] = useApiData<SpeechCredential>(url);
 
   useScopedRedirect(
     Scope.account,
@@ -34,12 +27,24 @@ export const EditSpeechService = () => {
     data
   );
 
-  useEffect(() => {
-    if (error) {
-      toastError(error.msg || "No access.");
-      navigate(ROUTE_INTERNAL_SPEECH);
+  const getUrlForSpeech = () => {
+    if (user && user?.scope === USER_ACCOUNT) {
+      setUrl(
+        `Accounts/${user?.account_sid}/SpeechCredentials/${params.speech_credential_sid}`
+      );
+    } else {
+      setUrl(
+        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials/${params.speech_credential_sid}`
+      );
     }
-  }, [error]);
+  };
+
+  useEffect(() => {
+    getUrlForSpeech();
+    if (error) {
+      toastError(error.msg);
+    }
+  }, [error, data, url]);
 
   return (
     <>

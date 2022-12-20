@@ -122,9 +122,9 @@ export const UserForm = ({ user }: UserFormProps) => {
             ? null
             : accountSid,
       })
-        .then(({ json }) => {
+        .then(() => {
           toastSuccess("User created successfully");
-          navigate(`${ROUTE_INTERNAL_USERS}/${json.user_sid}/edit`);
+          navigate(ROUTE_INTERNAL_USERS);
         })
         .catch((error: { msg: IMessage }) => {
           toastError(error.msg);
@@ -154,7 +154,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         .then(() => {
           user.refetch();
           toastSuccess("User updated successfully");
-          navigate(ROUTE_INTERNAL_USERS);
+          navigate(`${ROUTE_INTERNAL_USERS}/${user.data?.user_sid}/edit`);
         })
         .catch((error: { msg: IMessage }) => {
           toastError(error.msg);
@@ -170,7 +170,9 @@ export const UserForm = ({ user }: UserFormProps) => {
       setIsActive(!!user.data.is_active);
       setEmail(user.data.email);
       setScope(getUserScope(user.data));
-      user.data.account_sid ? setAccountSid(user.data.account_sid) : false;
+      if (user.data.account_sid) {
+        setAccountSid(user.data.account_sid);
+      }
     }
   }, [user]);
 

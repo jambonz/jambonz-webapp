@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { H1 } from "jambonz-ui";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { useApiData } from "src/api";
 import { toastError, useSelectState } from "src/store";
@@ -13,7 +13,6 @@ import { Scope } from "src/store/types";
 
 export const EditCarrier = () => {
   const params = useParams();
-  const navigate = useNavigate();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Carrier>(
     `VoipCarriers/${params.voip_carrier_sid}`
@@ -35,10 +34,9 @@ export const EditCarrier = () => {
 
   useEffect(() => {
     if (error) {
-      toastError(error.msg || "No access.");
-      navigate(ROUTE_INTERNAL_CARRIERS);
+      toastError(error.msg);
     }
-  }, [error]);
+  }, [error, data]);
 
   return (
     <>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useSelectState } from "src/store";
-import { getToken } from "src/router/auth";
+import { getToken, parseJwt } from "src/router/auth";
 import {
   DEV_BASE_URL,
   API_BASE_URL,
@@ -59,7 +59,6 @@ import type {
   LimitCategories,
   PasswordSettings,
 } from "./types";
-import { UserData } from "../store/types";
 import { StatusCodes } from "./types";
 
 /** Wrap all requests to normalize response handling */
@@ -259,21 +258,16 @@ export const postApplication = (payload: Partial<Application>) => {
 };
 
 export const postSpeechService = (
-  user: UserData,
   sid: string,
   payload: Partial<SpeechCredential>
 ) => {
-  if (user.scope === USER_ACCOUNT) {
-    return postFetch<SidResponse, Partial<SpeechCredential>>(
-      `${API_ACCOUNTS}/${user.account_sid}/SpeechCredentials`,
-      payload
-    );
-  } else {
-    return postFetch<SidResponse, Partial<SpeechCredential>>(
-      `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`,
-      payload
-    );
-  }
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials`
+      : `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`;
+
+  return postFetch<SidResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {
@@ -290,22 +284,14 @@ export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
   );
 };
 
-export const postCarrier = (
-  user: UserData,
-  sid: string,
-  payload: Partial<Carrier>
-) => {
-  if (user.scope === USER_ACCOUNT) {
-    return postFetch<SidResponse, Partial<SpeechCredential>>(
-      `${API_ACCOUNTS}/${user.account_sid}/VoipCarriers/`,
-      payload
-    );
-  } else {
-    return postFetch<SidResponse, Partial<Carrier>>(
-      `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
-      payload
-    );
-  }
+export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/VoipCarriers/`
+      : `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`;
+
+  return postFetch<SidResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const postPredefinedCarrierTemplate = (
@@ -394,22 +380,17 @@ export const putApplication = (sid: string, payload: Partial<Application>) => {
 };
 
 export const putSpeechService = (
-  user: UserData,
   sid1: string,
   sid2: string,
   payload: Partial<SpeechCredential>
 ) => {
-  if (user.scope === USER_ACCOUNT) {
-    return putFetch<EmptyResponse, Partial<SpeechCredential>>(
-      `${API_ACCOUNTS}/${user.account_sid}/SpeechCredentials/${sid2}`,
-      payload
-    );
-  } else {
-    return putFetch<EmptyResponse, Partial<SpeechCredential>>(
-      `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
-      payload
-    );
-  }
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials/${sid2}`
+      : `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`;
+
+  return putFetch<EmptyResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const putMsTeamsTenant = (

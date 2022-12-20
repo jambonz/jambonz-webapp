@@ -19,9 +19,10 @@ import {
   SelectFilter,
 } from "src/components";
 import {
+  getUserAccounts,
   hasLength,
   hasValue,
-  sortAlphabetically,
+  sortUsersAlpha,
   useFilteredResults,
 } from "src/utils";
 
@@ -38,15 +39,6 @@ export const Users = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const usersFiltered = useMemo(() => {
-    //find and add account/sp names to user to improve fuzzy search
-    users?.forEach((user) => {
-      user.account_name =
-        accounts?.find((acct) => acct.account_sid === user.account_sid)?.name ||
-        null;
-      user.service_provider_name =
-        user.scope === USER_ADMIN ? null : currentServiceProvider?.name || null;
-    });
-
     const serviceProviderUsers = users?.filter((e) => {
       return (
         e.scope === USER_ADMIN ||
@@ -75,7 +67,7 @@ export const Users = () => {
   }, [accountSid, scopeFilter, users, accounts, currentServiceProvider]);
 
   const filteredUsers = useFilteredResults<User>(filter, usersFiltered)?.sort(
-    (a, b) => sortAlphabetically(a, b)
+    sortUsersAlpha
   );
 
   return (
@@ -103,13 +95,7 @@ export const Users = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={
-            user?.scope === USER_ACCOUNT
-              ? accounts?.filter(
-                  (acct) => acct.account_sid === user.account_sid
-                )
-              : accounts
-          }
+          accounts={user && accounts && getUserAccounts(user, accounts)}
           defaultOption={user?.scope !== USER_ACCOUNT}
         />
       </section>

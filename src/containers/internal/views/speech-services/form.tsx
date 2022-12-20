@@ -28,13 +28,17 @@ import {
   VENDOR_IBM,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { getObscuredSecret } from "src/utils";
+import {
+  checkSelectOptions,
+  getObscuredSecret,
+  getUserAccounts,
+  hasAccountAccess,
+} from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
-import { USER_ACCOUNT } from "src/api/constants";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -100,7 +104,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user?.scope === USER_ACCOUNT && user.account_sid !== accountSid) {
+    if (user && hasAccountAccess(user, accountSid)) {
       toastError(
         "You do not have permissions to make changes to these Speech Credentials"
       );
@@ -133,11 +137,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
       };
 
-      if (credential && credential.data && user) {
+      if (credential && credential.data) {
         /** The backend API returns obscured secrets now so we need to make sure we don't send them back */
         /** Fields not sent back via :PUT are `service_key`, `access_key_id`, `secret_access_key` and `api_key`  */
         putSpeechService(
-          user,
           currentServiceProvider.service_provider_sid,
           credential.data.speech_credential_sid,
           payload
@@ -146,55 +149,39 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             if (credential && credential.data) {
               toastSuccess("Speech credential updated successfully");
               credential.refetch();
-              navigate(ROUTE_INTERNAL_SPEECH);
+              navigate(
+                `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+              );
             }
           })
           .catch((error) => {
             toastError(error.msg);
           });
       } else {
-        if (user)
-          postSpeechService(user, currentServiceProvider.service_provider_sid, {
-            ...payload,
-            service_key:
-              vendor === VENDOR_GOOGLE
-                ? JSON.stringify(googleServiceKey)
-                : null,
-            access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
-            secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
-            api_key:
-              vendor === VENDOR_MICROSOFT ||
-              vendor === VENDOR_WELLSAID ||
-              vendor === VENDOR_DEEPGRAM
-                ? apiKey
-                : null,
-            client_id: vendor === VENDOR_NUANCE ? clientId : null,
-            secret: vendor === VENDOR_NUANCE ? secretKey : null,
+        postSpeechService(currentServiceProvider.service_provider_sid, {
+          ...payload,
+          service_key:
+            vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
+          access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
+          secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+          api_key:
+            vendor === VENDOR_MICROSOFT ||
+            vendor === VENDOR_WELLSAID ||
+            vendor === VENDOR_DEEPGRAM
+              ? apiKey
+              : null,
+          client_id: vendor === VENDOR_NUANCE ? clientId : null,
+          secret: vendor === VENDOR_NUANCE ? secretKey : null,
+        })
+          .then(() => {
+            toastSuccess("Speech credential created successfully");
+            navigate(ROUTE_INTERNAL_SPEECH);
           })
-            .then(({ json }) => {
-              toastSuccess("Speech credential created successfully");
-              navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
+          .catch((error) => {
+            toastError(error.msg);
+          });
       }
     }
-  };
-
-  const checkOptions = () => {
-    if (user?.scope === USER_ACCOUNT) {
-      if (credential && credential.data?.account_sid) {
-        return false;
-      }
-      if (!credential) {
-        return false;
-      }
-      if (credential && !credential.data?.account_sid) {
-        return true;
-      }
-    }
-    return true;
   };
 
   useEffect(() => {
@@ -314,16 +301,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={
-              user?.scope === USER_ACCOUNT
-                ? accounts?.filter(
-                    (acct) => acct.account_sid === user.account_sid
-                  )
-                : accounts
-            }
+            accounts={user && accounts && getUserAccounts(user, accounts)}
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption={checkOptions()}
+            defaultOption={user && checkSelectOptions(user, credential)}
             disabled={credential ? true : false}
           />
         </fieldset>
