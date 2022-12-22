@@ -567,22 +567,27 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
   useEffect(() => {
     let ignore = false;
 
-    getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
-      .then(({ json }) => {
-        if (!ignore) {
-          setResult(json!);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          setError(error);
-        }
-      });
+    // Don't fetch if api url is empty string ""
+    if (apiPath) {
+      getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
+        .then(({ json }) => {
+          if (!ignore) {
+            setResult(json!);
+          }
+        })
+        .catch((error) => {
+          if (!ignore) {
+            setError(error);
+          }
+        });
+    }
 
     return function cleanup() {
       ignore = true;
     };
-  }, [refetch]);
+
+    // Refetch data if refetcher() is called OR api url changes
+  }, [refetch, apiPath]);
 
   return [result, refetcher, error];
 };
