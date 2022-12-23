@@ -3,7 +3,11 @@ import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import { getRecentCalls, useServiceProviderData } from "src/api";
-import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
+import {
+  DATE_SELECTION,
+  PER_PAGE_SELECTION,
+  USER_ACCOUNT,
+} from "src/api/constants";
 import { toastError, useSelectState } from "src/store";
 import {
   Section,
@@ -12,10 +16,12 @@ import {
   Pagination,
   SelectFilter,
 } from "src/components";
-import { getUserAccounts, hasLength, hasValue } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
 import { DetailsItem } from "./details";
 
 import type { Account, CallQuery, RecentCall } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 const directionSelection = [
   { name: "either", value: "io" },
@@ -75,8 +81,12 @@ export const RecentCalls = () => {
 
   /** Reset page number when filters change */
   useEffect(() => {
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+    }
+
     setPageNumber(1);
-  }, [accountSid, dateFilter, directionFilter, statusFilter]);
+  }, [user, accountSid, dateFilter, directionFilter, statusFilter]);
 
   return (
     <>
@@ -85,10 +95,12 @@ export const RecentCalls = () => {
       </section>
       {/* Setting overflow-x auto for now until we have a better responsive solution... */}
       <section className="filters filters--multi">
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={user && accounts && getUserAccounts(user, accounts)}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+          />
+        </ScopedAccess>
         <SelectFilter
           id="date_filter"
           label="Date"

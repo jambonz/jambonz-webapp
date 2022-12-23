@@ -113,11 +113,6 @@ export const Carriers = () => {
   };
 
   useEffect(() => {
-    // Why would we do this condition?
-    // if (user && user.scope === USER_ACCOUNT) {
-    //   setApiUrl(`Accounts/${user.account_sid}/VoipCarriers`);
-    // }
-
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/VoipCarriers`);
     } else if (currentServiceProvider) {

@@ -18,6 +18,7 @@ import type { NaviItem } from "./items";
 import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope, UserData } from "src/store/types";
+import { USER_ADMIN } from "src/api/constants";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -154,6 +155,7 @@ export const Navi = ({
               <select
                 value={currentServiceProvider?.service_provider_sid}
                 onChange={(e) => setSid(e.target.value)}
+                disabled={user?.scope !== USER_ADMIN}
               >
                 {currentServiceProvider ? (
                   serviceProviders.map((serviceProvider) => {

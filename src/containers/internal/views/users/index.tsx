@@ -19,7 +19,6 @@ import {
   SelectFilter,
 } from "src/components";
 import {
-  getUserAccounts,
   hasLength,
   hasValue,
   sortUsersAlpha,
@@ -28,6 +27,8 @@ import {
 
 import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 export const Users = () => {
   const user = useSelectState("user");
@@ -93,11 +94,13 @@ export const Users = () => {
           filter={[scopeFilter, setScopeFilter]}
           options={USER_SCOPE_SELECTION}
         />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={user && accounts && getUserAccounts(user, accounts)}
-          defaultOption={user?.scope !== USER_ACCOUNT}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            defaultOption={user?.scope !== USER_ACCOUNT}
+          />
+        </ScopedAccess>
       </section>
 
       <Section slim>

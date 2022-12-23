@@ -17,7 +17,6 @@ import {
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
-  getUserAccounts,
   hasAccountAccess,
   hasLength,
   hasValue,
@@ -25,6 +24,9 @@ import {
 } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const Applications = () => {
   const user = useSelectState("user");
@@ -66,10 +68,14 @@ export const Applications = () => {
   };
 
   useEffect(() => {
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+    }
+
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/Applications`);
     }
-  }, [accountSid]);
+  }, [accountSid, user]);
 
   return (
     <>
@@ -91,10 +97,12 @@ export const Applications = () => {
           placeholder="Filter applications"
           filter={[filter, setFilter]}
         />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={user && accounts && getUserAccounts(user, accounts)}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+          />
+        </ScopedAccess>
       </section>
       <Section {...(hasLength(filteredApplications) && { slim: true })}>
         <div className="list">

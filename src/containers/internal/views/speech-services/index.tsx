@@ -80,11 +80,6 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
-    // Why would we do this condition?
-    // if (accountSid) {
-    //   setApiUrl(`Accounts/${user?.account_sid}/SpeechCredentials`);
-    // }
-
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
     } else if (currentServiceProvider) {
