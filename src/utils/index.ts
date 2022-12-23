@@ -22,7 +22,6 @@ import type {
   IpType,
   PasswordSettings,
   SpeechCredential,
-  UseApiDataMap,
   User,
   UserScopes,
 } from "src/api/types";
@@ -171,16 +170,16 @@ export const getUserAccounts = (user: UserData, accounts: Account[]) => {
 
 export const checkSelectOptions = (
   user: UserData,
-  resource?: UseApiDataMap<SpeechCredential> | UseApiDataMap<Carrier>
+  resource?: SpeechCredential | Carrier
 ) => {
   if (user?.scope === USER_ACCOUNT) {
     if (!resource) {
       return false;
     }
-    if (resource && resource.data?.account_sid) {
+    if (resource && resource?.account_sid) {
       return false;
     }
-    if (resource && !resource.data?.account_sid) {
+    if (resource && !resource?.account_sid) {
       return true;
     }
   }

@@ -30,11 +30,11 @@ import { Scope } from "src/store/types";
 export const SpeechServices = () => {
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [url, setUrl] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [credential, setCredential] = useState<SpeechCredential | null>(null);
-  const [credentials, refetch, error] = useApiData<SpeechCredential[]>(url);
+  const [credentials, refetch] = useApiData<SpeechCredential[]>(apiUrl);
   const [filter] = useState("");
 
   const credentialsFiltered = useMemo(() => {
@@ -52,16 +52,6 @@ export const SpeechServices = () => {
     credentialsFiltered
   );
 
-  const getSpeechUrl = () => {
-    if (accountSid) {
-      setUrl(`Accounts/${user?.account_sid || accountSid}/SpeechCredentials`);
-    } else {
-      setUrl(
-        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
-      );
-    }
-  };
-
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
       if (user && hasAccountAccess(user, accountSid)) {
@@ -75,7 +65,6 @@ export const SpeechServices = () => {
         credential.speech_credential_sid
       )
         .then(() => {
-          getSpeechUrl();
           setCredential(null);
           refetch();
           toastSuccess(
@@ -91,13 +80,19 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
-    getSpeechUrl();
-    if (error) {
-      toastError(error.msg);
-    }
+    // Why would we do this condition?
+    // if (accountSid) {
+    //   setApiUrl(`Accounts/${user?.account_sid}/SpeechCredentials`);
+    // }
 
-    refetch();
-  }, [user, url, accountSid]);
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
+    } else if (currentServiceProvider) {
+      setApiUrl(
+        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
+      );
+    }
+  }, [currentServiceProvider, accountSid]);
 
   return (
     <>

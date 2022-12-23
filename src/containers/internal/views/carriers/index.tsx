@@ -40,20 +40,12 @@ import { Scope } from "src/store/types";
 export const Carriers = () => {
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [url, setUrl] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, refetch, error] = useApiData<Carrier[]>(
-    `ServiceProviders/${currentServiceProvider?.service_provider_sid}/VoipCarriers`
-  );
+  const [carriers, refetch] = useApiData<Carrier[]>(apiUrl);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
-
-  const getUrlForCarriers = () => {
-    if ((user && user?.scope === USER_ACCOUNT) || accountSid) {
-      setUrl(`Accounts/${user?.account_sid || accountSid}/VoipCarriers`);
-    }
-  };
 
   const carriersFiltered = useMemo(() => {
     return carriers
@@ -106,7 +98,6 @@ export const Carriers = () => {
                   )
               );
           });
-          getUrlForCarriers();
           setCarrier(null);
           refetch();
           toastSuccess(
@@ -122,11 +113,19 @@ export const Carriers = () => {
   };
 
   useEffect(() => {
-    getUrlForCarriers();
-    if (error) {
-      toastError(error.msg);
+    // Why would we do this condition?
+    // if (user && user.scope === USER_ACCOUNT) {
+    //   setApiUrl(`Accounts/${user.account_sid}/VoipCarriers`);
+    // }
+
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/VoipCarriers`);
+    } else if (currentServiceProvider) {
+      setApiUrl(
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`
+      );
     }
-  }, [user, url, accountSid]);
+  }, [user, currentServiceProvider, accountSid]);
 
   return (
     <>

@@ -715,7 +715,7 @@ export const CarrierForm = ({
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption={user && checkSelectOptions(user, carrier)}
+                defaultOption={user && checkSelectOptions(user, carrier?.data)}
                 disabled={
                   user?.scope !== USER_ACCOUNT
                     ? false

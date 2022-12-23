@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, getFetch, useServiceProviderData } from "src/api";
-import { API_ACCOUNTS } from "src/api/constants";
+import { deleteApplication, useServiceProviderData, useApiData } from "src/api";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
@@ -29,25 +28,17 @@ import type { Application, Account } from "src/api/types";
 
 export const Applications = () => {
   const user = useSelectState("user");
-  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
-  const [applications, setApplications] = useState<Application[]>();
+  const [apiUrl, setApiUrl] = useState("");
+  const [applications, refetch] = useApiData<Application[]>(apiUrl);
   const [filter, setFilter] = useState("");
 
   const filteredApplications = useFilteredResults<Application>(
     filter,
     applications
   );
-
-  const getApplications = () => {
-    getFetch<Application[]>(`${API_ACCOUNTS}/${accountSid}/Applications`)
-      .then(({ json }) => setApplications(json))
-      .catch((error) => {
-        toastError(error.msg);
-      });
-  };
 
   const handleDelete = () => {
     if (application) {
@@ -59,7 +50,8 @@ export const Applications = () => {
       }
       deleteApplication(application.application_sid)
         .then(() => {
-          getApplications();
+          // getApplications();
+          refetch();
           setApplication(null);
           toastSuccess(
             <>
@@ -75,18 +67,9 @@ export const Applications = () => {
 
   useEffect(() => {
     if (accountSid) {
-      getApplications();
-    } else if (accounts && !accounts.length) {
-      setApplications([]);
+      setApiUrl(`Accounts/${accountSid}/Applications`);
     }
-  }, [accountSid, accounts]);
-
-  useEffect(() => {
-    return function cleanup() {
-      setAccountSid("");
-      setApplications(undefined);
-    };
-  }, [currentServiceProvider]);
+  }, [accountSid]);
 
   return (
     <>

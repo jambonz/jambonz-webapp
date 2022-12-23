@@ -304,7 +304,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             accounts={user && accounts && getUserAccounts(user, accounts)}
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption={user && checkSelectOptions(user, credential)}
+            defaultOption={user && checkSelectOptions(user, credential?.data)}
             disabled={credential ? true : false}
           />
         </fieldset>

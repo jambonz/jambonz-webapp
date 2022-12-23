@@ -7,7 +7,7 @@ import { useApiData } from "src/api";
 import { getStatus, getReason } from "./utils";
 
 import type { SpeechCredential, CredentialTestResult } from "src/api/types";
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 
 type CredentialStatusProps = {
   cred: SpeechCredential;
@@ -20,9 +20,9 @@ export const CredentialStatus = ({
 }: CredentialStatusProps) => {
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [url, setUrl] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
   const [testResult, testRefetch, testError] =
-    useApiData<CredentialTestResult>(url);
+    useApiData<CredentialTestResult>(apiUrl);
   const notTestedTxt =
     "In order to test your credentials you need to enable TTS/STT.";
 
@@ -59,22 +59,16 @@ export const CredentialStatus = ({
   }
 
   useEffect(() => {
-    if (user && user.scope !== USER_ACCOUNT) {
-      setUrl(
-        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+    if (user && user.scope === USER_ACCOUNT) {
+      setApiUrl(
+        `Accounts/${user.account_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
       );
-    } else {
-      setUrl(
-        `Accounts/${user?.account_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+    } else if (currentServiceProvider) {
+      setApiUrl(
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
       );
     }
-
-    if (testError) {
-      toastError(testError.msg);
-    }
-
-    testRefetch();
-  }, [user, url, cred]);
+  }, [user, cred, currentServiceProvider]);
 
   return (
     <>
