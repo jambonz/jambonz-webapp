@@ -163,9 +163,7 @@ export const hasAccountAccess = (user: UserData, accountSid: string) => {
 };
 
 export const getUserAccounts = (user: UserData, accounts: Account[]) => {
-  return user?.scope === USER_ACCOUNT
-    ? accounts?.filter((acct) => acct.account_sid === user.account_sid)
-    : accounts;
+  return accounts;
 };
 
 export const checkSelectOptions = (
