@@ -13,7 +13,8 @@ import {
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
 import { useAuth } from "src/router/auth";
 
-import { ClipBoard, Section } from "src/components";
+import { ClipBoard, Section, ScopedAccess } from "src/components";
+import { AccountSelect, Passwd, Selector } from "src/components/forms";
 import { DeleteUser } from "./delete";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -25,6 +26,7 @@ import {
   USER_SP,
 } from "src/api/constants";
 import { isValidPasswd, getUserScope, hasLength } from "src/utils";
+import { Scope } from "src/store/types";
 
 import type {
   UserSidResponse,
@@ -35,7 +37,6 @@ import type {
   Account,
 } from "src/api/types";
 import type { IMessage } from "src/store/types";
-import { AccountSelect, Passwd, Selector } from "src/components/forms";
 
 type UserFormProps = {
   user?: UseApiDataMap<User>;
@@ -183,7 +184,7 @@ export const UserForm = ({ user }: UserFormProps) => {
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>
-          {currentUser?.scope !== USER_ACCOUNT && (
+          <ScopedAccess user={currentUser} scope={Scope.service_provider}>
             <fieldset>
               <label htmlFor="scope">Scope:</label>
               <Selector
@@ -193,7 +194,7 @@ export const UserForm = ({ user }: UserFormProps) => {
                 options={
                   currentUser?.scope === USER_SP
                     ? USER_SCOPE_SELECTION.filter(
-                        (e) => e.value !== USER_ADMIN && e.value !== "all"
+                        (opt) => opt.value !== USER_ADMIN && opt.value !== "all"
                       )
                     : USER_SCOPE_SELECTION.filter((e) => e.value !== "all")
                 }
@@ -224,7 +225,7 @@ export const UserForm = ({ user }: UserFormProps) => {
                 </>
               )}
             </fieldset>
-          )}
+          </ScopedAccess>
           {user && user.data && (
             <fieldset>
               <label htmlFor="user_sid">User SID</label>

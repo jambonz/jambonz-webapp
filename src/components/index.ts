@@ -13,6 +13,7 @@ import { SelectFilter } from "./select-filter";
 import { Pagination } from "./pagination";
 import { ApplicationFilter } from "./application-filter";
 import { SearchFilter } from "./search-filter";
+import { ScopedAccess } from "./scoped-access";
 
 export {
   Icons,
@@ -32,4 +33,5 @@ export {
   Pagination,
   ApplicationFilter,
   SearchFilter,
+  ScopedAccess,
 };
