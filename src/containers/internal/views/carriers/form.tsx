@@ -42,7 +42,7 @@ import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   checkSelectOptions,
   getIpValidationType,
-  hasAccountAccess,
+  isUserAccountScope,
   hasLength,
   isValidPort,
 } from "src/utils";
@@ -446,10 +446,7 @@ export const CarrierForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      (user && hasAccountAccess(user, accountSid)) ||
-      (user?.scope === USER_ACCOUNT && !accountSid)
-    ) {
+    if (isUserAccountScope(accountSid, user)) {
       toastError("You do not have permissions to make changes to this Carrier");
       return;
     }
@@ -715,7 +712,7 @@ export const CarrierForm = ({
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption={user && checkSelectOptions(user, carrier?.data)}
+                defaultOption={checkSelectOptions(user, carrier?.data)}
                 disabled={
                   user?.scope !== USER_ACCOUNT
                     ? false

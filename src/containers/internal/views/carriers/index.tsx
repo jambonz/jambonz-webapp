@@ -21,8 +21,7 @@ import {
 import { ScopedAccess } from "src/components/scoped-access";
 import { Gateways } from "./gateways";
 import {
-  getUserAccounts,
-  hasAccountAccess,
+  isUserAccountScope,
   hasLength,
   hasValue,
   useFilteredResults,
@@ -64,7 +63,7 @@ export const Carriers = () => {
 
   const handleDelete = () => {
     if (carrier) {
-      if (user && hasAccountAccess(user, accountSid)) {
+      if (isUserAccountScope(accountSid, user)) {
         toastError("You do not have permissions to delete this Carrier");
         return;
       }
@@ -140,7 +139,7 @@ export const Carriers = () => {
         />
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={user && accounts && getUserAccounts(user, accounts)}
+          accounts={accounts}
           label="Used by"
           defaultOption
         />

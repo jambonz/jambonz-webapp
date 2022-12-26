@@ -17,7 +17,6 @@ import {
 } from "src/api/constants";
 
 import type {
-  Account,
   Carrier,
   IpType,
   PasswordSettings,
@@ -158,16 +157,15 @@ export const getUserScope = (user: User): UserScopes => {
   }
 };
 
-export const hasAccountAccess = (user: UserData, accountSid: string) => {
-  return user?.scope === USER_ACCOUNT && user.account_sid !== accountSid;
-};
-
-export const getUserAccounts = (user: UserData, accounts: Account[]) => {
-  return accounts;
+export const isUserAccountScope = (accountSid: string, user?: UserData) => {
+  return (
+    user?.scope === USER_ACCOUNT &&
+    (user?.account_sid !== accountSid || !accountSid)
+  );
 };
 
 export const checkSelectOptions = (
-  user: UserData,
+  user?: UserData,
   resource?: SpeechCredential | Carrier
 ) => {
   if (user?.scope === USER_ACCOUNT) {

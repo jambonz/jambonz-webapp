@@ -13,8 +13,7 @@ import {
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import {
   getHumanDateTime,
-  getUserAccounts,
-  hasAccountAccess,
+  isUserAccountScope,
   hasLength,
   hasValue,
   useFilteredResults,
@@ -54,7 +53,7 @@ export const SpeechServices = () => {
 
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
-      if (user && hasAccountAccess(user, accountSid)) {
+      if (isUserAccountScope(accountSid, user)) {
         toastError(
           "You do not have permissions to delete these Speech Credentials"
         );
@@ -102,7 +101,7 @@ export const SpeechServices = () => {
       <section className="filters filters--ender">
         <AccountFilter
           account={[accountSid, setAccountSid]}
-          accounts={user && accounts && getUserAccounts(user, accounts)}
+          accounts={accounts}
           label="Used by"
           defaultOption
         />

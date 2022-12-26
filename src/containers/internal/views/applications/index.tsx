@@ -17,7 +17,7 @@ import {
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
-  hasAccountAccess,
+  isUserAccountScope,
   hasLength,
   hasValue,
   useFilteredResults,
@@ -44,7 +44,7 @@ export const Applications = () => {
 
   const handleDelete = () => {
     if (application) {
-      if (user && hasAccountAccess(user, accountSid)) {
+      if (isUserAccountScope(accountSid, user)) {
         toastError(
           "You do not have permissions to make changes to this Application"
         );

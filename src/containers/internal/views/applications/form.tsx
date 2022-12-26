@@ -49,7 +49,7 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { getUserAccounts, hasAccountAccess, useRedirect } from "src/utils";
+import { isUserAccountScope, useRedirect } from "src/utils";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -116,7 +116,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user && hasAccountAccess(user, accountSid)) {
+    if (isUserAccountScope(accountSid, user)) {
       toastError(
         "You do not have permissions to make changes to these Speech Credentials"
       );
@@ -277,7 +277,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={user && accounts && getUserAccounts(user, accounts)}
+            accounts={accounts}
             account={[accountSid, setAccountSid]}
           />
         </fieldset>

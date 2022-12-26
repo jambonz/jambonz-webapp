@@ -31,8 +31,7 @@ import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
   checkSelectOptions,
   getObscuredSecret,
-  getUserAccounts,
-  hasAccountAccess,
+  isUserAccountScope,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
@@ -104,7 +103,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user && hasAccountAccess(user, accountSid)) {
+    if (isUserAccountScope(accountSid, user)) {
       toastError(
         "You do not have permissions to make changes to these Speech Credentials"
       );
@@ -301,10 +300,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         <fieldset>
           <AccountSelect
-            accounts={user && accounts && getUserAccounts(user, accounts)}
+            accounts={accounts}
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption={user && checkSelectOptions(user, credential?.data)}
+            defaultOption={checkSelectOptions(user, credential?.data)}
             disabled={credential ? true : false}
           />
         </fieldset>
