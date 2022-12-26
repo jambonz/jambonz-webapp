@@ -415,10 +415,13 @@ export const putCarrier = (
   sid2: string,
   payload: Partial<Carrier>
 ) => {
-  return putFetch<EmptyResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${sid1}/VoipCarriers/${sid2}`,
-    payload
-  );
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/VoipCarriers/${sid2}`
+      : `${API_SERVICE_PROVIDERS}/${sid1}/VoipCarriers/${sid2}`;
+
+  return putFetch<EmptyResponse, Partial<Carrier>>(apiUrl, payload);
 };
 
 export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
