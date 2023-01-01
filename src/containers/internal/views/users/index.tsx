@@ -19,6 +19,7 @@ import {
   SelectFilter,
 } from "src/components";
 import {
+  filterScopeOptions,
   hasLength,
   hasValue,
   sortUsersAlpha,
@@ -88,12 +89,14 @@ export const Users = () => {
             filter={[filter, setFilter]}
           />
         </section>
-        <SelectFilter
-          id="scope"
-          label="Scope"
-          filter={[scopeFilter, setScopeFilter]}
-          options={USER_SCOPE_SELECTION}
-        />
+        {user && (
+          <SelectFilter
+            id="scope"
+            label="Scope"
+            filter={[scopeFilter, setScopeFilter]}
+            options={filterScopeOptions(USER_SCOPE_SELECTION, user)}
+          />
+        )}
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
             account={[accountSid, setAccountSid]}

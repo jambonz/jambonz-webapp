@@ -2,6 +2,7 @@ import type {
   LimitField,
   LimitUnitOption,
   PasswordSettings,
+  SelectorOptions,
   SipGateway,
   SmppGateway,
   WebHook,
@@ -104,7 +105,7 @@ export const PER_PAGE_SELECTION = [
   { name: "100 / page", value: "100" },
 ];
 
-export const USER_SCOPE_SELECTION = [
+export const USER_SCOPE_SELECTION: SelectorOptions[] = [
   { name: "All Scopes", value: "all" },
   { name: "Admin", value: "admin" },
   { name: "Service Provider", value: "service_provider" },

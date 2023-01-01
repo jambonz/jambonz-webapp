@@ -82,6 +82,11 @@ export interface WebhookOption {
   value: WebhookMethod;
 }
 
+export interface SelectorOptions {
+  name: string;
+  value: string;
+}
+
 export interface Pcap {
   data_url: string;
   file_name: string;

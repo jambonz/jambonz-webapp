@@ -20,6 +20,7 @@ import type {
   Carrier,
   IpType,
   PasswordSettings,
+  SelectorOptions,
   SpeechCredential,
   User,
   UserScopes,
@@ -193,6 +194,21 @@ export const sortUsersAlpha = (a: User, b: User) => {
   }
 
   return 0;
+};
+
+export const filterScopeOptions = (
+  optionArray: SelectorOptions[],
+  user: UserData
+) => {
+  if (user.scope === USER_SP) {
+    return optionArray.filter((option) => option.value !== USER_ADMIN);
+  }
+
+  if (user.scope === USER_ACCOUNT) {
+    return optionArray.filter((option) => option.value === USER_ACCOUNT);
+  }
+
+  return optionArray;
 };
 
 export {
