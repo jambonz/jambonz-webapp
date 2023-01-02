@@ -7,19 +7,46 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { Section, Icons, Spinner, SearchFilter } from "src/components";
 import { DeleteAccount } from "./delete";
 import { toastError, toastSuccess } from "src/store";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
+import {
+  hasLength,
+  hasValue,
+  useFilteredResults,
+  useScopedRedirect,
+} from "src/utils";
+import { USER_ACCOUNT } from "src/api/constants";
 
+import { Scope } from "src/store/types";
 import type { Account } from "src/api/types";
+import { getToken, parseJwt } from "src/router/auth";
 
 export const Accounts = () => {
+  const token = getToken();
+  const user = parseJwt(token);
   const [accounts, refetch] = useServiceProviderData<Account[]>("Accounts");
   const [account, setAccount] = useState<Account | null>(null);
   const [filter, setFilter] = useState("");
 
   const filteredAccounts = useFilteredResults<Account>(filter, accounts);
 
+  useScopedRedirect(
+    Scope.service_provider,
+    `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
+    user,
+    "You do not have permissions to manage all accounts"
+  );
+
   const handleDelete = () => {
     if (account) {
+      if (
+        user?.scope === USER_ACCOUNT &&
+        user.account_sid !== account.account_sid
+      ) {
+        toastError(
+          "You do not have permissions to make changes to this Account"
+        );
+        return;
+      }
+
       deleteAccount(account.account_sid)
         .then(() => {
           refetch();

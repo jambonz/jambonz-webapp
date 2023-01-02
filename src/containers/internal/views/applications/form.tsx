@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, MS } from "jambonz-ui";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { ClipBoard, Section } from "src/components";
 import {
   Selector,
@@ -49,7 +49,7 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { useRedirect } from "src/utils";
+import { isUserAccountScope, useRedirect } from "src/utils";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -58,6 +58,7 @@ type ApplicationFormProps = {
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
   const { synthesis, recognizers } = useSpeechVendors();
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
@@ -115,6 +116,13 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isUserAccountScope(accountSid, user)) {
+      toastError(
+        "You do not have permissions to make changes to these Speech Credentials"
+      );
+      return;
+    }
+
     setMessage("");
 
     if (applications) {
@@ -152,15 +160,18 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .then(() => {
           application.refetch();
           toastSuccess("Application updated successfully");
+          navigate(
+            `${ROUTE_INTERNAL_APPLICATIONS}/${application.data?.application_sid}/edit`
+          );
         })
         .catch((error) => {
           toastError(error.msg);
         });
     } else {
       postApplication(payload)
-        .then(({ json }) => {
+        .then(() => {
           toastSuccess("Application created successfully");
-          navigate(`${ROUTE_INTERNAL_APPLICATIONS}/${json.sid}/edit`);
+          navigate(ROUTE_INTERNAL_APPLICATIONS);
         })
         .catch((error) => {
           toastError(error.msg);

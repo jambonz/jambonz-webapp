@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MS } from "jambonz-ui";
 
-import { CRED_NOT_TESTED, CRED_OK } from "src/api/constants";
+import { CRED_NOT_TESTED, CRED_OK, USER_ACCOUNT } from "src/api/constants";
 import { Icons, Spinner } from "src/components";
-import { useServiceProviderData } from "src/api";
+import { useApiData } from "src/api";
 import { getStatus, getReason } from "./utils";
 
 import type { SpeechCredential, CredentialTestResult } from "src/api/types";
+import { useSelectState } from "src/store";
 
 type CredentialStatusProps = {
   cred: SpeechCredential;
@@ -17,10 +18,11 @@ export const CredentialStatus = ({
   cred,
   showSummary = false,
 }: CredentialStatusProps) => {
+  const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [apiUrl, setApiUrl] = useState("");
   const [testResult, testRefetch, testError] =
-    useServiceProviderData<CredentialTestResult>(
-      `SpeechCredentials/${cred.speech_credential_sid}/test`
-    );
+    useApiData<CredentialTestResult>(apiUrl);
   const notTestedTxt =
     "In order to test your credentials you need to enable TTS/STT.";
 
@@ -55,6 +57,18 @@ export const CredentialStatus = ({
     setPrevCred(cred);
     testRefetch();
   }
+
+  useEffect(() => {
+    if (user && user.scope === USER_ACCOUNT) {
+      setApiUrl(
+        `Accounts/${user.account_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+      );
+    } else if (currentServiceProvider) {
+      setApiUrl(
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+      );
+    }
+  }, [user, cred, currentServiceProvider]);
 
   return (
     <>

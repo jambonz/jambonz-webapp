@@ -2,18 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Button, H1 } from "jambonz-ui";
 import { useLocation, Navigate } from "react-router-dom";
 
-import { toastError } from "src/store";
+import { toastError, useSelectState } from "src/store";
 import { useAuth } from "src/router/auth";
 import { SESS_UNAUTHORIZED, SESS_OLD_PASSWORD } from "src/constants";
 import { Passwd, Message } from "src/components/forms";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_CREATE_PASSWORD,
+  ROUTE_INTERNAL_APPLICATIONS,
 } from "src/router/routes";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const Login = () => {
   const { signin, authorized } = useAuth();
   const location = useLocation();
+  const user = useSelectState("user");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -49,7 +52,11 @@ export const Login = () => {
 
     return (
       <Navigate
-        to={ROUTE_INTERNAL_ACCOUNTS}
+        to={
+          user?.scope !== USER_ACCOUNT
+            ? ROUTE_INTERNAL_ACCOUNTS
+            : ROUTE_INTERNAL_APPLICATIONS
+        }
         state={{ from: location }}
         replace
       />

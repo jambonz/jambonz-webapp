@@ -3,8 +3,12 @@ import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import { getRecentCalls, useServiceProviderData } from "src/api";
-import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
-import { toastError } from "src/store";
+import {
+  DATE_SELECTION,
+  PER_PAGE_SELECTION,
+  USER_ACCOUNT,
+} from "src/api/constants";
+import { toastError, useSelectState } from "src/store";
 import {
   Section,
   AccountFilter,
@@ -16,6 +20,8 @@ import { hasLength, hasValue } from "src/utils";
 import { DetailsItem } from "./details";
 
 import type { Account, CallQuery, RecentCall } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 const directionSelection = [
   { name: "either", value: "io" },
@@ -30,6 +36,7 @@ const statusSelection = [
 ];
 
 export const RecentCalls = () => {
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
@@ -74,8 +81,12 @@ export const RecentCalls = () => {
 
   /** Reset page number when filters change */
   useEffect(() => {
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+    }
+
     setPageNumber(1);
-  }, [accountSid, dateFilter, directionFilter, statusFilter]);
+  }, [user, accountSid, dateFilter, directionFilter, statusFilter]);
 
   return (
     <>
@@ -84,10 +95,12 @@ export const RecentCalls = () => {
       </section>
       {/* Setting overflow-x auto for now until we have a better responsive solution... */}
       <section className="filters filters--multi">
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+          />
+        </ScopedAccess>
         <SelectFilter
           id="date_filter"
           label="Date"
@@ -114,7 +127,7 @@ export const RecentCalls = () => {
           ) : hasLength(calls) ? (
             calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
           ) : (
-            <M>No data</M>
+            <M>No data.</M>
           )}
         </div>
       </Section>

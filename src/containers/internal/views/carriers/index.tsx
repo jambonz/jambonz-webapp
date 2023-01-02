@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, H1, Icon, M } from "jambonz-ui";
 import {
@@ -6,9 +6,10 @@ import {
   deleteSipGateway,
   deleteSmppGateway,
   getFetch,
+  useApiData,
   useServiceProviderData,
 } from "src/api";
-import { toastSuccess, toastError } from "src/store";
+import { toastSuccess, toastError, useSelectState } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import {
   AccountFilter,
@@ -17,16 +18,30 @@ import {
   Spinner,
   SearchFilter,
 } from "src/components";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
-import { API_SIP_GATEWAY, API_SMPP_GATEWAY } from "src/api/constants";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Gateways } from "./gateways";
+import {
+  isUserAccountScope,
+  hasLength,
+  hasValue,
+  useFilteredResults,
+} from "src/utils";
+import {
+  API_SIP_GATEWAY,
+  API_SMPP_GATEWAY,
+  USER_ACCOUNT,
+} from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
 import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
-import { Gateways } from "./gateways";
+import { Scope } from "src/store/types";
 
 export const Carriers = () => {
+  const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [apiUrl, setApiUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, refetch] = useServiceProviderData<Carrier[]>("VoipCarriers");
+  const [carriers, refetch] = useApiData<Carrier[]>(apiUrl);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
@@ -39,7 +54,7 @@ export const Carriers = () => {
             : carrier.account_sid === null
         )
       : [];
-  }, [accountSid, carriers]);
+  }, [accountSid, carrier, carriers]);
 
   const filteredCarriers = useFilteredResults<Carrier>(
     filter,
@@ -48,6 +63,11 @@ export const Carriers = () => {
 
   const handleDelete = () => {
     if (carrier) {
+      if (isUserAccountScope(accountSid, user)) {
+        toastError("You do not have permissions to delete this Carrier");
+        return;
+      }
+
       deleteCarrier(carrier.voip_carrier_sid)
         .then(() => {
           Promise.all([
@@ -77,8 +97,8 @@ export const Carriers = () => {
                   )
               );
           });
-          refetch();
           setCarrier(null);
+          refetch();
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
@@ -90,6 +110,16 @@ export const Carriers = () => {
         });
     }
   };
+
+  useEffect(() => {
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/VoipCarriers`);
+    } else if (currentServiceProvider) {
+      setApiUrl(
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`
+      );
+    }
+  }, [user, currentServiceProvider, accountSid]);
 
   return (
     <>
@@ -123,14 +153,24 @@ export const Carriers = () => {
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">
-                    <Link
-                      to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                      title="Edit Carrier"
-                      className="i"
+                    <ScopedAccess
+                      user={user}
+                      scope={
+                        !accountSid ? Scope.service_provider : Scope.account
+                      }
                     >
+                      <Link
+                        to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
+                        title="Edit Carrier"
+                        className="i"
+                      >
+                        <strong>{carrier.name}</strong>
+                        <Icons.ArrowRight />
+                      </Link>
+                    </ScopedAccess>
+                    {!accountSid && user?.scope === USER_ACCOUNT && (
                       <strong>{carrier.name}</strong>
-                      <Icons.ArrowRight />
-                    </Link>
+                    )}
                   </div>
                   <div className="item__meta">
                     <div>
@@ -150,22 +190,27 @@ export const Carriers = () => {
                     <Gateways carrier={carrier} />
                   </div>
                 </div>
-                <div className="item__actions">
-                  <Link
-                    to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                    title="Edit Carrier"
-                  >
-                    <Icons.Edit3 />
-                  </Link>
-                  <button
-                    type="button"
-                    title="Delete Carrier"
-                    onClick={() => setCarrier(carrier)}
-                    className="btnty"
-                  >
-                    <Icons.Trash />
-                  </button>
-                </div>
+                <ScopedAccess
+                  user={user}
+                  scope={!accountSid ? Scope.service_provider : Scope.account}
+                >
+                  <div className="item__actions">
+                    <Link
+                      to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
+                      title="Edit Carrier"
+                    >
+                      <Icons.Edit3 />
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete Carrier"
+                      onClick={() => setCarrier(carrier)}
+                      className="btnty"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                </ScopedAccess>
               </div>
             ))
           ) : (

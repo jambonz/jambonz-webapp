@@ -28,7 +28,11 @@ import {
   VENDOR_IBM,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { getObscuredSecret } from "src/utils";
+import {
+  checkSelectOptions,
+  getObscuredSecret,
+  isUserAccountScope,
+} from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
@@ -41,6 +45,7 @@ type SpeechServiceFormProps = {
 
 export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const navigate = useNavigate();
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -98,6 +103,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isUserAccountScope(accountSid, user)) {
+      toastError(
+        "You do not have permissions to make changes to these Speech Credentials"
+      );
+      return;
+    }
+
     if (currentServiceProvider) {
       const payload: Partial<SpeechCredential> = {
         vendor,
@@ -136,6 +148,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             if (credential && credential.data) {
               toastSuccess("Speech credential updated successfully");
               credential.refetch();
+              navigate(
+                `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+              );
             }
           })
           .catch((error) => {
@@ -156,14 +171,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               : null,
           client_id: vendor === VENDOR_NUANCE ? clientId : null,
           secret: vendor === VENDOR_NUANCE ? secretKey : null,
-          stt_api_key: sttApiKey || null,
-          stt_region: sttRegion || null,
-          tts_api_key: ttsApiKey || null,
-          tts_region: ttsRegion || null,
         })
-          .then(({ json }) => {
+          .then(() => {
             toastSuccess("Speech credential created successfully");
-            navigate(`${ROUTE_INTERNAL_SPEECH}/${json.sid}/edit`);
+            navigate(ROUTE_INTERNAL_SPEECH);
           })
           .catch((error) => {
             toastError(error.msg);
@@ -292,7 +303,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             accounts={accounts}
             account={[accountSid, setAccountSid]}
             required={false}
-            defaultOption
+            defaultOption={checkSelectOptions(user, credential?.data)}
             disabled={credential ? true : false}
           />
         </fieldset>
@@ -541,7 +552,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                   checked={useCustomTts}
                 />
-                <div>Use for custom text-to-speech</div>
+                <div>Use for custom voice</div>
               </label>
               <label htmlFor="use_custom_tts">
                 Custom voice endpoint{useCustomTts && <span>*</span>}
@@ -577,7 +588,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                   checked={useCustomStt}
                 />
-                <div>Use for custom speech-to-text</div>
+                <div>Use for custom speech model</div>
               </label>
               <label htmlFor="use_custom_stt">
                 Custom speech endpoint id{useCustomStt && <span>*</span>}

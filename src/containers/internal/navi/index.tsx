@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
+import { UserMe } from "../user-me";
 import {
   useSelectState,
   useDispatch,
@@ -16,7 +17,8 @@ import type { NaviItem } from "./items";
 
 import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
-import { Scope } from "src/store/types";
+import { Scope, UserData } from "src/store/types";
+import { USER_ADMIN } from "src/api/constants";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -30,16 +32,17 @@ type NaviProps = CommonProps & {
 
 type ItemProps = CommonProps & {
   item: NaviItem;
+  user?: UserData;
 };
 
-const Item = ({ item, handleMenu }: ItemProps) => {
+const Item = ({ item, user, handleMenu }: ItemProps) => {
   const location = useLocation();
-  const active = location.pathname.includes(item.route);
+  const active = location.pathname.includes(item.route(user));
 
   return (
     <li>
       <Link
-        to={item.route}
+        to={item.route(user)}
         className={classNames({ navi__link: true, "txt--jean": true, active })}
         onClick={handleMenu}
       >
@@ -70,6 +73,20 @@ export const Navi = ({
       (item) => !item.acl || (item.acl && accessControl[item.acl])
     );
   }, [accessControl, currentServiceProvider]);
+
+  const naviTopFiltered = useMemo(() => {
+    return naviTop.filter((item) => {
+      if (item.scope === undefined) {
+        return true;
+      } else if (user) {
+        if (item.restrict) {
+          return user.access === item.scope;
+        }
+
+        return user.access >= item.scope;
+      }
+    });
+  }, [user]);
 
   const handleSubmit = () => {
     postServiceProviders({ name })
@@ -121,6 +138,7 @@ export const Navi = ({
             <Icon subStyle="white" onClick={handleMenu}>
               <Icons.X />
             </Icon>
+            <UserMe />
             <Button
               small
               mainStyle="hollow"
@@ -137,6 +155,7 @@ export const Navi = ({
               <select
                 value={currentServiceProvider?.service_provider_sid}
                 onChange={(e) => setSid(e.target.value)}
+                disabled={user?.scope !== USER_ADMIN}
               >
                 {currentServiceProvider ? (
                   serviceProviders.map((serviceProvider) => {
@@ -172,9 +191,16 @@ export const Navi = ({
         </div>
         <div className="navi__routes">
           <ul>
-            {naviTop.map((item) => (
-              <Item key={item.label} item={item} handleMenu={handleMenu} />
-            ))}
+            {naviTopFiltered.map((item) => {
+              return (
+                <Item
+                  key={item.label}
+                  user={user}
+                  item={item}
+                  handleMenu={handleMenu}
+                />
+              );
+            })}
           </ul>
         </div>
         <div className="navi__byo">
@@ -183,7 +209,12 @@ export const Navi = ({
         <div className="navi__routes">
           <ul>
             {naviByoFiltered.map((item) => (
-              <Item key={item.label} item={item} handleMenu={handleMenu} />
+              <Item
+                key={item.label}
+                user={user}
+                item={item}
+                handleMenu={handleMenu}
+              />
             ))}
           </ul>
         </div>

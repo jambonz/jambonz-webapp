@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { H1, M, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, getFetch, useServiceProviderData } from "src/api";
-import { API_ACCOUNTS } from "src/api/constants";
+import { deleteApplication, useServiceProviderData, useApiData } from "src/api";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
@@ -17,16 +16,25 @@ import {
 } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
+import {
+  isUserAccountScope,
+  hasLength,
+  hasValue,
+  useFilteredResults,
+} from "src/utils";
 
 import type { Application, Account } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const Applications = () => {
-  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
-  const [applications, setApplications] = useState<Application[]>();
+  const [apiUrl, setApiUrl] = useState("");
+  const [applications, refetch] = useApiData<Application[]>(apiUrl);
   const [filter, setFilter] = useState("");
 
   const filteredApplications = useFilteredResults<Application>(
@@ -34,19 +42,18 @@ export const Applications = () => {
     applications
   );
 
-  const getApplications = () => {
-    getFetch<Application[]>(`${API_ACCOUNTS}/${accountSid}/Applications`)
-      .then(({ json }) => setApplications(json))
-      .catch((error) => {
-        toastError(error.msg);
-      });
-  };
-
   const handleDelete = () => {
     if (application) {
+      if (isUserAccountScope(accountSid, user)) {
+        toastError(
+          "You do not have permissions to make changes to this Application"
+        );
+        return;
+      }
       deleteApplication(application.application_sid)
         .then(() => {
-          getApplications();
+          // getApplications();
+          refetch();
           setApplication(null);
           toastSuccess(
             <>
@@ -61,19 +68,14 @@ export const Applications = () => {
   };
 
   useEffect(() => {
-    if (accountSid) {
-      getApplications();
-    } else if (accounts && !accounts.length) {
-      setApplications([]);
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
     }
-  }, [accountSid, accounts]);
 
-  useEffect(() => {
-    return function cleanup() {
-      setAccountSid("");
-      setApplications(undefined);
-    };
-  }, [currentServiceProvider]);
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/Applications`);
+    }
+  }, [accountSid, user]);
 
   return (
     <>
@@ -95,10 +97,12 @@ export const Applications = () => {
           placeholder="Filter applications"
           filter={[filter, setFilter]}
         />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+          />
+        </ScopedAccess>
       </section>
       <Section {...(hasLength(filteredApplications) && { slim: true })}>
         <div className="list">

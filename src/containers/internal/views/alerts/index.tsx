@@ -3,8 +3,12 @@ import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
 import { getAlerts, useServiceProviderData } from "src/api";
-import { DATE_SELECTION, PER_PAGE_SELECTION } from "src/api/constants";
-import { toastError } from "src/store";
+import {
+  DATE_SELECTION,
+  PER_PAGE_SELECTION,
+  USER_ACCOUNT,
+} from "src/api/constants";
+import { toastError, useSelectState } from "src/store";
 import { hasLength, hasValue } from "src/utils";
 import {
   AccountFilter,
@@ -16,8 +20,11 @@ import {
 } from "src/components";
 
 import type { Account, Alert, PageQuery } from "src/api/types";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 export const Alerts = () => {
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
@@ -51,10 +58,14 @@ export const Alerts = () => {
   };
 
   useEffect(() => {
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+    }
+
     if (accountSid) {
       handleFilterChange();
     }
-  }, [accountSid, pageNumber, dateFilter]);
+  }, [user, accountSid, pageNumber, dateFilter]);
 
   /** Reset page number when filters change */
   useEffect(() => {
@@ -67,10 +78,12 @@ export const Alerts = () => {
         <H1 className="h2">Alerts</H1>
       </section>
       <section className="filters filters--multi">
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+          />
+        </ScopedAccess>
         <SelectFilter
           id="date_filter"
           label="Date"
@@ -103,7 +116,7 @@ export const Alerts = () => {
               </div>
             ))
           ) : (
-            <M>No data</M>
+            <M>No data.</M>
           )}
         </div>
       </Section>

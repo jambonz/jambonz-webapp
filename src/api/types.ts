@@ -82,6 +82,11 @@ export interface WebhookOption {
   value: WebhookMethod;
 }
 
+export interface SelectorOptions {
+  name: string;
+  value: string;
+}
+
 export interface Pcap {
   data_url: string;
   file_name: string;
@@ -118,7 +123,9 @@ export interface User {
   is_active: boolean;
   force_change: boolean;
   account_sid: string | null;
+  account_name?: string | null;
   service_provider_sid: string | null;
+  service_provider_name?: string | null;
   initial_password?: string;
   permissions?: UserPermissions[];
 }
@@ -154,6 +161,11 @@ export interface UserJWT {
   account_sid?: string | null;
   service_provider_sid?: string | null;
   permissions: UserPermissions[];
+  name: string;
+}
+
+export interface CurrentUserData {
+  user: User;
 }
 
 export interface ServiceProvider {

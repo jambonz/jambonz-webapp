@@ -10,6 +10,7 @@ import {
   ROUTE_LOGIN,
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
 } from "./routes";
 import {
   SESS_OLD_PASSWORD,
@@ -20,6 +21,8 @@ import {
 } from "src/constants";
 
 import type { UserLogin } from "src/api/types";
+import { USER_ACCOUNT } from "src/api/constants";
+import type { UserData } from "src/store/types";
 
 interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
@@ -85,6 +88,7 @@ export const parseJwt = (token: string) => {
  */
 export const useProvideAuth = (): AuthStateContext => {
   let token = getToken();
+  let userData: UserData;
   const navigate = useNavigate();
   const authorized = token ? true : false;
 
@@ -95,13 +99,18 @@ export const useProvideAuth = (): AuthStateContext => {
           if (response.status === StatusCodes.OK) {
             token = response.json.token;
             setToken(token);
+            userData = parseJwt(token);
 
             if (response.json.force_change) {
               sessionStorage.setItem(SESS_USER_SID, response.json.user_sid);
               sessionStorage.setItem(SESS_OLD_PASSWORD, password);
               navigate(ROUTE_CREATE_PASSWORD);
             } else {
-              navigate(ROUTE_INTERNAL_ACCOUNTS);
+              navigate(
+                userData.scope !== USER_ACCOUNT
+                  ? ROUTE_INTERNAL_ACCOUNTS
+                  : ROUTE_INTERNAL_APPLICATIONS
+              );
             }
 
             resolve(response.json);

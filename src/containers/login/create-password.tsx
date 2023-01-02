@@ -6,7 +6,11 @@ import { isValidPasswd } from "src/utils";
 import { putUser, useApiData } from "src/api";
 import { PasswordSettings, StatusCodes } from "src/api/types";
 import { Passwd, Message } from "src/components/forms";
-import { ROUTE_LOGIN, ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import {
+  ROUTE_LOGIN,
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_INTERNAL_APPLICATIONS,
+} from "src/router/routes";
 import {
   SESS_OLD_PASSWORD,
   SESS_USER_SID,
@@ -17,6 +21,8 @@ import {
 } from "src/constants";
 
 import type { IMessage } from "src/store/types";
+import { USER_ACCOUNT } from "src/api/constants";
+import { getToken, parseJwt } from "src/router/auth";
 
 export const CreatePassword = () => {
   const [passwdSettings] = useApiData<PasswordSettings>("PasswordSettings");
@@ -50,6 +56,8 @@ export const CreatePassword = () => {
 
     const userSid = sessionStorage.getItem(SESS_USER_SID);
     const oldPassword = sessionStorage.getItem(SESS_OLD_PASSWORD);
+    const token = getToken();
+    const userData = parseJwt(token);
 
     if (!oldPassword) {
       navigate(ROUTE_LOGIN);
@@ -65,7 +73,11 @@ export const CreatePassword = () => {
           if (response.status === StatusCodes.NO_CONTENT) {
             sessionStorage.clear();
 
-            navigate(ROUTE_INTERNAL_ACCOUNTS);
+            navigate(
+              userData.scope !== USER_ACCOUNT
+                ? ROUTE_INTERNAL_ACCOUNTS
+                : ROUTE_INTERNAL_APPLICATIONS
+            );
           } else {
             setMessage(MSG_SOMETHING_WRONG);
           }

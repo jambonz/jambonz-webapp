@@ -99,17 +99,16 @@
     }
   }
 
-  &--col4 {
+  &--col3--users {
     .grid__row {
-      grid-template-columns: [col] 30% [col] 30% [col] 30% [col] 10%;
+      grid-template-columns: [col] 40% [col] 58% [col] 2%;
       grid-template-rows: [row] auto [row] auto [row] [row] auto;
       display: grid;
       justify-content: space-between;
 
       > div:last-child {
-        text-align: right;
+        text-align: left;
         padding-right: 0;
-        font-size: 0;
       }
     }
   }

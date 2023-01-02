@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Button, Icon, classNames } from "jambonz-ui";
 
+import { UserMe } from "./user-me";
 import { Navi } from "./navi";
 import { Icons } from "src/components";
 import { toastSuccess } from "src/store";
@@ -43,6 +44,7 @@ export const Layout = () => {
           <Icon subStyle="dark" onClick={handleMenu}>
             <Icons.Menu />
           </Icon>
+          <UserMe />
           <Button
             small
             mainStyle="hollow"

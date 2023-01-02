@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";
 import { ROUTE_INTERNAL_USERS } from "src/router/routes";
-import { USER_SCOPE_SELECTION, USER_ADMIN } from "src/api/constants";
+import {
+  USER_SCOPE_SELECTION,
+  USER_ADMIN,
+  USER_ACCOUNT,
+} from "src/api/constants";
 
 import {
   Section,
@@ -14,12 +18,21 @@ import {
   AccountFilter,
   SelectFilter,
 } from "src/components";
-import { hasLength, hasValue, useFilteredResults } from "src/utils";
+import {
+  filterScopeOptions,
+  hasLength,
+  hasValue,
+  sortUsersAlpha,
+  useFilteredResults,
+} from "src/utils";
 
 import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 export const Users = () => {
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [users] = useApiData<User[]>("Users");
   const [filter, setFilter] = useState("");
@@ -55,7 +68,9 @@ export const Users = () => {
     return [];
   }, [accountSid, scopeFilter, users, accounts, currentServiceProvider]);
 
-  const filteredUsers = useFilteredResults<User>(filter, usersFiltered);
+  const filteredUsers = useFilteredResults<User>(filter, usersFiltered)?.sort(
+    sortUsersAlpha
+  );
 
   return (
     <>
@@ -74,24 +89,27 @@ export const Users = () => {
             filter={[filter, setFilter]}
           />
         </section>
-        <SelectFilter
-          id="scope"
-          label="Scope"
-          filter={[scopeFilter, setScopeFilter]}
-          options={USER_SCOPE_SELECTION}
-        />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-          defaultOption={true}
-        />
+        {user && (
+          <SelectFilter
+            id="scope"
+            label="Scope"
+            filter={[scopeFilter, setScopeFilter]}
+            options={filterScopeOptions(USER_SCOPE_SELECTION, user)}
+          />
+        )}
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            defaultOption={user?.scope !== USER_ACCOUNT}
+          />
+        </ScopedAccess>
       </section>
 
       <Section slim>
-        <div className="grid grid--col4">
+        <div className="grid grid--col3--users">
           <div className="grid__row grid__th">
             <div>User Name</div>
-            <div>Email</div>
             <div>Scope</div>
             <div>&nbsp;</div>
           </div>
@@ -101,9 +119,21 @@ export const Users = () => {
             filteredUsers.map((user) => {
               return (
                 <div className="grid__row" key={user.user_sid}>
-                  <div>{user.name}</div>
-                  <div>{user.email}</div>
-                  <div>{user.scope}</div>
+                  <div>
+                    <Link
+                      to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}
+                      title="Edit user"
+                    >
+                      <div>{user.name}</div>
+                    </Link>
+                  </div>
+                  <div>
+                    {user.scope === USER_ADMIN
+                      ? "All"
+                      : user.account_name
+                      ? `Account: ${user.account_name}`
+                      : `Service Provider: ${user.service_provider_name}`}
+                  </div>
                   <div className="item__actions">
                     <Link
                       to={`${ROUTE_INTERNAL_USERS}/${user.user_sid}/edit`}

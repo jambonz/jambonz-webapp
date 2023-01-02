@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, H1, Icon, MS } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
@@ -7,7 +7,7 @@ import {
   putPhoneNumber,
   useServiceProviderData,
 } from "src/api";
-import { toastError, toastSuccess } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   Icons,
   Section,
@@ -30,8 +30,12 @@ import {
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
+import { USER_ACCOUNT } from "src/api/constants";
+import { ScopedAccess } from "src/components/scoped-access";
+import { Scope } from "src/store/types";
 
 export const PhoneNumbers = () => {
+  const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
@@ -101,6 +105,12 @@ export const PhoneNumbers = () => {
     }
   };
 
+  useEffect(() => {
+    if (user?.account_sid && user.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+    }
+  }, [user]);
+
   return (
     <>
       <section className="mast">
@@ -121,11 +131,13 @@ export const PhoneNumbers = () => {
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}
         />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-          defaultOption
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            defaultOption
+          />
+        </ScopedAccess>
       </section>
       <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
         <div className="list">

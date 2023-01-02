@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useSelectState } from "src/store";
-import { getToken } from "src/router/auth";
+import { getToken, parseJwt } from "src/router/auth";
 import {
   DEV_BASE_URL,
   API_BASE_URL,
@@ -17,6 +17,7 @@ import {
   API_SMPP_GATEWAY,
   API_SIP_GATEWAY,
   API_PASSWORD_SETTINGS,
+  USER_ACCOUNT,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -260,10 +261,13 @@ export const postSpeechService = (
   sid: string,
   payload: Partial<SpeechCredential>
 ) => {
-  return postFetch<SidResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`,
-    payload
-  );
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials`
+      : `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`;
+
+  return postFetch<SidResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {
@@ -281,10 +285,13 @@ export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
 };
 
 export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
-  return postFetch<SidResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`,
-    payload
-  );
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/VoipCarriers/`
+      : `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers/`;
+
+  return postFetch<SidResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const postPredefinedCarrierTemplate = (
@@ -293,6 +300,15 @@ export const postPredefinedCarrierTemplate = (
 ) => {
   return postFetch<SidResponse>(
     `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
+  );
+};
+
+export const postPredefinedCarrierTemplateAccount = (
+  accountSid: string,
+  predefinedCarrierSid: string
+) => {
+  return postFetch<SidResponse>(
+    `${API_BASE_URL}/Accounts/${accountSid}/PredefinedCarriers/${predefinedCarrierSid}`
   );
 };
 
@@ -368,10 +384,13 @@ export const putSpeechService = (
   sid2: string,
   payload: Partial<SpeechCredential>
 ) => {
-  return putFetch<EmptyResponse, Partial<SpeechCredential>>(
-    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
-    payload
-  );
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials/${sid2}`
+      : `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`;
+
+  return putFetch<EmptyResponse, Partial<SpeechCredential>>(apiUrl, payload);
 };
 
 export const putMsTeamsTenant = (
@@ -396,10 +415,13 @@ export const putCarrier = (
   sid2: string,
   payload: Partial<Carrier>
 ) => {
-  return putFetch<EmptyResponse, Partial<Carrier>>(
-    `${API_SERVICE_PROVIDERS}/${sid1}/VoipCarriers/${sid2}`,
-    payload
-  );
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/VoipCarriers/${sid2}`
+      : `${API_SERVICE_PROVIDERS}/${sid1}/VoipCarriers/${sid2}`;
+
+  return putFetch<EmptyResponse, Partial<Carrier>>(apiUrl, payload);
 };
 
 export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
@@ -548,22 +570,27 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
   useEffect(() => {
     let ignore = false;
 
-    getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
-      .then(({ json }) => {
-        if (!ignore) {
-          setResult(json!);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          setError(error);
-        }
-      });
+    // Don't fetch if api url is empty string ""
+    if (apiPath) {
+      getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
+        .then(({ json }) => {
+          if (!ignore) {
+            setResult(json!);
+          }
+        })
+        .catch((error) => {
+          if (!ignore) {
+            setError(error);
+          }
+        });
+    }
 
     return function cleanup() {
       ignore = true;
     };
-  }, [refetch]);
+
+    // Refetch data if refetcher() is called OR api url changes
+  }, [refetch, apiPath]);
 
   return [result, refetcher, error];
 };

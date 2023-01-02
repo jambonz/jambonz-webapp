@@ -21,7 +21,11 @@ import {
   LocalLimits,
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
-import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
+import {
+  DEFAULT_WEBHOOK,
+  USER_ACCOUNT,
+  WEBHOOK_METHODS,
+} from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
 import type {
@@ -42,6 +46,7 @@ type AccountFormProps = {
 
 export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const navigate = useNavigate();
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
   const [name, setName] = useState("");
@@ -137,6 +142,14 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (
+      user?.scope === USER_ACCOUNT &&
+      user.account_sid !== account?.data?.account_sid
+    ) {
+      toastError("You do not have permissions to make changes to this Account");
+      return;
+    }
+
     setMessage("");
 
     if (accounts) {
@@ -173,6 +186,9 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         .then(() => {
           account.refetch();
           toastSuccess("Account updated successfully");
+          if (user?.scope !== USER_ACCOUNT) {
+            navigate(ROUTE_INTERNAL_ACCOUNTS);
+          }
         })
         .catch((error) => {
           toastError(error.msg);

@@ -34,6 +34,7 @@
     display: flex;
     align-items: center;
     grid-gap: ui-vars.$px02;
+    color: ui-vars.$jambonz;
 
     + .item__meta {
       @include mixins.small() {

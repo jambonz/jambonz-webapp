@@ -14,6 +14,7 @@ import {
   useApiData,
   useServiceProviderData,
   postPredefinedCarrierTemplate,
+  postPredefinedCarrierTemplateAccount,
 } from "src/api";
 import {
   DEFAULT_SIP_GATEWAY,
@@ -24,6 +25,7 @@ import {
   NETMASK_OPTIONS,
   TCP_MAX_PORT,
   TECH_PREFIX_MINLENGTH,
+  USER_ACCOUNT,
 } from "src/api/constants";
 import { Icons, Section } from "src/components";
 import {
@@ -37,7 +39,13 @@ import {
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { getIpValidationType, hasLength, isValidPort } from "src/utils";
+import {
+  checkSelectOptions,
+  getIpValidationType,
+  isUserAccountScope,
+  hasLength,
+  isValidPort,
+} from "src/utils";
 
 import type {
   Account,
@@ -63,6 +71,7 @@ export const CarrierForm = ({
   carrierSmppGateways,
 }: CarrierFormProps) => {
   const navigate = useNavigate();
+  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
   const refSipIp = useRef<HTMLInputElement[]>([]);
@@ -437,6 +446,11 @@ export const CarrierForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isUserAccountScope(accountSid, user)) {
+      toastError("You do not have permissions to make changes to this Carrier");
+      return;
+    }
+
     setSipMessage("");
     setSmppInboundMessage("");
     setSmppOutboundMessage("");
@@ -499,6 +513,9 @@ export const CarrierForm = ({
 
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
+            navigate(
+              `${ROUTE_INTERNAL_CARRIERS}/${carrier.data?.voip_carrier_sid}/edit`
+            );
           })
           .catch((error) => {
             toastError(error.msg);
@@ -513,7 +530,7 @@ export const CarrierForm = ({
             handleSmppGatewayPutPost(json.sid);
 
             toastSuccess("Carrier created successfully");
-            navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
+            navigate(ROUTE_INTERNAL_CARRIERS);
           })
           .catch((error) => {
             toastError(error.msg);
@@ -529,10 +546,18 @@ export const CarrierForm = ({
       )?.predefined_carrier_sid;
 
       if (currentServiceProvider && predefinedCarrierSid) {
-        postPredefinedCarrierTemplate(
-          currentServiceProvider.service_provider_sid,
-          predefinedCarrierSid
-        )
+        const postPredefinedCarrier =
+          user?.scope === USER_ACCOUNT
+            ? postPredefinedCarrierTemplateAccount(
+                accountSid,
+                predefinedCarrierSid
+              )
+            : postPredefinedCarrierTemplate(
+                currentServiceProvider.service_provider_sid,
+                predefinedCarrierSid
+              );
+
+        postPredefinedCarrier
           .then(({ json }) => {
             navigate(`${ROUTE_INTERNAL_CARRIERS}/${json.sid}/edit`);
           })
@@ -677,11 +702,24 @@ export const CarrierForm = ({
                 <em>Prepend a leading + on origination attempts.</em>
               </MXS>
               <AccountSelect
-                accounts={accounts}
+                accounts={
+                  user?.scope === USER_ACCOUNT
+                    ? accounts?.filter(
+                        (acct) => user.account_sid === acct.account_sid
+                      )
+                    : accounts
+                }
                 account={[accountSid, setAccountSid]}
                 label="Used By"
                 required={false}
-                defaultOption
+                defaultOption={checkSelectOptions(user, carrier?.data)}
+                disabled={
+                  user?.scope !== USER_ACCOUNT
+                    ? false
+                    : user.account_sid !== accountSid
+                    ? true
+                    : false
+                }
               />
               {accountSid && hasLength(applications) && (
                 <>
@@ -971,6 +1009,7 @@ export const CarrierForm = ({
                         </label>
                       </div>
                     </div>
+
                     <button
                       className="btnty"
                       title="Delete SIP Gateway"

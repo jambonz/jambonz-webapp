@@ -88,6 +88,9 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
         .then(() => {
           phoneNumber.refetch();
           toastSuccess("Phone number updated successfully");
+          navigate(
+            `${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.data?.phone_number_sid}/edit`
+          );
         })
         .catch((error) => {
           toastError(error.msg);
@@ -98,9 +101,9 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
         number: phoneNumberNum,
         voip_carrier_sid: sipTrunkSid,
       })
-        .then(({ json }) => {
+        .then(() => {
           toastSuccess("Phone number created successfully");
-          navigate(`${ROUTE_INTERNAL_PHONE_NUMBERS}/${json.sid}/edit`);
+          navigate(ROUTE_INTERNAL_PHONE_NUMBERS);
         })
         .catch((error) => {
           toastError(error.msg);

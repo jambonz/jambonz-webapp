@@ -4,6 +4,7 @@ import { withAccessControl } from "./with-access-control";
 import { withSelectState } from "./with-select-state";
 import { useRedirect } from "./use-redirect";
 import { useFilteredResults } from "./use-filtered-results";
+import { useScopedRedirect } from "./use-scoped-redirect";
 import {
   FQDN,
   FQDN_TOP_LEVEL,
@@ -15,7 +16,16 @@ import {
   USER_SP,
 } from "src/api/constants";
 
-import type { IpType, PasswordSettings, User, UserScopes } from "src/api/types";
+import type {
+  Carrier,
+  IpType,
+  PasswordSettings,
+  SelectorOptions,
+  SpeechCredential,
+  User,
+  UserScopes,
+} from "src/api/types";
+import type { UserData } from "src/store/types";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -148,6 +158,59 @@ export const getUserScope = (user: User): UserScopes => {
   }
 };
 
+export const isUserAccountScope = (accountSid: string, user?: UserData) => {
+  return (
+    user?.scope === USER_ACCOUNT &&
+    (user?.account_sid !== accountSid || !accountSid)
+  );
+};
+
+export const checkSelectOptions = (
+  user?: UserData,
+  resource?: SpeechCredential | Carrier
+) => {
+  if (user?.scope === USER_ACCOUNT) {
+    if (!resource) {
+      return false;
+    }
+    if (resource && resource?.account_sid) {
+      return false;
+    }
+    if (resource && !resource?.account_sid) {
+      return true;
+    }
+  }
+  return true;
+};
+
+export const sortUsersAlpha = (a: User, b: User) => {
+  const nameA = a.name.toLowerCase();
+  const nameB = b.name.toLowerCase();
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+};
+
+export const filterScopeOptions = (
+  optionArray: SelectorOptions[],
+  user: UserData
+) => {
+  if (user.scope === USER_SP) {
+    return optionArray.filter((option) => option.value !== USER_ADMIN);
+  }
+
+  if (user.scope === USER_ACCOUNT) {
+    return optionArray.filter((option) => option.value === USER_ACCOUNT);
+  }
+
+  return optionArray;
+};
+
 export {
   withSuspense,
   useMobileMedia,
@@ -155,4 +218,5 @@ export {
   withSelectState,
   useRedirect,
   useFilteredResults,
+  useScopedRedirect,
 };
