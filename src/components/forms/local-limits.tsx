@@ -1,10 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { LIMITS, LIMIT_MINS, LIMIT_SESS, LIMIT_UNITS } from "src/api/constants";
+import {
+  LIMITS,
+  LIMIT_MINS,
+  LIMIT_SESS,
+  LIMIT_UNITS,
+  USER_ADMIN,
+} from "src/api/constants";
 import { hasLength } from "src/utils";
 
 import type { Limit, LimitCategories, LimitUnit } from "src/api/types";
 import { Selector } from "./selector";
+import { useSelectState } from "src/store";
+import { ScopedAccess } from "../scoped-access";
+import { Scope } from "src/store/types";
 
 type LocalLimitRef = {
   [key in LimitCategories]?: HTMLInputElement;
@@ -26,6 +35,7 @@ export const LocalLimits = ({
   limits: [localLimits, setLocalLimits],
   inputRef,
 }: LocalLimitsProps) => {
+  const user = useSelectState("user");
   const [unit, setUnit] = useState<Lowercase<LimitUnit>>(LIMIT_SESS);
 
   const updateLimitValue = (category: string) => {
@@ -74,44 +84,65 @@ export const LocalLimits = ({
             value={unit}
             options={LIMIT_UNITS}
             onChange={(e) => setUnit(e.target.value as Lowercase<LimitUnit>)}
+            disabled={user && user.scope !== USER_ADMIN}
           />
         </>
       )}
       {filteredLimits.map(({ category, label }) => {
         return (
-          <React.Fragment key={category}>
-            <label htmlFor={category}>{label}</label>
-            <input
-              ref={(el: HTMLInputElement) => {
-                if (inputRef && inputRef.current) {
-                  inputRef.current[category] = el;
-                }
-              }}
-              id={category}
-              type="number"
-              name={category}
-              placeholder="Enter quantity (0=unlimited)"
-              min="0"
-              value={updateLimitValue(category)}
-              onChange={(e) => {
-                const limit = localLimits.find((l) => l.category === category);
-                const value = e.target.value ? Number(e.target.value) : "";
+          user && (
+            <ScopedAccess
+              user={user}
+              scope={
+                (import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL &&
+                  !category.includes("license") &&
+                  Scope.admin) ||
+                Scope.account
+              }
+            >
+              <React.Fragment key={category}>
+                <label htmlFor={category}>{label}</label>
+                <input
+                  ref={(el: HTMLInputElement) => {
+                    if (inputRef && inputRef.current) {
+                      inputRef.current[category] = el;
+                    }
+                  }}
+                  id={category}
+                  type="number"
+                  name={category}
+                  placeholder="Enter quantity (0=unlimited)"
+                  min="0"
+                  value={updateLimitValue(category)}
+                  disabled={
+                    import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL &&
+                    user.scope !== USER_ADMIN
+                  }
+                  onChange={(e) => {
+                    const limit = localLimits.find(
+                      (l) => l.category === category
+                    );
+                    const value = e.target.value ? Number(e.target.value) : "";
 
-                if (limit) {
-                  setLocalLimits(
-                    localLimits.map((l) =>
-                      l.category === category ? { ...l, quantity: value } : l
-                    )
-                  );
-                } else {
-                  setLocalLimits([
-                    ...localLimits,
-                    { category, quantity: value },
-                  ]);
-                }
-              }}
-            />
-          </React.Fragment>
+                    if (limit) {
+                      setLocalLimits(
+                        localLimits.map((l) =>
+                          l.category === category
+                            ? { ...l, quantity: value }
+                            : l
+                        )
+                      );
+                    } else {
+                      setLocalLimits([
+                        ...localLimits,
+                        { category, quantity: value },
+                      ]);
+                    }
+                  }}
+                />
+              </React.Fragment>
+            </ScopedAccess>
+          )
         );
       })}
     </>
