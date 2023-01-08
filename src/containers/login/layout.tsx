@@ -16,7 +16,9 @@ export const Layout = () => (
         alt="jambonz"
       />
     </header>
-    <Outlet />
+    <section>
+      <Outlet />
+    </section>
     <footer>
       <MXS>jambonz is open source MIT on</MXS>
       <MXS>

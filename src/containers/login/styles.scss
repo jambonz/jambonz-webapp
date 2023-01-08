@@ -9,28 +9,30 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding-left: ui-vars.$px02;
   padding-right: ui-vars.$px02;
 
   header {
-    position: fixed;
     padding: ui-vars.$px03;
-    top: 0;
-    left: 0;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
+  section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+  }
+
   footer {
     color: ui-vars.$grey;
-    position: fixed;
     padding: ui-vars.$px03;
-    bottom: 0;
-    left: 0;
     width: 100%;
     display: flex;
     align-items: center;
