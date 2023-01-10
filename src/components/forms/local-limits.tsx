@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   LIMITS,
-  LIMIT_MINS,
+  LIMIT_MIN,
   LIMIT_SESS,
   LIMIT_UNITS,
   USER_ADMIN,
@@ -51,21 +51,21 @@ export const LocalLimits = ({
   const filteredLimits = import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL
     ? LIMITS.filter((limit) =>
         unit === LIMIT_SESS
-          ? !limit.category.includes(LIMIT_MINS)
-          : limit.category.includes(LIMIT_MINS)
+          ? !limit.category.includes(LIMIT_MIN)
+          : limit.category.includes(LIMIT_MIN)
       )
     : LIMITS.filter(
         (limit) =>
           !limit.category.includes("license") &&
-          !limit.category.includes(LIMIT_MINS)
+          !limit.category.includes(LIMIT_MIN)
       );
 
   useEffect(() => {
     if (hasLength(data)) {
       setLocalLimits(data);
       setUnit(() => {
-        return data.find((l) => l.category.includes(LIMIT_MINS))
-          ? LIMIT_MINS
+        return data.find((l) => l.category.includes(LIMIT_MIN))
+          ? LIMIT_MIN
           : LIMIT_SESS;
       });
     } else {
@@ -77,14 +77,23 @@ export const LocalLimits = ({
     <>
       {import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL && (
         <>
-          <label htmlFor="units">Units</label>
+          <label htmlFor="units">Unit</label>
           <Selector
             id="units"
             name="units"
             value={unit}
             options={LIMIT_UNITS}
-            onChange={(e) => setUnit(e.target.value as Lowercase<LimitUnit>)}
             disabled={user && user.scope !== USER_ADMIN}
+            onChange={(e) => {
+              setUnit(e.target.value as Lowercase<LimitUnit>);
+              if (e.target.value !== unit) {
+                localLimits.forEach((l) => {
+                  if (l.category.includes(unit)) {
+                    l.quantity = "";
+                  }
+                });
+              }
+            }}
           />
         </>
       )}

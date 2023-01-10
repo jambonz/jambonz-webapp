@@ -327,6 +327,7 @@ export const postServiceProviderLimit = (
   sid: string,
   payload: Partial<Limit>
 ) => {
+  console.log(payload);
   return postFetch<SidResponse, Partial<Limit>>(
     `${API_SERVICE_PROVIDERS}/${sid}/Limits`,
     payload

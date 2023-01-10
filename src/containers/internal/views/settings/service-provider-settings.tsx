@@ -125,7 +125,7 @@ export const ServiceProviderSettings = ({
         setInitialCheck(false);
       }
     }
-  }, [currentServiceProvider]);
+  }, [currentServiceProvider, limits]);
 
   return (
     <>
@@ -143,9 +143,11 @@ export const ServiceProviderSettings = ({
           onChange={(e) => setName(e.target.value)}
         />
       </fieldset>
-      <fieldset>
-        <LocalLimits data={limits} limits={[localLimits, setLocalLimits]} />
-      </fieldset>
+      {!import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL && (
+        <fieldset>
+          <LocalLimits data={limits} limits={[localLimits, setLocalLimits]} />
+        </fieldset>
+      )}
       <fieldset>
         <Checkzone
           name="teams"

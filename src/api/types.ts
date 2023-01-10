@@ -16,7 +16,7 @@ export type LimitCategories =
   | "voice_call_minutes"
   | "voice_call_session_license";
 
-export type LimitUnit = "Sessions" | "Minutes";
+export type LimitUnit = "Session" | "Minute";
 
 export interface LimitUnitOption {
   name: LimitUnit;
