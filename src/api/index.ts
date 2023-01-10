@@ -21,7 +21,7 @@ import {
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
-  SESS_UNAUTHORIZED,
+  SESS_FLASH_MSG,
   MSG_SESS_EXPIRED,
   MSG_SERVER_DOWN,
   MSG_SOMETHING_WRONG,
@@ -163,7 +163,7 @@ const handleBadRequest = (msg: string) => {
   sessionStorage.clear();
 
   if (window.location.pathname !== ROUTE_LOGIN) {
-    sessionStorage.setItem(SESS_UNAUTHORIZED, msg);
+    sessionStorage.setItem(SESS_FLASH_MSG, msg);
     window.location.href = ROUTE_LOGIN;
   }
 };

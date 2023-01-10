@@ -15,6 +15,8 @@ import {
 import {
   SESS_OLD_PASSWORD,
   SESS_USER_SID,
+  SESS_FLASH_MSG,
+  MSG_LOGGED_OUT,
   MSG_INCORRECT_CREDS,
   MSG_SOMETHING_WRONG,
   MSG_SERVER_DOWN,
@@ -136,7 +138,8 @@ export const useProvideAuth = (): AuthStateContext => {
   const signout = () => {
     localStorage.clear();
     sessionStorage.clear();
-    navigate(ROUTE_LOGIN);
+    sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+    window.location.href = ROUTE_LOGIN;
   };
 
   return {
