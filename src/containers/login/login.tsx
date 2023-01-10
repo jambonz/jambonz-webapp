@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, H1 } from "jambonz-ui";
 import { useLocation, Navigate } from "react-router-dom";
 
-import { toastError, useSelectState } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { useAuth } from "src/router/auth";
-import { SESS_UNAUTHORIZED, SESS_OLD_PASSWORD } from "src/constants";
+import {
+  SESS_FLASH_MSG,
+  SESS_OLD_PASSWORD,
+  MSG_LOGGED_OUT,
+} from "src/constants";
 import { Passwd, Message } from "src/components/forms";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -31,10 +35,12 @@ export const Login = () => {
 
   /** "Flash" a session message when booted from the app */
   useEffect(() => {
-    const unauthorized = sessionStorage.getItem(SESS_UNAUTHORIZED);
+    const flashMsg = sessionStorage.getItem(SESS_FLASH_MSG);
 
-    if (unauthorized) {
-      toastError(unauthorized);
+    if (flashMsg) {
+      const toastMethod =
+        flashMsg === MSG_LOGGED_OUT ? toastSuccess : toastError;
+      toastMethod(flashMsg);
       sessionStorage.clear();
     }
   }, []);

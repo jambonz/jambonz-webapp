@@ -5,10 +5,8 @@ import { Button, Icon, classNames } from "jambonz-ui";
 import { UserMe } from "./user-me";
 import { Navi } from "./navi";
 import { Icons } from "src/components";
-import { toastSuccess } from "src/store";
 import { useAuth } from "src/router/auth";
 import { useMobileMedia } from "src/utils";
-import { MSG_LOGGED_OUT } from "src/constants";
 
 import "./styles.scss";
 
@@ -19,7 +17,6 @@ export const Layout = () => {
 
   const handleLogout = () => {
     signout();
-    toastSuccess(MSG_LOGGED_OUT);
   };
 
   const handleMenu = () => {

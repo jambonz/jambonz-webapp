@@ -1,7 +1,7 @@
 import React from "react";
 
 export const TOAST_TIME = 3000;
-export const SESS_UNAUTHORIZED = "SESS_UNAUTHORIZED";
+export const SESS_FLASH_MSG = "SESS_FLASH_MSG";
 export const SESS_USER_SID = "SESS_USER_SID";
 export const SESS_OLD_PASSWORD = "SESS_OLD_PASSWORD";
 export const MSG_SESS_EXPIRED =
