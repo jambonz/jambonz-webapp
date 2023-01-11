@@ -306,6 +306,7 @@ export interface SpeechCredential {
   tts_region: null | string;
   stt_api_key: null | string;
   stt_region: null | string;
+  instance_id: null | string;
 }
 
 export interface Alert {

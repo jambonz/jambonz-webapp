@@ -67,6 +67,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [sttApiKey, setSttApiKey] = useState("");
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
+  const [instanceId, setInstanceId] = useState("");
   const [useCustomTts, setUseCustomTts] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
@@ -129,6 +130,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           custom_stt_endpoint: customSttEndpoint || null,
         }),
         ...(vendor === VENDOR_IBM && {
+          instance_id: instanceId,
           stt_api_key: sttApiKey || null,
           stt_region: sttRegion || null,
           tts_api_key: ttsApiKey || null,
@@ -251,6 +253,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.stt_region) {
         setSttRegion(credential.data.stt_region);
+      }
+
+      if (credential.data.instance_id) {
+        setInstanceId(credential.data.instance_id);
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
@@ -527,6 +533,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 value={sttApiKey ? getObscuredSecret(sttApiKey) : sttApiKey}
                 onChange={(e) => setSttApiKey(e.target.value)}
                 disabled={credential ? true : false}
+              />
+              <label htmlFor="instance_id">
+                Speech Instance ID {sttCheck && <span>*</span>}
+              </label>
+              <input
+                id="instance_id"
+                required={sttCheck}
+                type="text"
+                name="instance_id"
+                placeholder="Instance ID"
+                value={instanceId}
+                onChange={(e) => setInstanceId(e.target.value)}
               />
             </fieldset>
           )}
