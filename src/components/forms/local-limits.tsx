@@ -101,6 +101,7 @@ export const LocalLimits = ({
         return (
           user && (
             <ScopedAccess
+              key={category}
               user={user}
               scope={
                 (import.meta.env.VITE_APP_ENABLE_ACCOUNT_LIMITS_ALL &&
