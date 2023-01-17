@@ -152,17 +152,17 @@ export const LIMITS: LimitField[] = [
   },
 ];
 
-export const LIMIT_MINS = "minutes";
-export const LIMIT_SESS = "sessions";
+export const LIMIT_MIN = "minute";
+export const LIMIT_SESS = "session";
 
 export const LIMIT_UNITS: LimitUnitOption[] = [
   {
-    name: "Sessions",
+    name: "Session",
     value: LIMIT_SESS,
   },
   {
-    name: "Minutes",
-    value: LIMIT_MINS,
+    name: "Minute",
+    value: LIMIT_MIN,
   },
 ];
 
