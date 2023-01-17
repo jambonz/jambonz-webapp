@@ -60,7 +60,11 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             {Object.keys(call).map((key) => (
               <React.Fragment key={key}>
                 <div>{key}:</div>
-                <div>{call[key as keyof typeof call].toString()}</div>
+                <div>
+                  {call[key as keyof typeof call]
+                    ? call[key as keyof typeof call].toString()
+                    : "null"}
+                </div>
               </React.Fragment>
             ))}
           </div>
