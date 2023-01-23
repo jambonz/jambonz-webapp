@@ -138,11 +138,11 @@ export const UserForm = ({ user }: UserFormProps) => {
       }
 
       putUser(user.data.user_sid, {
-        name: name || user.data.name,
-        email: email || user.data.email,
+        name: name,
+        email: email,
         initial_password: initialPassword || null,
-        force_change: forceChange || !!user.data.force_change,
-        is_active: isActive || !!user.data.is_active,
+        force_change: forceChange,
+        is_active: isActive,
         service_provider_sid:
           scope === USER_ADMIN && currentUser?.scope === USER_ADMIN
             ? null

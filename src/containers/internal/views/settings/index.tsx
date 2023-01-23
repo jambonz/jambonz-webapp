@@ -9,7 +9,7 @@ import { ScopedAccess } from "src/components/scoped-access";
 import type { ServiceProvider } from "src/api/types";
 import { Section } from "src/components";
 
-import { USER_ADMIN } from "src/api/constants";
+import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { useSelectState } from "src/store";
 import { Scope } from "src/store/types";
@@ -56,16 +56,17 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
         </form>
       </Section>
 
-      {currentServiceProvider && activeTab === "serviceProvider" && (
-        <ApiKeys
-          key={currentServiceProvider.service_provider_sid}
-          path={`ServiceProviders/${currentServiceProvider.service_provider_sid}/ApiKeys`}
-          post={{
-            service_provider_sid: currentServiceProvider.service_provider_sid,
-          }}
-          label="Service provider"
-        />
-      )}
+      {currentServiceProvider &&
+        (activeTab === "serviceProvider" || user?.scope !== USER_ACCOUNT) && (
+          <ApiKeys
+            key={currentServiceProvider.service_provider_sid}
+            path={`ServiceProviders/${currentServiceProvider.service_provider_sid}/ApiKeys`}
+            post={{
+              service_provider_sid: currentServiceProvider.service_provider_sid,
+            }}
+            label="Service provider"
+          />
+        )}
     </>
   );
 };
