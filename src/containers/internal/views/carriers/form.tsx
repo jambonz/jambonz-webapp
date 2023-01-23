@@ -481,6 +481,7 @@ export const CarrierForm = ({
         name: carrierName.trim(),
         e164_leading_plus: e164,
         application_sid: applicationSid || null,
+        service_provider_sid: currentServiceProvider.service_provider_sid,
         account_sid: accountSid || null,
         requires_register: sipRegister,
         register_username: sipUser.trim() || null,
