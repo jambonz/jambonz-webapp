@@ -110,7 +110,7 @@ export const LocalLimits = ({
                 Scope.account
               }
             >
-              <React.Fragment key={category}>
+              <React.Fragment>
                 <label htmlFor={category}>{label}</label>
                 <input
                   ref={(el: HTMLInputElement) => {

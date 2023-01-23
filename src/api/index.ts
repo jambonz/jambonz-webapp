@@ -530,19 +530,19 @@ export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
   );
 };
 
-export const getRecentCall = (sid: string, callSid: string) => {
+export const getRecentCall = (sid: string, sipCallId: string) => {
   return getFetch<TotalResponse>(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${callSid}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${callSid}`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}`
   );
 };
 
-export const getPcap = (sid: string, callSid: string) => {
+export const getPcap = (sid: string, sipCallId: string) => {
   return getBlob(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${callSid}/pcap`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${callSid}/pcap`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/pcap`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/pcap`
   );
 };
 

@@ -101,9 +101,7 @@ export const Alerts = () => {
                 <div className="item__info">
                   <div className="item__title txt--jam">
                     <strong>
-                      {dayjs
-                        .unix(alert.time / 1000)
-                        .format("YYYY MM.DD hh:mm a")}
+                      {dayjs(alert.time).format("YYYY MM.DD hh:mm a")}
                     </strong>
                   </div>
                   <div className="item__meta">
