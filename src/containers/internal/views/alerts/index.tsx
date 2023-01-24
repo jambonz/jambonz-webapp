@@ -93,7 +93,7 @@ export const Alerts = () => {
       </section>
       <Section {...(hasLength(alerts) && { slim: true })}>
         <div className="list">
-          {!hasValue(alerts) ? (
+          {!hasValue(alerts) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(alerts) ? (
             alerts.map((alert) => (

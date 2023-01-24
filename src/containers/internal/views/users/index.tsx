@@ -113,7 +113,7 @@ export const Users = () => {
             <div>Scope</div>
             <div>&nbsp;</div>
           </div>
-          {!hasValue(users) ? (
+          {!hasValue(users) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(filteredUsers) ? (
             filteredUsers.map((user) => {

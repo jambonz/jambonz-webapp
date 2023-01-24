@@ -106,7 +106,7 @@ export const Applications = () => {
       </section>
       <Section {...(hasLength(filteredApplications) && { slim: true })}>
         <div className="list">
-          {!hasValue(applications) ? (
+          {!hasValue(applications) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(filteredApplications) ? (
             filteredApplications.map((application) => {
