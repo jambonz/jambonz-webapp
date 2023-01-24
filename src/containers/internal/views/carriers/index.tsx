@@ -146,7 +146,7 @@ export const Carriers = () => {
       </section>
       <Section {...(hasLength(filteredCarriers) && { slim: true })}>
         <div className="list">
-          {!hasValue(carriers) && !hasLength(accounts) ? (
+          {!hasValue(carriers) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(filteredCarriers) ? (
             filteredCarriers.map((carrier) => (
