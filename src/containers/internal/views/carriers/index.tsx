@@ -47,6 +47,10 @@ export const Carriers = () => {
   const [filter, setFilter] = useState("");
 
   const carriersFiltered = useMemo(() => {
+    if (user?.scope === USER_ACCOUNT) {
+      return carriers;
+    }
+
     return carriers
       ? carriers.filter((carrier) =>
           accountSid
@@ -137,12 +141,14 @@ export const Carriers = () => {
           placeholder="Filter carriers"
           filter={[filter, setFilter]}
         />
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-          label="Used by"
-          defaultOption
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            label="Used by"
+            defaultOption
+          />
+        </ScopedAccess>
       </section>
       <Section {...(hasLength(filteredCarriers) && { slim: true })}>
         <div className="list">
@@ -156,7 +162,9 @@ export const Carriers = () => {
                     <ScopedAccess
                       user={user}
                       scope={
-                        !accountSid ? Scope.service_provider : Scope.account
+                        !carrier.account_sid
+                          ? Scope.service_provider
+                          : Scope.account
                       }
                     >
                       <Link
@@ -168,7 +176,7 @@ export const Carriers = () => {
                         <Icons.ArrowRight />
                       </Link>
                     </ScopedAccess>
-                    {!accountSid && user?.scope === USER_ACCOUNT && (
+                    {!carrier.account_sid && user?.scope === USER_ACCOUNT && (
                       <strong>{carrier.name}</strong>
                     )}
                   </div>
@@ -192,7 +200,11 @@ export const Carriers = () => {
                 </div>
                 <ScopedAccess
                   user={user}
-                  scope={!accountSid ? Scope.service_provider : Scope.account}
+                  scope={
+                    !carrier.account_sid
+                      ? Scope.service_provider
+                      : Scope.account
+                  }
                 >
                   <div className="item__actions">
                     <Link

@@ -37,6 +37,10 @@ export const SpeechServices = () => {
   const [filter] = useState("");
 
   const credentialsFiltered = useMemo(() => {
+    if (user?.scope === USER_ACCOUNT) {
+      return credentials;
+    }
+
     return credentials
       ? credentials.filter((credential) =>
           accountSid
@@ -99,12 +103,14 @@ export const SpeechServices = () => {
         </Link>
       </section>
       <section className="filters filters--ender">
-        <AccountFilter
-          account={[accountSid, setAccountSid]}
-          accounts={accounts}
-          label="Used by"
-          defaultOption
-        />
+        <ScopedAccess user={user} scope={Scope.service_provider}>
+          <AccountFilter
+            account={[accountSid, setAccountSid]}
+            accounts={accounts}
+            label="Used by"
+            defaultOption
+          />
+        </ScopedAccess>
       </section>
       <Section {...(hasLength(filteredCredentials) && { slim: true })}>
         <div className="list">
@@ -119,7 +125,9 @@ export const SpeechServices = () => {
                       <ScopedAccess
                         user={user}
                         scope={
-                          !accountSid ? Scope.service_provider : Scope.account
+                          !credential.account_sid
+                            ? Scope.service_provider
+                            : Scope.account
                         }
                       >
                         <Link
@@ -131,9 +139,10 @@ export const SpeechServices = () => {
                           <Icons.ArrowRight />
                         </Link>
                       </ScopedAccess>
-                      {!accountSid && user?.scope === USER_ACCOUNT && (
-                        <strong>Vendor: {credential.vendor}</strong>
-                      )}
+                      {!credential.account_sid &&
+                        user?.scope === USER_ACCOUNT && (
+                          <strong>Vendor: {credential.vendor}</strong>
+                        )}
                     </div>
                     <div className="item__meta">
                       <div>
@@ -177,7 +186,11 @@ export const SpeechServices = () => {
                   </div>
                   <ScopedAccess
                     user={user}
-                    scope={!accountSid ? Scope.service_provider : Scope.account}
+                    scope={
+                      !credential.account_sid
+                        ? Scope.service_provider
+                        : Scope.account
+                    }
                   >
                     <div className="item__actions">
                       <Link
