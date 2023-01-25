@@ -43,7 +43,7 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
               <Tab id="admin" label="Admin">
                 <AdminSettings />
               </Tab>
-              <Tab id="serviceProvider" label="Service Provider">
+              <Tab id="serviceProvider" label="Service provider">
                 <ServiceProviderSettings />
               </Tab>
             </Tabs>

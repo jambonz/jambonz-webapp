@@ -90,7 +90,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       required: true,
     },
     {
-      label: "Call Status",
+      label: "Call status",
       prefix: "status_webhook",
       stateVal: statusWebhook,
       stateSet: setStatusWebhook,
@@ -287,7 +287,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               <div className="multi">
                 <div className="inp">
                   <label htmlFor={`${webhook.prefix}_url`}>
-                    {webhook.label} Webhook{" "}
+                    {webhook.label} webhook{" "}
                     {webhook.required ? <span>*</span> : ""}
                   </label>
                   <input
@@ -324,7 +324,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               <Checkzone
                 hidden
                 name={webhook.prefix}
-                label="Use HTTP Basic Authentication"
+                label="Use HTTP basic authentication"
                 initialCheck={webhook.initialCheck}
               >
                 <MS>{MSG_WEBHOOK_FIELDS}</MS>
@@ -375,7 +375,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         })}
         {synthesis && (
           <fieldset>
-            <label htmlFor="synthesis_vendor">Speech Synthesis Vendor</label>
+            <label htmlFor="synthesis_vendor">Speech synthesis vendor</label>
             <Selector
               id="synthesis_vendor"
               name="synthesis_vendor"
@@ -471,7 +471,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         )}
         {recognizers && (
           <fieldset>
-            <label htmlFor="recognizer_vendor">Speech Recognizer Vendor</label>
+            <label htmlFor="recognizer_vendor">Speech recognizer vendor</label>
             <Selector
               id="recognizer_vendor"
               name="recognizer_vendor"

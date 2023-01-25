@@ -697,7 +697,7 @@ export const CarrierForm = ({
                   checked={e164}
                   onChange={(e) => setE164(e.target.checked)}
                 />
-                <div>E.164 Syntax</div>
+                <div>E.164 syntax</div>
               </label>
               <MXS>
                 <em>Prepend a leading + on origination attempts.</em>
@@ -711,7 +711,7 @@ export const CarrierForm = ({
                     : accounts
                 }
                 account={[accountSid, setAccountSid]}
-                label="Used By"
+                label="Used by"
                 required={false}
                 defaultOption={checkSelectOptions(user, carrier?.data)}
                 disabled={
@@ -739,7 +739,7 @@ export const CarrierForm = ({
               <Checkzone
                 hidden
                 name="sip_credentials"
-                label="Outbound Authentication"
+                label="Outbound authentication"
                 initialCheck={initialRegister}
                 handleChecked={(e) => {
                   if (!e.target.checked) {
@@ -801,7 +801,7 @@ export const CarrierForm = ({
                       calls.
                     </MS>
                     <label htmlFor="sip_realm">
-                      SIP Realm{sipRegister ? <span>*</span> : ""}
+                      SIP realm{sipRegister ? <span>*</span> : ""}
                     </label>
                     <input
                       id="sip_realm"
@@ -812,7 +812,7 @@ export const CarrierForm = ({
                       required={sipRegister}
                       onChange={(e) => setSipRealm(e.target.value)}
                     />
-                    <label htmlFor="from_user">SIP From User</label>
+                    <label htmlFor="from_user">SIP from user</label>
                     <input
                       id="from_user"
                       name="from_user"
@@ -821,7 +821,7 @@ export const CarrierForm = ({
                       placeholder="Optional: specify user part of SIP From header"
                       onChange={(e) => setFromUser(e.target.value)}
                     />
-                    <label htmlFor="from_domain">SIP From Domain</label>
+                    <label htmlFor="from_domain">SIP from domain</label>
                     <input
                       id="from_domain"
                       name="from_domain"
@@ -840,7 +840,7 @@ export const CarrierForm = ({
                           setRegPublicIpInContact(e.target.checked)
                         }
                       />
-                      <div>Use Public IP in Contact</div>
+                      <div>Use public IP in contact</div>
                     </label>
                   </>
                 )}
@@ -850,7 +850,7 @@ export const CarrierForm = ({
               <Checkzone
                 hidden
                 name="tech_prefix_check"
-                label="Tech Prefix"
+                label="Tech prefix"
                 initialCheck={initialPrefix}
                 handleChecked={(e) => {
                   if (!e.target.checked) {
@@ -904,13 +904,13 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <label htmlFor="sip_gateways">
-                SIP Gateways<span>*</span>
+                SIP gateways<span>*</span>
               </label>
               <MXS>
                 <em>At least one SIP gateway is required.</em>
               </MXS>
               <label htmlFor="sip_gateways">
-                Network Address / Port / Netmask
+                Network address / Port / Netmask
               </label>
               {sipMessage && <Message message={sipMessage} />}
               {hasLength(sipGateways) &&

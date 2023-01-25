@@ -399,7 +399,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                   <Checkzone
                     hidden
                     name={webhook.prefix}
-                    label="Use HTTP Basic Authentication"
+                    label="Use HTTP basic authentication"
                     initialCheck={webhook.initialCheck}
                   >
                     <MS>{MSG_WEBHOOK_FIELDS}</MS>

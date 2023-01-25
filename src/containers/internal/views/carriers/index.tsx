@@ -220,7 +220,7 @@ export const Carriers = () => {
       </Section>
       <Section clean>
         <Button small as={Link} to={`${ROUTE_INTERNAL_CARRIERS}/add`}>
-          Add Carrier
+          Add carrier
         </Button>
       </Section>
       {carrier && (

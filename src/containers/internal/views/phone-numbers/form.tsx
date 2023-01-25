@@ -159,7 +159,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
           </fieldset>
           <fieldset>
             <label htmlFor="sip_trunk">
-              SIP Trunk <span>*</span>
+              Carrier <span>*</span>
             </label>
             <Selector
               id="sip_trunk"
