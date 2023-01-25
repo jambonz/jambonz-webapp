@@ -151,7 +151,7 @@ export const ServiceProviderSettings = ({
       <fieldset>
         <Checkzone
           name="teams"
-          label="Enable MS Teams direct routing"
+          label="Enable MS Teams Direct Routing"
           initialCheck={initialCheck}
           handleChecked={handleChecked}
         >
