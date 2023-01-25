@@ -56,7 +56,7 @@ export const naviTop: NaviItem[] = [
     route: () => ROUTE_INTERNAL_APPLICATIONS,
   },
   {
-    label: "Recent Calls",
+    label: "Recent calls",
     icon: Icons.List,
     route: () => ROUTE_INTERNAL_RECENT_CALLS,
   },

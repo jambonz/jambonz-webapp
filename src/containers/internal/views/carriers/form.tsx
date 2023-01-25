@@ -1097,7 +1097,7 @@ export const CarrierForm = ({
                 }}
               />
               <label htmlFor="outbound_smpp">
-                Carrier SMPP Gateways
+                Carrier SMPP gateways
                 <span>{smppSystemId || smppPass ? "*" : ""}</span>
               </label>
               <MXS>
@@ -1250,7 +1250,7 @@ export const CarrierForm = ({
                 }}
               />
               <label htmlFor="inbound_smpp">
-                Carrier IP Address(es) to whitelist
+                Carrier IP address(es) to whitelist
               </label>
               <MXS>
                 <em>
