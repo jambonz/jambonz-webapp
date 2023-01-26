@@ -108,7 +108,7 @@ export const SpeechServices = () => {
       </section>
       <Section {...(hasLength(filteredCredentials) && { slim: true })}>
         <div className="list">
-          {!hasValue(filteredCredentials) ? (
+          {!hasValue(filteredCredentials) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(filteredCredentials) ? (
             filteredCredentials.map((credential) => {

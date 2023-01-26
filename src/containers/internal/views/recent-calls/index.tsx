@@ -122,7 +122,7 @@ export const RecentCalls = () => {
       </section>
       <Section {...(hasLength(calls) && { slim: true })}>
         <div className="list">
-          {!hasValue(calls) ? (
+          {!hasValue(calls) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(calls) ? (
             calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
