@@ -404,7 +404,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor === VENDOR_AWS && (
           <fieldset>
             <label htmlFor="aws_access_key">
-              Access Key ID<span>*</span>
+              Access key ID<span>*</span>
             </label>
             <input
               id="aws_access_key"
@@ -417,7 +417,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               disabled={credential ? true : false}
             />
             <label htmlFor="aws_secret_key">
-              Secret Access Key<span>*</span>
+              Secret access key<span>*</span>
             </label>
             <Passwd
               id="aws_secret_key"
@@ -439,13 +439,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_DEEPGRAM) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
-              API Key<span>*</span>
+              API key<span>*</span>
             </label>
             <Passwd
               id={`${vendor}_apikey`}
               required
               name={`${vendor}_apikey`}
-              placeholder="API Key"
+              placeholder="API key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={credential ? true : false}
@@ -479,7 +479,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           regions[vendor as keyof RegionVendors] && (
             <fieldset>
               <label htmlFor="tts_region">
-                TTS Region {ttsCheck && <span>*</span>}
+                TTS region {ttsCheck && <span>*</span>}
               </label>
               <Selector
                 id="tts_region"
@@ -495,19 +495,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 onChange={(e) => setTtsRegion(e.target.value)}
               />
               <label htmlFor={`${vendor}_tts_apikey`}>
-                TTS API Key {ttsCheck && <span>*</span>}
+                TTS API key {ttsCheck && <span>*</span>}
               </label>
               <Passwd
                 id={`${vendor}_tts_apikey`}
                 required={ttsCheck}
                 name={`${vendor}_tts_apikey`}
-                placeholder="TTS API Key"
+                placeholder="TTS API key"
                 value={ttsApiKey ? getObscuredSecret(ttsApiKey) : ttsApiKey}
                 onChange={(e) => setTtsApiKey(e.target.value)}
                 disabled={credential ? true : false}
               />
               <label htmlFor="stt_region">
-                STT Region {sttCheck && <span>*</span>}
+                STT region {sttCheck && <span>*</span>}
               </label>
               <Selector
                 id="stt_region"
@@ -523,19 +523,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 onChange={(e) => setSttRegion(e.target.value)}
               />
               <label htmlFor={`${vendor}_sst_apikey`}>
-                SST API Key {sttCheck && <span>*</span>}
+                SST API key {sttCheck && <span>*</span>}
               </label>
               <Passwd
                 id={`${vendor}_stt_apikey`}
                 required={sttCheck}
                 name={`${vendor}_stt_apikey`}
-                placeholder="STT API Key"
+                placeholder="STT API key"
                 value={sttApiKey ? getObscuredSecret(sttApiKey) : sttApiKey}
                 onChange={(e) => setSttApiKey(e.target.value)}
                 disabled={credential ? true : false}
               />
               <label htmlFor="instance_id">
-                Speech Instance ID {sttCheck && <span>*</span>}
+                Speech instance ID {sttCheck && <span>*</span>}
               </label>
               <input
                 id="instance_id"
@@ -617,7 +617,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 disabled={!useCustomStt}
                 type="text"
                 name="custom_stt_endpoint"
-                placeholder="Custom speech endpoint id"
+                placeholder="Custom speech endpoint ID"
                 value={customSttEndpoint}
                 onChange={(e) => setCustomSttEndpoint(e.target.value)}
               />

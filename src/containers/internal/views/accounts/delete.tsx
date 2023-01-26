@@ -155,7 +155,7 @@ export const DeleteAccount = ({
           {hasLength(inUse.apiKeys) && (
             <InUseItems
               items={inUse.apiKeys}
-              itemsLabel="API Keys"
+              itemsLabel="API keys"
               sidKey="api_key_sid"
               labelKey="token"
             />

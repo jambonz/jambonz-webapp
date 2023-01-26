@@ -106,9 +106,9 @@ export const PER_PAGE_SELECTION = [
 ];
 
 export const USER_SCOPE_SELECTION: SelectorOptions[] = [
-  { name: "All Scopes", value: "all" },
+  { name: "All scopes", value: "all" },
   { name: "Admin", value: "admin" },
-  { name: "Service Provider", value: "service_provider" },
+  { name: "Service provider", value: "service_provider" },
   { name: "Account", value: "account" },
 ];
 

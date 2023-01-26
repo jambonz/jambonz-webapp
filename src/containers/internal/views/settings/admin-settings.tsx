@@ -48,7 +48,7 @@ export const AdminSettings = () => {
   return (
     <>
       <fieldset>
-        <label htmlFor="min_password_length">Min Password Length</label>
+        <label htmlFor="min_password_length">Min password length</label>
         <Selector
           id="min_password_length"
           name="min_password_length"
@@ -64,7 +64,7 @@ export const AdminSettings = () => {
             checked={requireDigit}
             onChange={(e) => setRequireDigit(e.target.checked)}
           />
-          <div>Password Require Digit</div>
+          <div>Password require digit</div>
         </label>
 
         <label htmlFor="require_special_character" className="chk">
@@ -75,7 +75,7 @@ export const AdminSettings = () => {
             checked={requireSpecialCharacter}
             onChange={(e) => setRequireSpecialCharacter(e.target.checked)}
           />
-          <div>Password Require Special Character</div>
+          <div>Password require special character</div>
         </label>
       </fieldset>
       <fieldset>

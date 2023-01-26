@@ -91,7 +91,7 @@ export const SpeechServices = () => {
   return (
     <>
       <section className="mast">
-        <H1 className="h2">Speech Services</H1>
+        <H1 className="h2">Speech services</H1>
         <Link to={`${ROUTE_INTERNAL_SPEECH}/add`} title="Add a speech service">
           <Icon>
             <Icons.Plus />
