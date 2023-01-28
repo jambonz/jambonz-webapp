@@ -235,6 +235,7 @@ export interface Account {
 
 export interface Application {
   name: string;
+  app_json: null | string;
   call_hook: null | WebHook;
   account_sid: null | string;
   messaging_hook: null | WebHook;

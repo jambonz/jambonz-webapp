@@ -63,6 +63,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
+  const [applicationJson, setApplicationJson] = useState("");
+  const [callHookRequired, setCallHookRequired] = useState(true);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
@@ -88,7 +90,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       stateVal: callWebhook,
       stateSet: setCallWebhook,
       initialCheck: initialCallWebhook,
-      required: true,
+      required: callHookRequired,
     },
     {
       label: "Call status",
@@ -145,6 +147,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
     const payload = {
       name: applicationName,
+      app_json: applicationJson || null,
       call_hook: callWebhook || null,
       account_sid: accountSid || null,
       messaging_hook: messageWebhook || null,
@@ -185,6 +188,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
+      setApplicationJson(application.data.app_json || "");
 
       if (application.data.call_hook) {
         setCallWebhook(application.data.call_hook);
@@ -282,6 +286,20 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           <AccountSelect
             accounts={accounts}
             account={[accountSid, setAccountSid]}
+          />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="application_json">Application Json</label>
+          <input
+            id="application_json"
+            type="text"
+            name="application_json"
+            placeholder="Application Json"
+            value={applicationJson}
+            onChange={(e) => {
+              setCallHookRequired(e.target.value?.length == 0);
+              setApplicationJson(e.target.value);
+            }}
           />
         </fieldset>
         {webhooks.map((webhook) => {
