@@ -531,7 +531,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               hidden
               name="application_json"
               label="Override webhook for initial application"
-              initialCheck={false}
+              initialCheck={applicationJson.length !== 0}
             >
               <input
                 id="application_json"
