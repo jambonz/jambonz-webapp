@@ -64,7 +64,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
   const [applicationJson, setApplicationJson] = useState("");
-  const [callHookRequired, setCallHookRequired] = useState(true);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
@@ -90,7 +89,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       stateVal: callWebhook,
       stateSet: setCallWebhook,
       initialCheck: initialCallWebhook,
-      required: callHookRequired,
+      required: true,
     },
     {
       label: "Call status",
@@ -286,20 +285,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           <AccountSelect
             accounts={accounts}
             account={[accountSid, setAccountSid]}
-          />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="application_json">Application Json</label>
-          <input
-            id="application_json"
-            type="text"
-            name="application_json"
-            placeholder="Application Json"
-            value={applicationJson}
-            onChange={(e) => {
-              setCallHookRequired(e.target.value?.length == 0);
-              setApplicationJson(e.target.value);
-            }}
           />
         </fieldset>
         {webhooks.map((webhook) => {
@@ -537,6 +522,26 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 />
               </>
             )}
+          </fieldset>
+        )}
+        {(import.meta.env.INITIAL_APP_JSON_ENABLED === undefined ||
+          import.meta.env.INITIAL_APP_JSON_ENABLED) && (
+          <fieldset>
+            <Checkzone
+              hidden
+              name="application_json"
+              label="Override webhook for initial application"
+              initialCheck={false}
+            >
+              <input
+                id="application_json"
+                type="text"
+                name="application_json"
+                placeholder="Application Json"
+                value={applicationJson}
+                onChange={(e) => setApplicationJson(e.target.value)}
+              />
+            </Checkzone>
           </fieldset>
         )}
         {message && <fieldset>{<Message message={message} />}</fieldset>}
