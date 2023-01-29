@@ -64,6 +64,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
   const [applicationJson, setApplicationJson] = useState("");
+  const [initialApplicationJson, setInitialApplicationJson] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
@@ -188,6 +189,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     if (application && application.data) {
       setApplicationName(application.data.name);
       setApplicationJson(application.data.app_json || "");
+      setInitialApplicationJson(
+        application.data.app_json != undefined &&
+          application.data.app_json.length !== 0
+      );
 
       if (application.data.call_hook) {
         setCallWebhook(application.data.call_hook);
@@ -529,12 +534,17 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           <fieldset>
             <Checkzone
               hidden
-              name="application_json"
+              name="cz_pplication_json"
               label="Override webhook for initial application"
-              initialCheck={applicationJson.length !== 0}
+              initialCheck={initialApplicationJson}
+              handleChecked={(e) => {
+                if (!e.target.checked) {
+                  setApplicationJson("");
+                }
+              }}
             >
               <input
-                id="application_json"
+                id="input_application_json"
                 type="text"
                 name="application_json"
                 placeholder="Application Json"
