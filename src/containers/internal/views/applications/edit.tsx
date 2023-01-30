@@ -34,7 +34,7 @@ export const EditApplication = () => {
 
   return (
     <>
-      <H1 className="h2">Edit Application</H1>
+      <H1 className="h2">Edit application</H1>
       <ApplicationForm application={{ data, refetch, error }} />
     </>
   );

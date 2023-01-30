@@ -169,7 +169,7 @@ export const Carriers = () => {
                     >
                       <Link
                         to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                        title="Edit Carrier"
+                        title="Edit carrier"
                         className="i"
                       >
                         <strong>{carrier.name}</strong>
@@ -209,7 +209,7 @@ export const Carriers = () => {
                   <div className="item__actions">
                     <Link
                       to={`${ROUTE_INTERNAL_CARRIERS}/${carrier.voip_carrier_sid}/edit`}
-                      title="Edit Carrier"
+                      title="Edit carrier"
                     >
                       <Icons.Edit3 />
                     </Link>
