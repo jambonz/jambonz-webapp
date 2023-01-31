@@ -543,11 +543,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 }
               }}
             >
-              <input
+              <textarea
                 id="input_application_json"
-                type="text"
                 name="application_json"
-                placeholder="Application Json"
+                rows={6}
+                cols={55}
+                placeholder="an array of jambonz verbs to execute"
                 value={applicationJson}
                 onChange={(e) => setApplicationJson(e.target.value)}
               />
