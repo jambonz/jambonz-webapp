@@ -11,6 +11,7 @@ import {
   toastSuccess,
   toastError,
 } from "src/store";
+import { getActiveSP, setActiveSP } from "src/store/localStore";
 import { postServiceProviders } from "src/api";
 
 import type { NaviItem } from "./items";
@@ -98,6 +99,7 @@ export const Navi = ({
         );
         dispatch({ type: "serviceProviders" });
         setSid(json.sid);
+        setActiveSP(json.sid);
         setName("");
         setModal(false);
       })
@@ -113,6 +115,7 @@ export const Navi = ({
 
   /** Subscribe to change events on the service provider <select> */
   useEffect(() => {
+    setSid(getActiveSP());
     if (sid) {
       const serviceProvider = serviceProviders.find(
         (sp) => sp.service_provider_sid === sid
@@ -153,8 +156,11 @@ export const Navi = ({
           <div className="smsel smsel--navi">
             <div>
               <select
-                value={currentServiceProvider?.service_provider_sid}
-                onChange={(e) => setSid(e.target.value)}
+                value={sid || currentServiceProvider?.service_provider_sid}
+                onChange={(e) => {
+                  setSid(e.target.value);
+                  setActiveSP(e.target.value);
+                }}
                 disabled={user?.scope !== USER_ADMIN}
               >
                 {currentServiceProvider ? (
