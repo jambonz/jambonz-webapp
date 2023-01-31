@@ -11,7 +11,7 @@ const fuzzyMatch = (patterns: string[], items: string[]) => {
 
   return searchableItems.find((item) => {
     return patterns.some((patternPart) => {
-      return item.includes(patternPart);
+      return item.toLowerCase().includes(patternPart.toLowerCase());
     });
   });
 };
