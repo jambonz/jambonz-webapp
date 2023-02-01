@@ -35,7 +35,7 @@ import { DeleteCarrier } from "./delete";
 
 import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
 import { Scope } from "src/store/types";
-import { getActiveFilter, setLocation } from "src/store/localStore";
+import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const Carriers = () => {
   const user = useSelectState("user");
@@ -48,7 +48,7 @@ export const Carriers = () => {
   const [filter, setFilter] = useState("");
 
   const carriersFiltered = useMemo(() => {
-    setAccountSid(getActiveFilter());
+    setAccountSid(getAccountFilter());
     if (user?.scope === USER_ACCOUNT) {
       return carriers;
     }

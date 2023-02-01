@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
@@ -22,6 +22,11 @@ import {
 import type { Account, Alert, PageQuery } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import {
+  getAccountFilter,
+  getQueryFilter,
+  setLocation,
+} from "src/store/localStore";
 
 export const Alerts = () => {
   const user = useSelectState("user");
@@ -57,7 +62,16 @@ export const Alerts = () => {
       });
   };
 
+  useMemo(() => {
+    if (getQueryFilter()) {
+      const [date] = getQueryFilter().split("/");
+      setAccountSid(getAccountFilter());
+      setDateFilter(date);
+    }
+  }, [accountSid]);
+
   useEffect(() => {
+    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     }

@@ -33,7 +33,7 @@ import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
 import { USER_ACCOUNT } from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
-import { getActiveFilter, setLocation } from "src/store/localStore";
+import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const PhoneNumbers = () => {
   const user = useSelectState("user");
@@ -53,7 +53,7 @@ export const PhoneNumbers = () => {
   const [accountSid, setAccountSid] = useState("");
 
   const phoneNumbersFiltered = useMemo(() => {
-    setAccountSid(getActiveFilter());
+    setAccountSid(getAccountFilter());
     return phoneNumbers
       ? phoneNumbers.filter(
           (phn) => !accountSid || phn.account_sid === accountSid

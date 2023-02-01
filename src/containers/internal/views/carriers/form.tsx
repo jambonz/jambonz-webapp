@@ -58,7 +58,7 @@ import type {
   Smpp,
   Application,
 } from "src/api/types";
-import { setActiveFilter, setLocation } from "src/store/localStore";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
@@ -533,7 +533,7 @@ export const CarrierForm = ({
 
             toastSuccess("Carrier created successfully");
             navigate(ROUTE_INTERNAL_CARRIERS);
-            setActiveFilter(accountSid);
+            setAccountFilter(accountSid);
           })
           .catch((error) => {
             toastError(error.msg);

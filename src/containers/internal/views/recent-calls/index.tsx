@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ButtonGroup, H1, M, MS } from "jambonz-ui";
 import dayjs from "dayjs";
 
@@ -22,6 +22,11 @@ import { DetailsItem } from "./details";
 import type { Account, CallQuery, RecentCall } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import {
+  getAccountFilter,
+  getQueryFilter,
+  setLocation,
+} from "src/store/localStore";
 
 const directionSelection = [
   { name: "either", value: "io" },
@@ -73,7 +78,18 @@ export const RecentCalls = () => {
       });
   };
 
+  useMemo(() => {
+    if (getQueryFilter()) {
+      const [date, direction, status] = getQueryFilter().split("/");
+      setAccountSid(getAccountFilter());
+      setDateFilter(date);
+      setDirectionFilter(direction);
+      setStatusFilter(status);
+    }
+  }, [accountSid]);
+
   useEffect(() => {
+    setLocation();
     if (accountSid) {
       handleFilterChange();
     }

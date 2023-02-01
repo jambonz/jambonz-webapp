@@ -26,6 +26,7 @@ import type {
   UserScopes,
 } from "src/api/types";
 import type { UserData } from "src/store/types";
+import { getQueryFilter } from "src/store/localStore";
 
 export const hasValue = <Type>(
   variable: Type | null | undefined
@@ -209,6 +210,19 @@ export const filterScopeOptions = (
   }
 
   return optionArray;
+};
+
+export const createFilterString = (filterValue: string, label: string) => {
+  const filterString = getQueryFilter().split("/");
+
+  if (label === "Date") {
+    filterString.splice(0, 0, filterValue);
+  } else if (label === "Direction") {
+    filterString.splice(1, 1, filterValue);
+  } else if (label === "Status") {
+    filterString.splice(2, 2, filterValue);
+  }
+  return filterString.join("/");
 };
 
 export {

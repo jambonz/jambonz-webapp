@@ -30,7 +30,7 @@ import type {
   Carrier,
   UseApiDataMap,
 } from "src/api/types";
-import { setActiveFilter, setLocation } from "src/store/localStore";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type PhoneNumberFormProps = {
   phoneNumber?: UseApiDataMap<PhoneNumber>;
@@ -105,7 +105,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
         .then(() => {
           toastSuccess("Phone number created successfully");
           navigate(ROUTE_INTERNAL_PHONE_NUMBERS);
-          setActiveFilter(accountSid);
+          setAccountFilter(accountSid);
         })
         .catch((error) => {
           toastError(error.msg);

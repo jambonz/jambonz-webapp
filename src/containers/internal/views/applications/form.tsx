@@ -50,7 +50,7 @@ import type {
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 import { isUserAccountScope, useRedirect } from "src/utils";
-import { setActiveFilter, setLocation } from "src/store/localStore";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -173,7 +173,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .then(() => {
           toastSuccess("Application created successfully");
           navigate(ROUTE_INTERNAL_APPLICATIONS);
-          setActiveFilter(accountSid);
+          setAccountFilter(accountSid);
         })
         .catch((error) => {
           toastError(error.msg);

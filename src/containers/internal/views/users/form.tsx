@@ -37,7 +37,7 @@ import type {
   Account,
 } from "src/api/types";
 import type { IMessage } from "src/store/types";
-import { setActiveFilter, setLocation } from "src/store/localStore";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type UserFormProps = {
   user?: UseApiDataMap<User>;
@@ -127,7 +127,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         .then(() => {
           toastSuccess("User created successfully");
           navigate(ROUTE_INTERNAL_USERS);
-          setActiveFilter(accountSid);
+          setAccountFilter(accountSid);
         })
         .catch((error: { msg: IMessage }) => {
           toastError(error.msg);

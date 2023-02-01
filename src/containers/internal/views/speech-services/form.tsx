@@ -38,7 +38,7 @@ import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
-import { setActiveFilter, setLocation } from "src/store/localStore";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -177,7 +177,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           .then(() => {
             toastSuccess("Speech credential created successfully");
             navigate(ROUTE_INTERNAL_SPEECH);
-            setActiveFilter(accountSid);
+            setAccountFilter(accountSid);
           })
           .catch((error) => {
             toastError(error.msg);

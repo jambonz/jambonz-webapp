@@ -30,7 +30,7 @@ import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
-import { getActiveFilter, setLocation } from "src/store/localStore";
+import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const Users = () => {
   const user = useSelectState("user");
@@ -42,7 +42,7 @@ export const Users = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const usersFiltered = useMemo(() => {
-    setAccountSid(getActiveFilter());
+    setAccountSid(getAccountFilter());
     const serviceProviderUsers = users?.filter((e) => {
       return (
         e.scope === USER_ADMIN ||
