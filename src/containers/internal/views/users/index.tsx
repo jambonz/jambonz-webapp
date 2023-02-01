@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { H1, Button, Icon } from "jambonz-ui";
 import { Link } from "react-router-dom";
 
@@ -30,6 +30,7 @@ import type { Account, User } from "src/api/types";
 import { useSelectState } from "src/store";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import { getActiveFilter, setLocation } from "src/store/localStore";
 
 export const Users = () => {
   const user = useSelectState("user");
@@ -41,6 +42,7 @@ export const Users = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const usersFiltered = useMemo(() => {
+    setAccountSid(getActiveFilter());
     const serviceProviderUsers = users?.filter((e) => {
       return (
         e.scope === USER_ADMIN ||
@@ -71,6 +73,10 @@ export const Users = () => {
   const filteredUsers = useFilteredResults<User>(filter, usersFiltered)?.sort(
     sortUsersAlpha
   );
+
+  useEffect(() => {
+    setLocation();
+  }, []);
 
   return (
     <>

@@ -27,6 +27,7 @@ import type { Application, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { USER_ACCOUNT } from "src/api/constants";
+import { getActiveFilter, setLocation } from "src/store/localStore";
 
 export const Applications = () => {
   const user = useSelectState("user");
@@ -68,9 +69,12 @@ export const Applications = () => {
   };
 
   useEffect(() => {
+    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     }
+
+    setAccountSid(getActiveFilter());
 
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/Applications`);
