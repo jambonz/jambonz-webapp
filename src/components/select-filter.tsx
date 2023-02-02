@@ -4,6 +4,8 @@ import { classNames } from "jambonz-ui";
 import { Icons } from "src/components/icons";
 
 import type { SelectorOption } from "./forms/selector";
+import { setQueryFilter } from "src/store/localStore";
+import { createFilterString } from "src/utils";
 
 type SelectFilterProps = {
   id: string;
@@ -38,6 +40,11 @@ export const SelectFilter = ({
           value={filterValue}
           onChange={(e) => {
             setFilterValue(e.target.value);
+            const advancedFilter = createFilterString(
+              e.target.value,
+              label as string
+            );
+            setQueryFilter(advancedFilter);
 
             if (handleSelect) {
               handleSelect(e);

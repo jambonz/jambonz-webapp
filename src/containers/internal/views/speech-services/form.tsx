@@ -38,6 +38,7 @@ import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
+import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -176,6 +177,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           .then(() => {
             toastSuccess("Speech credential created successfully");
             navigate(ROUTE_INTERNAL_SPEECH);
+            setAccountFilter(accountSid);
           })
           .catch((error) => {
             toastError(error.msg);
@@ -185,6 +187,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   };
 
   useEffect(() => {
+    setLocation();
     if (credential && credential.data) {
       if (credential.data.vendor) {
         setVendor(credential.data.vendor);

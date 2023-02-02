@@ -25,6 +25,7 @@ import { CredentialStatus } from "./status";
 import type { SpeechCredential, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
+import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const SpeechServices = () => {
   const user = useSelectState("user");
@@ -37,6 +38,7 @@ export const SpeechServices = () => {
   const [filter] = useState("");
 
   const credentialsFiltered = useMemo(() => {
+    setAccountSid(getAccountFilter());
     if (user?.scope === USER_ACCOUNT) {
       return credentials;
     }
@@ -83,6 +85,7 @@ export const SpeechServices = () => {
   };
 
   useEffect(() => {
+    setLocation();
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
     } else if (currentServiceProvider) {

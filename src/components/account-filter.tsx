@@ -5,6 +5,7 @@ import { Icons } from "src/components/icons";
 
 import type { Account } from "src/api/types";
 import { hasLength, sortLocaleName } from "src/utils";
+import { setAccountFilter } from "src/store/localStore";
 
 export type AccountFilterProps = {
   label?: string;
@@ -43,7 +44,10 @@ export const AccountFilter = ({
           id="account_filter"
           name="account_filter"
           value={accountSid}
-          onChange={(e) => setAccountSid(e.target.value)}
+          onChange={(e) => {
+            setAccountSid(e.target.value);
+            setAccountFilter(e.target.value);
+          }}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
         >
