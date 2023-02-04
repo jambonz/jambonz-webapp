@@ -74,7 +74,7 @@ export const Applications = () => {
       setAccountSid(user?.account_sid);
     }
 
-    setAccountSid(getAccountFilter());
+    setAccountSid(getAccountFilter() || accountSid);
 
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/Applications`);
