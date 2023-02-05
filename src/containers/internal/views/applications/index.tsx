@@ -72,9 +72,9 @@ export const Applications = () => {
     setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
+    } else {
+      setAccountSid(getAccountFilter() || accountSid);
     }
-
-    setAccountSid(getAccountFilter() || accountSid);
 
     if (accountSid) {
       setApiUrl(`Accounts/${accountSid}/Applications`);

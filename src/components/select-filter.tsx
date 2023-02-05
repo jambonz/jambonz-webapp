@@ -40,11 +40,11 @@ export const SelectFilter = ({
           value={filterValue}
           onChange={(e) => {
             setFilterValue(e.target.value);
-            const advancedFilter = createFilterString(
+            const queryFilter = createFilterString(
               e.target.value,
               label as string
             );
-            setQueryFilter(advancedFilter);
+            setQueryFilter(queryFilter);
 
             if (handleSelect) {
               handleSelect(e);

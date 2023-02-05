@@ -65,7 +65,8 @@ export const Alerts = () => {
   useMemo(() => {
     if (getQueryFilter()) {
       const [date] = getQueryFilter().split("/");
-      setAccountSid(getAccountFilter());
+      setAccountSid(getAccountFilter() || accountSid);
+      if (!accountSid && user?.account_sid) setAccountSid(user?.account_sid);
       setDateFilter(date);
     }
   }, [accountSid]);

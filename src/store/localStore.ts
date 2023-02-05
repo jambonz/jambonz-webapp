@@ -39,7 +39,7 @@ export const removeAccountFilter = () => {
  * Methods to get/set the RecentCalls and Alerts selected filters from local storage
  */
 
-const storeQueryFilter = "advancedFilter";
+const storeQueryFilter = "queryFilter";
 
 export const setQueryFilter = (combinedFilterString: string) => {
   return localStorage.setItem(storeQueryFilter, combinedFilterString);
@@ -50,7 +50,7 @@ export const getQueryFilter = () => {
   return localStorage.getItem(storeQueryFilter) || "";
 };
 
-export const removeAdvancedFilter = () => {
+export const removeQueryFilter = () => {
   return localStorage.removeItem(storeQueryFilter);
 };
 
