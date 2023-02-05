@@ -81,12 +81,13 @@ export const RecentCalls = () => {
   useMemo(() => {
     if (getQueryFilter()) {
       const [date, direction, status] = getQueryFilter().split("/");
-      setAccountSid(getAccountFilter());
+      setAccountSid(getAccountFilter() || accountSid);
+      if (!accountSid && user?.account_sid) setAccountSid(user?.account_sid);
       setDateFilter(date);
       setDirectionFilter(direction);
       setStatusFilter(status);
     }
-  }, [accountSid]);
+  }, [accountSid, pageNumber]);
 
   useEffect(() => {
     setLocation();
