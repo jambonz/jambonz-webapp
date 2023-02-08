@@ -49,7 +49,8 @@ export const Carriers = () => {
 
   const carriersFiltered = useMemo(() => {
     setAccountSid(getAccountFilter());
-    if (user?.scope === USER_ACCOUNT) {
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
       return carriers;
     }
 
@@ -119,9 +120,7 @@ export const Carriers = () => {
 
   useEffect(() => {
     setLocation();
-    if (accountSid) {
-      setApiUrl(`Accounts/${accountSid}/VoipCarriers`);
-    } else if (currentServiceProvider) {
+    if (currentServiceProvider) {
       setApiUrl(
         `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`
       );
