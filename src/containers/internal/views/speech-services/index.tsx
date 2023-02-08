@@ -39,7 +39,8 @@ export const SpeechServices = () => {
 
   const credentialsFiltered = useMemo(() => {
     setAccountSid(getAccountFilter());
-    if (user?.scope === USER_ACCOUNT) {
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
       return credentials;
     }
 
@@ -86,9 +87,7 @@ export const SpeechServices = () => {
 
   useEffect(() => {
     setLocation();
-    if (accountSid) {
-      setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
-    } else if (currentServiceProvider) {
+    if (currentServiceProvider) {
       setApiUrl(
         `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
       );
