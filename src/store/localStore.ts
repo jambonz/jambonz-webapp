@@ -14,6 +14,10 @@ export const setActiveSP = (sid: string) => {
   localStorage.setItem(storeActiveSP, sid);
 };
 
+export const removeActiveSP = () => {
+  localStorage.removeItem(storeActiveSP);
+};
+
 /**
  * The key used to store active Filter in localStorage
  */

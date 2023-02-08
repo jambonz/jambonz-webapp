@@ -14,6 +14,7 @@ import { Modal } from "src/components";
 import { Checkzone, LocalLimits } from "src/components/forms";
 import { withSelectState } from "src/utils";
 import type { Limit, ServiceProvider } from "src/api/types";
+import { removeActiveSP } from "src/store/localStore";
 
 export type ServiceProviderSettingsProps = {
   serviceProviders: ServiceProvider[];
@@ -94,6 +95,7 @@ export const ServiceProviderSettings = ({
             <strong>{currentServiceProvider.name}</strong>
           </>
         );
+        removeActiveSP();
       })
       .catch((error) => {
         toastError(error.msg);
