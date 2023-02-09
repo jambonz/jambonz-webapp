@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { H1, Tabs, Tab, MS } from "jambonz-ui";
+import { H1, Tabs, Tab, MS } from "@jambonz/ui-kit";
 
 import { useScopedRedirect, withSelectState } from "src/utils";
 import { ApiKeys } from "src/containers/internal/api-keys";

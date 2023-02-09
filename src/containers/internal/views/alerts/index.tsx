@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ButtonGroup, H1, M, MS } from "jambonz-ui";
+import { ButtonGroup, H1, M, MS } from "@jambonz/ui-kit";
 import dayjs from "dayjs";
 
 import { getAlerts, useServiceProviderData } from "src/api";

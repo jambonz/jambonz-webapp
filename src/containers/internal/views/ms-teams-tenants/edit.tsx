@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { H1 } from "jambonz-ui";
+import { H1 } from "@jambonz/ui-kit";
 import { useParams } from "react-router-dom";
 
 import { useApiData } from "src/api";

@@ -1,5 +1,5 @@
 import React from "react";
-import { H1 } from "jambonz-ui";
+import { H1 } from "@jambonz/ui-kit";
 
 import { UserForm } from "./form";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { MXS } from "jambonz-ui";
+import { MXS } from "@jambonz/ui-kit";
 
 import { Icons } from "src/components";
 

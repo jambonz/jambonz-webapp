@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { Icon } from "jambonz-ui";
+import { Icon } from "@jambonz/ui-kit";
 
 import { Icons } from "../icons";
 

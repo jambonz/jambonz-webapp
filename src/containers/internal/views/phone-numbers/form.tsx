@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, MS } from "jambonz-ui";
+import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 

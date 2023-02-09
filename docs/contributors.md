@@ -137,11 +137,11 @@ of each category of component to get an idea of how the patterns are put into pr
 
 ## :art: UI and styling
 
-We have a UI design system called [jambonz-ui](https://github.com/jambonz/jambonz-ui).
+We have a UI design system called [@jambonz/ui-kit](https://github.com/jambonz/jambonz-ui).
 It's public on `npm` and is being used for this project. It's still small and simple
 but provides the foundational package content for building jambonz UIs. You can view
 the storybook for it [here](https://jambonz-ui.vercel.app/) as well as view the docs
-for it [here](https://www.jambonz.org/docs/jambonz-ui/).
+for it [here](https://www.jambonz.org/docs/@jambonz/ui-kit/).
 
 ### A note on styles
 

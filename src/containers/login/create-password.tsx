@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, H1, M } from "jambonz-ui";
+import { Button, H1, M } from "@jambonz/ui-kit";
 import { useNavigate } from "react-router-dom";
 
 import { isValidPasswd } from "src/utils";

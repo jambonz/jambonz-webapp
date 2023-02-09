@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, H1 } from "jambonz-ui";
+import { Button, H1 } from "@jambonz/ui-kit";
 import { useLocation, Navigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";

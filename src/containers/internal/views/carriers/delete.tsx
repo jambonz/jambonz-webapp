@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { P } from "jambonz-ui";
+import { P } from "@jambonz/ui-kit";
 
 import { Modal, ModalClose } from "src/components";
 import { getFetch } from "src/api";

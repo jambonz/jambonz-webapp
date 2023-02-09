@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { classNames } from "jambonz-ui";
+import { classNames } from "@jambonz/ui-kit";
 
 import { Icons } from "src/components";
 

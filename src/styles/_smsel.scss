@@ -1,6 +1,6 @@
 @use "./vars";
-@use "jambonz-ui/src/styles/vars" as ui-vars;
-@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/mixins" as ui-mixins;
 
 .smsel {
   label {

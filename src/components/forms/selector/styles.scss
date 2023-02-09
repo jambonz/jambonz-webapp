@@ -1,8 +1,8 @@
 @use "src/styles/vars";
 @use "src/styles/mixins";
-@use "jambonz-ui/src/styles/index";
-@use "jambonz-ui/src/styles/vars" as ui-vars;
-@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+@use "@jambonz/ui-kit/src/styles/index";
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/mixins" as ui-mixins;
 
 .selector {
   position: relative;

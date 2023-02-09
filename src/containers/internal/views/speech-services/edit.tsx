@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { H1 } from "jambonz-ui";
+import { H1 } from "@jambonz/ui-kit";
 
 import { useApiData } from "src/api";
 import { toastError, useSelectState } from "src/store";

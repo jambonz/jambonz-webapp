@@ -1,5 +1,5 @@
 import React, { useState, forwardRef } from "react";
-import { classNames } from "jambonz-ui";
+import { classNames } from "@jambonz/ui-kit";
 
 import { Icons } from "src/components/icons";
 

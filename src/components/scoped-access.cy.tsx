@@ -1,5 +1,5 @@
 import React from "react";
-import { H1 } from "jambonz-ui";
+import { H1 } from "@jambonz/ui-kit";
 
 import { ScopedAccess } from "./scoped-access";
 import { USER_SP, USER_ADMIN, USER_ACCOUNT } from "src/api/constants";

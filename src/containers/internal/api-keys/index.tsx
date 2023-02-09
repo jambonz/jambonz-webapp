@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { P, Button } from "jambonz-ui";
+import { P, Button } from "@jambonz/ui-kit";
 
 import { toastSuccess, toastError } from "src/store";
 import { useApiData, postApiKey, deleteApiKey } from "src/api";

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, H1, Icon, MS } from "jambonz-ui";
+import { Button, ButtonGroup, H1, Icon, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
 import {

@@ -5,12 +5,12 @@
 @use "./inpbtn";
 @use "./filters";
 @use "./grid";
-@use "jambonz-ui/src/styles/index";
+@use "@jambonz/ui-kit/src/styles/index";
 
 @use "./vars";
 @use "./mixins";
-@use "jambonz-ui/src/styles/vars" as ui-vars;
-@use "jambonz-ui/src/styles/mixins" as ui-mixins;
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/mixins" as ui-mixins;
 
 /** Root custom vars */
 :root {
@@ -92,7 +92,7 @@ details {
   }
 }
 
-/** Could go in jambonz-ui */
+/** Could go in @jambonz/ui-kit */
 .txt--dark {
   color: ui-vars.$dark;
 }
@@ -102,7 +102,7 @@ details {
 }
 
 /** The idea is this is like [type="button"] generically */
-/** We need to prohibit some jambonz-ui buttons from submitting forms */
+/** We need to prohibit some @jambonz/ui-kit buttons from submitting forms */
 /** Otherwise this selector would just be `button[type="button"] {...}` */
 /** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attr-type */
 .btnty {

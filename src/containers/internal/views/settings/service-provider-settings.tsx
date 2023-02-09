@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { P, Button, ButtonGroup } from "jambonz-ui";
+import { P, Button, ButtonGroup } from "@jambonz/ui-kit";
 
 import { useDispatch, toastSuccess, toastError } from "src/store";
 import { hasLength } from "src/utils";

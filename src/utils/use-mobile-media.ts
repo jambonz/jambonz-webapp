@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCssVar } from "jambonz-ui";
+import { getCssVar } from "@jambonz/ui-kit";
 
 export const useMobileMedia = () => {
   const [mobile, setMobile] = useState(false);
