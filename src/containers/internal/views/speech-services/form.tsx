@@ -76,7 +76,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] = useState("");
   const [customSttEndpoint, setCustomSttEndpoint] = useState("");
   const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
-  const [nvidiaSpeechEndpoint, setNvidiaSpeechEndpoint] = useState("");
+  const [rivaServerUri, setRivaServerUri] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -139,7 +139,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           tts_region: ttsRegion || null,
         }),
         ...(vendor === VENDOR_NVIDIA && {
-          nvidia_speech_endpoint: nvidiaSpeechEndpoint || null,
+          riva_server_uri: rivaServerUri || null,
         }),
       };
 
@@ -178,8 +178,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               : null,
           client_id: vendor === VENDOR_NUANCE ? clientId : null,
           secret: vendor === VENDOR_NUANCE ? secretKey : null,
-          nvidia_speech_endpoint:
-            vendor == VENDOR_NVIDIA ? nvidiaSpeechEndpoint : null,
+          riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
           .then(() => {
             toastSuccess("Speech credential created successfully");
@@ -268,8 +267,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setInstanceId(credential.data.instance_id);
       }
 
-      if (credential.data.nvidia_speech_endpoint) {
-        setNvidiaSpeechEndpoint(credential.data.nvidia_speech_endpoint);
+      if (credential.data.riva_server_uri) {
+        setRivaServerUri(credential.data.riva_server_uri);
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
@@ -640,16 +639,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor === VENDOR_NVIDIA && (
           <React.Fragment>
             <fieldset>
-              <label htmlFor="nvidia_endpoint">
-                Speech Endpoint<span>*</span>
+              <label htmlFor="riva_server_uri">
+                Riva Server Uri<span>*</span>
               </label>
               <input
-                id="nvidia_endpoint"
+                id="riva_server_uri"
                 type="text"
-                name="nvidia_endpoint"
-                placeholder="Speech Endpoint"
-                value={nvidiaSpeechEndpoint}
-                onChange={(e) => setNvidiaSpeechEndpoint(e.target.value)}
+                name="riva_server_uri"
+                placeholder="Riva Server Uri"
+                value={rivaServerUri}
+                onChange={(e) => setRivaServerUri(e.target.value)}
               />
             </fieldset>
           </React.Fragment>

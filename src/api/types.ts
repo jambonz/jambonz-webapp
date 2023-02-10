@@ -307,7 +307,7 @@ export interface SpeechCredential {
   stt_api_key: null | string;
   stt_region: null | string;
   instance_id: null | string;
-  nvidia_speech_endpoint: null | string;
+  riva_server_uri: null | string;
 }
 
 export interface Alert {
