@@ -5,7 +5,8 @@ export type Vendor =
   | "WellSaid"
   | "Nuance"
   | "deepgram"
-  | "IBM";
+  | "IBM"
+  | "NVIDIA";
 
 export interface VendorOptions {
   name: Vendor;

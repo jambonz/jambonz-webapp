@@ -16,6 +16,7 @@ export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
 export const VENDOR_IBM = "ibm";
+export const VENDOR_NVIDIA = "nvidia";
 
 export const vendors: VendorOptions[] = [
   {
@@ -45,6 +46,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "IBM",
     value: VENDOR_IBM,
+  },
+  {
+    name: "NVIDIA",
+    value: VENDOR_NVIDIA,
   },
 ];
 

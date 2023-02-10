@@ -26,6 +26,7 @@ import {
   VENDOR_WELLSAID,
   VENDOR_DEEPGRAM,
   VENDOR_IBM,
+  VENDOR_NVIDIA,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -75,6 +76,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] = useState("");
   const [customSttEndpoint, setCustomSttEndpoint] = useState("");
   const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
+  const [nvidiaSpeechEndpoint, setNvidiaSpeechEndpoint] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -136,6 +138,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           tts_api_key: ttsApiKey || null,
           tts_region: ttsRegion || null,
         }),
+        ...(vendor === VENDOR_NVIDIA && {
+          nvidia_speech_endpoint: nvidiaSpeechEndpoint || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -173,6 +178,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               : null,
           client_id: vendor === VENDOR_NUANCE ? clientId : null,
           secret: vendor === VENDOR_NUANCE ? secretKey : null,
+          nvidia_speech_endpoint:
+            vendor == VENDOR_NVIDIA ? nvidiaSpeechEndpoint : null,
         })
           .then(() => {
             toastSuccess("Speech credential created successfully");
@@ -259,6 +266,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.instance_id) {
         setInstanceId(credential.data.instance_id);
+      }
+
+      if (credential.data.nvidia_speech_endpoint) {
+        setNvidiaSpeechEndpoint(credential.data.nvidia_speech_endpoint);
       }
 
       setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
@@ -626,6 +637,24 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             </fieldset>
           </React.Fragment>
         )}
+        {vendor === VENDOR_NVIDIA && (
+          <React.Fragment>
+            <fieldset>
+              <label htmlFor="nvidia_endpoint">
+                Speech Endpoint<span>*</span>
+              </label>
+              <input
+                id="nvidia_endpoint"
+                type="text"
+                name="nvidia_endpoint"
+                placeholder="Speech Endpoint"
+                value={nvidiaSpeechEndpoint}
+                onChange={(e) => setNvidiaSpeechEndpoint(e.target.value)}
+              />
+            </fieldset>
+          </React.Fragment>
+        )}
+
         <fieldset>
           <ButtonGroup left>
             <Button small subStyle="grey" as={Link} to={ROUTE_INTERNAL_SPEECH}>
