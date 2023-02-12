@@ -40,7 +40,7 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_NUANCE,
   },
   {
-    name: "deepgram",
+    name: "Deepgram",
     value: VENDOR_DEEPGRAM,
   },
   {
@@ -48,7 +48,7 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_IBM,
   },
   {
-    name: "NVIDIA",
+    name: "Nvidia",
     value: VENDOR_NVIDIA,
   },
 ];
@@ -103,12 +103,14 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/nuance-speech-recognizer-lang"),
       import("./speech-recognizer/deepgram-speech-recognizer-lang"),
       import("./speech-recognizer/ibm-speech-recognizer-lang"),
+      import("./speech-recognizer/nvidia-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
       import("./speech-synthesis/ibm-speech-synthesis-lang"),
+      import("./speech-synthesis/nvidia-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -117,12 +119,14 @@ export const useSpeechVendors = () => {
         { default: nuanceRecognizer },
         { default: deepgramRecognizer },
         { default: ibmRecognizer },
+        { default: nvidiaRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
         { default: wellsaidSynthesis },
         { default: nuanceSynthesis },
         { default: ibmSynthesis },
+        { default: nvidiaynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -133,6 +137,7 @@ export const useSpeechVendors = () => {
               wellsaid: wellsaidSynthesis,
               nuance: nuanceSynthesis,
               ibm: ibmSynthesis,
+              nvidia: nvidiaynthesis,
             },
             recognizers: {
               aws: awsRecognizer,
@@ -141,6 +146,7 @@ export const useSpeechVendors = () => {
               nuance: nuanceRecognizer,
               deepgram: deepgramRecognizer,
               ibm: ibmRecognizer,
+              nvidia: nvidiaRecognizer,
             },
           });
         }

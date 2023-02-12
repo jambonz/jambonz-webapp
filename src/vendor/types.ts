@@ -4,9 +4,9 @@ export type Vendor =
   | "Microsoft"
   | "WellSaid"
   | "Nuance"
-  | "deepgram"
+  | "Deepgram"
   | "IBM"
-  | "NVIDIA";
+  | "Nvidia";
 
 export interface VendorOptions {
   name: Vendor;
@@ -61,6 +61,7 @@ export interface RecognizerVendors {
   nuance: Language[];
   deepgram: Language[];
   ibm: Language[];
+  nvidia: Language[];
 }
 
 export interface SynthesisVendors {
@@ -70,6 +71,7 @@ export interface SynthesisVendors {
   wellsaid: VoiceLanguage[];
   nuance: VoiceLanguage[];
   ibm: VoiceLanguage[];
+  nvidia: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {
