@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, ButtonGroup, Icon, MS, MXS, Tab, Tabs } from "jambonz-ui";
+import { Button, ButtonGroup, Icon, MS, MXS, Tab, Tabs } from "@jambonz/ui-kit";
 
 import {
   deleteSipGateway,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Button, Icon, classNames } from "jambonz-ui";
+import { Button, Icon, classNames } from "@jambonz/ui-kit";
 
 import { UserMe } from "./user-me";
 import { Navi } from "./navi";

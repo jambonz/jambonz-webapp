@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { H1, Button, Icon } from "jambonz-ui";
+import { H1, Button, Icon } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
 import { useApiData, useServiceProviderData } from "src/api";

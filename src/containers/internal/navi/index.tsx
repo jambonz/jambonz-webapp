@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { classNames, M, Icon, Button } from "jambonz-ui";
+import { classNames, M, Icon, Button } from "@jambonz/ui-kit";
 import { Link, useLocation } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, H1, Icon, M } from "jambonz-ui";
+import { Button, H1, Icon, M } from "@jambonz/ui-kit";
 import {
   deleteCarrier,
   deleteSipGateway,

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, ButtonGroup } from "jambonz-ui";
+import { Button, ButtonGroup } from "@jambonz/ui-kit";
 
 import "./styles.scss";
 

@@ -1,6 +1,6 @@
 @use "src/styles/vars";
 @use "src/styles/mixins";
-@use "jambonz-ui/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
 
 .toast {
   padding-left: ui-vars.$px02;

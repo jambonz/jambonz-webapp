@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { ButtonGroup, Button } from "jambonz-ui";
+import { ButtonGroup, Button } from "@jambonz/ui-kit";
 import { useApiData, postPasswordSettings } from "src/api";
 import { PasswordSettings } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";

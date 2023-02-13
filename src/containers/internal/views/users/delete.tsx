@@ -1,5 +1,5 @@
 import React from "react";
-import { P } from "jambonz-ui";
+import { P } from "@jambonz/ui-kit";
 import { Modal } from "src/components";
 import type { User } from "src/api/types";
 

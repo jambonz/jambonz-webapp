@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MS } from "jambonz-ui";
+import { MS } from "@jambonz/ui-kit";
 
 import { CRED_NOT_TESTED, CRED_OK, USER_ACCOUNT } from "src/api/constants";
 import { Icons, Spinner } from "src/components";

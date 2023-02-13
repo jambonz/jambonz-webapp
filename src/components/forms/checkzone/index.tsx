@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef } from "react";
-import { classNames } from "jambonz-ui";
+import { classNames } from "@jambonz/ui-kit";
 
 import "./styles.scss";
 

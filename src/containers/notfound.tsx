@@ -1,5 +1,5 @@
 import React from "react";
-import { H1, Button, classNames } from "jambonz-ui";
+import { H1, Button, classNames } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "src/router/auth";

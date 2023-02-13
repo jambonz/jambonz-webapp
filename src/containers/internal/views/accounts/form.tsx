@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { P, Button, ButtonGroup, MS } from "jambonz-ui";
+import { P, Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
