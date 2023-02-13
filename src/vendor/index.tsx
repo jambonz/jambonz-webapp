@@ -20,24 +20,12 @@ export const VENDOR_NVIDIA = "nvidia";
 
 export const vendors: VendorOptions[] = [
   {
-    name: "Google",
-    value: VENDOR_GOOGLE,
-  },
-  {
     name: "AWS",
     value: VENDOR_AWS,
   },
   {
-    name: "Microsoft",
-    value: VENDOR_MICROSOFT,
-  },
-  {
-    name: "WellSaid",
-    value: VENDOR_WELLSAID,
-  },
-  {
-    name: "Nuance",
-    value: VENDOR_NUANCE,
+    name: "Google",
+    value: VENDOR_GOOGLE,
   },
   {
     name: "Deepgram",
@@ -48,8 +36,20 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_IBM,
   },
   {
+    name: "Microsoft",
+    value: VENDOR_MICROSOFT,
+  },
+  {
+    name: "Nuance",
+    value: VENDOR_NUANCE,
+  },
+  {
     name: "Nvidia",
     value: VENDOR_NVIDIA,
+  },
+  {
+    name: "WellSaid",
+    value: VENDOR_WELLSAID,
   },
 ];
 
