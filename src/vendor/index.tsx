@@ -16,35 +16,40 @@ export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
 export const VENDOR_IBM = "ibm";
+export const VENDOR_NVIDIA = "nvidia";
 
 export const vendors: VendorOptions[] = [
+  {
+    name: "AWS",
+    value: VENDOR_AWS,
+  },
   {
     name: "Google",
     value: VENDOR_GOOGLE,
   },
   {
-    name: "AWS",
-    value: VENDOR_AWS,
+    name: "Deepgram",
+    value: VENDOR_DEEPGRAM,
+  },
+  {
+    name: "IBM",
+    value: VENDOR_IBM,
   },
   {
     name: "Microsoft",
     value: VENDOR_MICROSOFT,
   },
   {
-    name: "WellSaid",
-    value: VENDOR_WELLSAID,
-  },
-  {
     name: "Nuance",
     value: VENDOR_NUANCE,
   },
   {
-    name: "deepgram",
-    value: VENDOR_DEEPGRAM,
+    name: "Nvidia",
+    value: VENDOR_NVIDIA,
   },
   {
-    name: "IBM",
-    value: VENDOR_IBM,
+    name: "WellSaid",
+    value: VENDOR_WELLSAID,
   },
 ];
 
@@ -98,12 +103,14 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/nuance-speech-recognizer-lang"),
       import("./speech-recognizer/deepgram-speech-recognizer-lang"),
       import("./speech-recognizer/ibm-speech-recognizer-lang"),
+      import("./speech-recognizer/nvidia-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
       import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
       import("./speech-synthesis/ibm-speech-synthesis-lang"),
+      import("./speech-synthesis/nvidia-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -112,12 +119,14 @@ export const useSpeechVendors = () => {
         { default: nuanceRecognizer },
         { default: deepgramRecognizer },
         { default: ibmRecognizer },
+        { default: nvidiaRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
         { default: wellsaidSynthesis },
         { default: nuanceSynthesis },
         { default: ibmSynthesis },
+        { default: nvidiaynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -128,6 +137,7 @@ export const useSpeechVendors = () => {
               wellsaid: wellsaidSynthesis,
               nuance: nuanceSynthesis,
               ibm: ibmSynthesis,
+              nvidia: nvidiaynthesis,
             },
             recognizers: {
               aws: awsRecognizer,
@@ -136,6 +146,7 @@ export const useSpeechVendors = () => {
               nuance: nuanceRecognizer,
               deepgram: deepgramRecognizer,
               ibm: ibmRecognizer,
+              nvidia: nvidiaRecognizer,
             },
           });
         }
