@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, H1, Icon, M } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
-import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
+import { USER_ACCOUNT } from "src/api/constants";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
 import { useSelectState, toastError, toastSuccess } from "src/store";
 import {
@@ -88,7 +88,7 @@ export const SpeechServices = () => {
   useEffect(() => {
     setLocation();
 
-    if (user?.scope === USER_ADMIN && accountSid) {
+    if (user?.scope !== USER_ACCOUNT && accountSid) {
       setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
     } else {
       setApiUrl(
