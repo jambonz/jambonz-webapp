@@ -64,6 +64,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
   const [applicationJson, setApplicationJson] = useState("");
+  const [tmpApplicationJson, setTmpApplicationJson] = useState("");
   const [initialApplicationJson, setInitialApplicationJson] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
@@ -188,7 +189,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
-      setApplicationJson(application.data.app_json || "");
+      if (!applicationJson) {
+        setApplicationJson(application.data.app_json || "");
+      }
+      setTmpApplicationJson(applicationJson);
       setInitialApplicationJson(
         application.data.app_json != undefined &&
           application.data.app_json.length !== 0
@@ -538,7 +542,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               label="Override webhook for initial application"
               initialCheck={initialApplicationJson}
               handleChecked={(e) => {
+                if (e.target.checked && tmpApplicationJson) {
+                  setApplicationJson(tmpApplicationJson);
+                }
                 if (!e.target.checked) {
+                  setTmpApplicationJson(applicationJson);
                   setApplicationJson("");
                 }
               }}
