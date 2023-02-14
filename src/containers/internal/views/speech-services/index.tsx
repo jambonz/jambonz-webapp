@@ -87,7 +87,10 @@ export const SpeechServices = () => {
 
   useEffect(() => {
     setLocation();
-    if (currentServiceProvider) {
+
+    if (user?.scope !== USER_ACCOUNT && accountSid) {
+      setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
+    } else {
       setApiUrl(
         `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
       );
