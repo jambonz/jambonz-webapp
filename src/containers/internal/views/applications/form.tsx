@@ -63,6 +63,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
+  const [applicationJson, setApplicationJson] = useState("");
+  const [tmpApplicationJson, setTmpApplicationJson] = useState("");
+  const [initialApplicationJson, setInitialApplicationJson] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
@@ -145,6 +148,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
     const payload = {
       name: applicationName,
+      app_json: applicationJson || null,
       call_hook: callWebhook || null,
       account_sid: accountSid || null,
       messaging_hook: messageWebhook || null,
@@ -185,6 +189,14 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
+      if (!applicationJson) {
+        setApplicationJson(application.data.app_json || "");
+      }
+      setTmpApplicationJson(applicationJson);
+      setInitialApplicationJson(
+        application.data.app_json != undefined &&
+          application.data.app_json.length !== 0
+      );
 
       if (application.data.call_hook) {
         setCallWebhook(application.data.call_hook);
@@ -519,6 +531,36 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 />
               </>
             )}
+          </fieldset>
+        )}
+        {(import.meta.env.INITIAL_APP_JSON_ENABLED === undefined ||
+          import.meta.env.INITIAL_APP_JSON_ENABLED) && (
+          <fieldset>
+            <Checkzone
+              hidden
+              name="cz_pplication_json"
+              label="Override webhook for initial application"
+              initialCheck={initialApplicationJson}
+              handleChecked={(e) => {
+                if (e.target.checked && tmpApplicationJson) {
+                  setApplicationJson(tmpApplicationJson);
+                }
+                if (!e.target.checked) {
+                  setTmpApplicationJson(applicationJson);
+                  setApplicationJson("");
+                }
+              }}
+            >
+              <textarea
+                id="input_application_json"
+                name="application_json"
+                rows={6}
+                cols={55}
+                placeholder="an array of jambonz verbs to execute"
+                value={applicationJson}
+                onChange={(e) => setApplicationJson(e.target.value)}
+              />
+            </Checkzone>
           </fieldset>
         )}
         {message && <fieldset>{<Message message={message} />}</fieldset>}
