@@ -1,4 +1,4 @@
-FROM node:18.8.0-alpine as builder
+FROM node:18.14.0-alpine3.16 as builder
 RUN apk update && apk add --no-cache python3 make g++
 COPY . /opt/app
 WORKDIR /opt/app/
