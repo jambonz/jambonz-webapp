@@ -6,7 +6,7 @@ RUN npm install
 RUN npm run build
 RUN npm prune
 
-FROM node:18.9.0-alpine as webapp
+FROM node:18.14.1-alpine as webapp
 RUN apk add curl
 WORKDIR /opt/app
 COPY . /opt/app
