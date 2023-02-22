@@ -45,6 +45,7 @@ import {
   isUserAccountScope,
   hasLength,
   isValidPort,
+  disableDefaultTrunkRouting,
 } from "src/utils";
 
 import type {
@@ -725,18 +726,21 @@ export const CarrierForm = ({
                     : false
                 }
               />
-              {accountSid && hasLength(applications) && (
-                <>
-                  <ApplicationSelect
-                    label="Default Application"
-                    defaultOption="None"
-                    application={[applicationSid, setApplicationSid]}
-                    applications={applications.filter(
-                      (application) => application.account_sid === accountSid
-                    )}
-                  />
-                </>
-              )}
+              {user &&
+                disableDefaultTrunkRouting(user?.scope) &&
+                accountSid &&
+                hasLength(applications) && (
+                  <>
+                    <ApplicationSelect
+                      label="Default Application"
+                      defaultOption="None"
+                      application={[applicationSid, setApplicationSid]}
+                      applications={applications.filter(
+                        (application) => application.account_sid === accountSid
+                      )}
+                    />
+                  </>
+                )}
             </fieldset>
             <fieldset>
               <Checkzone
