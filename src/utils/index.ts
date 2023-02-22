@@ -225,6 +225,17 @@ export const createFilterString = (filterValue: string, label: string) => {
   return filterString.join("/");
 };
 
+export const disableDefaultTrunkRouting = (userScope: UserData["scope"]) => {
+  if (import.meta.env.VITE_APP_DISABLE_DEFAULT_TRUNK_ROUTING) {
+    if (userScope === USER_ADMIN) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return true;
+};
+
 export {
   withSuspense,
   useMobileMedia,
