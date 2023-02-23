@@ -418,11 +418,6 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                           username: e.target.value,
                         });
                       }}
-                      required={
-                        webhook.stateVal.password && !webhook.stateVal.username
-                          ? true
-                          : false
-                      }
                     />
                     <label htmlFor={`${webhook.prefix}_password`}>
                       Password
@@ -438,11 +433,6 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                           password: e.target.value,
                         });
                       }}
-                      required={
-                        webhook.stateVal.username && !webhook.stateVal.password
-                          ? true
-                          : false
-                      }
                     />
                   </Checkzone>
                 </div>
