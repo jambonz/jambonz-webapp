@@ -356,13 +356,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                       username: e.target.value,
                     });
                   }}
-                  required={
-                    webhook.required &&
-                    !webhook.stateVal.username &&
-                    webhook.stateVal.password
-                      ? true
-                      : false
-                  }
                 />
                 <label htmlFor={`${webhook.prefix}_password`}>Password</label>
                 <Passwd
@@ -376,13 +369,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                       password: e.target.value,
                     });
                   }}
-                  required={
-                    webhook.required &&
-                    webhook.stateVal.username &&
-                    !webhook.stateVal.password
-                      ? true
-                      : false
-                  }
                 />
               </Checkzone>
             </fieldset>
