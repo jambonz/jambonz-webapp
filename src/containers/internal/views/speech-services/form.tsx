@@ -27,6 +27,7 @@ import {
   VENDOR_DEEPGRAM,
   VENDOR_IBM,
   VENDOR_NVIDIA,
+  VENDOR_SONIOX,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -173,7 +174,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           api_key:
             vendor === VENDOR_MICROSOFT ||
             vendor === VENDOR_WELLSAID ||
-            vendor === VENDOR_DEEPGRAM
+            vendor === VENDOR_DEEPGRAM ||
+            vendor === VENDOR_SONIOX
               ? apiKey
               : null,
           client_id: vendor === VENDOR_NUANCE ? clientId : null,
@@ -327,7 +329,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            {vendor !== VENDOR_DEEPGRAM && (
+            {vendor !== VENDOR_DEEPGRAM && vendor !== VENDOR_SONIOX && (
               <label htmlFor="use_for_tts" className="chk">
                 <input
                   id="use_for_tts"
@@ -448,7 +450,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {(vendor === VENDOR_MICROSOFT ||
           vendor === VENDOR_WELLSAID ||
-          vendor === VENDOR_DEEPGRAM) && (
+          vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
               API key<span>*</span>

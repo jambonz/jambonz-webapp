@@ -20,6 +20,7 @@ import {
   VENDOR_WELLSAID,
   useSpeechVendors,
   VENDOR_DEEPGRAM,
+  VENDOR_SONIOX,
 } from "src/vendor";
 import {
   postApplication,
@@ -382,7 +383,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               name="synthesis_vendor"
               value={synthVendor}
               options={vendors.filter(
-                (vendor) => vendor.value != VENDOR_DEEPGRAM
+                (vendor) =>
+                  vendor.value != VENDOR_DEEPGRAM &&
+                  vendor.value != VENDOR_SONIOX
               )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof SynthesisVendors;

@@ -6,7 +6,8 @@ export type Vendor =
   | "Nuance"
   | "Deepgram"
   | "IBM"
-  | "Nvidia";
+  | "Nvidia"
+  | "Soniox";
 
 export interface VendorOptions {
   name: Vendor;
@@ -62,6 +63,7 @@ export interface RecognizerVendors {
   deepgram: Language[];
   ibm: Language[];
   nvidia: Language[];
+  soniox: Language[];
 }
 
 export interface SynthesisVendors {
