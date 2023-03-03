@@ -26,6 +26,7 @@ import type { SpeechCredential, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
+import { VENDOR_CUSTOM } from "src/vendor";
 
 export const SpeechServices = () => {
   const user = useSelectState("user");
@@ -140,7 +141,12 @@ export const SpeechServices = () => {
                           title="Edit application"
                           className="i"
                         >
-                          <strong>Vendor: {credential.vendor}</strong>
+                          <strong>
+                            Vendor:{" "}
+                            {credential.vendor.startsWith(VENDOR_CUSTOM)
+                              ? credential.vendor.substring(7)
+                              : credential.vendor}
+                          </strong>
                           <Icons.ArrowRight />
                         </Link>
                       </ScopedAccess>

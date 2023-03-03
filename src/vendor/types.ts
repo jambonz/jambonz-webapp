@@ -7,7 +7,8 @@ export type Vendor =
   | "Deepgram"
   | "IBM"
   | "Nvidia"
-  | "Soniox";
+  | "Soniox"
+  | "Custom";
 
 export interface VendorOptions {
   name: Vendor;
