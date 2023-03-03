@@ -17,6 +17,7 @@ export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
 export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
+export const VENDOR_SONIOX = "soniox";
 
 export const vendors: VendorOptions[] = [
   {
@@ -50,6 +51,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "WellSaid",
     value: VENDOR_WELLSAID,
+  },
+  {
+    name: "Soniox",
+    value: VENDOR_SONIOX,
   },
 ];
 
@@ -104,6 +109,7 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/deepgram-speech-recognizer-lang"),
       import("./speech-recognizer/ibm-speech-recognizer-lang"),
       import("./speech-recognizer/nvidia-speech-recognizer-lang"),
+      import("./speech-recognizer/soniox-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
@@ -120,6 +126,7 @@ export const useSpeechVendors = () => {
         { default: deepgramRecognizer },
         { default: ibmRecognizer },
         { default: nvidiaRecognizer },
+        { default: sonioxRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
@@ -147,6 +154,7 @@ export const useSpeechVendors = () => {
               deepgram: deepgramRecognizer,
               ibm: ibmRecognizer,
               nvidia: nvidiaRecognizer,
+              soniox: sonioxRecognizer,
             },
           });
         }
