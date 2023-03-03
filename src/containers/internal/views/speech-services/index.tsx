@@ -144,7 +144,9 @@ export const SpeechServices = () => {
                           <strong>
                             Vendor:{" "}
                             {credential.vendor.startsWith(VENDOR_CUSTOM)
-                              ? credential.vendor.substring(7)
+                              ? credential.vendor.substring(
+                                  VENDOR_CUSTOM.length + 1
+                                )
                               : credential.vendor}
                           </strong>
                           <Icons.ArrowRight />

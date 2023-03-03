@@ -298,7 +298,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTmpCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
       setCustomVendorName(
         credential.data.vendor.startsWith(VENDOR_CUSTOM)
-          ? credential.data.vendor.substring(7)
+          ? credential.data.vendor.substring(VENDOR_CUSTOM.length + 1)
           : credential.data.vendor
       );
       setCustomVendorAuthToken(credential.data.auth_token || "");
