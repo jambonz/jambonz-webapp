@@ -199,7 +199,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_tts)
         .map((tv) =>
           Object.assign({
-            name: tv.vendor.substring(VENDOR_CUSTOM.length + 1),
+            name:
+              tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
+              ` (${VENDOR_CUSTOM})`,
             value: tv.vendor,
           })
         );
@@ -209,7 +211,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_stt)
         .map((tv) =>
           Object.assign({
-            name: tv.vendor.substring(VENDOR_CUSTOM.length + 1),
+            name:
+              tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
+              ` (${VENDOR_CUSTOM})`,
             value: tv.vendor,
           })
         );
@@ -558,7 +562,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               name="recognizer_vendor"
               value={recogVendor}
               options={softSttVendor.filter(
-                (vendor) => vendor.value != VENDOR_WELLSAID
+                (vendor) =>
+                  vendor.value != VENDOR_WELLSAID &&
+                  vendor.value !== VENDOR_CUSTOM
               )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof RecognizerVendors;
