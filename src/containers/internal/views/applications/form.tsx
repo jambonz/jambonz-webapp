@@ -41,6 +41,7 @@ import type {
   Voice,
   VoiceLanguage,
   Language,
+  VendorOptions,
 } from "src/vendor/types";
 
 import type {
@@ -49,9 +50,10 @@ import type {
   Application,
   WebhookMethod,
   UseApiDataMap,
+  SpeechCredential,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { isUserAccountScope, useRedirect } from "src/utils";
+import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type ApplicationFormProps = {
@@ -84,6 +86,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
   const [recogLang, setRecogLang] = useState(LANG_EN_US);
   const [message, setMessage] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
+  const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
+  const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
+  const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -186,6 +192,36 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (credentials && hasLength(credentials)) {
+      const v = credentials
+        .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_tts)
+        .map((tv) =>
+          Object.assign({
+            name: tv.vendor.substring(VENDOR_CUSTOM.length + 1),
+            value: tv.vendor,
+          })
+        );
+      setSoftTtsVendor(vendors.concat(v));
+
+      const v2 = credentials
+        .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_stt)
+        .map((tv) =>
+          Object.assign({
+            name: tv.vendor.substring(VENDOR_CUSTOM.length + 1),
+            value: tv.vendor,
+          })
+        );
+      setSoftSttVendor(vendors.concat(v2));
+    }
+  }, [credentials]);
+
+  useEffect(() => {
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
+    }
+  }, [accountSid]);
 
   useEffect(() => {
     setLocation();
@@ -386,14 +422,18 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               options={vendors.filter(
                 (vendor) =>
                   vendor.value != VENDOR_DEEPGRAM &&
-                  vendor.value != VENDOR_SONIOX
+                  vendor.value != VENDOR_SONIOX &&
+                  vendor.value !== VENDOR_CUSTOM
               )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof SynthesisVendors;
                 setSynthVendor(vendor);
 
                 /** When Custom Vendor is used, user you have to input the lange and voice. */
-                if (vendor.toString() === VENDOR_CUSTOM) return;
+                if (vendor.toString().startsWith(VENDOR_CUSTOM)) {
+                  setSynthVoice("");
+                  return;
+                }
 
                 /** When using Google and en-US, ensure "Standard-C" is used as default */
                 if (
@@ -424,7 +464,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               }}
             />
             {synthVendor &&
-              synthVendor.toString() !== VENDOR_CUSTOM &&
+              !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
               synthLang && (
                 <>
                   <label htmlFor="synthesis_lang">Language</label>
@@ -479,7 +519,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                   />
                 </>
               )}
-            {synthVendor.toString() === VENDOR_CUSTOM && (
+            {synthVendor.toString().startsWith(VENDOR_CUSTOM) && (
               <>
                 <label htmlFor="custom_vendor_synthesis_lang">Language</label>
                 <input
@@ -517,7 +557,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               id="recognizer_vendor"
               name="recognizer_vendor"
               value={recogVendor}
-              options={vendors.filter(
+              options={softSttVendor.filter(
                 (vendor) => vendor.value != VENDOR_WELLSAID
               )}
               onChange={(e) => {
@@ -542,7 +582,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               }}
             />
             {recogVendor &&
-              recogVendor.toString() !== VENDOR_CUSTOM &&
+              !recogVendor.toString().startsWith(VENDOR_CUSTOM) &&
               recogLang && (
                 <>
                   <label htmlFor="recognizer_lang">Language</label>
@@ -562,7 +602,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                   />
                 </>
               )}
-            {recogVendor.toString() === VENDOR_CUSTOM && (
+            {recogVendor.toString().startsWith(VENDOR_CUSTOM) && (
               <>
                 <label htmlFor="custom_vendor_recognizer_voice">Language</label>
                 <input
