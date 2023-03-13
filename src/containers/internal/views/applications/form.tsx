@@ -423,7 +423,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               id="synthesis_vendor"
               name="synthesis_vendor"
               value={synthVendor}
-              options={vendors.filter(
+              options={softTtsVendor.filter(
                 (vendor) =>
                   vendor.value != VENDOR_DEEPGRAM &&
                   vendor.value != VENDOR_SONIOX &&

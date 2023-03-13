@@ -381,18 +381,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            {vendor !== VENDOR_DEEPGRAM && vendor !== VENDOR_SONIOX  && vendor != VENDOR_CUSTOM && (
-              <label htmlFor="use_for_tts" className="chk">
-                <input
-                  id="use_for_tts"
-                  name="use_for_tts"
-                  type="checkbox"
-                  onChange={(e) => setTtsCheck(e.target.checked)}
-                  defaultChecked={ttsCheck}
-                />
-                <div>Use for text-to-speech</div>
-              </label>
-            )}
+            {vendor !== VENDOR_DEEPGRAM &&
+              vendor !== VENDOR_SONIOX &&
+              vendor != VENDOR_CUSTOM && (
+                <label htmlFor="use_for_tts" className="chk">
+                  <input
+                    id="use_for_tts"
+                    name="use_for_tts"
+                    type="checkbox"
+                    onChange={(e) => setTtsCheck(e.target.checked)}
+                    defaultChecked={ttsCheck}
+                  />
+                  <div>Use for text-to-speech</div>
+                </label>
+              )}
             {vendor !== VENDOR_WELLSAID && vendor != VENDOR_CUSTOM && (
               <label htmlFor="use_for_stt" className="chk">
                 <input
