@@ -43,6 +43,7 @@ import { CredentialStatus } from "./status";
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import { DISABLE_CUSTOM_SPEECH } from "src/api/constants";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -342,7 +343,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 name: "Select a vendor",
                 value: "",
               },
-            ].concat(vendors)}
+            ]
+              .concat(vendors)
+              .filter(
+                (v) => !DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM
+              )}
             onChange={(e) => {
               setVendor(e.target.value as Lowercase<Vendor>);
               setRegion("");
@@ -395,7 +400,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   <div>Use for text-to-speech</div>
                 </label>
               )}
-            {vendor !== VENDOR_WELLSAID && vendor != VENDOR_CUSTOM && (
+            {vendor !== VENDOR_WELLSAID && vendor !== VENDOR_CUSTOM && (
               <label htmlFor="use_for_stt" className="chk">
                 <input
                   id="use_for_stt"
