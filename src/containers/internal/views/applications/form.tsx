@@ -21,6 +21,7 @@ import {
   useSpeechVendors,
   VENDOR_DEEPGRAM,
   VENDOR_SONIOX,
+  VENDOR_CUSTOM,
 } from "src/vendor";
 import {
   postApplication,
@@ -40,6 +41,7 @@ import type {
   Voice,
   VoiceLanguage,
   Language,
+  VendorOptions,
 } from "src/vendor/types";
 
 import type {
@@ -48,9 +50,10 @@ import type {
   Application,
   WebhookMethod,
   UseApiDataMap,
+  SpeechCredential,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { isUserAccountScope, useRedirect } from "src/utils";
+import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 
 type ApplicationFormProps = {
@@ -83,6 +86,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
   const [recogLang, setRecogLang] = useState(LANG_EN_US);
   const [message, setMessage] = useState("");
+  const [apiUrl, setApiUrl] = useState("");
+  const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
+  const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
+  const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -185,6 +192,40 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (credentials && hasLength(credentials)) {
+      const v = credentials
+        .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_tts)
+        .map((tv) =>
+          Object.assign({
+            name:
+              tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
+              ` (${VENDOR_CUSTOM})`,
+            value: tv.vendor,
+          })
+        );
+      setSoftTtsVendor(vendors.concat(v));
+
+      const v2 = credentials
+        .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_stt)
+        .map((tv) =>
+          Object.assign({
+            name:
+              tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
+              ` (${VENDOR_CUSTOM})`,
+            value: tv.vendor,
+          })
+        );
+      setSoftSttVendor(vendors.concat(v2));
+    }
+  }, [credentials]);
+
+  useEffect(() => {
+    if (accountSid) {
+      setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
+    }
+  }, [accountSid]);
 
   useEffect(() => {
     setLocation();
@@ -382,14 +423,21 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               id="synthesis_vendor"
               name="synthesis_vendor"
               value={synthVendor}
-              options={vendors.filter(
+              options={softTtsVendor.filter(
                 (vendor) =>
                   vendor.value != VENDOR_DEEPGRAM &&
-                  vendor.value != VENDOR_SONIOX
+                  vendor.value != VENDOR_SONIOX &&
+                  vendor.value !== VENDOR_CUSTOM
               )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof SynthesisVendors;
                 setSynthVendor(vendor);
+
+                /** When Custom Vendor is used, user you have to input the lange and voice. */
+                if (vendor.toString().startsWith(VENDOR_CUSTOM)) {
+                  setSynthVoice("");
+                  return;
+                }
 
                 /** When using Google and en-US, ensure "Standard-C" is used as default */
                 if (
@@ -419,55 +467,88 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 setSynthVoice(newLang!.voices[0].value);
               }}
             />
-            {synthVendor && synthLang && (
-              <>
-                <label htmlFor="synthesis_lang">Language</label>
-                <Selector
-                  id="synthesis_lang"
-                  name="synthesis_lang"
-                  value={synthLang}
-                  options={synthesis[synthVendor as keyof SynthesisVendors].map(
-                    (lang: VoiceLanguage) => ({
+            {synthVendor &&
+              !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
+              synthLang && (
+                <>
+                  <label htmlFor="synthesis_lang">Language</label>
+                  <Selector
+                    id="synthesis_lang"
+                    name="synthesis_lang"
+                    value={synthLang}
+                    options={synthesis[
+                      synthVendor as keyof SynthesisVendors
+                    ].map((lang: VoiceLanguage) => ({
                       name: lang.name,
                       value: lang.code,
-                    })
-                  )}
-                  onChange={(e) => {
-                    const language = e.target.value;
-                    setSynthLang(language);
+                    }))}
+                    onChange={(e) => {
+                      const language = e.target.value;
+                      setSynthLang(language);
 
-                    /** When using Google and en-US, ensure "Standard-C" is used as default */
-                    if (
-                      synthVendor === VENDOR_GOOGLE &&
-                      language === LANG_EN_US
-                    ) {
-                      setSynthVoice(LANG_EN_US_STANDARD_C);
-                      return;
+                      /** When using Google and en-US, ensure "Standard-C" is used as default */
+                      if (
+                        synthVendor === VENDOR_GOOGLE &&
+                        language === LANG_EN_US
+                      ) {
+                        setSynthVoice(LANG_EN_US_STANDARD_C);
+                        return;
+                      }
+
+                      const newLang = synthesis[
+                        synthVendor as keyof SynthesisVendors
+                      ].find((lang) => lang.code === language);
+
+                      setSynthVoice(newLang!.voices[0].value);
+                    }}
+                  />
+                  <label htmlFor="synthesis_voice">Voice</label>
+                  <Selector
+                    id="synthesis_voice"
+                    name="synthesis_voice"
+                    value={synthVoice}
+                    options={
+                      synthesis[synthVendor as keyof SynthesisVendors]
+                        .filter(
+                          (lang: VoiceLanguage) => lang.code === synthLang
+                        )
+                        .flatMap((lang: VoiceLanguage) =>
+                          lang.voices.map((voice: Voice) => ({
+                            name: voice.name,
+                            value: voice.value,
+                          }))
+                        ) as Voice[]
                     }
-
-                    const newLang = synthesis[
-                      synthVendor as keyof SynthesisVendors
-                    ].find((lang) => lang.code === language);
-
-                    setSynthVoice(newLang!.voices[0].value);
+                    onChange={(e) => setSynthVoice(e.target.value)}
+                  />
+                </>
+              )}
+            {synthVendor.toString().startsWith(VENDOR_CUSTOM) && (
+              <>
+                <label htmlFor="custom_vendor_synthesis_lang">Language</label>
+                <input
+                  id="custom_vendor_synthesis_lang"
+                  type="text"
+                  name="custom_vendor_synthesis_lang"
+                  placeholder="Required"
+                  required
+                  value={synthLang}
+                  onChange={(e) => {
+                    setSynthLang(e.target.value);
                   }}
                 />
-                <label htmlFor="synthesis_voice">Voice</label>
-                <Selector
-                  id="synthesis_voice"
-                  name="synthesis_voice"
+
+                <label htmlFor="custom_vendor_synthesis_voice">Voice</label>
+                <input
+                  id="custom_vendor_synthesis_voice"
+                  type="text"
+                  name="custom_vendor_synthesis_voice"
+                  placeholder="Required"
+                  required
                   value={synthVoice}
-                  options={
-                    synthesis[synthVendor as keyof SynthesisVendors]
-                      .filter((lang: VoiceLanguage) => lang.code === synthLang)
-                      .flatMap((lang: VoiceLanguage) =>
-                        lang.voices.map((voice: Voice) => ({
-                          name: voice.name,
-                          value: voice.value,
-                        }))
-                      ) as Voice[]
-                  }
-                  onChange={(e) => setSynthVoice(e.target.value)}
+                  onChange={(e) => {
+                    setSynthVoice(e.target.value);
+                  }}
                 />
               </>
             )}
@@ -480,12 +561,17 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               id="recognizer_vendor"
               name="recognizer_vendor"
               value={recogVendor}
-              options={vendors.filter(
-                (vendor) => vendor.value != VENDOR_WELLSAID
+              options={softSttVendor.filter(
+                (vendor) =>
+                  vendor.value != VENDOR_WELLSAID &&
+                  vendor.value !== VENDOR_CUSTOM
               )}
               onChange={(e) => {
                 const vendor = e.target.value as keyof RecognizerVendors;
                 setRecogVendor(vendor);
+
+                /**When vendor is custom, Language is input by user */
+                if (vendor.toString() === VENDOR_CUSTOM) return;
 
                 /** Google and AWS have different language lists */
                 /** If the new language doesn't map then default to "en-US" */
@@ -501,19 +587,37 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 }
               }}
             />
-            {recogVendor && recogLang && (
+            {recogVendor &&
+              !recogVendor.toString().startsWith(VENDOR_CUSTOM) &&
+              recogLang && (
+                <>
+                  <label htmlFor="recognizer_lang">Language</label>
+                  <Selector
+                    id="recognizer_lang"
+                    name="recognizer_lang"
+                    value={recogLang}
+                    options={recognizers[
+                      recogVendor as keyof RecognizerVendors
+                    ].map((lang: Language) => ({
+                      name: lang.name,
+                      value: lang.code,
+                    }))}
+                    onChange={(e) => {
+                      setRecogLang(e.target.value);
+                    }}
+                  />
+                </>
+              )}
+            {recogVendor.toString().startsWith(VENDOR_CUSTOM) && (
               <>
-                <label htmlFor="recognizer_lang">Language</label>
-                <Selector
-                  id="recognizer_lang"
-                  name="recognizer_lang"
+                <label htmlFor="custom_vendor_recognizer_voice">Language</label>
+                <input
+                  id="custom_vendor_recognizer_voice"
+                  type="text"
+                  name="custom_vendor_recognizer_voice"
+                  placeholder="Required"
+                  required
                   value={recogLang}
-                  options={recognizers[
-                    recogVendor as keyof RecognizerVendors
-                  ].map((lang: Language) => ({
-                    name: lang.name,
-                    value: lang.code,
-                  }))}
                   onChange={(e) => {
                     setRecogLang(e.target.value);
                   }}

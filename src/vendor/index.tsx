@@ -18,6 +18,7 @@ export const VENDOR_DEEPGRAM = "deepgram";
 export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
+export const VENDOR_CUSTOM = "custom";
 
 export const vendors: VendorOptions[] = [
   {
@@ -55,6 +56,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Soniox",
     value: VENDOR_SONIOX,
+  },
+  {
+    name: "Custom",
+    value: VENDOR_CUSTOM,
   },
 ];
 

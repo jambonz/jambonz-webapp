@@ -309,6 +309,9 @@ export interface SpeechCredential {
   stt_region: null | string;
   instance_id: null | string;
   riva_server_uri: null | string;
+  auth_token: null | string;
+  custom_stt_url: null | string;
+  custom_tts_url: null | string;
 }
 
 export interface Alert {

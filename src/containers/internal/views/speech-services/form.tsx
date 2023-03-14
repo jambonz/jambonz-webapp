@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ import {
   Selector,
   Passwd,
   AccountSelect,
+  Checkzone,
 } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -28,6 +29,7 @@ import {
   VENDOR_IBM,
   VENDOR_NVIDIA,
   VENDOR_SONIOX,
+  VENDOR_CUSTOM,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -41,6 +43,7 @@ import { CredentialStatus } from "./status";
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import { DISABLE_CUSTOM_SPEECH } from "src/api/constants";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -53,7 +56,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
+  const [initialTtsCheck, setInitialTtsCheck] = useState(false);
   const [ttsCheck, setTtsCheck] = useState(false);
+  const [initialSttCheck, setInitialSttCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
   const [vendor, setVendor] = useState<Lowercase<Vendor>>(
     "" as Lowercase<Vendor>
@@ -78,6 +83,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customSttEndpoint, setCustomSttEndpoint] = useState("");
   const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
   const [rivaServerUri, setRivaServerUri] = useState("");
+  const [customVendorName, setCustomVendorName] = useState("");
+  const [customVendorAuthToken, setCustomVendorAuthToken] = useState("");
+  const [tmpCustomVendorTtsUrl, setTmpCustomVendorTtsUrl] = useState("");
+  const [customVendorTtsUrl, setCustomVendorTtsUrl] = useState("");
+  const [tmpCustomVendorSttUrl, setTmpCustomVendorSttUrl] = useState("");
+  const [customVendorSttUrl, setCustomVendorSttUrl] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -142,6 +153,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_NVIDIA && {
           riva_server_uri: rivaServerUri || null,
         }),
+        ...(vendor === VENDOR_CUSTOM && {
+          vendor: (vendor + ":" + customVendorName) as Lowercase<Vendor>,
+          use_for_tts: ttsCheck ? 1 : 0,
+          use_for_stt: sttCheck ? 1 : 0,
+          custom_tts_url: customVendorTtsUrl || null,
+          custom_stt_url: customVendorSttUrl || null,
+          auth_token: customVendorAuthToken || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -198,7 +217,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     setLocation();
     if (credential && credential.data) {
       if (credential.data.vendor) {
-        setVendor(credential.data.vendor);
+        const v = credential.data.vendor.startsWith(VENDOR_CUSTOM)
+          ? VENDOR_CUSTOM
+          : vendor;
+        setVendor(v);
       }
 
       if (credential.data.account_sid) {
@@ -207,14 +229,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.use_for_stt) {
         setSttCheck(true);
+        setInitialSttCheck(true);
       } else {
         setSttCheck(false);
+        setInitialSttCheck(false);
       }
 
       if (credential.data.use_for_tts) {
         setTtsCheck(true);
+        setInitialTtsCheck(true);
       } else {
         setTtsCheck(false);
+        setInitialTtsCheck(false);
       }
 
       if (credential.data.service_key) {
@@ -279,6 +305,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
       setTmpCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setTmpCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
+      setCustomVendorName(
+        credential.data.vendor.startsWith(VENDOR_CUSTOM)
+          ? credential.data.vendor.substring(VENDOR_CUSTOM.length + 1)
+          : credential.data.vendor
+      );
+      setCustomVendorAuthToken(credential.data.auth_token || "");
+      setCustomVendorSttUrl(credential.data.custom_stt_url || "");
+      setTmpCustomVendorSttUrl(credential.data.custom_stt_url || "");
+      setCustomVendorTtsUrl(credential.data.custom_tts_url || "");
+      setTmpCustomVendorTtsUrl(credential.data.custom_tts_url || "");
     }
   }, [credential]);
 
@@ -307,7 +343,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 name: "Select a vendor",
                 value: "",
               },
-            ].concat(vendors)}
+            ]
+              .concat(vendors)
+              .filter(
+                (v) => !DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM
+              )}
             onChange={(e) => {
               setVendor(e.target.value as Lowercase<Vendor>);
               setRegion("");
@@ -317,6 +357,23 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             disabled={credential ? true : false}
             required
           />
+          {vendor === VENDOR_CUSTOM && (
+            <>
+              <label htmlFor="custom_vendor_name">
+                Name<span>*</span>
+              </label>
+              <input
+                id="custom_vendor_name"
+                required
+                type="text"
+                name="custom_vendor_name"
+                placeholder="Vendor Name"
+                value={customVendorName}
+                onChange={(e) => setCustomVendorName(e.target.value)}
+                disabled={credential ? true : false}
+              />
+            </>
+          )}
         </fieldset>
         <fieldset>
           <AccountSelect
@@ -329,19 +386,21 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            {vendor !== VENDOR_DEEPGRAM && vendor !== VENDOR_SONIOX && (
-              <label htmlFor="use_for_tts" className="chk">
-                <input
-                  id="use_for_tts"
-                  name="use_for_tts"
-                  type="checkbox"
-                  onChange={(e) => setTtsCheck(e.target.checked)}
-                  defaultChecked={ttsCheck}
-                />
-                <div>Use for text-to-speech</div>
-              </label>
-            )}
-            {vendor !== VENDOR_WELLSAID && (
+            {vendor !== VENDOR_DEEPGRAM &&
+              vendor !== VENDOR_SONIOX &&
+              vendor != VENDOR_CUSTOM && (
+                <label htmlFor="use_for_tts" className="chk">
+                  <input
+                    id="use_for_tts"
+                    name="use_for_tts"
+                    type="checkbox"
+                    onChange={(e) => setTtsCheck(e.target.checked)}
+                    defaultChecked={ttsCheck}
+                  />
+                  <div>Use for text-to-speech</div>
+                </label>
+              )}
+            {vendor !== VENDOR_WELLSAID && vendor !== VENDOR_CUSTOM && (
               <label htmlFor="use_for_stt" className="chk">
                 <input
                   id="use_for_stt"
@@ -353,6 +412,87 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 <div>Use for speech-to-text</div>
               </label>
             )}
+            {vendor === VENDOR_CUSTOM && (
+              <Fragment>
+                <Checkzone
+                  hidden
+                  name="custom_vendor_use_for_tts"
+                  label="Use for text-to-speech"
+                  initialCheck={initialTtsCheck}
+                  handleChecked={(e) => {
+                    setTtsCheck(e.target.checked);
+                    if (!e.target.checked) {
+                      setTmpCustomVendorTtsUrl(customVendorTtsUrl);
+                      setCustomVendorTtsUrl("");
+                    } else {
+                      setCustomVendorTtsUrl(tmpCustomVendorTtsUrl);
+                    }
+                  }}
+                >
+                  <label htmlFor="custom_vendor_use_for_tts">
+                    TTS HTTP URL<span>*</span>
+                  </label>
+                  <input
+                    id="custom_vendor_use_for_tts"
+                    type="text"
+                    name="custom_vendor_use_for_tts"
+                    placeholder="Required"
+                    required={ttsCheck}
+                    value={customVendorTtsUrl}
+                    onChange={(e) => {
+                      setCustomVendorTtsUrl(e.target.value);
+                    }}
+                  />
+                </Checkzone>
+
+                <Checkzone
+                  hidden
+                  name="custom_vendor_use_for_stt"
+                  label="Use for speech-to-text"
+                  initialCheck={initialSttCheck}
+                  handleChecked={(e) => {
+                    setSttCheck(e.target.checked);
+                    if (!e.target.checked) {
+                      setTmpCustomVendorSttUrl(customVendorSttUrl);
+                      setCustomVendorSttUrl("");
+                    } else {
+                      setCustomVendorSttUrl(tmpCustomVendorSttUrl);
+                    }
+                  }}
+                >
+                  <label htmlFor="custom_vendor_use_for_stt">
+                    STT websocket URL<span>*</span>
+                  </label>
+                  <input
+                    id="custom_vendor_use_for_stt"
+                    type="text"
+                    name="custom_vendor_use_for_stt"
+                    placeholder="Required"
+                    required={sttCheck}
+                    value={customVendorSttUrl}
+                    onChange={(e) => {
+                      setCustomVendorSttUrl(e.target.value);
+                    }}
+                  />
+                </Checkzone>
+              </Fragment>
+            )}
+          </fieldset>
+        )}
+        {vendor === VENDOR_CUSTOM && (
+          <fieldset>
+            <label htmlFor="custom_vendor_auth_token">
+              Authentication Token
+            </label>
+            <input
+              id="custom_vendor_auth_token"
+              type="text"
+              name="custom_vendor_auth_token"
+              placeholder="Authentication Token"
+              value={customVendorAuthToken}
+              onChange={(e) => setCustomVendorAuthToken(e.target.value)}
+              disabled={credential ? true : false}
+            />
           </fieldset>
         )}
         {vendor === VENDOR_GOOGLE && (

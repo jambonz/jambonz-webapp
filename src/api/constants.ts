@@ -28,6 +28,11 @@ export const API_BASE_URL =
 /** Serves mock API responses from a local dev API server */
 export const DEV_BASE_URL = import.meta.env.VITE_DEV_BASE_URL;
 
+/** Disable custom speech vendor*/
+export const DISABLE_CUSTOM_SPEECH: boolean = JSON.parse(
+  import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
