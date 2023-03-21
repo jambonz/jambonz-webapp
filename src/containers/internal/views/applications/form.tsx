@@ -72,10 +72,16 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [initialApplicationJson, setInitialApplicationJson] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [callWebhook, setCallWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
+  const [tmpCallWebhook, setTmpCallWebhook] =
+    useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialCallWebhook, setInitialCallWebhook] = useState(false);
   const [statusWebhook, setStatusWebhook] = useState<WebHook>(DEFAULT_WEBHOOK);
+  const [tmpStatusWebhook, setTmpStatusWebhook] =
+    useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialStatusWebhook, setInitialStatusWebhook] = useState(false);
   const [messageWebhook, setMessageWebhook] =
+    useState<WebHook>(DEFAULT_WEBHOOK);
+  const [tmpMessageWebhook, setTmpMessageWebhook] =
     useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialMessageWebhook, setInitialMessageWebhook] = useState(false);
   const [synthVendor, setSynthVendor] =
@@ -97,7 +103,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       label: "Calling",
       prefix: "call_webhook",
       stateVal: callWebhook,
+      tmpStateVal: tmpCallWebhook,
       stateSet: setCallWebhook,
+      tmpStateSet: setTmpCallWebhook,
       initialCheck: initialCallWebhook,
       required: true,
     },
@@ -105,7 +113,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       label: "Call status",
       prefix: "status_webhook",
       stateVal: statusWebhook,
+      tmpStateVal: tmpStatusWebhook,
       stateSet: setStatusWebhook,
+      tmpStateSet: setTmpStatusWebhook,
       initialCheck: initialStatusWebhook,
       required: true,
     },
@@ -113,7 +123,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       label: "Messaging",
       prefix: "message_webhook",
       stateVal: messageWebhook,
+      tmpStateVal: tmpMessageWebhook,
       stateSet: setMessageWebhook,
+      tmpStateSet: setTmpMessageWebhook,
       initialCheck: initialMessageWebhook,
       required: false,
     },
@@ -242,6 +254,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.call_hook) {
         setCallWebhook(application.data.call_hook);
+        setTmpCallWebhook(application.data.call_hook);
 
         if (
           application.data.call_hook.username ||
@@ -253,6 +266,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.call_status_hook) {
         setStatusWebhook(application.data.call_status_hook);
+        setTmpStatusWebhook(application.data.call_status_hook);
 
         if (
           application.data.call_status_hook.username ||
@@ -264,6 +278,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.messaging_hook) {
         setMessageWebhook(application.data.messaging_hook);
+        setTmpMessageWebhook(application.data.messaging_hook);
 
         if (
           application.data.messaging_hook.username ||
@@ -383,6 +398,18 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 name={webhook.prefix}
                 label="Use HTTP basic authentication"
                 initialCheck={webhook.initialCheck}
+                handleChecked={(e) => {
+                  if (e.target.checked) {
+                    webhook.stateSet(webhook.tmpStateVal);
+                  } else {
+                    webhook.tmpStateSet(webhook.stateVal);
+                    webhook.stateSet({
+                      ...webhook.stateVal,
+                      username: "",
+                      password: "",
+                    });
+                  }
+                }}
               >
                 <MS>{MSG_WEBHOOK_FIELDS}</MS>
                 <label htmlFor={`${webhook.prefix}_username`}>Username</label>
