@@ -17,6 +17,7 @@ import {
   API_SMPP_GATEWAY,
   API_SIP_GATEWAY,
   API_PASSWORD_SETTINGS,
+  API_FORGOT_PASSWORD,
   USER_ACCOUNT,
   API_LOGOUT,
 } from "./constants";
@@ -59,6 +60,7 @@ import type {
   Limit,
   LimitCategories,
   PasswordSettings,
+  ForgotPassword,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -348,6 +350,13 @@ export const postAccountLimit = (sid: string, payload: Partial<Limit>) => {
 export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
   return postFetch<EmptyResponse, Partial<PasswordSettings>>(
     API_PASSWORD_SETTINGS,
+    payload
+  );
+};
+
+export const postForgotPassword = (payload: Partial<ForgotPassword>) => {
+  return postFetch<EmptyResponse, Partial<ForgotPassword>>(
+    API_FORGOT_PASSWORD,
     payload
   );
 };

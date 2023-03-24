@@ -113,6 +113,10 @@ export interface PasswordSettings {
   require_special_character: number;
 }
 
+export interface ForgotPassword {
+  email: string;
+}
+
 /** API responses/payloads */
 
 export interface User {
