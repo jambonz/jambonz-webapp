@@ -611,7 +611,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                 >
                   <label htmlFor="on_prem_nuance_use_tts">
-                    TTS HTTP URL<span>*</span>
+                    TTS URI<span>*</span>
                   </label>
                   <input
                     id="on_prem_nuance_use_tts"
@@ -643,7 +643,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                 >
                   <label htmlFor="on_prem_nuance_use_stt_lb">
-                    STT HTTP URL<span>*</span>
+                    STT URI<span>*</span>
                   </label>
                   <input
                     id="on_prem_nuance_use_stt"
