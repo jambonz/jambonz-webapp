@@ -89,6 +89,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customVendorTtsUrl, setCustomVendorTtsUrl] = useState("");
   const [tmpCustomVendorSttUrl, setTmpCustomVendorSttUrl] = useState("");
   const [customVendorSttUrl, setCustomVendorSttUrl] = useState("");
+  const [initialOnPremNuanceTtsCheck, setInitialOnPremNuanceTtsCheck] =
+    useState(false);
+  const [onPremNuanceTtsCheck, setOnPremNuanceTtsCheck] = useState(false);
+  const [onPremNuanceTtsUrl, setOnPremNuanceTtsUrl] = useState("");
+  const [tmpOnPremNuanceTtsUrl, setTmpOnPremNuanceTtsUrl] = useState("");
+  const [initialOnPremNuanceSttCheck, setInitialOnPremNuanceSttCheck] =
+    useState(false);
+  const [onPremNuanceSttCheck, setOnPremNuanceSttCheck] = useState(false);
+  const [tmpOnPremNuanceSttUrl, setTmpOnPremNuanceSttUrl] = useState("");
+  const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -161,6 +171,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           custom_stt_url: customVendorSttUrl || null,
           auth_token: customVendorAuthToken || null,
         }),
+        ...(vendor === VENDOR_NUANCE && {
+          client_id: clientId || null,
+          secret: secretKey || null,
+          nuance_tts_uri: onPremNuanceTtsUrl || null,
+          nuance_stt_uri: onPremNuanceSttUrl || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -197,8 +213,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_SONIOX
               ? apiKey
               : null,
-          client_id: vendor === VENDOR_NUANCE ? clientId : null,
-          secret: vendor === VENDOR_NUANCE ? secretKey : null,
           riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
           .then(() => {
@@ -219,7 +233,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.vendor) {
         const v = credential.data.vendor.startsWith(VENDOR_CUSTOM)
           ? VENDOR_CUSTOM
-          : vendor;
+          : credential.data.vendor;
         setVendor(v);
       }
 
@@ -273,6 +287,24 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.secret) {
         setSecretKey(credential.data.secret);
+      }
+
+      if (credential.data.nuance_tts_uri) {
+        setOnPremNuanceTtsUrl(credential.data.nuance_tts_uri);
+        setInitialOnPremNuanceTtsCheck(true);
+        setOnPremNuanceTtsCheck(true);
+      } else {
+        setInitialOnPremNuanceTtsCheck(false);
+        setOnPremNuanceTtsCheck(false);
+      }
+
+      if (credential.data.nuance_stt_uri) {
+        setOnPremNuanceSttUrl(credential.data.nuance_stt_uri);
+        setInitialOnPremNuanceSttCheck(true);
+        setOnPremNuanceSttCheck(true);
+      } else {
+        setInitialOnPremNuanceSttCheck(false);
+        setOnPremNuanceSttCheck(false);
       }
 
       if (credential.data.tts_api_key) {
@@ -527,33 +559,108 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </>
         )}
         {vendor === VENDOR_NUANCE && (
-          <fieldset>
-            <label htmlFor="nuance_client_id">
-              Client ID<span>*</span>
-            </label>
-            <input
-              id="nuance_client_id"
-              required
-              type="text"
-              name="nuance_client_id"
-              placeholder="Client ID"
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              disabled={credential ? true : false}
-            />
-            <label htmlFor="nuance_secret">
-              Secret<span>*</span>
-            </label>
-            <Passwd
-              id="nuance_secret"
-              required
-              name="nuance_secret"
-              placeholder="Secret Key"
-              value={secretKey ? getObscuredSecret(secretKey) : secretKey}
-              onChange={(e) => setSecretKey(e.target.value)}
-              disabled={credential ? true : false}
-            />
-          </fieldset>
+          <>
+            <fieldset>
+              <label htmlFor="nuance_client_id">
+                Client ID
+                {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && (
+                  <span>*</span>
+                )}
+              </label>
+              <input
+                id="nuance_client_id"
+                required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+                type="text"
+                name="nuance_client_id"
+                placeholder="Client ID"
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value)}
+                disabled={credential ? true : false}
+              />
+              <label htmlFor="nuance_secret">
+                Secret
+                {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && (
+                  <span>*</span>
+                )}
+              </label>
+              <Passwd
+                id="nuance_secret"
+                required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+                name="nuance_secret"
+                placeholder="Secret Key"
+                value={secretKey ? getObscuredSecret(secretKey) : secretKey}
+                onChange={(e) => setSecretKey(e.target.value)}
+                disabled={credential ? true : false}
+              />
+            </fieldset>
+            <fieldset>
+              <>
+                <Checkzone
+                  hidden
+                  name="on_prem_nuance_use_tts"
+                  label="Use on-prem TTS"
+                  initialCheck={initialOnPremNuanceTtsCheck}
+                  handleChecked={(e) => {
+                    setOnPremNuanceTtsCheck(e.target.checked);
+                    if (!e.target.checked) {
+                      setTmpOnPremNuanceTtsUrl(onPremNuanceTtsUrl);
+                      setOnPremNuanceTtsUrl("");
+                    } else {
+                      setOnPremNuanceTtsUrl(tmpOnPremNuanceTtsUrl);
+                    }
+                  }}
+                >
+                  <label htmlFor="on_prem_nuance_use_tts">
+                    TTS HTTP URL<span>*</span>
+                  </label>
+                  <input
+                    id="on_prem_nuance_use_tts"
+                    type="text"
+                    name="on_prem_nuance_use_tts"
+                    placeholder="ip:port"
+                    pattern="(.*):([0-9]{0,6}$)"
+                    required={onPremNuanceTtsCheck}
+                    value={onPremNuanceTtsUrl}
+                    onChange={(e) => {
+                      setOnPremNuanceTtsUrl(e.target.value);
+                    }}
+                  />
+                </Checkzone>
+
+                <Checkzone
+                  hidden
+                  name="on_prem_nuance_use_stt"
+                  label="Use on-prem STT"
+                  initialCheck={initialOnPremNuanceSttCheck}
+                  handleChecked={(e) => {
+                    setOnPremNuanceSttCheck(e.target.checked);
+                    if (!e.target.checked) {
+                      setTmpOnPremNuanceSttUrl(onPremNuanceSttUrl);
+                      setOnPremNuanceSttUrl("");
+                    } else {
+                      setOnPremNuanceSttUrl(tmpOnPremNuanceSttUrl);
+                    }
+                  }}
+                >
+                  <label htmlFor="on_prem_nuance_use_stt_lb">
+                    STT HTTP URL<span>*</span>
+                  </label>
+                  <input
+                    id="on_prem_nuance_use_stt"
+                    type="text"
+                    name="on_prem_nuance_use_stt"
+                    placeholder="ip:port"
+                    pattern="(.*):([0-9]{0,6}$)"
+                    required={onPremNuanceSttCheck}
+                    value={onPremNuanceSttUrl}
+                    onChange={(e) => {
+                      setOnPremNuanceSttUrl(e.target.value);
+                    }}
+                  />
+                </Checkzone>
+              </>
+            </fieldset>
+          </>
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
