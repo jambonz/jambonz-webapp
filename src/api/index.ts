@@ -18,6 +18,7 @@ import {
   API_SIP_GATEWAY,
   API_PASSWORD_SETTINGS,
   USER_ACCOUNT,
+  API_LOGOUT,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -231,6 +232,10 @@ export const postLogin = (payload: UserLoginPayload) => {
       "Content-Type": "application/json",
     },
   });
+};
+
+export const postLogout = () => {
+  return postFetch<undefined>(API_LOGOUT);
 };
 
 /** Named wrappers for `postFetch` */
