@@ -4,13 +4,13 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { postLogin } from "src/api";
+import { postLogin, postLogout } from "src/api";
 import { StatusCodes } from "src/api/types";
 import {
-  ROUTE_LOGIN,
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
+  ROUTE_LOGIN,
 } from "./routes";
 import {
   SESS_OLD_PASSWORD,
@@ -136,10 +136,28 @@ export const useProvideAuth = (): AuthStateContext => {
   };
 
   const signout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
-    window.location.href = ROUTE_LOGIN;
+    return new Promise((resolve, reject) => {
+      postLogout()
+        .then((response) => {
+          if (response.status === StatusCodes.OK) {
+            localStorage.clear();
+            sessionStorage.clear();
+            sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+            window.location.href = ROUTE_LOGIN;
+            resolve(response.json);
+          }
+        })
+        .catch((error) => {
+          localStorage.clear();
+          sessionStorage.clear();
+          sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+          window.location.href = ROUTE_LOGIN;
+          if (error) {
+            reject(error);
+          }
+          reject(MSG_SOMETHING_WRONG);
+        });
+    });
   };
 
   return {

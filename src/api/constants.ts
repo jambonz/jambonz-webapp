@@ -189,6 +189,7 @@ export const CRED_NOT_TESTED = "not tested";
 
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;
+export const API_LOGOUT = `${API_BASE_URL}/logout`;
 export const API_SBCS = `${API_BASE_URL}/Sbcs`;
 export const API_USERS = `${API_BASE_URL}/Users`;
 export const API_API_KEYS = `${API_BASE_URL}/ApiKeys`;
