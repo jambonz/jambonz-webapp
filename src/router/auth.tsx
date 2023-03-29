@@ -148,6 +148,10 @@ export const useProvideAuth = (): AuthStateContext => {
           }
         })
         .catch((error) => {
+          localStorage.clear();
+          sessionStorage.clear();
+          sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+          window.location.href = ROUTE_LOGIN;
           if (error) {
             reject(error);
           }
