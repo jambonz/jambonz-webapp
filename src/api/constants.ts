@@ -33,6 +33,11 @@ export const DISABLE_CUSTOM_SPEECH: boolean = JSON.parse(
   import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false"
 );
 
+/** Enable Forgot Password */
+export const ENABLE_FORGOT_PASSWORD: boolean = JSON.parse(
+  import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 

@@ -6,6 +6,7 @@ import { useSelectState } from "src/store";
 import { Login, Layout as LoginLayout } from "src/containers/login";
 import { Layout as InternalLayout } from "src/containers/internal";
 import { NotFound } from "src/containers/notfound";
+import { ENABLE_FORGOT_PASSWORD } from "src/api/constants";
 
 /** Login */
 import CreatePassword from "src/containers/login/create-password";
@@ -57,7 +58,9 @@ export const Router = () => {
               </RequireAuth>
             }
           />
-          <Route path="forgot-password" element={<ForgotPassword />} />
+          {ENABLE_FORGOT_PASSWORD && (
+            <Route path="forgot-password" element={<ForgotPassword />} />
+          )}
 
           {/* 404 page not found */}
           <Route path="*" element={<NotFound />} />

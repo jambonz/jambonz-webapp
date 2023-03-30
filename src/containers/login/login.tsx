@@ -16,7 +16,7 @@ import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_FORGOT_PASSWORD,
 } from "src/router/routes";
-import { USER_ACCOUNT } from "src/api/constants";
+import { USER_ACCOUNT, ENABLE_FORGOT_PASSWORD } from "src/api/constants";
 
 export const Login = () => {
   const { signin, authorized } = useAuth();
@@ -91,11 +91,13 @@ export const Login = () => {
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
-        <div>
-          <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
-            <p>Forgot Password</p>
-          </Link>
-        </div>
+        {ENABLE_FORGOT_PASSWORD && (
+          <div>
+            <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
+              <p>Forgot Password</p>
+            </Link>
+          </div>
+        )}
       </form>
     </>
   );
