@@ -137,13 +137,13 @@ export const useProvideAuth = (): AuthStateContext => {
 
   const signout = () => {
     return new Promise((resolve, reject) => {
+      window.location.href = ROUTE_LOGIN;
       postLogout()
         .then((response) => {
           if (response.status === StatusCodes.OK) {
             localStorage.clear();
             sessionStorage.clear();
             sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
-            window.location.href = ROUTE_LOGIN;
             resolve(response.json);
           }
         })
