@@ -198,7 +198,7 @@ export const Carriers = () => {
                         <span>{carrier.is_active ? "Active" : "Inactive"}</span>
                       </div>
                     </div>
-                    {carrier.requires_register && (
+                    {Boolean(carrier.requires_register) && (
                       <div
                         className={`i txt--${
                           carrier.register_status.status === CARRIER_REG_OK

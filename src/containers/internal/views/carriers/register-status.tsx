@@ -15,25 +15,33 @@ export const RegisterStatus = ({
     return (
       <div
         className={`i txt--${
-          register_status.status === CARRIER_REG_OK ? "teal" : "jam"
+          register_status.status
+            ? register_status.status === CARRIER_REG_OK
+              ? "teal"
+              : "jam"
+            : "jean"
         }`}
-        title={register_status.reason || ""}
+        title={register_status.reason || "Not Started"}
       >
         {register_status.status === CARRIER_REG_OK ? (
           <Icons.CheckCircle />
         ) : (
           <Icons.XCircle />
         )}
-        <span>Status {register_status.status}</span>
+        <span>
+          {register_status.status
+            ? `Status ${register_status.status}`
+            : "Not Started"}
+        </span>
       </div>
     );
   };
 
   return (
-    <details className={register_status.status || "ok"}>
+    <details className={register_status.status || "not-tested"}>
       <summary>{renderStatus()}</summary>
       <MS>
-        <strong>Reason:</strong> {register_status.reason}
+        <strong>Reason:</strong> {register_status.reason || "Not Started"}
       </MS>
     </details>
   );

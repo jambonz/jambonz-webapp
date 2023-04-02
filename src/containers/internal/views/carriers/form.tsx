@@ -620,12 +620,15 @@ export const CarrierForm = ({
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>
-        {carrier && carrier.data && carrier.data.register_status && (
-          <fieldset>
-            <div className="m med">Register status</div>
-            <RegisterStatus register_status={carrier.data.register_status} />
-          </fieldset>
-        )}
+        {carrier &&
+          carrier.data &&
+          Boolean(carrier.data.requires_register) &&
+          carrier.data.register_status && (
+            <fieldset>
+              <div className="m med">Register status</div>
+              <RegisterStatus register_status={carrier.data.register_status} />
+            </fieldset>
+          )}
         <fieldset>
           <div className="multi">
             <div className="inp">
