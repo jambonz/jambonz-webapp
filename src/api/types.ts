@@ -324,6 +324,11 @@ export interface Alert {
   detail: string;
 }
 
+export interface CarrierRegisterStatus {
+  status: null | string;
+  reason: null | string;
+}
+
 export interface Carrier {
   voip_carrier_sid: string;
   name: string;
@@ -349,6 +354,7 @@ export interface Carrier {
   smpp_inbound_system_id: null | string;
   smpp_inbound_password: null | string;
   smpp_enquire_link_interval: number;
+  register_status: CarrierRegisterStatus;
 }
 
 export interface PredefinedCarrier extends Carrier {

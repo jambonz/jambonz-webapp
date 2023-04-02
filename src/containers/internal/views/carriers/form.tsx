@@ -60,6 +60,7 @@ import type {
   Application,
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import { RegisterStatus } from "./register-status";
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
@@ -619,6 +620,12 @@ export const CarrierForm = ({
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>
+        {carrier && carrier.data && carrier.data.register_status && (
+          <fieldset>
+            <div className="m med">Register status</div>
+            <RegisterStatus register_status={carrier.data.register_status} />
+          </fieldset>
+        )}
         <fieldset>
           <div className="multi">
             <div className="inp">

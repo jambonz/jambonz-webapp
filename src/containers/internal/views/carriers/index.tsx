@@ -29,6 +29,7 @@ import {
 import {
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
+  CARRIER_REG_OK,
   USER_ACCOUNT,
 } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
@@ -197,6 +198,26 @@ export const Carriers = () => {
                         <span>{carrier.is_active ? "Active" : "Inactive"}</span>
                       </div>
                     </div>
+                    {carrier.requires_register && (
+                      <div
+                        className={`i txt--${
+                          carrier.register_status.status === CARRIER_REG_OK
+                            ? "teal"
+                            : "jam"
+                        }`}
+                      >
+                        {carrier.register_status.status === CARRIER_REG_OK ? (
+                          <Icons.CheckCircle />
+                        ) : (
+                          <Icons.XCircle />
+                        )}
+                        <span>
+                          {carrier.register_status.status === CARRIER_REG_OK
+                            ? "Registered"
+                            : "Unregistered"}
+                        </span>
+                      </div>
+                    )}
                     <Gateways carrier={carrier} />
                   </div>
                 </div>
