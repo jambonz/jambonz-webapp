@@ -327,6 +327,8 @@ export interface Alert {
 export interface CarrierRegisterStatus {
   status: null | string;
   reason: null | string;
+  cseq: null | string;
+  callId: null | string;
 }
 
 export interface Carrier {

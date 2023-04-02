@@ -626,7 +626,7 @@ export const CarrierForm = ({
           carrier.data.register_status && (
             <fieldset>
               <div className="m med">Register status</div>
-              <RegisterStatus register_status={carrier.data.register_status} />
+              <RegisterStatus carrier={carrier.data} />
             </fieldset>
           )}
         <fieldset>

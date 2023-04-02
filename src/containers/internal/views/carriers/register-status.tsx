@@ -1,36 +1,35 @@
 import React from "react";
-import { CarrierRegisterStatus } from "src/api/types";
+import { Carrier, RecentCall } from "src/api/types";
 import { Icons } from "src/components";
 import { CARRIER_REG_OK } from "src/api/constants";
 import { MS } from "@jambonz/ui-kit";
+import { PcapButton } from "../recent-calls/pcap";
 
-type CarrierRegisterStatusProps = {
-  register_status: CarrierRegisterStatus;
+type CarrierProps = {
+  carrier: Carrier;
 };
 
-export const RegisterStatus = ({
-  register_status,
-}: CarrierRegisterStatusProps) => {
+export const RegisterStatus = ({ carrier }: CarrierProps) => {
   const renderStatus = () => {
     return (
       <div
         className={`i txt--${
-          register_status.status
-            ? register_status.status === CARRIER_REG_OK
+          carrier.register_status.status
+            ? carrier.register_status.status === CARRIER_REG_OK
               ? "teal"
               : "jam"
             : "jean"
         }`}
-        title={register_status.reason || "Not Started"}
+        title={carrier.register_status.reason || "Not Started"}
       >
-        {register_status.status === CARRIER_REG_OK ? (
+        {carrier.register_status.status === CARRIER_REG_OK ? (
           <Icons.CheckCircle />
         ) : (
           <Icons.XCircle />
         )}
         <span>
-          {register_status.status
-            ? `Status ${register_status.status}`
+          {carrier.register_status.status
+            ? `Status ${carrier.register_status.status}`
             : "Not Started"}
         </span>
       </div>
@@ -38,11 +37,20 @@ export const RegisterStatus = ({
   };
 
   return (
-    <details className={register_status.status || "not-tested"}>
+    <details className={carrier.register_status.status || "not-tested"}>
       <summary>{renderStatus()}</summary>
       <MS>
-        <strong>Reason:</strong> {register_status.reason || "Not Started"}
+        <strong>Reason:</strong>{" "}
+        {carrier.register_status.reason || "Not Started"}
       </MS>
+      <PcapButton
+        call={
+          {
+            account_sid: carrier.account_sid || carrier.service_provider_sid,
+            sip_callid: carrier.register_status.callId,
+          } as RecentCall
+        }
+      />
     </details>
   );
 };
