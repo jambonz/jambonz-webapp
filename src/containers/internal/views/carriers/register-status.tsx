@@ -1,9 +1,9 @@
 import React from "react";
-import { Carrier, RecentCall } from "src/api/types";
+import { Carrier } from "src/api/types";
 import { Icons } from "src/components";
 import { CARRIER_REG_OK } from "src/api/constants";
 import { MS } from "@jambonz/ui-kit";
-import { PcapButton } from "../recent-calls/pcap";
+import { PcapButton } from "./pcap";
 
 type CarrierProps = {
   carrier: Carrier;
@@ -44,12 +44,9 @@ export const RegisterStatus = ({ carrier }: CarrierProps) => {
         {carrier.register_status.reason || "Not Started"}
       </MS>
       <PcapButton
-        call={
-          {
-            account_sid: carrier.account_sid || carrier.service_provider_sid,
-            sip_callid: carrier.register_status.callId,
-          } as RecentCall
-        }
+        accountSid={carrier.account_sid || ""}
+        serviceProviderSid={carrier.service_provider_sid}
+        sipCallId={carrier.register_status.callId || ""}
       />
     </details>
   );
