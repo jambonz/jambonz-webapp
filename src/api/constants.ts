@@ -59,7 +59,7 @@ export const DEFAULT_SIP_GATEWAY: SipGateway = {
   ipv4: "",
   port: 5060,
   netmask: 32,
-  is_active: false,
+  is_active: true,
   inbound: 1,
   outbound: 0,
 };
