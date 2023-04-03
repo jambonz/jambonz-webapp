@@ -550,6 +550,25 @@ export const getPcap = (sid: string, sipCallId: string) => {
   );
 };
 
+export const getServiceProviderRecentCall = (
+  sid: string,
+  sipCallId: string
+) => {
+  return getFetch<TotalResponse>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}`
+      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}`
+  );
+};
+
+export const getServiceProviderPcap = (sid: string, sipCallId: string) => {
+  return getBlob(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}/pcap`
+      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}/pcap`
+  );
+};
+
 export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
   const qryStr = getQuery<Partial<PageQuery>>(query);
 

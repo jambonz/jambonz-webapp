@@ -59,7 +59,7 @@ export const DEFAULT_SIP_GATEWAY: SipGateway = {
   ipv4: "",
   port: 5060,
   netmask: 32,
-  is_active: false,
+  is_active: true,
   inbound: 1,
   outbound: 0,
 };
@@ -186,6 +186,10 @@ export const USER_ACCOUNT = "account";
 export const CRED_OK = "ok";
 export const CRED_FAIL = "fail";
 export const CRED_NOT_TESTED = "not tested";
+
+/** Voip Carrier Register result status values */
+export const CARRIER_REG_OK = "ok";
+export const CARRIER_REG_FAIL = "fail";
 
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;
