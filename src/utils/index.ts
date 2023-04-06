@@ -55,7 +55,7 @@ export const isValidPasswd = (
       password.length >= passwordSettings?.min_password_length &&
       (passwordSettings?.require_digit ? /\d/.test(password) : true) &&
       (passwordSettings?.require_special_character
-        ? /[!@#$%^&*(),.?"';:{}|<>+~]/.test(password)
+        ? /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
         : true)
     );
   }

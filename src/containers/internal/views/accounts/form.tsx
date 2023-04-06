@@ -158,7 +158,14 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
           ? accounts.filter((a) => a.account_sid !== account.data!.account_sid)
           : accounts;
 
-      if (filtered.find((a) => a.name === name)) {
+      if (
+        account &&
+        filtered.find(
+          (a) =>
+            a.service_provider_sid !== account.data!.service_provider_sid &&
+            a.name === name
+        )
+      ) {
         setMessage(
           "The name you have entered is already in use on another one of your accounts."
         );
