@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { classNames, M, Icon, Button } from "@jambonz/ui-kit";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
@@ -20,6 +20,7 @@ import "./styles.scss";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope, UserData } from "src/store/types";
 import { USER_ADMIN } from "src/api/constants";
+import { ROUTE_LOGIN } from "src/router/routes";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -61,6 +62,7 @@ export const Navi = ({
   handleLogout,
 }: NaviProps) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelectState("user");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
@@ -160,6 +162,7 @@ export const Navi = ({
                 onChange={(e) => {
                   setSid(e.target.value);
                   setActiveSP(e.target.value);
+                  navigate(ROUTE_LOGIN);
                 }}
                 disabled={user?.scope !== USER_ADMIN}
               >
