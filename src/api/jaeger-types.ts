@@ -1,42 +1,50 @@
 export interface JaegerRoot {
-    resourceSpans: JaegerResourceSpan[]
+  resourceSpans: JaegerResourceSpan[];
 }
 
 export interface JaegerResourceSpan {
-    resource: JaegerResource
-    instrumentationLibrarySpans: InstrumentationLibrarySpan[]
+  resource: JaegerResource;
+  instrumentationLibrarySpans: InstrumentationLibrarySpan[];
 }
 
 export interface JaegerResource {
-    attributes: JaegerAttribute[]
+  attributes: JaegerAttribute[];
 }
 
 export interface InstrumentationLibrarySpan {
-    instrumentationLibrary: InstrumentationLibrary
-    spans: JaegerSpan[]
+  instrumentationLibrary: InstrumentationLibrary;
+  spans: JaegerSpan[];
 }
 
 export interface InstrumentationLibrary {
-    name: string
-    version: string
+  name: string;
+  version: string;
 }
 
 export interface JaegerSpan {
-    traceId: string
-    spanId: string
-    parentSpanId: string
-    name: string
-    kind: string
-    startTimeUnixNano: string
-    endTimeUnixNano: string
-    attributes: JaegerAttribute[]
+  traceId: string;
+  spanId: string;
+  parentSpanId: string;
+  name: string;
+  kind: string;
+  startTimeUnixNano: number;
+  endTimeUnixNano: number;
+  attributes: JaegerAttribute[];
 }
 
 export interface JaegerAttribute {
-    key: string
-    value: JaegerValue
+  key: string;
+  value: JaegerValue;
 }
 
 export interface JaegerValue {
-    stringValue: string
+  stringValue: string;
+}
+
+export interface JaegerGroup {
+  level: number;
+  start: number;
+  end: number;
+  span: JaegerSpan;
+  children: JaegerGroup[];
 }

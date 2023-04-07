@@ -1,0 +1,1159 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "MCRQSOikMNQ=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "verb:tag",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783740348000000",
+              "endTimeUnixNano": "1680783740348058000",
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "XYzNoYnT3Nw=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "call-status:in-progress",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783744122000000",
+              "endTimeUnixNano": "1680783744128775000",
+              "attributes": [
+                {
+                  "key": "callSid",
+                  "value": {
+                    "stringValue": "fdab98c8-ffde-4171-acbb-02decc19936e"
+                  }
+                },
+                {
+                  "key": "direction",
+                  "value": {
+                    "stringValue": "inbound"
+                  }
+                },
+                {
+                  "key": "from",
+                  "value": {
+                    "stringValue": "+447939345980"
+                  }
+                },
+                {
+                  "key": "to",
+                  "value": {
+                    "stringValue": "+443301240503"
+                  }
+                },
+                {
+                  "key": "callId",
+                  "value": {
+                    "stringValue": "8487aec8-4f18-123c-e689-125235e25693"
+                  }
+                },
+                {
+                  "key": "sipStatus",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "sipReason",
+                  "value": {
+                    "stringValue": "OK"
+                  }
+                },
+                {
+                  "key": "callStatus",
+                  "value": {
+                    "stringValue": "in-progress"
+                  }
+                },
+                {
+                  "key": "accountSid",
+                  "value": {
+                    "stringValue": "130dedf9-a377-4324-8283-3cc9980a9d2e"
+                  }
+                },
+                {
+                  "key": "traceId",
+                  "value": {
+                    "stringValue": "536f0e5eb7b0ae9739c42fba6fd055c3"
+                  }
+                },
+                {
+                  "key": "applicationSid",
+                  "value": {
+                    "stringValue": "acd79a8a-f4ef-4445-aa8f-508680d2aa8e"
+                  }
+                },
+                {
+                  "key": "fsSipAddress",
+                  "value": {
+                    "stringValue": "172.31.4.95:5060"
+                  }
+                },
+                {
+                  "key": "originatingSipIp",
+                  "value": {
+                    "stringValue": "99.80.180.248"
+                  }
+                },
+                {
+                  "key": "originatingSipTrunkName",
+                  "value": {
+                    "stringValue": "_connect.callable.io"
+                  }
+                },
+                {
+                  "key": "fsPublicIp",
+                  "value": {
+                    "stringValue": "54.87.161.132"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "QaODUr2d7Co=",
+              "parentSpanId": "Mcjx0iq1Sec=",
+              "name": "verb:hook",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680786070940000000",
+              "endTimeUnixNano": "1680786071107521000",
+              "attributes": [
+                {
+                  "key": "hook.url",
+                  "value": {
+                    "stringValue": "/voice/569d25e1-686a-4975-8a88-dea21db65262"
+                  }
+                },
+                {
+                  "key": "http.body",
+                  "value": {
+                    "stringValue": "{\"callSid\":\"fdab98c8-ffde-4171-acbb-02decc19936e\",\"direction\":\"inbound\",\"from\":\"+447939345980\",\"to\":\"+443301240503\",\"callId\":\"8487aec8-4f18-123c-e689-125235e25693\",\"sipStatus\":200,\"sipReason\":\"OK\",\"callStatus\":\"completed\",\"accountSid\":\"130dedf9-a377-4324-8283-3cc9980a9d2e\",\"traceId\":\"536f0e5eb7b0ae9739c42fba6fd055c3\",\"applicationSid\":\"acd79a8a-f4ef-4445-aa8f-508680d2aa8e\",\"fsSipAddress\":\"172.31.4.95:5060\",\"originatingSipIp\":\"99.80.180.248\",\"originatingSipTrunkName\":\"_connect.callable.io\",\"callTerminationBy\":\"caller\",\"duration\":2326,\"customerData\":{\"service_url\":\"http://192.168.47.224:8080\",\"forwarded_ip\":\"99.80.180.248\",\"trunk_id\":\"\",\"ddi_id\":\"aabb999d-d594-4090-9766-a02f10b83093\",\"paid\":\"+447939345980\",\"region_id\":\"6025510d595a477b62143464\",\"server_ip\":\"18.233.253.148\",\"customer_id\":\"63c1579442a5676f5f8351de\",\"teams_id\":\"\",\"client_id\":\"\",\"global_ddi_name\":\"\"},\"fsPublicIp\":\"54.87.161.132\",\"dialCallStatus\":\"completed\",\"dialSipStatus\":200,\"dialCallSid\":\"7f40fc84-0778-4a25-a68e-ff58ce3e45ba\"}"
+                  }
+                },
+                {
+                  "key": "http.statusCode",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "Mcjx0iq1Sec=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "verb:dial{type=teams,number=+441273652002}",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783740349000000",
+              "endTimeUnixNano": "1680786071108488000",
+              "attributes": [
+                {
+                  "key": "dial.target",
+                  "value": {
+                    "stringValue": "[{\"type\":\"teams\",\"number\":\"+441273652002\",\"tenant\":\"callableus.teams.callable.io\",\"vmail\":false}]"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "00Okpa9z85A=",
+              "parentSpanId": "AAAAAAAAAAA=",
+              "name": "incoming-call",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783739980000000",
+              "endTimeUnixNano": "1680786071109004000",
+              "attributes": [
+                {
+                  "key": "callSid",
+                  "value": {
+                    "stringValue": "fdab98c8-ffde-4171-acbb-02decc19936e"
+                  }
+                },
+                {
+                  "key": "accountSid",
+                  "value": {
+                    "stringValue": "130dedf9-a377-4324-8283-3cc9980a9d2e"
+                  }
+                },
+                {
+                  "key": "applicationSid",
+                  "value": {
+                    "stringValue": "acd79a8a-f4ef-4445-aa8f-508680d2aa8e"
+                  }
+                },
+                {
+                  "key": "callId",
+                  "value": {
+                    "stringValue": "8487aec8-4f18-123c-e689-125235e25693"
+                  }
+                },
+                {
+                  "key": "externalCallId",
+                  "value": {
+                    "stringValue": "eba9da2-708ee083-1b547b5-7ff5515e4d38-64631fac-13c6-7225"
+                  }
+                },
+                {
+                  "key": "finalStatus",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "call.termination",
+                  "value": {
+                    "stringValue": "hangup by caller"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "S5iS5B24y2A=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "lookupApplication",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783739993000000",
+              "endTimeUnixNano": "1680783739997667000",
+              "attributes": [
+                {
+                  "key": "app.hook",
+                  "value": {
+                    "stringValue": "https://us-east-1-proxy.control.callable.io/voice/start"
+                  }
+                },
+                {
+                  "key": "application_sid",
+                  "value": {
+                    "stringValue": "acd79a8a-f4ef-4445-aa8f-508680d2aa8e"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "5xZhYslKbGc=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "performAppWebhook",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783739999000000",
+              "endTimeUnixNano": "1680783740346963000",
+              "attributes": [
+                {
+                  "key": "http.statusCode",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "app.tasks",
+                  "value": {
+                    "stringValue": "[tag,dial{type=teams,number=+441273652002}]"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "ppT5EbLESbo=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "call-status:trying",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783740347000000",
+              "endTimeUnixNano": "1680783740676766000",
+              "attributes": [
+                {
+                  "key": "callSid",
+                  "value": {
+                    "stringValue": "fdab98c8-ffde-4171-acbb-02decc19936e"
+                  }
+                },
+                {
+                  "key": "direction",
+                  "value": {
+                    "stringValue": "inbound"
+                  }
+                },
+                {
+                  "key": "from",
+                  "value": {
+                    "stringValue": "+447939345980"
+                  }
+                },
+                {
+                  "key": "to",
+                  "value": {
+                    "stringValue": "+443301240503"
+                  }
+                },
+                {
+                  "key": "callId",
+                  "value": {
+                    "stringValue": "8487aec8-4f18-123c-e689-125235e25693"
+                  }
+                },
+                {
+                  "key": "sipStatus",
+                  "value": {
+                    "doubleValue": 100
+                  }
+                },
+                {
+                  "key": "sipReason",
+                  "value": {
+                    "stringValue": "Trying"
+                  }
+                },
+                {
+                  "key": "callStatus",
+                  "value": {
+                    "stringValue": "trying"
+                  }
+                },
+                {
+                  "key": "accountSid",
+                  "value": {
+                    "stringValue": "130dedf9-a377-4324-8283-3cc9980a9d2e"
+                  }
+                },
+                {
+                  "key": "traceId",
+                  "value": {
+                    "stringValue": "536f0e5eb7b0ae9739c42fba6fd055c3"
+                  }
+                },
+                {
+                  "key": "applicationSid",
+                  "value": {
+                    "stringValue": "acd79a8a-f4ef-4445-aa8f-508680d2aa8e"
+                  }
+                },
+                {
+                  "key": "fsSipAddress",
+                  "value": {
+                    "stringValue": "172.31.4.95:5060"
+                  }
+                },
+                {
+                  "key": "originatingSipIp",
+                  "value": {
+                    "stringValue": "99.80.180.248"
+                  }
+                },
+                {
+                  "key": "originatingSipTrunkName",
+                  "value": {
+                    "stringValue": "_connect.callable.io"
+                  }
+                },
+                {
+                  "key": "fsPublicIp",
+                  "value": {
+                    "stringValue": "54.87.161.132"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "2LClh7dWIIo=",
+              "parentSpanId": "Mcjx0iq1Sec=",
+              "name": "invite",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783740381000000",
+              "endTimeUnixNano": "1680783744106973000",
+              "attributes": [
+                {
+                  "key": "invite.uri",
+                  "value": {
+                    "stringValue": "sip:+441273652002@172.31.4.52"
+                  }
+                },
+                {
+                  "key": "invite.dest_type",
+                  "value": {
+                    "stringValue": "teams"
+                  }
+                },
+                {
+                  "key": "invite.call_id",
+                  "value": {
+                    "stringValue": "84c55b4d-4f18-123c-4f82-12c935dcb25b"
+                  }
+                },
+                {
+                  "key": "invite.status_code",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "Ac42mek68kg=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "call-status:completed",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680786070891000000",
+              "endTimeUnixNano": "1680786070919338000",
+              "attributes": [
+                {
+                  "key": "callSid",
+                  "value": {
+                    "stringValue": "fdab98c8-ffde-4171-acbb-02decc19936e"
+                  }
+                },
+                {
+                  "key": "direction",
+                  "value": {
+                    "stringValue": "inbound"
+                  }
+                },
+                {
+                  "key": "from",
+                  "value": {
+                    "stringValue": "+447939345980"
+                  }
+                },
+                {
+                  "key": "to",
+                  "value": {
+                    "stringValue": "+443301240503"
+                  }
+                },
+                {
+                  "key": "callId",
+                  "value": {
+                    "stringValue": "8487aec8-4f18-123c-e689-125235e25693"
+                  }
+                },
+                {
+                  "key": "sipStatus",
+                  "value": {
+                    "doubleValue": 200
+                  }
+                },
+                {
+                  "key": "sipReason",
+                  "value": {
+                    "stringValue": "OK"
+                  }
+                },
+                {
+                  "key": "callStatus",
+                  "value": {
+                    "stringValue": "completed"
+                  }
+                },
+                {
+                  "key": "accountSid",
+                  "value": {
+                    "stringValue": "130dedf9-a377-4324-8283-3cc9980a9d2e"
+                  }
+                },
+                {
+                  "key": "traceId",
+                  "value": {
+                    "stringValue": "536f0e5eb7b0ae9739c42fba6fd055c3"
+                  }
+                },
+                {
+                  "key": "applicationSid",
+                  "value": {
+                    "stringValue": "acd79a8a-f4ef-4445-aa8f-508680d2aa8e"
+                  }
+                },
+                {
+                  "key": "fsSipAddress",
+                  "value": {
+                    "stringValue": "172.31.4.95:5060"
+                  }
+                },
+                {
+                  "key": "originatingSipIp",
+                  "value": {
+                    "stringValue": "99.80.180.248"
+                  }
+                },
+                {
+                  "key": "originatingSipTrunkName",
+                  "value": {
+                    "stringValue": "_connect.callable.io"
+                  }
+                },
+                {
+                  "key": "callTerminationBy",
+                  "value": {
+                    "stringValue": "caller"
+                  }
+                },
+                {
+                  "key": "duration",
+                  "value": {
+                    "doubleValue": 2326
+                  }
+                },
+                {
+                  "key": "fsPublicIp",
+                  "value": {
+                    "stringValue": "54.87.161.132"
+                  }
+                },
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "jambonz-feature-server"
+            }
+          }
+        ]
+      },
+      "instrumentationLibrarySpans": [
+        {
+          "instrumentationLibrary": {
+            "name": "jambonz-feature-server",
+            "version": "undefined"
+          },
+          "spans": [
+            {
+              "traceId": "U28OXrewrpc5xC+6b9BVww==",
+              "spanId": "384vE+ZfcKw=",
+              "parentSpanId": "00Okpa9z85A=",
+              "name": "lookupAccountDetails",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1680783739980000000",
+              "endTimeUnixNano": "1680783739991124000",
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "jambonz-feature-server"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.language",
+                  "value": {
+                    "stringValue": "nodejs"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.name",
+                  "value": {
+                    "stringValue": "opentelemetry"
+                  }
+                },
+                {
+                  "key": "telemetry.sdk.version",
+                  "value": {
+                    "stringValue": "1.9.0"
+                  }
+                },
+                {
+                  "key": "service.version",
+                  "value": {
+                    "stringValue": "v0.8.2"
+                  }
+                },
+                {
+                  "key": "internal.span.format",
+                  "value": {
+                    "stringValue": "jaeger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
