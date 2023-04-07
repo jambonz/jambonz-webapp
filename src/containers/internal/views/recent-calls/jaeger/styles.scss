@@ -40,8 +40,8 @@
   background-color: #333;
   color: #fff;
   max-height: 50vh;
-  overflow-x: scroll;
-  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 50px;
 }
 
@@ -114,7 +114,7 @@
 
   &__details_body {
     max-width: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
     white-space: pre;
     height: 40px;
   }
