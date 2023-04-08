@@ -33,6 +33,19 @@
   justify-content: space-between;
   flex-shrink: 1;
   background-color: #333;
+
+  &__thumb {
+    width: 10px;
+    height: 49px;
+    background-color: #333;
+    border: thin solid ui-vars.$jambonz;
+  }
+
+  &__track {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
 }
 
 .barGroup {
