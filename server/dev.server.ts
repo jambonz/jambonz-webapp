@@ -136,6 +136,17 @@ app.get(
   }
 );
 
+app.get(
+  "/api/Accounts/:account_sid/RecentCalls/trace/:trace_id",
+  (req: Request, res: Response) => {
+    const json = fs.readFileSync(
+      path.resolve(process.cwd(), "server", "sample-jaeger.json"),
+      { encoding: "utf8" }
+    );
+    res.status(200).json(json);
+  }
+);
+
 /** Alerts mock API responses for local dev */
 app.get("/api/Accounts/:account_sid/Alerts", (req: Request, res: Response) => {
   const data: Alert[] = [];
