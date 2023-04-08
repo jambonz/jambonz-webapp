@@ -21,10 +21,12 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   const barGroupRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
+    document.body.style.overflow = "auto";
     setModal(false);
   };
 
   const handleOpen = () => {
+    document.body.style.overflow = "hidden";
     setModal(true);
   };
 

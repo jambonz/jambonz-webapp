@@ -8,7 +8,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #000000;
+  background-color: #fff;
   z-index: vars.$zindex00;
   overflow-y: scroll;
 }
@@ -92,9 +92,6 @@
 
 .spanDetailsWrapper {
   background-color: #fff;
-  color: #444;
-  min-height: 200px;
-  height: 100%;
   width: 100%;
 
   &__details {
