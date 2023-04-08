@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { Icons } from "src/components";
 import { formatPhoneNumber } from "src/utils";
 import { PcapButton } from "./pcap";
-
+import { JaegerButton } from "./jaeger";
 import type { RecentCall } from "src/api/types";
 
 type DetailsItemProps = {
@@ -68,7 +68,18 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
               </React.Fragment>
             ))}
           </div>
-          {open && <PcapButton call={call} />}
+          {open && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "300px",
+              }}
+            >
+              <PcapButton call={call} />
+              <JaegerButton call={call} />
+            </div>
+          )}
         </div>
       </details>
     </div>
