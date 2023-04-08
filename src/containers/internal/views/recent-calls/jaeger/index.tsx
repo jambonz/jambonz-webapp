@@ -32,17 +32,42 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
 
   const goLeft = () => {
     if (barGroupRef.current) {
-      barGroupRef.current.scrollLeft -= barGroupRef.current.offsetWidth * 100;
+      barGroupRef.current.scrollLeft -= barGroupRef.current.offsetWidth;
     }
   };
 
   const goRight = () => {
     if (barGroupRef.current) {
-      barGroupRef.current.scrollLeft += barGroupRef.current.offsetWidth * 100;
+      barGroupRef.current.scrollLeft += barGroupRef.current.offsetWidth;
     }
   };
 
-  const buildSpans = (trace: JaegerRoot) => {
+  /*
+   * Need to find a better way for long duration
+   * and short duration spans to coexist.
+   * Currently the longer spans either require a
+   * large scroll to right or we compress the timeline.
+   * Shrinking the timeline based on longest span
+   * causes us to lose the detail between the ms spans
+   * For now using a stepped ratio based on duration
+   * which gives an average result.
+   * */
+  const durationRatio = (durationMs: number) => {
+    const mins = durationMs / 1000 / 60;
+    if (mins <= 10) return 2000;
+    else if (mins <= 20) return 8000;
+    else if (mins <= 30) return 12000;
+    else if (mins <= 40) return 16000;
+    else if (mins <= 50) return 18000;
+    else return 22000;
+  };
+  const getViewPortRatio = (durationMs: number) => {
+    const { innerWidth } = window;
+    const titleOffset = innerWidth + durationRatio(durationMs);
+    return durationMs / titleOffset;
+  };
+
+  const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
     const spans: JaegerSpan[] = [];
     trace.resourceSpans.forEach((resourceSpan) => {
       resourceSpan.instrumentationLibrarySpans.forEach(
@@ -54,44 +79,78 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
       );
     });
     spans.sort((a, b) => a.startTimeUnixNano - b.startTimeUnixNano);
-    const span = spans.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
-    if (span) {
-      setJaegerSpan(span);
-      const level = 1;
-      const start = 0;
-      const end =
-        (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000_000;
-      const group: JaegerGroup = {
-        level,
-        start,
-        end,
-        span,
-        children: buildSpanChildren(level + 1, span, spans),
-      };
-      setJaegerGroup(group);
+    return spans;
+  };
+
+  const getGroupsByParent = (spanId: string, groups: JaegerGroup[]) => {
+    groups.sort((a, b) => a.startTimeUnixNano - b.startTimeUnixNano);
+    return groups.filter((value) => value.parentSpanId === spanId);
+  };
+
+  const getRootSpan = (spans: JaegerSpan[]) => {
+    return spans.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
+  };
+
+  const getRootGroup = (grps: JaegerGroup[]) => {
+    return grps.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
+  };
+
+  const buildSpans = (root: JaegerRoot) => {
+    const spans = getSpansFromJaegerRoot(root);
+    const rootSpan = getRootSpan(spans);
+    if (rootSpan) {
+      setJaegerSpan(rootSpan);
+
+      const startTime = rootSpan.startTimeUnixNano;
+      const fullDuration =
+        (rootSpan.endTimeUnixNano - rootSpan.startTimeUnixNano) / 1_000_000;
+      const viewPortRatio = getViewPortRatio(fullDuration);
+
+      const groups: JaegerGroup[] = spans.map((span) => {
+        const level = 0;
+        const children: JaegerGroup[] = [];
+        const startMs = (span.startTimeUnixNano - startTime) / 1_000_000;
+        const durationMs =
+          (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
+        const startPx = startMs / viewPortRatio;
+        const durationPx = durationMs / viewPortRatio;
+        const endPx = startPx + durationPx;
+        const endMs = startMs + durationMs;
+        return {
+          level,
+          children,
+          startPx,
+          endPx,
+          durationPx,
+          startMs,
+          endMs,
+          durationMs,
+          ...span,
+        };
+      });
+
+      const rootGroup = getRootGroup(groups);
+      if (rootGroup) {
+        rootGroup.children = buildChildren(
+          rootGroup.level + 1,
+          rootGroup,
+          groups
+        );
+        setJaegerGroup(rootGroup);
+      }
     }
   };
 
-  const buildSpanChildren = (
+  const buildChildren = (
     level: number,
-    span: JaegerSpan,
-    spans: JaegerSpan[]
+    rootGroup: JaegerGroup,
+    groups: JaegerGroup[]
   ): JaegerGroup[] => {
-    return spans
-      .filter((value) => value.parentSpanId === span.spanId)
-      .map((value) => {
-        const start =
-          (value.startTimeUnixNano - span.startTimeUnixNano) / 1_000_000_000;
-        const end =
-          (value.endTimeUnixNano - value.startTimeUnixNano) / 1_000_000_000;
-        return {
-          level,
-          start,
-          end,
-          span: value,
-          children: buildSpanChildren(level + 1, value, spans),
-        };
-      });
+    return getGroupsByParent(rootGroup.spanId, groups).map((group) => {
+      group.level = level;
+      group.children = buildChildren(group.level + 1, group, groups);
+      return group;
+    });
   };
 
   useEffect(() => {
