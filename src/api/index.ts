@@ -61,6 +61,7 @@ import type {
   PasswordSettings,
 } from "./types";
 import { StatusCodes } from "./types";
+import { JaegerRoot } from "./jaeger-types";
 
 /** Wrap all requests to normalize response handling */
 const fetchTransport = <Type>(
@@ -547,6 +548,14 @@ export const getPcap = (sid: string, sipCallId: string) => {
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/pcap`
       : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/pcap`
+  );
+};
+
+export const getJaegerTrace = (sid: string, traceId: string) => {
+  return getFetch<JaegerRoot>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/trace/${traceId}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/trace/${traceId}`
   );
 };
 
