@@ -43,8 +43,19 @@ export interface JaegerValue {
 
 export interface JaegerGroup {
   level: number;
-  start: number;
-  end: number;
-  span: JaegerSpan;
+  startPx: number;
+  endPx: number;
+  durationPx: number;
+  startMs: number;
+  endMs: number;
+  durationMs: number;
+  traceId: string;
+  spanId: string;
+  parentSpanId: string;
+  name: string;
+  kind: string;
+  startTimeUnixNano: number;
+  endTimeUnixNano: number;
+  attributes: JaegerAttribute[];
   children: JaegerGroup[];
 }
