@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getJaegerTrace, getRecentCall } from "src/api";
 import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
 import { toastError } from "src/store";
@@ -18,7 +18,6 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
   const [jaegerDetail, setJaegerDetail] = useState<JaegerGroup>();
   const [modal, setModal] = useState(false);
-  const barGroupRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
     document.body.style.overflow = "auto";
@@ -58,14 +57,13 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
     return grps.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
   };
 
-  const getViewPortRatio = (span: JaegerSpan) => {
-    if (barGroupRef.current) {
-      const { offsetWidth } = barGroupRef.current;
-      const durationMs =
-        (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
-      if (durationMs > offsetWidth) {
-        return durationMs / (offsetWidth - 700);
-      }
+  const calculateRatio = (span: JaegerSpan) => {
+    const { innerWidth } = window;
+    const durationMs =
+      (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
+
+    if (durationMs > innerWidth) {
+      return durationMs / (innerWidth - 700);
     }
     return 1;
   };
@@ -75,16 +73,16 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
     const rootSpan = getRootSpan(spans);
     if (rootSpan) {
       const startTime = rootSpan.startTimeUnixNano;
-      const viewPortRatio = getViewPortRatio(rootSpan);
-
+      const ratio = calculateRatio(rootSpan);
+      calculateRatio(rootSpan);
       const groups: JaegerGroup[] = spans.map((span) => {
         const level = 0;
         const children: JaegerGroup[] = [];
         const startMs = (span.startTimeUnixNano - startTime) / 1_000_000;
         const durationMs =
           (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
-        const startPx = startMs / viewPortRatio;
-        const durationPx = durationMs / viewPortRatio;
+        const startPx = startMs / ratio;
+        const durationPx = durationMs / ratio;
         const endPx = startPx + durationPx;
         const endMs = startMs + durationMs;
         return {
@@ -145,6 +143,26 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
       });
   }, []);
 
+  useEffect(() => {
+    getRecentCall(call.account_sid, call.sip_callid)
+      .then(({ json }) => {
+        if (json.total > 0 && !call.trace_id.startsWith("0000")) {
+          getJaegerTrace(call.account_sid, call.trace_id)
+            .then(({ json }) => {
+              if (json) {
+                buildSpans(json);
+              }
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
+        }
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  }, []);
+
   if (jaegerGroup) {
     return (
       <>
@@ -162,7 +180,7 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
                 <div>{call.trace_id}</div>
               </div>
             </div>
-            <div ref={barGroupRef} className="barGroup">
+            <div className="barGroup">
               <Bar group={jaegerGroup} handleRowSelect={setJaegerDetail} />
             </div>
             {jaegerDetail && <JaegerDetail group={jaegerDetail} />}
