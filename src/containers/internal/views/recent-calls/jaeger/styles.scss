@@ -19,6 +19,7 @@
   padding: 20px;
   vertical-align: middle;
   justify-content: left;
+  height: 8vh;
 
   &__header_item {
     padding-top: 10px;
@@ -52,8 +53,8 @@
   display: flex;
   background-color: #333;
   color: #fff;
-  max-height: 50vh;
-  overflow-x: hidden;
+  height: 35vh;
+  overflow-x: scroll;
   overflow-y: auto;
   padding: 50px;
 }
@@ -106,27 +107,31 @@
 .spanDetailsWrapper {
   background-color: #fff;
   width: 100%;
+  height: 45vh;
 
   &__details {
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
-    font-size: 0.875rem;
-    line-height: 1.9;
+    font-size: 0.8rem;
+    //line-height: 1.0;
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-row-gap: 8px;
-    grid-column-gap: 32px;
+    grid-row-gap: 0;
+    grid-column-gap: 16px;
     text-align: left;
-    padding: 32px;
+    padding-left: 32px;
+    padding-top: 20px;
     color: #000;
     background-color: #fff;
     border-radius: 8px;
+    height: 100%;
+    overflow-y: scroll;
   }
 
   &__details_body {
     max-width: 100%;
     overflow-x: auto;
     white-space: pre;
-    height: 40px;
+    height: 30px;
   }
 
   &__header {
