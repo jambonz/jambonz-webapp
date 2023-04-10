@@ -11,30 +11,36 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
   return (
     <div className="spanDetailsWrapper">
       <div className="spanDetailsWrapper__header">Span: {group.name}</div>
-      <div className="spanDetailsWrapper__details">
-        <div className="spanDetailsWrapper__details_header">Span ID:</div>
-        <div className="spanDetailsWrapper__details_body">{group.spanId}</div>
-        <div className="spanDetailsWrapper__details_header">Span Start:</div>
-        <div className="spanDetailsWrapper__details_body">
-          {dayjs
-            .unix(group.startTimeUnixNano / 1000000000)
-            .format("DD/MM/YY HH:mm:ss.SSS")}
+      <div className="spanDetailsWrapper__detailsWrapper">
+        <div className="spanDetailsWrapper__details">
+          <div className="spanDetailsWrapper__details_header">Span ID:</div>
+          <div className="spanDetailsWrapper__details_body">{group.spanId}</div>
         </div>
-        <div className="spanDetailsWrapper__details_header">Span End:</div>
-        <div className="spanDetailsWrapper__details_body">
-          {dayjs
-            .unix(group.endTimeUnixNano / 1000000000)
-            .format("DD/MM/YY HH:mm:ss.SSS")}
+        <div className="spanDetailsWrapper__details">
+          <div className="spanDetailsWrapper__details_header">Span Start:</div>
+          <div className="spanDetailsWrapper__details_body">
+            {dayjs
+              .unix(group.startTimeUnixNano / 1000000000)
+              .format("DD/MM/YY HH:mm:ss.SSS")}
+          </div>
+        </div>
+        <div className="spanDetailsWrapper__details">
+          <div className="spanDetailsWrapper__details_header">Span End:</div>
+          <div className="spanDetailsWrapper__details_body">
+            {dayjs
+              .unix(group.endTimeUnixNano / 1000000000)
+              .format("DD/MM/YY HH:mm:ss.SSS")}
+          </div>
         </div>
         {group.attributes.map((attribute) => (
-          <React.Fragment key={attribute.key}>
+          <div key={attribute.key} className="spanDetailsWrapper__details">
             <div className="spanDetailsWrapper__details_header">
               {attribute.key}:
             </div>
             <div className="spanDetailsWrapper__details_body">
               {attribute.value.stringValue}
             </div>
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>
