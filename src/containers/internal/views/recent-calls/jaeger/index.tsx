@@ -15,9 +15,11 @@ type JaegerButtonProps = {
 };
 
 export const JaegerButton = ({ call }: JaegerButtonProps) => {
+  const [jaegerRoot, setJaegerRoot] = useState<JaegerRoot>();
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
   const [jaegerDetail, setJaegerDetail] = useState<JaegerGroup>();
   const [modal, setModal] = useState(false);
+  const windowSize = useWindowSize();
 
   const handleClose = () => {
     document.body.style.overflow = "auto";
@@ -30,6 +32,7 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
+    setJaegerRoot(trace);
     const spans: JaegerSpan[] = [];
     trace.resourceSpans.forEach((resourceSpan) => {
       resourceSpan.instrumentationLibrarySpans.forEach(
@@ -63,8 +66,10 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
       (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
 
     if (durationMs > innerWidth) {
-      return durationMs / (innerWidth - 700);
+      const offset = innerWidth > 1200 ? 3 : innerWidth > 800 ? 2.5 : 2;
+      return durationMs / (innerWidth - innerWidth / offset);
     }
+
     return 1;
   };
 
@@ -163,6 +168,12 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
       });
   }, []);
 
+  useEffect(() => {
+    if (jaegerRoot) {
+      buildSpans(jaegerRoot);
+    }
+  }, [windowSize]);
+
   if (jaegerGroup) {
     return (
       <>
@@ -191,3 +202,23 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   }
   return null;
 };
+
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: 100,
+    height: 100,
+  });
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return windowSize;
+}
