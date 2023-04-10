@@ -53,19 +53,19 @@
   display: flex;
   background-color: #333;
   color: #fff;
-  height: 35vh;
-  overflow-x: scroll;
+  height: 50vh;
+  overflow-x: auto;
   overflow-y: auto;
   padding: 50px;
 }
 
 .barWrapper {
-  margin-top: 5px;
+  margin-top: 1px;
   width: 100%;
 
   &__row {
     display: flex;
-    padding: 3px;
+    padding: 1px;
     width: 100%;
     cursor: pointer;
   }
@@ -82,14 +82,14 @@
 
   &__header {
     min-width: 400px;
-    height: 20px;
-    padding-top: 8px;
+    height: 15px;
+    padding-top: 4px;
     font-size: small;
   }
 
   &__span {
-    padding-top: 8px;
-    height: 20px;
+    padding-top: 4px;
+    height: 15px;
     flex-shrink: 0;
     vertical-align: middle;
     border: 3px solid #444;
@@ -107,7 +107,7 @@
 .spanDetailsWrapper {
   background-color: #fff;
   width: 100%;
-  height: 45vh;
+  height: 35vh;
 
   &__details {
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;

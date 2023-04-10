@@ -64,11 +64,12 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
       const durationMs =
         (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
       if (durationMs > offsetWidth) {
-        return durationMs / (offsetWidth - 600);
+        return durationMs / (offsetWidth - 700);
       }
     }
     return 1;
   };
+
   const buildSpans = (root: JaegerRoot) => {
     const spans = getSpansFromJaegerRoot(root);
     const rootSpan = getRootSpan(spans);
