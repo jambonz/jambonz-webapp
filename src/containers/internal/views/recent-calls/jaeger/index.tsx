@@ -6,7 +6,6 @@ import { JaegerModalFullScreen } from "./modal";
 import type { RecentCall } from "src/api/types";
 import { Bar } from "./bar";
 import { Button } from "@jambonz/ui-kit";
-import { Scroll } from "./scroll";
 import { JaegerDetail } from "./detail";
 
 import "./styles.scss";
@@ -17,7 +16,7 @@ type JaegerButtonProps = {
 
 export const JaegerButton = ({ call }: JaegerButtonProps) => {
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
-  const [groups, setGroups] = useState<JaegerGroup[]>([]);
+  const [jaegerDetail, setJaegerDetail] = useState<JaegerGroup>();
   const [modal, setModal] = useState(false);
   const barGroupRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +87,6 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
           ...span,
         };
       });
-      setGroups(groups);
 
       const rootGroup = getRootGroup(groups);
       if (rootGroup) {
@@ -97,6 +95,7 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
           rootGroup,
           groups
         );
+        setJaegerDetail(rootGroup);
         setJaegerGroup(rootGroup);
       }
     }
@@ -152,10 +151,9 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
               </div>
             </div>
             <div ref={barGroupRef} className="barGroup">
-              <Bar group={jaegerGroup} handleRowSelect={setJaegerGroup} />
+              <Bar group={jaegerGroup} handleRowSelect={setJaegerDetail} />
             </div>
-            <Scroll groups={groups} barGroupRef={barGroupRef} />
-            {jaegerGroup && <JaegerDetail group={jaegerGroup} />}
+            {jaegerDetail && <JaegerDetail group={jaegerDetail} />}
           </JaegerModalFullScreen>
         )}
       </>
