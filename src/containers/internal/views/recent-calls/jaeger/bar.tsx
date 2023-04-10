@@ -32,6 +32,13 @@ export const Bar = ({ group, handleRowSelect }: BarProps) => {
     handleRowSelect(group);
   };
 
+  const truncate = (str: string) => {
+    if (str.length > 50) {
+      return str.substring(0, 50) + "...";
+    }
+    return str;
+  };
+
   return (
     <div className="barWrapper">
       <div
@@ -43,7 +50,7 @@ export const Bar = ({ group, handleRowSelect }: BarProps) => {
           className="barWrapper__header"
           style={{ paddingLeft: `${titleMargin}px` }}
         >
-          {group.name}
+          {truncate(group.name)}
         </div>
         <button
           className="barWrapper__span"
