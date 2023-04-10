@@ -58,12 +58,23 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
     return grps.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
   };
 
+  const getViewPortRatio = (span: JaegerSpan) => {
+    if (barGroupRef.current) {
+      const { offsetWidth } = barGroupRef.current;
+      const durationMs =
+        (span.endTimeUnixNano - span.startTimeUnixNano) / 1_000_000;
+      if (durationMs > offsetWidth) {
+        return durationMs / (offsetWidth - 600);
+      }
+    }
+    return 1;
+  };
   const buildSpans = (root: JaegerRoot) => {
     const spans = getSpansFromJaegerRoot(root);
     const rootSpan = getRootSpan(spans);
     if (rootSpan) {
       const startTime = rootSpan.startTimeUnixNano;
-      const viewPortRatio = 1;
+      const viewPortRatio = getViewPortRatio(rootSpan);
 
       const groups: JaegerGroup[] = spans.map((span) => {
         const level = 0;
