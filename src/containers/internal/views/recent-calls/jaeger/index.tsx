@@ -53,11 +53,11 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   const getRootSpan = (spans: JaegerSpan[]) => {
-    return spans.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
+    return spans.find((value) => value.kind == "SPAN_KIND_CONSUMER");
   };
 
   const getRootGroup = (grps: JaegerGroup[]) => {
-    return grps.find((value) => value.parentSpanId == "AAAAAAAAAAA=");
+    return grps.find((value) => value.kind == "SPAN_KIND_CONSUMER");
   };
 
   const calculateRatio = (span: JaegerSpan) => {
@@ -74,9 +74,11 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   const buildSpans = (root: JaegerRoot) => {
+    console.log("build Spans");
     const spans = getSpansFromJaegerRoot(root);
     const rootSpan = getRootSpan(spans);
     if (rootSpan) {
+      console.log("root Spans");
       const startTime = rootSpan.startTimeUnixNano;
       const ratio = calculateRatio(rootSpan);
       calculateRatio(rootSpan);
@@ -129,26 +131,7 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   useEffect(() => {
-    getRecentCall(call.account_sid, call.sip_callid)
-      .then(({ json }) => {
-        if (json.total > 0 && !call.trace_id.startsWith("0000")) {
-          getJaegerTrace(call.account_sid, call.trace_id)
-            .then(({ json }) => {
-              if (json) {
-                buildSpans(json);
-              }
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
-        }
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
-  }, []);
-
-  useEffect(() => {
+    console.log("EFFECT");
     getRecentCall(call.account_sid, call.sip_callid)
       .then(({ json }) => {
         if (json.total > 0 && !call.trace_id.startsWith("0000")) {
