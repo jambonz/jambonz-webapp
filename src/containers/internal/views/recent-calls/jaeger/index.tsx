@@ -53,11 +53,13 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   const getRootSpan = (spans: JaegerSpan[]) => {
-    return spans.find((value) => value.kind == "SPAN_KIND_CONSUMER");
+    const spanIds = spans.map((value) => value.spanId);
+    return spans.find((value) => spanIds.indexOf(value.parentSpanId) == -1);
   };
 
   const getRootGroup = (grps: JaegerGroup[]) => {
-    return grps.find((value) => value.kind == "SPAN_KIND_CONSUMER");
+    const spanIds = grps.map((value) => value.spanId);
+    return grps.find((value) => spanIds.indexOf(value.parentSpanId) == -1);
   };
 
   const calculateRatio = (span: JaegerSpan) => {
