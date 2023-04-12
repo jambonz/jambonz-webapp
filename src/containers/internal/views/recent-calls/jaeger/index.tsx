@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getJaegerTrace, getRecentCall } from "src/api";
+import { getJaegerTrace } from "src/api";
 import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
 import { toastError } from "src/store";
 import { JaegerModalFullScreen } from "./modal";
@@ -76,11 +76,9 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   const buildSpans = (root: JaegerRoot) => {
-    console.log("build Spans");
     const spans = getSpansFromJaegerRoot(root);
     const rootSpan = getRootSpan(spans);
     if (rootSpan) {
-      console.log("root Spans");
       const startTime = rootSpan.startTimeUnixNano;
       const ratio = calculateRatio(rootSpan);
       calculateRatio(rootSpan);
@@ -133,24 +131,17 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   };
 
   useEffect(() => {
-    console.log("EFFECT");
-    getRecentCall(call.account_sid, call.sip_callid)
-      .then(({ json }) => {
-        if (json.total > 0 && !call.trace_id.startsWith("0000")) {
-          getJaegerTrace(call.account_sid, call.trace_id)
-            .then(({ json }) => {
-              if (json) {
-                buildSpans(json);
-              }
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
-        }
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
+    if (call.trace_id && call.trace_id != "00000000000000000000000000000000") {
+      getJaegerTrace(call.account_sid, call.trace_id)
+        .then(({ json }) => {
+          if (json) {
+            buildSpans(json);
+          }
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
   }, []);
 
   useEffect(() => {

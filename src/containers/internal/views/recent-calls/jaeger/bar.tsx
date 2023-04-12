@@ -33,7 +33,6 @@ export const Bar = ({ group, handleRowSelect }: BarProps) => {
   };
 
   const truncate = (str: string) => {
-    console.log(str.length);
     if (str.length > 36) {
       return str.substring(0, 36) + "...";
     }
