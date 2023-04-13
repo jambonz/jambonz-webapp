@@ -137,6 +137,7 @@ export const CarrierForm = ({
 
   const setCarrierStates = (obj: Carrier) => {
     if (obj) {
+      setIsActive(obj.is_active);
       if (obj.name) {
         setCarrierName(obj.name);
       }
@@ -988,6 +989,27 @@ export const CarrierForm = ({
                       </div>
                     </div>
                     <div>
+                      <div>
+                        <label
+                          htmlFor={`sip__gw_is_active_${i}`}
+                          className="chk"
+                        >
+                          <input
+                            id={`sip__gw_is_active_${i}`}
+                            name={`sip__gw_is_active_${i}`}
+                            type="checkbox"
+                            checked={g.is_active ? true : false}
+                            onChange={(e) => {
+                              updateSipGateways(
+                                i,
+                                "is_active",
+                                e.target.checked ? 1 : 0
+                              );
+                            }}
+                          />
+                          <div>Active</div>
+                        </label>
+                      </div>
                       <div>
                         <label htmlFor={`sip_inbound_${i}`} className="chk">
                           <input
