@@ -268,3 +268,60 @@ fieldset {
     }
   }
 }
+
+.lcr {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  max-width: vars.$widthinput;
+  position: relative;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+    margin-left: 3%;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 50%;
+
+      @include mixins.small() {
+        grid-template-columns: [col] 100%;
+      }
+    }
+  }
+
+  .btn__delete {
+    position: absolute;
+    right: 0;
+    bottom: 50%;
+    transform: translate3d(50%, 50%, 0);
+
+    @include mixins.small() {
+      top: auto;
+      bottom: auto;
+      transform: none;
+      position: relative;
+      margin-top: ui-vars.$px02;
+      display: flex;
+      margin-left: auto;
+    }
+  }
+
+  .btn__up_level {
+    position: absolute;
+    left: 0;
+    bottom: 50%;
+    transform: translate3d(-50%, 50%, 0);
+
+    @include mixins.small() {
+      top: auto;
+      bottom: auto;
+      transform: none;
+      position: relative;
+      margin-top: ui-vars.$px02;
+      display: flex;
+      margin-right: auto;
+    }
+  }
+}

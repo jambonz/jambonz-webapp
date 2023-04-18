@@ -19,6 +19,8 @@ import {
   API_PASSWORD_SETTINGS,
   USER_ACCOUNT,
   API_LOGOUT,
+  API_LCR_ROUTES,
+  API_LCR_CARRIER_SET_ENTRIES,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -59,6 +61,9 @@ import type {
   Limit,
   LimitCategories,
   PasswordSettings,
+  Lcr,
+  LcrRoute,
+  LcrCarrierSetEntry,
 } from "./types";
 import { StatusCodes } from "./types";
 
@@ -351,6 +356,29 @@ export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
     payload
   );
 };
+
+export const postLcr = (sid: string, payload: Partial<Lcr>) => {
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/Lcrs/`
+      : `${API_SERVICE_PROVIDERS}/${sid}/Lcrs/`;
+
+  return postFetch<SidResponse, Partial<Lcr>>(apiUrl, payload);
+};
+
+export const postLcrRoute = (payload: Partial<LcrRoute>) => {
+  return postFetch<SidResponse, Partial<LcrRoute>>(API_LCR_ROUTES, payload);
+};
+
+export const postLcrCarrierSetEntry = (
+  payload: Partial<LcrCarrierSetEntry>
+) => {
+  return postFetch<SidResponse, Partial<LcrCarrierSetEntry>>(
+    API_LCR_CARRIER_SET_ENTRIES,
+    payload
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -439,6 +467,33 @@ export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
 export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
   return putFetch<EmptyResponse, Partial<SmppGateway>>(
     `${API_SMPP_GATEWAY}/${sid}`,
+    payload
+  );
+};
+
+export const putLcrs = (sid1: string, sid2: string, payload: Partial<Lcr>) => {
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/Lcrs/${sid2}`
+      : `${API_SERVICE_PROVIDERS}/${sid1}/Lcrs/${sid2}`;
+
+  return putFetch<EmptyResponse, Partial<Lcr>>(apiUrl, payload);
+};
+
+export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
+  return putFetch<EmptyResponse, Partial<LcrRoute>>(
+    `${API_LCR_ROUTES}/${sid}`,
+    payload
+  );
+};
+
+export const putLcrCarrierSetEntries = (
+  sid: string,
+  payload: Partial<LcrCarrierSetEntry>
+) => {
+  return putFetch<EmptyResponse, Partial<LcrCarrierSetEntry>>(
+    `${API_LCR_CARRIER_SET_ENTRIES}/${sid}`,
     payload
   );
 };

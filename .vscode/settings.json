@@ -5,5 +5,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.configPath": ".prettierrc.json",
   "files.trimTrailingWhitespace": true,
-  "typescript.preferences.quoteStyle": "double"
+  "typescript.preferences.quoteStyle": "double",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

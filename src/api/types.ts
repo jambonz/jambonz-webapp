@@ -172,6 +172,7 @@ export interface ServiceProvider {
   name: string;
   ms_teams_fqdn: null | string;
   service_provider_sid: string;
+  lcr_sid: null | string;
 }
 
 export interface Limit {
@@ -231,6 +232,7 @@ export interface Account {
   registration_hook: null | WebHook;
   service_provider_sid: string;
   device_calling_application_sid: null | string;
+  lcr_sid: null | string;
 }
 
 export interface Application {
@@ -382,6 +384,31 @@ export interface SmppGateway extends Gateway {
   smpp_gateway_sid?: null | string;
   is_primary: boolean;
   use_tls: boolean;
+}
+
+export interface Lcr {
+  lcr_sid?: null | string;
+  is_active: boolean;
+  name: null | string;
+  default_carrier_set_entry_sid?: null | string;
+  account_sid: null | string;
+  service_provider_sid: null | string;
+}
+
+export interface LcrRoute {
+  lcr_route_sid?: null | string;
+  lcr_sid: null | string;
+  regex: null | string;
+  desciption?: null | string;
+  priority: number;
+}
+
+export interface LcrCarrierSetEntry {
+  lcr_carrier_set_entry_sid?: null | string;
+  workload?: number;
+  lcr_route_sid: null | string;
+  voip_carrier_sid: null | string;
+  priority: number;
 }
 
 export interface PageQuery {

@@ -9,6 +9,7 @@ import {
   ROUTE_INTERNAL_SPEECH,
   ROUTE_INTERNAL_PHONE_NUMBERS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
+  ROUTE_INTERNAL_LEST_COST_ROUTING,
 } from "src/router/routes";
 import { Icons } from "src/components";
 import { Scope, UserData } from "src/store/types";
@@ -88,5 +89,10 @@ export const naviByo: NaviItem[] = [
     icon: Icons.Users,
     route: () => ROUTE_INTERNAL_MS_TEAMS_TENANTS,
     acl: "hasMSTeamsFqdn",
+  },
+  {
+    label: "Least Cost Routing",
+    icon: Icons.Share2,
+    route: () => ROUTE_INTERNAL_LEST_COST_ROUTING,
   },
 ];
