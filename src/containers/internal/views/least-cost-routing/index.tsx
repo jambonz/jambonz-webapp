@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, H1, Icon, M } from "@jambonz/ui-kit";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApiData, useServiceProviderData } from "src/api";
 // import { USER_ACCOUNT } from "src/api/constants";
@@ -15,44 +15,40 @@ import {
 import { ScopedAccess } from "src/components/scoped-access";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
 import { useSelectState } from "src/store";
-import { setLocation } from "src/store/localStore";
+// import { getAccountFilter, setLocation } from "src/store/localStore";
 import { Scope } from "src/store/types";
-import { hasLength, hasValue } from "src/utils";
+import { hasLength, hasValue, useFilteredResults } from "src/utils";
+import { USER_ACCOUNT } from "src/api/constants";
 
 export const Lcrs = () => {
   const [filter, setFilter] = useState("");
   const [accountSid, setAccountSid] = useState("");
-  const [apiUrl, setApiUrl] = useState("");
 
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [lcrs /*refetch*/] = useApiData<Lcr[]>(apiUrl);
-  // const [lcr, setLcr] = useState<Lcr | null>(null);
+  const [lcrs] = useApiData<Lcr[]>("Lcrs");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
-  // const lcrsFiltered = useMemo(() => {
-  //   setAccountSid(getAccountFilter());
-  //   if (user?.account_sid && user?.scope === USER_ACCOUNT) {
-  //     setAccountSid(user?.account_sid);
-  //     return lcrs;
-  //   }
-
-  //   return lcrs
-  //     ? lcrs.filter((lcr) =>
-  //       accountSid ? lcr.account_sid === accountSid : lcr.account_sid === null
-  //     )
-  //     : [];
-  // }, [accountSid, lcr, lcrs]);
-  // const filteredLcrs = useFilteredResults<Lcr>(filter, lcrsFiltered);
-
-  useEffect(() => {
-    setLocation();
-    if (currentServiceProvider) {
-      setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/Lcrs`
-      );
+  const lcrsFiltered = useMemo(() => {
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
+      return lcrs;
     }
-  }, [user, currentServiceProvider, accountSid]);
+
+    console.log(accountSid);
+
+    return lcrs
+      ? lcrs.filter((lcr) =>
+          accountSid
+            ? lcr.account_sid === accountSid
+            : currentServiceProvider?.service_provider_sid
+            ? lcr.service_provider_sid ==
+              currentServiceProvider.service_provider_sid
+            : lcr.account_sid === null
+        )
+      : [];
+  }, [accountSid, lcrs]);
+  const filteredLcrs = useFilteredResults<Lcr>(filter, lcrsFiltered);
 
   return (
     <>
@@ -70,7 +66,7 @@ export const Lcrs = () => {
       </section>
       <section className="filters filters--spaced">
         <SearchFilter placeholder="Filter lcrs" filter={[filter, setFilter]} />
-        <ScopedAccess user={user} scope={Scope.service_provider}>
+        <ScopedAccess user={user} scope={Scope.admin}>
           <AccountFilter
             account={[accountSid, setAccountSid]}
             accounts={accounts}
@@ -79,12 +75,12 @@ export const Lcrs = () => {
           />
         </ScopedAccess>
       </section>
-      <Section {...(hasLength(lcrs) && { slim: true })}>
+      <Section {...(hasLength(filteredLcrs) && { slim: true })}>
         <div className="list">
-          {!hasValue(lcrs) && hasLength(accounts) ? (
+          {!hasValue(filteredLcrs) && hasLength(accounts) ? (
             <Spinner />
-          ) : hasLength(lcrs) ? (
-            lcrs.map((lcr) => (
+          ) : hasLength(filteredLcrs) ? (
+            filteredLcrs.map((lcr) => (
               <div className="item" key={lcr.lcr_sid}>
                 <div className="item__info">
                   <div className="item__title">

@@ -21,6 +21,7 @@ import {
   API_LOGOUT,
   API_LCR_ROUTES,
   API_LCR_CARRIER_SET_ENTRIES,
+  API_LCRS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -357,14 +358,8 @@ export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
   );
 };
 
-export const postLcr = (sid: string, payload: Partial<Lcr>) => {
-  const userData = parseJwt(getToken());
-  const apiUrl =
-    userData.scope === USER_ACCOUNT
-      ? `${API_ACCOUNTS}/${userData.account_sid}/Lcrs/`
-      : `${API_SERVICE_PROVIDERS}/${sid}/Lcrs/`;
-
-  return postFetch<SidResponse, Partial<Lcr>>(apiUrl, payload);
+export const postLcr = (payload: Partial<Lcr>) => {
+  return postFetch<SidResponse, Partial<Lcr>>(API_LCRS, payload);
 };
 
 export const postLcrRoute = (payload: Partial<LcrRoute>) => {
@@ -471,14 +466,8 @@ export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
   );
 };
 
-export const putLcrs = (sid1: string, sid2: string, payload: Partial<Lcr>) => {
-  const userData = parseJwt(getToken());
-  const apiUrl =
-    userData.scope === USER_ACCOUNT
-      ? `${API_ACCOUNTS}/${userData.account_sid}/Lcrs/${sid2}`
-      : `${API_SERVICE_PROVIDERS}/${sid1}/Lcrs/${sid2}`;
-
-  return putFetch<EmptyResponse, Partial<Lcr>>(apiUrl, payload);
+export const putLcrs = (sid: string, payload: Partial<Lcr>) => {
+  return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
 };
 
 export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
@@ -574,6 +563,16 @@ export const getServiceProviders = () => {
 export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
     `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
+  );
+};
+
+export const getLcrRoutes = (sid: string) => {
+  return getFetch<LcrRoute[]>(`${API_LCR_ROUTES}?lcr_sid=${sid}`);
+};
+
+export const getLcrCarrierSetEtries = (sid: string) => {
+  return getFetch<LcrCarrierSetEntry[]>(
+    `${API_LCR_CARRIER_SET_ENTRIES}?lcr_route_sid=${sid}`
   );
 };
 

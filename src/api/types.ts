@@ -401,6 +401,7 @@ export interface LcrRoute {
   regex: null | string;
   desciption?: null | string;
   priority: number;
+  lcr_carrier_set_entries?: LcrCarrierSetEntry[];
 }
 
 export interface LcrCarrierSetEntry {

@@ -14,27 +14,37 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
-import { postLcrCarrierSetEntry, useApiData } from "src/api";
+import {
+  postLcrCarrierSetEntry,
+  putLcrCarrierSetEntries,
+  putLcrRoutes,
+  putLcrs,
+  useApiData,
+} from "src/api";
 import { USER_ACCOUNT } from "src/api/constants";
 import { hasLength } from "src/utils";
-import { postLcr } from "src/api";
+import { postLcr, getLcrCarrierSetEtries } from "src/api";
 import { postLcrRoute } from "src/api";
 
-type LcrRouteData = {
-  pattern: string;
-  voip_carrier_sid: string;
-};
-
 type LcrFormProps = {
-  lcr?: UseApiDataMap<Lcr>;
+  lcrDataMap?: UseApiDataMap<Lcr>;
+  lcrRouteDataMap?: UseApiDataMap<LcrRoute[]>;
 };
 
-const DEFAULT_LCR_ROUTE: LcrRouteData = {
-  pattern: "",
-  voip_carrier_sid: "",
+const DEFAULT_LCR_ROUTE: LcrRoute = {
+  regex: "",
+  lcr_sid: "",
+  lcr_carrier_set_entries: [
+    {
+      lcr_route_sid: "",
+      voip_carrier_sid: "",
+      priority: 0,
+    },
+  ],
+  priority: 0,
 };
 
-export const LcrForm = ({ lcr }: LcrFormProps) => {
+export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const MAX_ROUTES = 5;
 
   const [lcrName, setLcrName] = useState("");
@@ -42,9 +52,7 @@ export const LcrForm = ({ lcr }: LcrFormProps) => {
   const [apiUrl, setApiUrl] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [lcrRoutes, setLcrRoutes] = useState<LcrRouteData[]>([
-    DEFAULT_LCR_ROUTE,
-  ]);
+  const [lcrRoutes, setLcrRoutes] = useState<LcrRoute[]>([DEFAULT_LCR_ROUTE]);
 
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -58,6 +66,10 @@ export const LcrForm = ({ lcr }: LcrFormProps) => {
       );
     }
   }, [user, currentServiceProvider, accountSid]);
+
+  useEffect(() => {
+    SetLcrState();
+  }, [lcrDataMap, lcrRouteDataMap]);
 
   const carriersFiltered = useMemo(() => {
     setAccountSid(getAccountFilter());
@@ -91,71 +103,176 @@ export const LcrForm = ({ lcr }: LcrFormProps) => {
     );
   }, [carriersFiltered]);
 
+  const sortSetLcrRoutes = (routes: LcrRoute[]) => {
+    let sorted = [...routes];
+    sorted = sorted.sort((p1, p2) =>
+      p1.priority > p2.priority ? 1 : p1.priority < p2.priority ? -1 : 0
+    );
+    return sorted;
+  };
+
   const addLcrRoutes = () => {
-    setLcrRoutes((curr) => [...curr, DEFAULT_LCR_ROUTE]);
+    setLcrRoutes((curr) => [
+      ...curr,
+      {
+        ...DEFAULT_LCR_ROUTE,
+        priority: lcrRoutes.length,
+      },
+    ]);
   };
 
   const updateLcrRoute = (
     index: number,
     key: string,
-    value: typeof lcrRoutes[number][keyof LcrRouteData]
+    value: typeof lcrRoutes[number][keyof LcrRoute]
+  ) => {
+    const sorted = sortSetLcrRoutes(
+      lcrRoutes.map((lr, i) => (i === index ? { ...lr, [key]: value } : lr))
+    );
+    setLcrRoutes(sorted);
+  };
+
+  const updateLcrCarrierSetEntries = (
+    index1: number,
+    index2: number,
+    key: string,
+    value: unknown
   ) => {
     setLcrRoutes(
-      lcrRoutes.map((lr, i) => (i === index ? { ...lr, [key]: value } : lr))
+      lcrRoutes.map((lr, i) =>
+        i === index1
+          ? {
+              ...lr,
+              lcr_carrier_set_entries: lr.lcr_carrier_set_entries?.map(
+                (entry, j) =>
+                  j === index2
+                    ? {
+                        ...entry,
+                        [key]: value,
+                      }
+                    : entry
+              ),
+            }
+          : lr
+      )
     );
   };
 
   const moveLcrRoute = (from: number, to: number) => {
-    const e = lcrRoutes[from];
-    lcrRoutes.splice(from, 1);
-    lcrRoutes.splice(to, 0, e);
-    setLcrRoutes([...lcrRoutes]);
+    lcrRoutes[from].priority = to;
+    lcrRoutes[to].priority = from;
+    setLcrRoutes(sortSetLcrRoutes(lcrRoutes));
+  };
+
+  const SetLcrState = async () => {
+    if (lcrDataMap && lcrDataMap.data) {
+      setLcrName(lcrDataMap.data.name || "");
+      setIsActive(lcrDataMap.data.is_active);
+    }
+
+    if (lcrRouteDataMap && lcrRouteDataMap.data) {
+      for (const route of lcrRouteDataMap.data) {
+        const { json } = await getLcrCarrierSetEtries(
+          route.lcr_route_sid || ""
+        );
+        if (json) {
+          route.lcr_carrier_set_entries = json;
+        }
+      }
+      const sorted = sortSetLcrRoutes(lcrRouteDataMap.data);
+      setLcrRoutes(sorted);
+    }
   };
 
   const submitNewLcr = () => {
     // Add new LCR
     const lcrPayload: Lcr = {
       name: lcrName,
-      is_active: true,
+      is_active: isActive,
       account_sid: user?.account_sid || null,
       service_provider_sid:
         currentServiceProvider?.service_provider_sid || null,
     };
-    postLcr(
-      currentServiceProvider?.service_provider_sid || "",
-      lcrPayload
-    ).then(({ json }) => {
+    postLcr(lcrPayload).then(({ json }) => {
       // add new lcr route
-      lcrRoutes.forEach((data, i) => {
+      lcrRoutes.forEach((route) => {
         const lcrRoutePayload: LcrRoute = {
           lcr_sid: json.sid,
-          regex: data.pattern,
-          priority: i,
+          regex: route.regex,
+          priority: route.priority,
         };
         postLcrRoute(lcrRoutePayload).then(({ json }) => {
           // add new lcr carrier set entries
           const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
             lcr_route_sid: json.sid,
-            voip_carrier_sid: data.voip_carrier_sid,
+            voip_carrier_sid: "",
             priority: 0,
           };
-          postLcrCarrierSetEntry(lcrCarrierSetEntryPayload).then(({ json }) => {
-            console.log(json.sid);
-          });
+          if (route.lcr_carrier_set_entries) {
+            route.lcr_carrier_set_entries.forEach((entry) => {
+              postLcrCarrierSetEntry({
+                ...lcrCarrierSetEntryPayload,
+                voip_carrier_sid: entry.voip_carrier_sid,
+                priority: entry.priority,
+              }).then(({ json }) => {
+                console.log(json.sid);
+              });
+            });
+          }
         });
       });
     });
   };
 
-  // const submitUpdateLcr = () => {
-  //   // update LCR
-  //   // update lcr route
-  //   // update lcr carrier set entries
-  // }
+  const submitUpdateLcr = () => {
+    // update LCR
+    const lcrPayload: Lcr = {
+      name: lcrName,
+      is_active: isActive,
+      account_sid: user?.account_sid || null,
+      service_provider_sid:
+        currentServiceProvider?.service_provider_sid || null,
+    };
+
+    putLcrs(lcrDataMap?.data?.lcr_sid || "", lcrPayload).then(() => {
+      // update lcr route
+      lcrRoutes.forEach((route) => {
+        const lcrRoutePayload: LcrRoute = {
+          lcr_sid: lcrDataMap?.data?.lcr_sid || "",
+          regex: route.regex,
+          priority: route.priority,
+        };
+        putLcrRoutes(route.lcr_route_sid || "", lcrRoutePayload).then(() => {
+          if (route.lcr_carrier_set_entries) {
+            const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
+              lcr_route_sid: route.lcr_route_sid || "",
+              voip_carrier_sid: "",
+              priority: 0,
+            };
+
+            route.lcr_carrier_set_entries.forEach((entry) => {
+              putLcrCarrierSetEntries(entry.lcr_carrier_set_entry_sid || "", {
+                ...lcrCarrierSetEntryPayload,
+                voip_carrier_sid: entry.voip_carrier_sid,
+                priority: entry.priority,
+              }).then(() => {
+                lcrDataMap?.refetch();
+                lcrRouteDataMap?.refetch();
+              });
+            });
+          }
+        });
+      });
+    });
+
+    // update lcr route
+    // update lcr carrier set entries
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (lcr) {
+    if (lcrDataMap) {
+      submitUpdateLcr();
     } else {
       submitNewLcr();
     }
@@ -223,9 +340,9 @@ export const LcrForm = ({ lcr }: LcrFormProps) => {
                       type="text"
                       placeholder="Digit prefix or regex"
                       required
-                      value={lr.pattern || ""}
+                      value={lr.regex || ""}
                       onChange={(e) => {
-                        updateLcrRoute(i, "pattern", e.target.value);
+                        updateLcrRoute(i, "regex", e.target.value);
                       }}
                     />
                   </div>
@@ -234,10 +351,21 @@ export const LcrForm = ({ lcr }: LcrFormProps) => {
                       id={`lcr_carrier_set_entry_carrier_${i}`}
                       name={`lcr_carrier_set_entry_carrier_${i}`}
                       placeholder="Carrier"
-                      value={lr.voip_carrier_sid || ""}
+                      value={
+                        lr.lcr_carrier_set_entries
+                          ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
+                            ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
+                            : ""
+                          : ""
+                      }
                       options={carrierSelectorOptions}
                       onChange={(e) => {
-                        updateLcrRoute(i, "voip_carrier_sid", e.target.value);
+                        updateLcrCarrierSetEntries(
+                          i,
+                          0,
+                          "voip_carrier_sid",
+                          e.target.value
+                        );
                       }}
                     />
                   </div>
