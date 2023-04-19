@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Button, H1, Icon, M } from "@jambonz/ui-kit";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteLcr, useApiData, useServiceProviderData } from "src/api";
 // import { USER_ACCOUNT } from "src/api/constants";
 import type { Account, Lcr } from "src/api/types";
@@ -22,13 +22,21 @@ import { USER_ACCOUNT } from "src/api/constants";
 import DeleteLcr from "./delete";
 
 export const Lcrs = () => {
+  const user = useSelectState("user");
+  const [lcrs, refetch] = useApiData<Lcr[]>("Lcrs");
+  if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+    const navigate = useNavigate();
+    if (lcrs && lcrs.length > 0) {
+      navigate(`${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcrs[0].lcr_sid}/edit`);
+    } else {
+      navigate(`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`);
+    }
+  }
   const [filter, setFilter] = useState("");
   const [accountSid, setAccountSid] = useState("");
 
-  const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [lcr, setLcr] = useState<Lcr | null>();
-  const [lcrs, refetch] = useApiData<Lcr[]>("Lcrs");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const lcrsFiltered = useMemo(() => {

@@ -4,9 +4,10 @@ import { Button, ButtonGroup, Icon, MS } from "@jambonz/ui-kit";
 import { Icons, Section } from "src/components";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { getAccountFilter, setLocation } from "src/store/localStore";
-import { Selector } from "src/components/forms";
+import { setLocation } from "src/store/localStore";
+import { AccountSelect, Message, Selector } from "src/components/forms";
 import type {
+  Account,
   Carrier,
   Lcr,
   LcrCarrierSetEntry,
@@ -21,8 +22,9 @@ import {
   putLcrRoutes,
   putLcrs,
   useApiData,
+  useServiceProviderData,
 } from "src/api";
-import { USER_ACCOUNT } from "src/api/constants";
+import { USER_ACCOUNT, USER_ADMIN, USER_SP } from "src/api/constants";
 import { hasLength } from "src/utils";
 import { postLcr, getLcrCarrierSetEtries } from "src/api";
 import { postLcrRoute } from "src/api";
@@ -55,6 +57,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [lcrRoutes, setLcrRoutes] = useState<LcrRoute[]>([DEFAULT_LCR_ROUTE]);
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -74,7 +77,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   }, [lcrDataMap, lcrRouteDataMap]);
 
   const carriersFiltered = useMemo(() => {
-    setAccountSid(getAccountFilter());
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
       return carriers;
@@ -191,6 +193,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       deleteLcrRoute(r.lcr_route_sid)
         .then(() => {
           toastSuccess("Least cost routing rule successfully deleted");
+          lcrRouteDataMap?.refetch();
         })
         .catch((error) => {
           toastError(error);
@@ -203,7 +206,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     const lcrPayload: Lcr = {
       name: lcrName,
       is_active: isActive,
-      account_sid: user?.account_sid || null,
+      account_sid: accountSid,
       service_provider_sid:
         currentServiceProvider?.service_provider_sid || null,
     };
@@ -214,8 +217,8 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           submitNewLcrRoute(json.sid, route);
         });
       })
-      .catch((error) => {
-        toastError(error);
+      .catch(({ msg }) => {
+        toastError(msg);
       });
   };
 
@@ -234,7 +237,13 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             })
           )
             .then(() => {
-              navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+              if (lcrDataMap) {
+                toastSuccess("Least cost routing successfully updated");
+                lcrRouteDataMap?.refetch();
+              } else {
+                toastSuccess("Least cost routing successfully created");
+                navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+              }
             })
             .catch((error) => {
               toastError(error);
@@ -329,8 +338,10 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       entry: LcrCarrierSetEntry
     ) => {
       const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
-        ...entry,
         lcr_route_sid,
+        workload: entry.workload,
+        voip_carrier_sid: entry.voip_carrier_sid,
+        priority: entry.priority,
       };
       return putLcrCarrierSetEntries(
         lcr_carrier_set_entry_sid,
@@ -356,6 +367,10 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       <form className="form form--internal" onSubmit={handleSubmit}>
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
+          {!carriers ||
+            (carriers.length === 0 && (
+              <Message message={"There is no available Carriers"} />
+            ))}
         </fieldset>
         <fieldset>
           <div className="multi">
@@ -393,9 +408,28 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
               name="defailt_carrier"
               value={defaultCarrier}
               options={carrierSelectorOptions}
+              required
               onChange={(e) => setDefaultCarrier(e.target.value)}
             />
           </div>
+        </fieldset>
+        <fieldset>
+          <AccountSelect
+            accounts={
+              user?.scope === USER_ACCOUNT
+                ? accounts?.filter(
+                    (acct) => user.account_sid === acct.account_sid
+                  )
+                : accounts
+            }
+            account={[accountSid, setAccountSid]}
+            label="Used by"
+            required={false}
+            defaultOption={
+              user?.scope === USER_ADMIN || user?.scope === USER_SP
+            }
+            disabled={user?.scope !== USER_ADMIN}
+          />
         </fieldset>
         <fieldset>
           <label htmlFor="lcr_route">
@@ -432,6 +466,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                             : ""
                           : ""
                       }
+                      required
                       options={carrierSelectorOptions}
                       onChange={(e) => {
                         updateLcrCarrierSetEntries(
@@ -500,7 +535,11 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             >
               Cancel
             </Button>
-            <Button type="submit" small onClick={handleSubmit}>
+            <Button
+              type="submit"
+              small
+              disabled={!carriers || carriers.length === 0}
+            >
               Save
             </Button>
           </ButtonGroup>
