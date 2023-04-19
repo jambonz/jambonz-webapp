@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Icon, MS } from "@jambonz/ui-kit";
 import { Icons, Section } from "src/components";
-import { useSelectState } from "src/store";
+import { toastError, toastSuccess, useSelectState } from "src/store";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { getAccountFilter, setLocation } from "src/store/localStore";
 import { Selector } from "src/components/forms";
@@ -15,6 +15,7 @@ import type {
 } from "src/api/types";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
 import {
+  deleteLcrRoute,
   postLcrCarrierSetEntry,
   putLcrCarrierSetEntries,
   putLcrRoutes,
@@ -46,6 +47,7 @@ const DEFAULT_LCR_ROUTE: LcrRoute = {
 
 export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const MAX_ROUTES = 5;
+  const navigate = useNavigate();
 
   const [lcrName, setLcrName] = useState("");
   const [defaultCarrier, setDefaultCarrier] = useState("");
@@ -184,6 +186,18 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     }
   };
 
+  const handleRouteDelete = (r: LcrRoute | undefined) => {
+    if (r && r.lcr_route_sid) {
+      deleteLcrRoute(r.lcr_route_sid)
+        .then(() => {
+          toastSuccess("Least cost routing rule successfully deleted");
+        })
+        .catch((error) => {
+          toastError(error);
+        });
+    }
+  };
+
   const submitNewLcr = () => {
     // Add new LCR
     const lcrPayload: Lcr = {
@@ -193,77 +207,136 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       service_provider_sid:
         currentServiceProvider?.service_provider_sid || null,
     };
-    postLcr(lcrPayload).then(({ json }) => {
-      // add new lcr route
-      lcrRoutes.forEach((route) => {
-        const lcrRoutePayload: LcrRoute = {
-          lcr_sid: json.sid,
-          regex: route.regex,
-          priority: route.priority,
-        };
-        postLcrRoute(lcrRoutePayload).then(({ json }) => {
-          // add new lcr carrier set entries
-          const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
-            lcr_route_sid: json.sid,
-            voip_carrier_sid: "",
-            priority: 0,
-          };
-          if (route.lcr_carrier_set_entries) {
-            route.lcr_carrier_set_entries.forEach((entry) => {
-              postLcrCarrierSetEntry({
-                ...lcrCarrierSetEntryPayload,
-                voip_carrier_sid: entry.voip_carrier_sid,
-                priority: entry.priority,
-              }).then(({ json }) => {
-                console.log(json.sid);
-              });
-            });
-          }
+    postLcr(lcrPayload)
+      .then(({ json }) => {
+        // add new lcr route
+        lcrRoutes.forEach((route) => {
+          submitNewLcrRoute(json.sid, route);
         });
+      })
+      .catch((error) => {
+        toastError(error);
       });
-    });
+  };
+
+  const submitNewLcrRoute = (lcr_sid: string, route: LcrRoute) => {
+    const lcrRoutePayload: LcrRoute = {
+      lcr_sid,
+      regex: route.regex,
+      priority: route.priority,
+    };
+    postLcrRoute(lcrRoutePayload)
+      .then(({ json }) => {
+        if (route.lcr_carrier_set_entries) {
+          Promise.all(
+            route.lcr_carrier_set_entries.map((entry) => {
+              submitNewLcrCarrierSetEntry(json.sid, entry);
+            })
+          )
+            .then(() => {
+              navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+            })
+            .catch((error) => {
+              toastError(error);
+            });
+        }
+      })
+      .catch((error) => {
+        toastError(error);
+      });
+  };
+
+  const submitNewLcrCarrierSetEntry = (
+    lcr_route_sid: string,
+    entry: LcrCarrierSetEntry
+  ) => {
+    const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
+      ...entry,
+      lcr_route_sid,
+    };
+
+    return postLcrCarrierSetEntry(lcrCarrierSetEntryPayload);
   };
 
   const submitUpdateLcr = () => {
-    // update LCR
-    const lcrPayload: Lcr = {
-      name: lcrName,
-      is_active: isActive,
-      account_sid: user?.account_sid || null,
-      service_provider_sid:
-        currentServiceProvider?.service_provider_sid || null,
-    };
-
-    putLcrs(lcrDataMap?.data?.lcr_sid || "", lcrPayload).then(() => {
-      // update lcr route
-      lcrRoutes.forEach((route) => {
-        const lcrRoutePayload: LcrRoute = {
-          lcr_sid: lcrDataMap?.data?.lcr_sid || "",
-          regex: route.regex,
-          priority: route.priority,
-        };
-        putLcrRoutes(route.lcr_route_sid || "", lcrRoutePayload).then(() => {
-          if (route.lcr_carrier_set_entries) {
-            const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
-              lcr_route_sid: route.lcr_route_sid || "",
-              voip_carrier_sid: "",
-              priority: 0,
-            };
-
-            route.lcr_carrier_set_entries.forEach((entry) => {
-              putLcrCarrierSetEntries(entry.lcr_carrier_set_entry_sid || "", {
-                ...lcrCarrierSetEntryPayload,
-                voip_carrier_sid: entry.voip_carrier_sid,
-                priority: entry.priority,
-              }).then(() => {
-                lcrDataMap?.refetch();
-                lcrRouteDataMap?.refetch();
-              });
-            });
+    if (lcrDataMap && lcrDataMap.data && lcrDataMap.data.lcr_sid) {
+      // update LCR
+      const lcrPayload: Lcr = {
+        name: lcrName,
+        is_active: isActive,
+        account_sid: user?.account_sid || null,
+        service_provider_sid:
+          currentServiceProvider?.service_provider_sid || null,
+      };
+      putLcrs(lcrDataMap.data.lcr_sid, lcrPayload).then(() => {
+        // update lcr route
+        lcrRoutes.forEach((route) => {
+          if (route.lcr_route_sid) {
+            submitUpdateLcrRoute(
+              lcrDataMap.data?.lcr_sid || "",
+              route.lcr_route_sid,
+              route
+            );
+          } else {
+            submitNewLcrRoute(lcrDataMap.data?.lcr_sid || "", route);
           }
         });
       });
-    });
+    }
+
+    const submitUpdateLcrRoute = (
+      lcr_sid: string,
+      lcr_route_sid: string,
+      route: LcrRoute
+    ) => {
+      const lcrRoutePayload: LcrRoute = {
+        lcr_sid,
+        regex: route.regex,
+        priority: route.priority,
+      };
+
+      putLcrRoutes(lcr_route_sid, lcrRoutePayload).then(() => {
+        if (
+          route.lcr_carrier_set_entries &&
+          route.lcr_carrier_set_entries.length > 0
+        ) {
+          Promise.all(
+            route.lcr_carrier_set_entries.map((entry) => {
+              if (entry.lcr_carrier_set_entry_sid) {
+                return submitUpdateLcrCarrierEntry(
+                  entry.lcr_route_sid || lcr_route_sid,
+                  entry.lcr_carrier_set_entry_sid,
+                  entry
+                );
+              } else {
+                return submitNewLcrCarrierSetEntry(lcr_route_sid, entry);
+              }
+            })
+          )
+            .then(() => {
+              toastSuccess("Least cost routing rule successfully updated");
+            })
+            .catch((error) => {
+              toastError(error);
+            });
+        }
+      });
+    };
+
+    const submitUpdateLcrCarrierEntry = (
+      lcr_route_sid: string,
+      lcr_carrier_set_entry_sid: string,
+      entry: LcrCarrierSetEntry
+    ) => {
+      const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
+        ...entry,
+        lcr_route_sid,
+      };
+      return putLcrCarrierSetEntries(
+        lcr_carrier_set_entry_sid,
+        lcrCarrierSetEntryPayload
+      );
+    };
 
     // update lcr route
     // update lcr carrier set entries
@@ -352,7 +425,8 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                       name={`lcr_carrier_set_entry_carrier_${i}`}
                       placeholder="Carrier"
                       value={
-                        lr.lcr_carrier_set_entries
+                        lr.lcr_carrier_set_entries &&
+                        lr.lcr_carrier_set_entries.length > 0
                           ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
                             ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
                             : ""
@@ -375,6 +449,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                   title="Delete route"
                   type="button"
                   onClick={() => {
+                    handleRouteDelete(lcrRoutes.find((g2, i2) => i2 === i));
                     setLcrRoutes(lcrRoutes.filter((l, i2) => i2 !== i));
                   }}
                 >

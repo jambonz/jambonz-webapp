@@ -550,6 +550,14 @@ export const deleteAccountLimit = (sid: string, cat: LimitCategories) => {
   );
 };
 
+export const deleteLcr = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_LCRS}/${sid}`);
+};
+
+export const deleteLcrRoute = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_LCR_ROUTES}/${sid}`);
+};
+
 /** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {

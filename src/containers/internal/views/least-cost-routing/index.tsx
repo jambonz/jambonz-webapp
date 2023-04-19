@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Button, H1, Icon, M } from "@jambonz/ui-kit";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useApiData, useServiceProviderData } from "src/api";
+import { deleteLcr, useApiData, useServiceProviderData } from "src/api";
 // import { USER_ACCOUNT } from "src/api/constants";
 import type { Account, Lcr } from "src/api/types";
 import {
@@ -14,11 +14,12 @@ import {
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
-import { useSelectState } from "src/store";
+import { toastSuccess, toastError, useSelectState } from "src/store";
 // import { getAccountFilter, setLocation } from "src/store/localStore";
 import { Scope } from "src/store/types";
 import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import { USER_ACCOUNT } from "src/api/constants";
+import DeleteLcr from "./delete";
 
 export const Lcrs = () => {
   const [filter, setFilter] = useState("");
@@ -26,7 +27,8 @@ export const Lcrs = () => {
 
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [lcrs] = useApiData<Lcr[]>("Lcrs");
+  const [lcr, setLcr] = useState<Lcr | null>();
+  const [lcrs, refetch] = useApiData<Lcr[]>("Lcrs");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
 
   const lcrsFiltered = useMemo(() => {
@@ -49,6 +51,24 @@ export const Lcrs = () => {
       : [];
   }, [accountSid, lcrs]);
   const filteredLcrs = useFilteredResults<Lcr>(filter, lcrsFiltered);
+
+  const handleDelete = () => {
+    if (lcr) {
+      deleteLcr(lcr.lcr_sid || "")
+        .then(() => {
+          toastSuccess(
+            <>
+              Deleted least cost routing <strong>{lcr?.name}</strong>
+            </>
+          );
+          setLcr(null);
+          refetch();
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  };
 
   return (
     <>
@@ -144,8 +164,8 @@ export const Lcrs = () => {
                     </Link>
                     <button
                       type="button"
-                      title="Delete Carrier"
-                      onClick={() => console.log("xhoaluu")}
+                      title="Delete least cost route"
+                      onClick={() => setLcr(lcr)}
                       className="btnty"
                     >
                       <Icons.Trash />
@@ -164,6 +184,13 @@ export const Lcrs = () => {
           Add least cost routing
         </Button>
       </Section>
+      {lcr && (
+        <DeleteLcr
+          lcr={lcr}
+          handleCancel={() => setLcr(null)}
+          handleSubmit={handleDelete}
+        />
+      )}
     </>
   );
 };
