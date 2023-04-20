@@ -16,6 +16,7 @@ import type {
 } from "src/api/types";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
 import {
+  deleteLcr,
   deleteLcrRoute,
   postLcrCarrierSetEntry,
   putLcrCarrierSetEntries,
@@ -24,40 +25,44 @@ import {
   useApiData,
   useServiceProviderData,
 } from "src/api";
-import { USER_ACCOUNT, USER_ADMIN, USER_SP } from "src/api/constants";
+import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
 import { hasLength } from "src/utils";
 import { postLcr, getLcrCarrierSetEtries } from "src/api";
 import { postLcrRoute } from "src/api";
+import DeleteLcr from "./delete";
 
 type LcrFormProps = {
   lcrDataMap?: UseApiDataMap<Lcr>;
   lcrRouteDataMap?: UseApiDataMap<LcrRoute[]>;
 };
 
-const DEFAULT_LCR_ROUTE: LcrRoute = {
-  regex: "",
-  lcr_sid: "",
-  lcr_carrier_set_entries: [
-    {
-      lcr_route_sid: "",
-      voip_carrier_sid: "",
-      priority: 0,
-    },
-  ],
-  priority: 0,
-};
-
 export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const MAX_ROUTES = 5;
+  const DEFAULT_ROUTE_PRIORITY = 9999;
+  const DEFAULT_LCR_ROUTE: LcrRoute = {
+    regex: "",
+    lcr_sid: "",
+    lcr_carrier_set_entries: [
+      {
+        lcr_route_sid: "",
+        voip_carrier_sid: "",
+        priority: 0,
+      },
+    ],
+    priority: 0,
+  };
+
   const navigate = useNavigate();
 
   const [lcrName, setLcrName] = useState("");
   const [defaultCarrier, setDefaultCarrier] = useState("");
+  const [defaultFirstCarrier, setDefaultFirstCarrier] = useState("");
   const [apiUrl, setApiUrl] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [lcrRoutes, setLcrRoutes] = useState<LcrRoute[]>([DEFAULT_LCR_ROUTE]);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [lcrForDelete, setLcrForDelete] = useState<Lcr | null>();
 
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -79,7 +84,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const carriersFiltered = useMemo(() => {
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
-      return carriers;
     }
 
     return carriers
@@ -92,19 +96,17 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   }, [accountSid, carriers]);
 
   const carrierSelectorOptions = useMemo(() => {
-    return [
-      {
-        name: "None",
-        value: "",
-      },
-    ].concat(
-      carriersFiltered
-        ? carriersFiltered.map((c: Carrier) => ({
+    return carriersFiltered
+      ? carriersFiltered.map((c: Carrier, i) => {
+          if (i === 0) {
+            setDefaultFirstCarrier(c.voip_carrier_sid);
+          }
+          return {
             name: c.name,
             value: c.voip_carrier_sid,
-          }))
-        : []
-    );
+          };
+        })
+      : [];
   }, [carriersFiltered]);
 
   const sortSetLcrRoutes = (routes: LcrRoute[]) => {
@@ -176,6 +178,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
 
     if (lcrRouteDataMap && lcrRouteDataMap.data) {
       for (const route of lcrRouteDataMap.data) {
+        // find default carrier here
         const { json } = await getLcrCarrierSetEtries(
           route.lcr_route_sid || ""
         );
@@ -185,6 +188,15 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       }
       const sorted = sortSetLcrRoutes(lcrRouteDataMap.data);
       setLcrRoutes(sorted);
+      // find default carrier here
+      const dr = sorted.filter((r) => r.priority === DEFAULT_ROUTE_PRIORITY);
+      if (dr && dr.length > 0) {
+        const entries = dr[0].lcr_carrier_set_entries;
+        if (entries && entries.length > 0) {
+          console.log(entries[0].voip_carrier_sid);
+          setDefaultCarrier(entries[0].voip_carrier_sid || defaultFirstCarrier);
+        }
+      }
     }
   };
 
@@ -213,8 +225,8 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     postLcr(lcrPayload)
       .then(({ json }) => {
         // add new lcr route
-        lcrRoutes.forEach((route) => {
-          submitNewLcrRoute(json.sid, route);
+        lcrRoutes.forEach((route, i) => {
+          submitNewLcrRoute(json.sid, route, i);
         });
       })
       .catch(({ msg }) => {
@@ -222,11 +234,18 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       });
   };
 
-  const submitNewLcrRoute = (lcr_sid: string, route: LcrRoute) => {
+  const submitNewLcrRoute = (
+    lcr_sid: string,
+    route: LcrRoute,
+    priority: number
+  ) => {
     const lcrRoutePayload: LcrRoute = {
       lcr_sid,
       regex: route.regex,
-      priority: route.priority,
+      priority:
+        route.priority === DEFAULT_ROUTE_PRIORITY
+          ? DEFAULT_ROUTE_PRIORITY
+          : priority,
     };
     postLcrRoute(lcrRoutePayload)
       .then(({ json }) => {
@@ -261,6 +280,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   ) => {
     const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
       ...entry,
+      voip_carrier_sid: entry.voip_carrier_sid || defaultFirstCarrier,
       lcr_route_sid,
     };
 
@@ -279,15 +299,16 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       };
       putLcrs(lcrDataMap.data.lcr_sid, lcrPayload).then(() => {
         // update lcr route
-        lcrRoutes.forEach((route) => {
+        lcrRoutes.forEach((route, i) => {
           if (route.lcr_route_sid) {
             submitUpdateLcrRoute(
               lcrDataMap.data?.lcr_sid || "",
               route.lcr_route_sid,
-              route
+              route,
+              i
             );
           } else {
-            submitNewLcrRoute(lcrDataMap.data?.lcr_sid || "", route);
+            submitNewLcrRoute(lcrDataMap.data?.lcr_sid || "", route, i);
           }
         });
       });
@@ -296,12 +317,16 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     const submitUpdateLcrRoute = (
       lcr_sid: string,
       lcr_route_sid: string,
-      route: LcrRoute
+      route: LcrRoute,
+      priority: number
     ) => {
       const lcrRoutePayload: LcrRoute = {
         lcr_sid,
         regex: route.regex,
-        priority: route.priority,
+        priority:
+          route.priority === DEFAULT_ROUTE_PRIORITY
+            ? DEFAULT_ROUTE_PRIORITY
+            : priority,
       };
 
       putLcrRoutes(lcr_route_sid, lcrRoutePayload).then(() => {
@@ -340,7 +365,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
         lcr_route_sid,
         workload: entry.workload,
-        voip_carrier_sid: entry.voip_carrier_sid,
+        voip_carrier_sid: entry.voip_carrier_sid || defaultFirstCarrier,
         priority: entry.priority,
       };
       return putLcrCarrierSetEntries(
@@ -348,9 +373,47 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
         lcrCarrierSetEntryPayload
       );
     };
+  };
 
-    // update lcr route
-    // update lcr carrier set entries
+  const handleDefaultOutboutCarrier = (voip_carrier_sid: string) => {
+    if (voip_carrier_sid) {
+      const defaultRoute = lcrRoutes.filter(
+        (l) => l.priority === DEFAULT_ROUTE_PRIORITY
+      );
+      if (defaultRoute.length > 0) {
+        const route = defaultRoute[0];
+        const entries: LcrCarrierSetEntry[] =
+          route.lcr_carrier_set_entries || [];
+        if (entries.length > 0) {
+          entries[0].voip_carrier_sid = voip_carrier_sid;
+        } else {
+          entries.push({
+            lcr_route_sid: route.lcr_route_sid || "",
+            voip_carrier_sid,
+            priority: 0,
+          });
+        }
+        route.lcr_carrier_set_entries = entries;
+      } else {
+        const route: LcrRoute = {
+          lcr_sid: "",
+          regex: "*",
+          desciption: "System Default Route",
+          priority: DEFAULT_ROUTE_PRIORITY,
+        };
+
+        const entries: LcrCarrierSetEntry[] = [
+          {
+            lcr_route_sid: "",
+            voip_carrier_sid,
+            priority: 0,
+          },
+        ];
+
+        route.lcr_carrier_set_entries = entries;
+        lcrRoutes.push(route);
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -362,190 +425,244 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     }
   };
 
+  const handleDelete = () => {
+    if (lcrForDelete) {
+      deleteLcr(lcrForDelete.lcr_sid || "")
+        .then(() => {
+          toastSuccess(
+            <>
+              Deleted least cost routing <strong>{lcrForDelete?.name}</strong>
+            </>
+          );
+          setLcrForDelete(null);
+          navigate(`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`);
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  };
+
   return (
-    <Section slim>
-      <form className="form form--internal" onSubmit={handleSubmit}>
-        <fieldset>
-          <MS>{MSG_REQUIRED_FIELDS}</MS>
-          {!carriers ||
-            (carriers.length === 0 && (
-              <Message message={"There is no available Carriers"} />
-            ))}
-        </fieldset>
-        <fieldset>
-          <div className="multi">
-            <div className="inp">
-              <label htmlFor="lcr_name">
-                Least cost routing name<span>*</span>
-              </label>
+    <>
+      <Section slim>
+        <form className="form form--internal" onSubmit={handleSubmit}>
+          <fieldset>
+            <MS>{MSG_REQUIRED_FIELDS}</MS>
+            {!carrierSelectorOptions ||
+              (carrierSelectorOptions.length === 0 && (
+                <Message message={"There are no available Carriers"} />
+              ))}
+          </fieldset>
+          <fieldset>
+            <div className="multi">
+              <div className="inp">
+                <label htmlFor="lcr_name">
+                  Least cost routing name<span>*</span>
+                </label>
+                <input
+                  id="lcr_name"
+                  name="lcr_name"
+                  type="text"
+                  required
+                  placeholder="Least cost routing name"
+                  value={lcrName}
+                  onChange={(e) => setLcrName(e.target.value)}
+                />
+              </div>
+            </div>
+            <label htmlFor="is_active" className="chk">
               <input
-                id="lcr_name"
-                name="lcr_name"
-                type="text"
+                id="is_active"
+                name="is_active"
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
+              <div>Active</div>
+            </label>
+            <div className="sel sel--preset">
+              <label htmlFor="predefined_select">
+                Select a default outbound carrier<span>*</span>
+              </label>
+              <Selector
+                id="defailt_carrier"
+                name="defailt_carrier"
+                value={defaultCarrier}
+                options={carrierSelectorOptions}
                 required
-                placeholder="Least cost routing name"
-                value={lcrName}
-                onChange={(e) => setLcrName(e.target.value)}
+                onChange={(e) => {
+                  handleDefaultOutboutCarrier(e.target.value);
+                  setDefaultCarrier(e.target.value);
+                }}
               />
             </div>
-          </div>
-          <label htmlFor="is_active" className="chk">
-            <input
-              id="is_active"
-              name="is_active"
-              type="checkbox"
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-            />
-            <div>Active</div>
-          </label>
-          <div className="sel sel--preset">
-            <label htmlFor="predefined_select">
-              Select a default outbound carrier<span>*</span>
+          </fieldset>
+          {user?.scope === USER_ADMIN && (
+            <fieldset>
+              <AccountSelect
+                accounts={accounts}
+                account={[accountSid, setAccountSid]}
+                label="Used by"
+                required={false}
+                defaultOption={true}
+                disabled={lcrDataMap !== undefined}
+              />
+            </fieldset>
+          )}
+          <fieldset>
+            <label htmlFor="lcr_route">
+              Route based on first match<span>*</span>
             </label>
-            <Selector
-              id="defailt_carrier"
-              name="defailt_carrier"
-              value={defaultCarrier}
-              options={carrierSelectorOptions}
-              required
-              onChange={(e) => setDefaultCarrier(e.target.value)}
-            />
-          </div>
-        </fieldset>
-        <fieldset>
-          <AccountSelect
-            accounts={
-              user?.scope === USER_ACCOUNT
-                ? accounts?.filter(
-                    (acct) => user.account_sid === acct.account_sid
-                  )
-                : accounts
-            }
-            account={[accountSid, setAccountSid]}
-            label="Used by"
-            required={false}
-            defaultOption={
-              user?.scope === USER_ADMIN || user?.scope === USER_SP
-            }
-            disabled={user?.scope !== USER_ADMIN}
-          />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="lcr_route">
-            Route based on first match<span>*</span>
-          </label>
-          <label htmlFor="sip_gateways">Digit pattern / Carrier</label>
-          {hasLength(lcrRoutes) &&
-            lcrRoutes.map((lr, i) => (
-              <div key={`lcr_route_${i}`} className="lcr lcr--route">
-                <div>
-                  <div>
-                    <input
-                      id={`lcr_route_regex_${i}`}
-                      name={`lcr_route_regex_${i}`}
-                      type="text"
-                      placeholder="Digit prefix or regex"
-                      required
-                      value={lr.regex || ""}
-                      onChange={(e) => {
-                        updateLcrRoute(i, "regex", e.target.value);
+            <label htmlFor="sip_gateways">Digit pattern / Carrier</label>
+            {hasLength(lcrRoutes) &&
+              lcrRoutes
+                .filter((lr) => lr.priority !== DEFAULT_ROUTE_PRIORITY)
+                .map((lr, i) => (
+                  <div key={`lcr_route_${i}`} className="lcr lcr--route">
+                    <div>
+                      <div>
+                        <input
+                          id={`lcr_route_regex_${i}`}
+                          name={`lcr_route_regex_${i}`}
+                          type="text"
+                          placeholder="Digit prefix or regex"
+                          required
+                          value={lr.regex || ""}
+                          onChange={(e) => {
+                            updateLcrRoute(i, "regex", e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Selector
+                          id={`lcr_carrier_set_entry_carrier_${i}`}
+                          name={`lcr_carrier_set_entry_carrier_${i}`}
+                          placeholder="Carrier"
+                          value={
+                            lr.lcr_carrier_set_entries &&
+                            lr.lcr_carrier_set_entries.length > 0
+                              ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
+                                ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
+                                : ""
+                              : ""
+                          }
+                          required
+                          options={carrierSelectorOptions}
+                          onChange={(e) => {
+                            updateLcrCarrierSetEntries(
+                              i,
+                              0,
+                              "voip_carrier_sid",
+                              e.target.value
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      className="btnty btn__delete"
+                      title="Delete route"
+                      type="button"
+                      onClick={() => {
+                        handleRouteDelete(lcrRoutes.find((g2, i2) => i2 === i));
+                        setLcrRoutes(lcrRoutes.filter((l, i2) => i2 !== i));
                       }}
-                    />
+                    >
+                      <Icon>
+                        <Icons.Trash2 />
+                      </Icon>
+                    </button>
+                    {i !== 0 && (
+                      <button
+                        className="btnty btn__up_level"
+                        title="Move route up"
+                        type="button"
+                        onClick={() => {
+                          moveLcrRoute(i, i - 1);
+                        }}
+                      >
+                        <Icon subStyle="teal">
+                          <Icons.ArrowUp />
+                        </Icon>
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <Selector
-                      id={`lcr_carrier_set_entry_carrier_${i}`}
-                      name={`lcr_carrier_set_entry_carrier_${i}`}
-                      placeholder="Carrier"
-                      value={
-                        lr.lcr_carrier_set_entries &&
-                        lr.lcr_carrier_set_entries.length > 0
-                          ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
-                            ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
-                            : ""
-                          : ""
-                      }
-                      required
-                      options={carrierSelectorOptions}
-                      onChange={(e) => {
-                        updateLcrCarrierSetEntries(
-                          i,
-                          0,
-                          "voip_carrier_sid",
-                          e.target.value
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
+                ))}
+            {lcrRoutes.length < MAX_ROUTES && (
+              <ButtonGroup left>
                 <button
-                  className="btnty btn__delete"
-                  title="Delete route"
+                  className="btnty"
                   type="button"
+                  title="Add route"
                   onClick={() => {
-                    handleRouteDelete(lcrRoutes.find((g2, i2) => i2 === i));
-                    setLcrRoutes(lcrRoutes.filter((l, i2) => i2 !== i));
+                    addLcrRoutes();
                   }}
                 >
-                  <Icon>
-                    <Icons.Trash2 />
+                  <Icon subStyle="teal">
+                    <Icons.Plus />
                   </Icon>
                 </button>
-                {i !== 0 && (
-                  <button
-                    className="btnty btn__up_level"
-                    title="Move route up"
-                    type="button"
-                    onClick={() => {
-                      moveLcrRoute(i, i - 1);
-                    }}
-                  >
-                    <Icon subStyle="teal">
-                      <Icons.ArrowUp />
-                    </Icon>
-                  </button>
-                )}
+              </ButtonGroup>
+            )}
+          </fieldset>
+          <fieldset>
+            <div className="grid grid--col3">
+              <div className="grid__row">
+                <div>
+                  <ButtonGroup left>
+                    <Button
+                      small
+                      subStyle="grey"
+                      as={Link}
+                      to={ROUTE_INTERNAL_LEST_COST_ROUTING}
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      small
+                      disabled={
+                        !carrierSelectorOptions ||
+                        carrierSelectorOptions.length === 0
+                      }
+                    >
+                      Save
+                    </Button>
+                  </ButtonGroup>
+                </div>
+                <div />
+                <div>
+                  {user?.scope === USER_ACCOUNT &&
+                    lcrDataMap &&
+                    lcrDataMap.data &&
+                    lcrDataMap.data.lcr_sid && (
+                      <ButtonGroup right>
+                        <Button
+                          small
+                          onClick={() => {
+                            setLcrForDelete(lcrDataMap.data);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </ButtonGroup>
+                    )}
+                </div>
               </div>
-            ))}
-          {lcrRoutes.length < MAX_ROUTES && (
-            <ButtonGroup left>
-              <button
-                className="btnty"
-                type="button"
-                title="Add route"
-                onClick={() => {
-                  addLcrRoutes();
-                }}
-              >
-                <Icon subStyle="teal">
-                  <Icons.Plus />
-                </Icon>
-              </button>
-            </ButtonGroup>
-          )}
-        </fieldset>
-        <fieldset>
-          <ButtonGroup left>
-            <Button
-              small
-              subStyle="grey"
-              as={Link}
-              to={ROUTE_INTERNAL_LEST_COST_ROUTING}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              small
-              disabled={!carriers || carriers.length === 0}
-            >
-              Save
-            </Button>
-          </ButtonGroup>
-        </fieldset>
-      </form>
-    </Section>
+            </div>
+          </fieldset>
+        </form>
+      </Section>
+      {lcrForDelete && (
+        <DeleteLcr
+          lcr={lcrForDelete}
+          handleCancel={() => setLcrForDelete(null)}
+          handleSubmit={handleDelete}
+        />
+      )}
+    </>
   );
 };
 

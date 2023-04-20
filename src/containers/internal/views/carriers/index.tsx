@@ -52,7 +52,6 @@ export const Carriers = () => {
     setAccountSid(getAccountFilter());
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
-      return carriers;
     }
 
     return carriers

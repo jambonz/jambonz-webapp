@@ -93,6 +93,11 @@ export const naviByo: NaviItem[] = [
   {
     label: "Least Cost Routing",
     icon: Icons.Share2,
-    route: () => ROUTE_INTERNAL_LEST_COST_ROUTING,
+    route: (user) => {
+      if (user?.access === Scope.admin) {
+        return ROUTE_INTERNAL_LEST_COST_ROUTING;
+      }
+      return `${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`;
+    },
   },
 ];

@@ -574,6 +574,10 @@ export const getAccountWebhook = (sid: string) => {
   );
 };
 
+export const getLcrs = () => {
+  return getFetch<Lcr[]>(API_LCRS);
+};
+
 export const getLcrRoutes = (sid: string) => {
   return getFetch<LcrRoute[]>(`${API_LCR_ROUTES}?lcr_sid=${sid}`);
 };

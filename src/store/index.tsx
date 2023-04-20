@@ -36,12 +36,14 @@ export const initialState: State = {
 const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
   switch (action.type) {
     case "user":
+    case "lcr":
     case "toast":
       return genericAction(state, action);
     case "serviceProviders":
       return serviceProvidersAction(state, action);
     case "currentServiceProvider":
       return currentServiceProviderAction(state, action);
+
     default:
       throw new Error();
   }
