@@ -16,11 +16,12 @@ import { Scope, UserData } from "src/store/types";
 
 import type { Icon } from "react-feather";
 import type { ACL } from "src/store/types";
+import { Lcr } from "src/api/types";
 
 export interface NaviItem {
   label: string;
   icon: Icon;
-  route: (user?: UserData) => string;
+  route: (user?: UserData, lcr?: Lcr) => string;
   acl?: keyof ACL;
   scope?: Scope;
   restrict?: boolean;
@@ -93,9 +94,12 @@ export const naviByo: NaviItem[] = [
   {
     label: "Least Cost Routing",
     icon: Icons.Share2,
-    route: (user) => {
+    route: (user, lcr) => {
       if (user?.access === Scope.admin) {
         return ROUTE_INTERNAL_LEST_COST_ROUTING;
+      }
+      if (lcr && lcr.lcr_sid) {
+        return `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr.lcr_sid}/edit`;
       }
       return `${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`;
     },

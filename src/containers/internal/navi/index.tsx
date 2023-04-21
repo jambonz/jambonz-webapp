@@ -21,6 +21,7 @@ import { ScopedAccess } from "src/components/scoped-access";
 import { Scope, UserData } from "src/store/types";
 import { USER_ADMIN } from "src/api/constants";
 import { ROUTE_LOGIN } from "src/router/routes";
+import { Lcr } from "src/api/types";
 
 type CommonProps = {
   handleMenu: () => void;
@@ -35,16 +36,17 @@ type NaviProps = CommonProps & {
 type ItemProps = CommonProps & {
   item: NaviItem;
   user?: UserData;
+  lcr?: Lcr;
 };
 
-const Item = ({ item, user, handleMenu }: ItemProps) => {
+const Item = ({ item, user, lcr, handleMenu }: ItemProps) => {
   const location = useLocation();
   const active = location.pathname.includes(item.route(user));
 
   return (
     <li>
       <Link
-        to={item.route(user)}
+        to={item.route(user, lcr)}
         className={classNames({ navi__link: true, "txt--jean": true, active })}
         onClick={handleMenu}
       >
@@ -64,6 +66,7 @@ export const Navi = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelectState("user");
+  const lcr = useSelectState("lcr");
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -133,6 +136,7 @@ export const Navi = ({
   useEffect(() => {
     dispatch({ type: "user" });
     dispatch({ type: "serviceProviders" });
+    dispatch({ type: "lcr" });
   }, []);
 
   return (
@@ -221,6 +225,7 @@ export const Navi = ({
               <Item
                 key={item.label}
                 user={user}
+                lcr={lcr}
                 item={item}
                 handleMenu={handleMenu}
               />

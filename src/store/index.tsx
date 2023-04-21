@@ -7,6 +7,7 @@ import {
   serviceProvidersAction,
   serviceProvidersAsyncAction,
   currentServiceProviderAction,
+  lcrAsyncAction,
 } from "./actions";
 
 import type {
@@ -67,6 +68,10 @@ const middleware: MiddleWare = (dispatch) => {
         return dispatch(action);
       case "user":
         return userAsyncAction().then((payload) => {
+          dispatch({ ...action, payload });
+        });
+      case "lcr":
+        return lcrAsyncAction().then((payload) => {
           dispatch({ ...action, payload });
         });
       case "serviceProviders":

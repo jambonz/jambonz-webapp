@@ -2,7 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Icon, MS } from "@jambonz/ui-kit";
 import { Icons, Section } from "src/components";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import {
+  toastError,
+  toastSuccess,
+  useDispatch,
+  useSelectState,
+} from "src/store";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { setLocation } from "src/store/localStore";
 import { AccountSelect, Message, Selector } from "src/components/forms";
@@ -30,6 +35,7 @@ import { hasLength } from "src/utils";
 import { postLcr, getLcrCarrierSetEtries } from "src/api";
 import { postLcrRoute } from "src/api";
 import DeleteLcr from "./delete";
+import { Scope } from "src/store/types";
 
 type LcrFormProps = {
   lcrDataMap?: UseApiDataMap<Lcr>;
@@ -53,6 +59,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   };
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [lcrName, setLcrName] = useState("");
   const [defaultCarrier, setDefaultCarrier] = useState("");
@@ -118,13 +125,14 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   };
 
   const addLcrRoutes = () => {
-    setLcrRoutes((curr) => [
-      ...curr,
+    const ls = [
+      ...lcrRoutes,
       {
         ...DEFAULT_LCR_ROUTE,
         priority: lcrRoutes.length,
       },
-    ]);
+    ];
+    setLcrRoutes(sortSetLcrRoutes(ls));
   };
 
   const updateLcrRoute = (
@@ -261,7 +269,15 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                 lcrRouteDataMap?.refetch();
               } else {
                 toastSuccess("Least cost routing successfully created");
-                navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+                if (user?.access === Scope.admin) {
+                  navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+                } else {
+                  navigate(
+                    `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr_sid}/edit`
+                  );
+                }
+                // Update global state
+                dispatch({ type: "lcr" });
               }
             })
             .catch((error) => {
@@ -435,7 +451,12 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             </>
           );
           setLcrForDelete(null);
-          navigate(`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`);
+          if (user?.access === Scope.admin) {
+            navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+          } else {
+            navigate(`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`);
+          }
+          dispatch({ type: "lcr" });
         })
         .catch((error) => {
           toastError(error.msg);
@@ -611,15 +632,16 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
               <div className="grid__row">
                 <div>
                   <ButtonGroup left>
-                    <Button
-                      small
-                      subStyle="grey"
-                      as={Link}
-                      to={ROUTE_INTERNAL_LEST_COST_ROUTING}
-                    >
-                      Cancel
-                    </Button>
-
+                    {user?.access === Scope.admin && (
+                      <Button
+                        small
+                        subStyle="grey"
+                        as={Link}
+                        to={ROUTE_INTERNAL_LEST_COST_ROUTING}
+                      >
+                        Cancel
+                      </Button>
+                    )}
                     <Button
                       type="submit"
                       small
@@ -641,6 +663,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                       <ButtonGroup right>
                         <Button
                           small
+                          subStyle="grey"
                           onClick={() => {
                             setLcrForDelete(lcrDataMap.data);
                           }}
