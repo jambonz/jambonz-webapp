@@ -48,8 +48,6 @@ export const Lcrs = () => {
       return lcrs;
     }
 
-    console.log(accountSid);
-
     return lcrs
       ? lcrs.filter((lcr) =>
           accountSid

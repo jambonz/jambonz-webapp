@@ -43,7 +43,7 @@ type LcrFormProps = {
 };
 
 export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
-  const MAX_ROUTES = 5;
+  const MAX_ROUTES = 6;
   const DEFAULT_ROUTE_PRIORITY = 9999;
   const DEFAULT_LCR_ROUTE: LcrRoute = {
     regex: "",
@@ -201,7 +201,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       if (dr && dr.length > 0) {
         const entries = dr[0].lcr_carrier_set_entries;
         if (entries && entries.length > 0) {
-          console.log(entries[0].voip_carrier_sid);
           setDefaultCarrier(entries[0].voip_carrier_sid || defaultFirstCarrier);
         }
       }
@@ -216,8 +215,11 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           lcrRouteDataMap?.refetch();
         })
         .catch((error) => {
+          lcrRouteDataMap?.refetch();
           toastError(error);
         });
+    } else {
+      setLcrRoutes(lcrRoutes.filter((l) => l.priority != r?.priority));
     }
   };
 
@@ -281,11 +283,13 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
               }
             })
             .catch((error) => {
+              lcrRouteDataMap?.refetch();
               toastError(error);
             });
         }
       })
       .catch((error) => {
+        lcrRouteDataMap?.refetch();
         toastError(error);
       });
   };
@@ -587,7 +591,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                       type="button"
                       onClick={() => {
                         handleRouteDelete(lcrRoutes.find((g2, i2) => i2 === i));
-                        setLcrRoutes(lcrRoutes.filter((l, i2) => i2 !== i));
                       }}
                     >
                       <Icon>
@@ -656,12 +659,13 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                 </div>
                 <div />
                 <div>
-                  {user?.scope === USER_ACCOUNT &&
+                  {user?.scope !== USER_ADMIN &&
                     lcrDataMap &&
                     lcrDataMap.data &&
                     lcrDataMap.data.lcr_sid && (
                       <ButtonGroup right>
                         <Button
+                          type="button"
                           small
                           subStyle="grey"
                           onClick={() => {
