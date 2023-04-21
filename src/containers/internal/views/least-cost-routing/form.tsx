@@ -26,13 +26,13 @@ import {
   postLcrCarrierSetEntry,
   putLcrCarrierSetEntries,
   putLcrRoutes,
-  putLcrs,
+  putLcr,
   useApiData,
   useServiceProviderData,
 } from "src/api";
 import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
 import { hasLength } from "src/utils";
-import { postLcr, getLcrCarrierSetEtries } from "src/api";
+import { postLcr } from "src/api";
 import { postLcrRoute } from "src/api";
 import DeleteLcr from "./delete";
 import { Scope } from "src/store/types";
@@ -68,6 +68,10 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [lcrRoutes, setLcrRoutes] = useState<LcrRoute[]>([DEFAULT_LCR_ROUTE]);
+  const [previousLcrRoutes, setPreviousLcrRoutes] = useState<LcrRoute[]>([
+    DEFAULT_LCR_ROUTE,
+  ]);
+  const [previouseLcr, setPreviousLcr] = useState<Lcr | null>();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [lcrForDelete, setLcrForDelete] = useState<Lcr | null>();
 
@@ -83,10 +87,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       );
     }
   }, [user, currentServiceProvider, accountSid]);
-
-  useEffect(() => {
-    SetLcrState();
-  }, [lcrDataMap, lcrRouteDataMap]);
 
   const carriersFiltered = useMemo(() => {
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
@@ -124,6 +124,30 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     return sorted;
   };
 
+  if (lcrDataMap && lcrDataMap.data && lcrDataMap.data !== previouseLcr) {
+    setLcrName(lcrDataMap.data.name || "");
+    setIsActive(lcrDataMap.data.is_active);
+    setPreviousLcr(lcrDataMap.data);
+  }
+
+  if (
+    lcrRouteDataMap &&
+    lcrRouteDataMap.data &&
+    lcrRouteDataMap.data !== previousLcrRoutes
+  ) {
+    setPreviousLcrRoutes(lcrRouteDataMap.data);
+    const sorted = sortSetLcrRoutes(lcrRouteDataMap.data);
+    setLcrRoutes(sorted);
+    // find default carrier here
+    const dr = sorted.filter((r) => r.priority === DEFAULT_ROUTE_PRIORITY);
+    if (dr && dr.length > 0) {
+      const entries = dr[0].lcr_carrier_set_entries;
+      if (entries && entries.length > 0) {
+        setDefaultCarrier(entries[0].voip_carrier_sid || defaultFirstCarrier);
+      }
+    }
+  }
+
   const addLcrRoutes = () => {
     const ls = [
       ...lcrRoutes,
@@ -141,7 +165,9 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     value: typeof lcrRoutes[number][keyof LcrRoute]
   ) => {
     const sorted = sortSetLcrRoutes(
-      lcrRoutes.map((lr, i) => (i === index ? { ...lr, [key]: value } : lr))
+      lcrRoutes
+        .filter((lr) => lr.priority !== DEFAULT_ROUTE_PRIORITY)
+        .map((lr, i) => (i === index ? { ...lr, [key]: value } : lr))
     );
     setLcrRoutes(sorted);
   };
@@ -178,52 +204,21 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     setLcrRoutes(sortSetLcrRoutes(lcrRoutes));
   };
 
-  const SetLcrState = async () => {
-    if (lcrDataMap && lcrDataMap.data) {
-      setLcrName(lcrDataMap.data.name || "");
-      setIsActive(lcrDataMap.data.is_active);
-    }
-
-    if (lcrRouteDataMap && lcrRouteDataMap.data) {
-      for (const route of lcrRouteDataMap.data) {
-        // find default carrier here
-        const { json } = await getLcrCarrierSetEtries(
-          route.lcr_route_sid || ""
-        );
-        if (json) {
-          route.lcr_carrier_set_entries = json;
-        }
-      }
-      const sorted = sortSetLcrRoutes(lcrRouteDataMap.data);
-      setLcrRoutes(sorted);
-      // find default carrier here
-      const dr = sorted.filter((r) => r.priority === DEFAULT_ROUTE_PRIORITY);
-      if (dr && dr.length > 0) {
-        const entries = dr[0].lcr_carrier_set_entries;
-        if (entries && entries.length > 0) {
-          setDefaultCarrier(entries[0].voip_carrier_sid || defaultFirstCarrier);
-        }
-      }
-    }
-  };
-
   const handleRouteDelete = (r: LcrRoute | undefined) => {
     if (r && r.lcr_route_sid) {
       deleteLcrRoute(r.lcr_route_sid)
         .then(() => {
           toastSuccess("Least cost routing rule successfully deleted");
-          lcrRouteDataMap?.refetch();
         })
         .catch((error) => {
-          lcrRouteDataMap?.refetch();
           toastError(error);
         });
-    } else {
-      setLcrRoutes(lcrRoutes.filter((l) => l.priority != r?.priority));
     }
   };
 
   const submitNewLcr = () => {
+    // Check if default carrier is set
+    handleDefaultOutboutCarrier(defaultCarrier);
     // Add new LCR
     const lcrPayload: Lcr = {
       name: lcrName,
@@ -268,7 +263,6 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             .then(() => {
               if (lcrDataMap) {
                 toastSuccess("Least cost routing successfully updated");
-                lcrRouteDataMap?.refetch();
               } else {
                 toastSuccess("Least cost routing successfully created");
                 if (user?.access === Scope.admin) {
@@ -283,13 +277,11 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
               }
             })
             .catch((error) => {
-              lcrRouteDataMap?.refetch();
               toastError(error);
             });
         }
       })
       .catch((error) => {
-        lcrRouteDataMap?.refetch();
         toastError(error);
       });
   };
@@ -317,7 +309,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
         service_provider_sid:
           currentServiceProvider?.service_provider_sid || null,
       };
-      putLcrs(lcrDataMap.data.lcr_sid, lcrPayload).then(() => {
+      putLcr(lcrDataMap.data.lcr_sid, lcrPayload).then(() => {
         // update lcr route
         lcrRoutes.forEach((route, i) => {
           if (route.lcr_route_sid) {
@@ -591,6 +583,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                       type="button"
                       onClick={() => {
                         handleRouteDelete(lcrRoutes.find((g2, i2) => i2 === i));
+                        setLcrRoutes(lcrRoutes.filter((g2, i2) => i2 !== i));
                       }}
                     >
                       <Icon>

@@ -466,7 +466,7 @@ export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
   );
 };
 
-export const putLcrs = (sid: string, payload: Partial<Lcr>) => {
+export const putLcr = (sid: string, payload: Partial<Lcr>) => {
   return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
 };
 
