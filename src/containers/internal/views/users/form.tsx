@@ -122,7 +122,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         account_sid:
           scope !== USER_ACCOUNT && currentUser?.scope !== USER_ACCOUNT
             ? null
-            : accountSid,
+            : accountSid || currentUser?.account_sid,
       })
         .then(() => {
           toastSuccess("User created successfully");
@@ -152,7 +152,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         account_sid:
           scope !== USER_ACCOUNT && currentUser?.scope !== USER_ACCOUNT
             ? null
-            : accountSid,
+            : accountSid || currentUser?.account_sid,
       })
         .then(() => {
           user.refetch();
