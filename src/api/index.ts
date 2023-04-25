@@ -578,8 +578,16 @@ export const getLcrs = () => {
   return getFetch<Lcr[]>(API_LCRS);
 };
 
+export const getLcr = (sid: string) => {
+  return getFetch<Lcr>(`${API_LCRS}/${sid}`);
+};
+
 export const getLcrRoutes = (sid: string) => {
   return getFetch<LcrRoute[]>(`${API_LCR_ROUTES}?lcr_sid=${sid}`);
+};
+
+export const getLcrRoute = (sid: string) => {
+  return getFetch<LcrRoute>(`${API_LCR_ROUTES}/${sid}`);
 };
 
 export const getLcrCarrierSetEtries = (sid: string) => {
