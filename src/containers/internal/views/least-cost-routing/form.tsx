@@ -338,7 +338,9 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                 handleLcrCarrierSetEntryPost(json.sid, entry);
               })
             )
-              .then(() => resolve(json.sid))
+              .then(() => {
+                resolve(json.sid);
+              })
               .catch((error) => {
                 reject(error);
               });
@@ -353,14 +355,17 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const handleLcrCarrierSetEntryPost = (
     lcr_route_sid: string,
     entry: LcrCarrierSetEntry
-  ) => {
+  ): Promise<string> => {
     const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
       ...entry,
       voip_carrier_sid: entry.voip_carrier_sid || defaultCarrier,
       lcr_route_sid,
     };
-
-    return postLcrCarrierSetEntry(lcrCarrierSetEntryPayload);
+    return new Promise<string>(async (r, e) => {
+      postLcrCarrierSetEntry(lcrCarrierSetEntryPayload)
+        .then(({ json }) => r(json.sid))
+        .catch((error) => e(error));
+    });
   };
 
   const handleLcrPut = () => {
@@ -448,17 +453,21 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       lcr_route_sid: string,
       lcr_carrier_set_entry_sid: string,
       entry: LcrCarrierSetEntry
-    ) => {
+    ): Promise<string> => {
       const lcrCarrierSetEntryPayload: LcrCarrierSetEntry = {
         lcr_route_sid,
         workload: entry.workload,
         voip_carrier_sid: entry.voip_carrier_sid || defaultCarrier,
         priority: entry.priority,
       };
-      return putLcrCarrierSetEntries(
-        lcr_carrier_set_entry_sid,
-        lcrCarrierSetEntryPayload
-      );
+      return new Promise<string>(async (r, e) => {
+        putLcrCarrierSetEntries(
+          lcr_carrier_set_entry_sid,
+          lcrCarrierSetEntryPayload
+        )
+          .then(() => r("success"))
+          .catch((error) => e(error));
+      });
     };
   };
 
