@@ -14,7 +14,7 @@ export const EditLcr = () => {
   );
   return (
     <>
-      <H1 className="h2">Edit least cost routing</H1>
+      <H1 className="h2">Edit outbound call routes</H1>
       <LcrForm
         lcrDataMap={{ data: lcrData, refetch: lcrRefect, error: lcrError }}
         lcrRouteDataMap={{

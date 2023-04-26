@@ -62,6 +62,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [errorMessage, setErrorMessage] = useState("");
   const [lcrName, setLcrName] = useState("");
   const [defaultLcrCarrier, setDefaultLcrCarrier] = useState("");
   const [defaultLcrCarrierSetEntrySid, setDefaultLcrCarrierSetEntrySid] =
@@ -92,22 +93,20 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     }
   }, [user, currentServiceProvider, accountSid]);
 
-  const carriersFiltered = useMemo(() => {
+  const carrierSelectorOptions = useMemo(() => {
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     }
 
-    return carriers
+    const carriersFiltered = carriers
       ? carriers.filter((carrier) =>
           accountSid
             ? carrier.account_sid === accountSid
             : carrier.account_sid === null
         )
       : [];
-  }, [accountSid, carriers]);
 
-  const carrierSelectorOptions = useMemo(() => {
-    return carriersFiltered
+    const ret = carriersFiltered
       ? carriersFiltered.map((c: Carrier, i) => {
           if (i === 0) {
             setDefaultCarrier(c.voip_carrier_sid);
@@ -118,7 +117,17 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           };
         })
       : [];
-  }, [carriersFiltered]);
+    if (carriers && ret.length === 0) {
+      setErrorMessage(
+        accountSid
+          ? "There are no available carriers defined for this account"
+          : "There are no available carriers"
+      );
+    } else {
+      setErrorMessage("");
+    }
+    return ret;
+  }, [accountSid, carriers]);
 
   const sortSetLcrRoutes = (routes: LcrRoute[]) => {
     let sorted = [...routes];
@@ -157,7 +166,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     });
   }
 
-  useEffect(() => {
+  useMemo(() => {
     if (lcrRouteDataMap && lcrRouteDataMap.data)
       setLcrRoutes(
         lcrRouteDataMap.data.filter(
@@ -491,23 +500,17 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
-            {!carrierSelectorOptions ||
-              (carrierSelectorOptions.length === 0 && (
-                <Message message={"There are no available Carriers"} />
-              ))}
+            {errorMessage && <Message message={errorMessage} />}
           </fieldset>
           <fieldset>
             <div className="multi">
               <div className="inp">
-                <label htmlFor="lcr_name">
-                  Least cost routing name<span>*</span>
-                </label>
+                <label htmlFor="lcr_name">Name</label>
                 <input
                   id="lcr_name"
                   name="lcr_name"
                   type="text"
-                  required
-                  placeholder="Least cost routing name"
+                  placeholder="name"
                   value={lcrName}
                   onChange={(e) => setLcrName(e.target.value)}
                 />
@@ -663,10 +666,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                     <Button
                       type="submit"
                       small
-                      disabled={
-                        !carrierSelectorOptions ||
-                        carrierSelectorOptions.length === 0
-                      }
+                      disabled={carrierSelectorOptions.length === 0}
                     >
                       Save
                     </Button>

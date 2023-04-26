@@ -32,7 +32,7 @@ export const Lcrs = () => {
     Scope.admin,
     `${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`,
     user,
-    "You do not have permissions to manage all least cost routings"
+    "You do not have permissions to manage all outbound call routes"
   );
   const [lcrs, refetch] = useApiData<Lcr[]>("Lcrs");
   const [filter, setFilter] = useState("");
@@ -67,7 +67,7 @@ export const Lcrs = () => {
         .then(() => {
           toastSuccess(
             <>
-              Deleted least cost routing <strong>{lcr?.name}</strong>
+              Deleted outbound call route <strong>{lcr?.name}</strong>
             </>
           );
           setLcr(null);
@@ -82,7 +82,7 @@ export const Lcrs = () => {
   return (
     <>
       <section className="mast">
-        <H1 className="h2">Least cost routing</H1>
+        <H1 className="h2">Outbound call routing</H1>
         <Link
           to={`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`}
           title="Add a Least cost routing"
@@ -123,7 +123,7 @@ export const Lcrs = () => {
                     >
                       <Link
                         to={`${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr.lcr_sid}/edit`}
-                        title="Edit least cost routing"
+                        title="Edit outbound call routes"
                         className="i"
                       >
                         <strong>{lcr.name}</strong>
@@ -173,7 +173,7 @@ export const Lcrs = () => {
                     </Link>
                     <button
                       type="button"
-                      title="Delete least cost route"
+                      title="Delete outbound call route"
                       onClick={() => setLcr(lcr)}
                       className="btnty"
                     >
@@ -184,13 +184,13 @@ export const Lcrs = () => {
               </div>
             ))
           ) : (
-            <M> No Least cost routings.</M>
+            <M>No outbound call routes.</M>
           )}
         </div>
       </Section>
       <Section clean>
         <Button small as={Link} to={`${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`}>
-          Add least cost routing
+          Add outbound call routes
         </Button>
       </Section>
       {lcr && (

@@ -33,6 +33,11 @@ export const DISABLE_CUSTOM_SPEECH: boolean = JSON.parse(
   import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false"
 );
 
+/** Disable Lcr */
+export const DISABLE_LCR: boolean = JSON.parse(
+  import.meta.env.VITE_APP_LCR_DISABLED || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
