@@ -286,35 +286,38 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     };
 
     handleLcrRoutePost(lcr_sid, defaultRoute, 9999).then((lcr_route_sid) => {
-      getLcrRoute(lcr_route_sid).then(({ json }) => {
-        if (json.lcr_carrier_set_entries?.length) {
-          const lcr_carrier_set_entry_sid =
-            json.lcr_carrier_set_entries[0].lcr_carrier_set_entry_sid;
-          getLcr(lcr_sid).then(({ json }) => {
-            json.default_carrier_set_entry_sid = lcr_carrier_set_entry_sid;
-            delete json.lcr_sid;
-            putLcr(lcr_sid, json)
-              .then(() => {
-                if (lcrDataMap) {
-                  toastSuccess("Least cost routing successfully updated");
-                } else {
-                  toastSuccess("Least cost routing successfully created");
-                  if (user?.access === Scope.admin) {
-                    navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+      // There is small hack here to wait the data commited in bd for lcr entries
+      new Promise(async (r) => setTimeout(() => r(0), 300)).then(() => {
+        getLcrRoute(lcr_route_sid).then(({ json }) => {
+          if (json.lcr_carrier_set_entries?.length) {
+            const lcr_carrier_set_entry_sid =
+              json.lcr_carrier_set_entries[0].lcr_carrier_set_entry_sid;
+            getLcr(lcr_sid).then(({ json }) => {
+              json.default_carrier_set_entry_sid = lcr_carrier_set_entry_sid;
+              delete json.lcr_sid;
+              putLcr(lcr_sid, json)
+                .then(() => {
+                  if (lcrDataMap) {
+                    toastSuccess("Least cost routing successfully updated");
                   } else {
-                    navigate(
-                      `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr_sid}/edit`
-                    );
+                    toastSuccess("Least cost routing successfully created");
+                    if (user?.access === Scope.admin) {
+                      navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
+                    } else {
+                      navigate(
+                        `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr_sid}/edit`
+                      );
+                    }
+                    // Update global state
+                    dispatch({ type: "lcr" });
                   }
-                  // Update global state
-                  dispatch({ type: "lcr" });
-                }
-              })
-              .catch((error) => {
-                toastError(error);
-              });
-          });
-        }
+                })
+                .catch((error) => {
+                  toastError(error);
+                });
+            });
+          }
+        });
       });
     });
   };
