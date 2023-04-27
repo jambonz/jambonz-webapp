@@ -393,6 +393,7 @@ export interface Lcr {
   default_carrier_set_entry_sid?: null | string;
   account_sid: null | string;
   service_provider_sid: null | string;
+  number_routes?: number;
 }
 
 export interface LcrRoute {

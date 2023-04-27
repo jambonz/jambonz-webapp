@@ -30,7 +30,6 @@ import {
   useApiData,
   useServiceProviderData,
   getLcrRoute,
-  getLcr,
 } from "src/api";
 import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
 import { hasLength } from "src/utils";
@@ -292,30 +291,28 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           if (json.lcr_carrier_set_entries?.length) {
             const lcr_carrier_set_entry_sid =
               json.lcr_carrier_set_entries[0].lcr_carrier_set_entry_sid;
-            getLcr(lcr_sid).then(({ json }) => {
-              json.default_carrier_set_entry_sid = lcr_carrier_set_entry_sid;
-              delete json.lcr_sid;
-              putLcr(lcr_sid, json)
-                .then(() => {
-                  if (lcrDataMap) {
-                    toastSuccess("Least cost routing successfully updated");
+            putLcr(lcr_sid, {
+              default_carrier_set_entry_sid: lcr_carrier_set_entry_sid,
+            })
+              .then(() => {
+                if (lcrDataMap) {
+                  toastSuccess("Least cost routing successfully updated");
+                } else {
+                  toastSuccess("Least cost routing successfully created");
+                  if (user?.access === Scope.admin) {
+                    navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
                   } else {
-                    toastSuccess("Least cost routing successfully created");
-                    if (user?.access === Scope.admin) {
-                      navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
-                    } else {
-                      navigate(
-                        `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr_sid}/edit`
-                      );
-                    }
-                    // Update global state
-                    dispatch({ type: "lcr" });
+                    navigate(
+                      `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr_sid}/edit`
+                    );
                   }
-                })
-                .catch((error) => {
-                  toastError(error);
-                });
-            });
+                  // Update global state
+                  dispatch({ type: "lcr" });
+                }
+              })
+              .catch((error) => {
+                toastError(error);
+              });
           }
         });
       });

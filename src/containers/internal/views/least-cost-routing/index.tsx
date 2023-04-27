@@ -156,6 +156,16 @@ export const Lcrs = () => {
                         </span>
                       </div>
                     </div>
+                    <div>
+                      <div className={`i txt--teal`}>
+                        <Icons.Share2 />
+                        <span>{`${
+                          lcr.number_routes && lcr.number_routes > 1
+                            ? lcr.number_routes - 1
+                            : 0
+                        } routes`}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <ScopedAccess
