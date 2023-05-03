@@ -289,6 +289,14 @@ fieldset {
         grid-template-columns: [col] 100%;
       }
     }
+
+    &:nth-child(2) {
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: ui-vars.$px02;
+      @include mixins.small() {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   }
 
   .btn__delete {
