@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 import { ButtonGroup, Button } from "@jambonz/ui-kit";
-import { useApiData, postPasswordSettings } from "src/api";
-import { PasswordSettings } from "src/api/types";
+import {
+  useApiData,
+  postPasswordSettings,
+  postSystemInformation,
+} from "src/api";
+import { PasswordSettings, SystemInformation } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
@@ -11,21 +15,36 @@ import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
     useApiData<PasswordSettings>("PasswordSettings");
+  const [systemInformatin, systemInformationFetcher] =
+    useApiData<SystemInformation>("SystemInformation");
   // Min value is 8
   const [minPasswordLength, setMinPasswordLength] = useState(PASSWORD_MIN);
   const [requireDigit, setRequireDigit] = useState(false);
   const [requireSpecialCharacter, setRequireSpecialCharacter] = useState(false);
+  const [domainName, setDomainName] = useState("");
+  const [sipDomainName, setSipDomainName] = useState("");
+  const [monitoringDomainName, setMonitoringDomainName] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: Partial<PasswordSettings> = {
+
+    const systemInformationPayload: Partial<SystemInformation> = {
+      domain_name: domainName,
+      sip_domain_name: sipDomainName,
+      monitoring_domain_name: monitoringDomainName,
+    };
+    const passwordSettingsPayload: Partial<PasswordSettings> = {
       min_password_length: minPasswordLength,
       require_digit: requireDigit ? 1 : 0,
       require_special_character: requireSpecialCharacter ? 1 : 0,
     };
-    postPasswordSettings(payload)
+    Promise.all([
+      postSystemInformation(systemInformationPayload),
+      postPasswordSettings(passwordSettingsPayload),
+    ])
       .then(() => {
         passwordSettingsFetcher();
+        systemInformationFetcher();
         toastSuccess("Password settings successfully updated");
       })
       .catch((error) => {
@@ -43,10 +62,44 @@ export const AdminSettings = () => {
         setMinPasswordLength(passwordSettings.min_password_length);
       }
     }
-  }, [passwordSettings]);
+    if (hasValue(systemInformatin)) {
+      setDomainName(systemInformatin.domain_name);
+      setSipDomainName(systemInformatin.sip_domain_name);
+      setMonitoringDomainName(systemInformatin.monitoring_domain_name);
+    }
+  }, [passwordSettings, systemInformatin]);
 
   return (
     <>
+      <fieldset>
+        <label htmlFor="name">Domain Name</label>
+        <input
+          id="domain_name"
+          type="text"
+          name="domain_name"
+          placeholder="Domain name"
+          value={domainName}
+          onChange={(e) => setDomainName(e.target.value)}
+        />
+        <label htmlFor="name">Sip Domain Name</label>
+        <input
+          id="sip_domain_name"
+          type="text"
+          name="sip_domain_name"
+          placeholder="Sip domain name"
+          value={sipDomainName}
+          onChange={(e) => setSipDomainName(e.target.value)}
+        />
+        <label htmlFor="name">Monitoring Domain Name</label>
+        <input
+          id="monitor_domain_name"
+          type="text"
+          name="monitor_domain_name"
+          placeholder="Monitoring domain name"
+          value={monitoringDomainName}
+          onChange={(e) => setMonitoringDomainName(e.target.value)}
+        />
+      </fieldset>
       <fieldset>
         <label htmlFor="min_password_length">Min password length</label>
         <Selector

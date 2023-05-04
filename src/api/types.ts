@@ -113,6 +113,12 @@ export interface PasswordSettings {
   require_special_character: number;
 }
 
+export interface SystemInformation {
+  domain_name: string;
+  sip_domain_name: string;
+  monitoring_domain_name: string;
+}
+
 /** API responses/payloads */
 
 export interface User {
