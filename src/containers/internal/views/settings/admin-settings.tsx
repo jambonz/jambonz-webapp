@@ -72,6 +72,7 @@ export const AdminSettings = () => {
   return (
     <>
       <fieldset>
+        <label htmlFor="system_information">System Information</label>
         <label htmlFor="name">Domain Name</label>
         <input
           id="domain_name"
