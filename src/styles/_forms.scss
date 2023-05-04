@@ -268,3 +268,22 @@ fieldset {
     }
   }
 }
+
+.lcr {
+  @extend .gateway;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+    margin-left: 3%;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 50%;
+
+      @include mixins.small() {
+        grid-template-columns: [col] 100%;
+      }
+    }
+  }
+}

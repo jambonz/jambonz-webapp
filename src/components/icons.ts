@@ -39,6 +39,9 @@ import {
   PhoneOutgoing,
   PhoneIncoming,
   MoreHorizontal,
+  Share2,
+  ArrowUp,
+  ArrowDown,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -88,4 +91,7 @@ export const Icons: IconMap = {
   PhoneOutgoing,
   PhoneIncoming,
   MoreHorizontal,
+  Share2,
+  ArrowUp,
+  ArrowDown,
 };

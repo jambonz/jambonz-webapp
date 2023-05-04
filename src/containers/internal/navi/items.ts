@@ -9,17 +9,20 @@ import {
   ROUTE_INTERNAL_SPEECH,
   ROUTE_INTERNAL_PHONE_NUMBERS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
+  ROUTE_INTERNAL_LEST_COST_ROUTING,
 } from "src/router/routes";
 import { Icons } from "src/components";
 import { Scope, UserData } from "src/store/types";
 
 import type { Icon } from "react-feather";
 import type { ACL } from "src/store/types";
+import { Lcr } from "src/api/types";
+import { DISABLE_LCR } from "src/api/constants";
 
 export interface NaviItem {
   label: string;
   icon: Icon;
-  route: (user?: UserData) => string;
+  route: (user?: UserData, lcr?: Lcr) => string;
   acl?: keyof ACL;
   scope?: Scope;
   restrict?: boolean;
@@ -89,4 +92,21 @@ export const naviByo: NaviItem[] = [
     route: () => ROUTE_INTERNAL_MS_TEAMS_TENANTS,
     acl: "hasMSTeamsFqdn",
   },
+  ...(DISABLE_LCR === false
+    ? [
+        {
+          label: "Outbound Call Routing",
+          icon: Icons.Share2,
+          route: (user, lcr) => {
+            if (user?.access === Scope.admin) {
+              return ROUTE_INTERNAL_LEST_COST_ROUTING;
+            }
+            if (lcr && lcr.lcr_sid) {
+              return `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr.lcr_sid}/edit`;
+            }
+            return `${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`;
+          },
+        } as NaviItem,
+      ]
+    : []),
 ];

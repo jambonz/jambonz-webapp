@@ -7,6 +7,7 @@ import {
   serviceProvidersAction,
   serviceProvidersAsyncAction,
   currentServiceProviderAction,
+  lcrAsyncAction,
 } from "./actions";
 
 import type {
@@ -36,12 +37,14 @@ export const initialState: State = {
 const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
   switch (action.type) {
     case "user":
+    case "lcr":
     case "toast":
       return genericAction(state, action);
     case "serviceProviders":
       return serviceProvidersAction(state, action);
     case "currentServiceProvider":
       return currentServiceProviderAction(state, action);
+
     default:
       throw new Error();
   }
@@ -65,6 +68,10 @@ const middleware: MiddleWare = (dispatch) => {
         return dispatch(action);
       case "user":
         return userAsyncAction().then((payload) => {
+          dispatch({ ...action, payload });
+        });
+      case "lcr":
+        return lcrAsyncAction().then((payload) => {
           dispatch({ ...action, payload });
         });
       case "serviceProviders":
