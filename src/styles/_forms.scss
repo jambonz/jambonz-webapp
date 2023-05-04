@@ -270,11 +270,7 @@ fieldset {
 }
 
 .lcr {
-  padding: ui-vars.$px02;
-  border-radius: ui-vars.$px01;
-  border: 2px solid ui-vars.$grey;
-  max-width: vars.$widthinput;
-  position: relative;
+  @extend .gateway;
 
   > div {
     display: grid;
@@ -288,48 +284,6 @@ fieldset {
       @include mixins.small() {
         grid-template-columns: [col] 100%;
       }
-    }
-
-    &:nth-child(2) {
-      grid-template-columns: repeat(2, 1fr);
-      margin-top: ui-vars.$px02;
-      @include mixins.small() {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  }
-
-  .btn__delete {
-    position: absolute;
-    right: 0;
-    bottom: 50%;
-    transform: translate3d(50%, 50%, 0);
-
-    @include mixins.small() {
-      top: auto;
-      bottom: auto;
-      transform: none;
-      position: relative;
-      margin-top: ui-vars.$px02;
-      display: flex;
-      margin-left: auto;
-    }
-  }
-
-  .btn__up_level {
-    position: absolute;
-    left: 0;
-    bottom: 50%;
-    transform: translate3d(-50%, 50%, 0);
-
-    @include mixins.small() {
-      top: auto;
-      bottom: auto;
-      transform: none;
-      position: relative;
-      margin-top: ui-vars.$px02;
-      display: flex;
-      margin-right: auto;
     }
   }
 }

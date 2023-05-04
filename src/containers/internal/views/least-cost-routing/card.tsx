@@ -7,6 +7,7 @@ import { LcrRoute } from "src/api/types";
 import { Icons } from "src/components";
 import { Selector } from "src/components/forms";
 import { SelectorOption } from "src/components/forms/selector";
+import "./styles.scss";
 
 interface DragItem {
   index: number;
@@ -28,7 +29,6 @@ type CardProps = {
     key: string,
     value: unknown
   ) => void;
-  moveLcrRoute: (i1: number, i2: number) => void;
   handleRouteDelete: (lr: LcrRoute, index: number) => void;
   carrierSelectorOptions: SelectorOption[];
 };
@@ -39,7 +39,6 @@ export const Card = ({
   moveCard,
   updateLcrRoute,
   updateLcrCarrierSetEntries,
-  moveLcrRoute,
   handleRouteDelete,
   carrierSelectorOptions,
 }: CardProps) => {
@@ -115,19 +114,14 @@ export const Card = ({
     },
   });
 
-  const opacity = isDragging ? 0 : 1;
-  const style = {
-    backgroundColor: "white",
-    cursor: "move",
-  };
-
   drag(drop(ref));
 
   return (
     <div
       ref={ref}
-      className={`lcr lcr--route`}
-      style={{ ...style, opacity }}
+      className={`lcr lcr--route lcr-card lcr-card-${
+        isDragging ? "disappear" : "appear"
+      }`}
       handler-id={handlerId}
     >
       <div>
@@ -176,21 +170,6 @@ export const Card = ({
           <Icons.Trash2 />
         </Icon>
       </button>
-
-      {index !== 0 && (
-        <button
-          className="btnty btn__up_level"
-          title="Move route up"
-          type="button"
-          onClick={() => {
-            moveLcrRoute(index, index - 1);
-          }}
-        >
-          <Icon subStyle="teal">
-            <Icons.ArrowUp />
-          </Icon>
-        </button>
-      )}
     </div>
   );
 };

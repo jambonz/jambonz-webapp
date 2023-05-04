@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, ButtonGroup, Icon, MS } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, Icon, MS, MXS } from "@jambonz/ui-kit";
 import { Icons, Section } from "src/components";
 import {
   toastError,
@@ -510,6 +510,9 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             <label htmlFor="lcr_route">
               Route based on first match<span>*</span>
             </label>
+            <MXS>
+              <em>Drag and drop to rearrange the order.</em>
+            </MXS>
             <label htmlFor="sip_gateways">Digit pattern / Carrier</label>
             <DndProvider backend={HTML5Backend}>
               <Container

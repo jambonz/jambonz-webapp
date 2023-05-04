@@ -60,20 +60,6 @@ export const Container = ({
     );
   };
 
-  const sortSetLcrRoutes = (routes: LcrRoute[]) => {
-    let sorted = [...routes];
-    sorted = sorted.sort((p1, p2) =>
-      p1.priority > p2.priority ? 1 : p1.priority < p2.priority ? -1 : 0
-    );
-    return sorted;
-  };
-
-  const moveLcrRoute = (from: number, to: number) => {
-    lcrRoutes[from].priority = to;
-    lcrRoutes[to].priority = from;
-    setLcrRoutes(sortSetLcrRoutes(lcrRoutes));
-  };
-
   const handleRouteDelete = (r: LcrRoute | undefined, index: number) => {
     if (
       r &&
@@ -102,7 +88,6 @@ export const Container = ({
             moveCard={moveCard}
             updateLcrRoute={updateLcrRoute}
             updateLcrCarrierSetEntries={updateLcrCarrierSetEntries}
-            moveLcrRoute={moveLcrRoute}
             handleRouteDelete={handleRouteDelete}
             carrierSelectorOptions={carrierSelectorOptions}
           />

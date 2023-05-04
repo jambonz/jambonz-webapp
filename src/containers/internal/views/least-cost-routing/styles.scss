@@ -1,0 +1,13 @@
+.lcr-card {
+  background-color: white;
+  cursor: pointer;
+  box-shadow: -7px 7px 5px #d5d7db, -5px -5px 10px #ffffff;
+}
+
+.lcr-card-appear {
+  opacity: 1;
+}
+
+.lcr-card-disappear {
+  opacity: 0;
+}
