@@ -19,6 +19,7 @@ import {
   API_PASSWORD_SETTINGS,
   USER_ACCOUNT,
   API_LOGOUT,
+  API_SYSTEM_INFORMATION,
   API_LCR_ROUTES,
   API_LCR_CARRIER_SET_ENTRIES,
   API_LCRS,
@@ -62,6 +63,7 @@ import type {
   Limit,
   LimitCategories,
   PasswordSettings,
+  SystemInformation,
   Lcr,
   LcrRoute,
   LcrCarrierSetEntry,
@@ -354,6 +356,13 @@ export const postAccountLimit = (sid: string, payload: Partial<Limit>) => {
 export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
   return postFetch<EmptyResponse, Partial<PasswordSettings>>(
     API_PASSWORD_SETTINGS,
+    payload
+  );
+};
+
+export const postSystemInformation = (payload: Partial<SystemInformation>) => {
+  return postFetch<SystemInformation, Partial<SystemInformation>>(
+    API_SYSTEM_INFORMATION,
     payload
   );
 };

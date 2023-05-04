@@ -210,6 +210,7 @@ export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
 export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
 export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;
+export const API_SYSTEM_INFORMATION = `${API_BASE_URL}/SystemInformation`;
 export const API_LCRS = `${API_BASE_URL}/Lcrs`;
 export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
 export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries`;
