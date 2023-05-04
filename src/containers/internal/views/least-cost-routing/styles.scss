@@ -1,7 +1,11 @@
 .lcr-card {
   background-color: white;
   cursor: pointer;
+}
+
+.lcr-card:hover {
   box-shadow: -7px 7px 5px #d5d7db, -5px -5px 10px #ffffff;
+  transform: translateY(-3px) translateX(-3px);
 }
 
 .lcr-card-appear {
