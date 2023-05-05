@@ -45,7 +45,7 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
               {attribute.key}:
             </div>
             <div className="spanDetailsWrapper__details_body">
-              {attribute.value.stringValue}
+              {attribute.value.stringValue || attribute.value.doubleValue}
             </div>
           </div>
         ))}

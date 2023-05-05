@@ -47,7 +47,7 @@ export const CallTracing = ({ call }: CallTracingProps) => {
               (attr) =>
                 !(
                   attr.key.startsWith("telemetry") ||
-                  attr.key.startsWith("internal.span")
+                  attr.key.startsWith("internal")
                 )
             );
             value.attributes = attrs;
