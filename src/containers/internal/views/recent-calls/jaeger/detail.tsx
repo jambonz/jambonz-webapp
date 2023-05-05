@@ -2,6 +2,7 @@ import React from "react";
 import { JaegerGroup } from "src/api/jaeger-types";
 import dayjs from "dayjs";
 import "./styles.scss";
+import { formattedDuration } from "./utils";
 
 type JaegerDetailProps = {
   group: JaegerGroup;
@@ -30,6 +31,12 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
             {dayjs
               .unix(group.endTimeUnixNano / 1000000000)
               .format("DD/MM/YY HH:mm:ss.SSS")}
+          </div>
+        </div>
+        <div className="spanDetailsWrapper__details">
+          <div className="spanDetailsWrapper__details_header">Duration:</div>
+          <div className="spanDetailsWrapper__details_body">
+            {formattedDuration(group.durationMs)}
           </div>
         </div>
         {group.attributes.map((attribute) => (

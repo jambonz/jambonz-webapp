@@ -42,9 +42,17 @@ export const CallTracing = ({ call }: CallTracingProps) => {
     trace.resourceSpans.forEach((resourceSpan) => {
       resourceSpan.instrumentationLibrarySpans.forEach(
         (instrumentationLibrarySpan) => {
-          instrumentationLibrarySpan.spans.forEach((value) =>
-            spans.push(value)
-          );
+          instrumentationLibrarySpan.spans.forEach((value) => {
+            const attrs = value.attributes.filter(
+              (attr) =>
+                !(
+                  attr.key.startsWith("telemetry") ||
+                  attr.key.startsWith("internal.span")
+                )
+            );
+            value.attributes = attrs;
+            spans.push(value);
+          });
         }
       );
     });
