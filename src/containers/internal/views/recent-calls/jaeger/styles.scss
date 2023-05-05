@@ -123,12 +123,10 @@
 }
 
 .barWrapper {
-  margin-top: 1px;
   width: 100%;
 
   &__row {
     display: flex;
-    padding: 1px;
     width: 100%;
     cursor: pointer;
   }
@@ -141,6 +139,7 @@
   &__row:hover button {
     font-weight: bolder;
     background-color: ui-vars.$purple;
+    cursor: pointer;
   }
 
   &__header {
@@ -158,7 +157,7 @@
 
   &__span {
     padding-top: 4px;
-    height: 15px;
+    height: 5px;
     flex-shrink: 0;
     vertical-align: middle;
     border: 3px solid #444;
