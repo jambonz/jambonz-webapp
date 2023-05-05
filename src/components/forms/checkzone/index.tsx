@@ -63,7 +63,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
           />
           <div>{label}</div>
         </label>
-        <div className={classesIn}>{children}</div>
+        {checked && <div className={classesIn}>{children}</div>}
       </div>
     );
   }
