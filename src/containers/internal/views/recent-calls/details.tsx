@@ -58,14 +58,18 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             </div>
           </div>
         </summary>
-        <Tabs active={[activeTab, setActiveTab]}>
-          <Tab id="details" label="Details">
-            <CallDetail call={call} />
-          </Tab>
-          <Tab id="tracing" label="Tracing">
-            <CallTracing call={call} />
-          </Tab>
-        </Tabs>
+        {call.trace_id === "00000000000000000000000000000000" ? (
+          <CallDetail call={call} />
+        ) : (
+          <Tabs active={[activeTab, setActiveTab]}>
+            <Tab id="details" label="Details">
+              <CallDetail call={call} />
+            </Tab>
+            <Tab id="tracing" label="Tracing">
+              <CallTracing call={call} />
+            </Tab>
+          </Tabs>
+        )}
         {open && (
           <div
             style={{
