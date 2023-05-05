@@ -48,6 +48,7 @@ app.get(
         remote_host: "3.55.24.34",
         direction: 0 === i % 2 ? "inbound" : "outbound",
         trunk: 0 === i % 2 ? "twilio" : "user",
+        trace_id: nanoid(),
       };
       data.push(call);
     }
@@ -143,7 +144,7 @@ app.get(
       path.resolve(process.cwd(), "server", "sample-jaeger.json"),
       { encoding: "utf8" }
     );
-    res.status(200).json(json);
+    res.status(200).json(JSON.parse(json));
   }
 );
 

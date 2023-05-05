@@ -1,35 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { getJaegerTrace } from "src/api";
+import { Bar } from "./jaeger/bar";
 import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
+import { getJaegerTrace } from "src/api";
 import { toastError } from "src/store";
-import { JaegerModalFullScreen } from "./modal";
-import type { RecentCall } from "src/api/types";
-import { Bar } from "./bar";
-import { Button } from "@jambonz/ui-kit";
-import { JaegerDetail } from "./detail";
+import { RecentCall } from "src/api/types";
+import { JaegerDetail } from "./jaeger/detail";
 
-import "./styles.scss";
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: 100,
+    height: 100,
+  });
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
 
-type JaegerButtonProps = {
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return windowSize;
+}
+
+export type CallTracingProps = {
   call: RecentCall;
 };
 
-export const JaegerButton = ({ call }: JaegerButtonProps) => {
+export const CallTracing = ({ call }: CallTracingProps) => {
   const [jaegerRoot, setJaegerRoot] = useState<JaegerRoot>();
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
   const [jaegerDetail, setJaegerDetail] = useState<JaegerGroup>();
-  const [modal, setModal] = useState(false);
   const windowSize = useWindowSize();
-
-  const handleClose = () => {
-    document.body.style.overflow = "auto";
-    setModal(false);
-  };
-
-  const handleOpen = () => {
-    document.body.style.overflow = "hidden";
-    setModal(true);
-  };
 
   const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
     setJaegerRoot(trace);
@@ -153,48 +158,16 @@ export const JaegerButton = ({ call }: JaegerButtonProps) => {
   if (jaegerGroup) {
     return (
       <>
-        <button className="btn btn--small pcap" onClick={handleOpen}>
-          View trace
-        </button>
-        {modal && (
-          <JaegerModalFullScreen>
-            <div className="modalHeader">
-              <Button type="button" small onClick={handleClose}>
-                Back
-              </Button>
-              <div className="modalHeader__header_item">
-                <div>Trace ID:</div>
-                <div>{call.trace_id}</div>
-              </div>
-            </div>
-            <div className="barGroup">
-              <Bar group={jaegerGroup} handleRowSelect={setJaegerDetail} />
-            </div>
-            {jaegerDetail && <JaegerDetail group={jaegerDetail} />}
-          </JaegerModalFullScreen>
-        )}
+        <div className="item__details">
+          <div className="barGroup">
+            <Bar group={jaegerGroup} handleRowSelect={setJaegerDetail} />
+          </div>
+        </div>
+        {jaegerDetail && <JaegerDetail group={jaegerDetail} />}
       </>
     );
   }
   return null;
 };
 
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: 100,
-    height: 100,
-  });
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  return windowSize;
-}
+export default CallTracing;
