@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getPcap, getRecentCall } from "src/api";
+import { getPcap } from "src/api";
 import { toastError } from "src/store";
 
 import type { Pcap, RecentCall } from "src/api/types";
@@ -13,21 +13,13 @@ export const PcapButton = ({ call }: PcapButtonProps) => {
   const [pcap, setPcap] = useState<Pcap>();
 
   useEffect(() => {
-    getRecentCall(call.account_sid, call.sip_callid)
-      .then(({ json }) => {
-        if (json.total > 0) {
-          getPcap(call.account_sid, call.sip_callid)
-            .then(({ blob }) => {
-              if (blob) {
-                setPcap({
-                  data_url: URL.createObjectURL(blob),
-                  file_name: `callid-${call.sip_callid}.pcap`,
-                });
-              }
-            })
-            .catch((error) => {
-              toastError(error.msg);
-            });
+    getPcap(call.account_sid, call.sip_callid)
+      .then(({ blob }) => {
+        if (blob) {
+          setPcap({
+            data_url: URL.createObjectURL(blob),
+            file_name: `callid-${call.sip_callid}.pcap`,
+          });
         }
       })
       .catch((error) => {

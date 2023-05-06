@@ -4,8 +4,10 @@ import dayjs from "dayjs";
 import { Icons } from "src/components";
 import { formatPhoneNumber } from "src/utils";
 import { PcapButton } from "./pcap";
-
 import type { RecentCall } from "src/api/types";
+import { Tabs, Tab } from "@jambonz/ui-kit";
+import CallDetail from "./call-detail";
+import CallTracing from "./call-tracing";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -13,6 +15,7 @@ type DetailsItemProps = {
 
 export const DetailsItem = ({ call }: DetailsItemProps) => {
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("");
 
   return (
     <div className="item">
@@ -55,21 +58,29 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             </div>
           </div>
         </summary>
-        <div className="item__details">
-          <div className="pre-grid">
-            {Object.keys(call).map((key) => (
-              <React.Fragment key={key}>
-                <div>{key}:</div>
-                <div>
-                  {call[key as keyof typeof call]
-                    ? call[key as keyof typeof call].toString()
-                    : "null"}
-                </div>
-              </React.Fragment>
-            ))}
+        {call.trace_id === "00000000000000000000000000000000" ? (
+          <CallDetail call={call} />
+        ) : (
+          <Tabs active={[activeTab, setActiveTab]}>
+            <Tab id="details" label="Details">
+              <CallDetail call={call} />
+            </Tab>
+            <Tab id="tracing" label="Tracing">
+              <CallTracing call={call} />
+            </Tab>
+          </Tabs>
+        )}
+        {open && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "300px",
+            }}
+          >
+            <PcapButton call={call} />
           </div>
-          {open && <PcapButton call={call} />}
-        </div>
+        )}
       </details>
     </div>
   );

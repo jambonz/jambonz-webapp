@@ -289,6 +289,7 @@ export interface RecentCall {
   remote_host: string;
   direction: string;
   trunk: string;
+  trace_id: string;
 }
 
 export interface SpeechCredential {
