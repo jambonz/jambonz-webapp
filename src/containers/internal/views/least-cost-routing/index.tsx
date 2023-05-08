@@ -93,6 +93,12 @@ export const Lcrs = () => {
           </Icon>
         </Link>
       </section>
+      <section>
+        <M>
+          Outbound call routing is used to select a carrier when there are
+          multiple carriers available.
+        </M>
+      </section>
       <section className="filters filters--spaced">
         <SearchFilter placeholder="Filter lcrs" filter={[filter, setFilter]} />
         <ScopedAccess user={user} scope={Scope.admin}>
