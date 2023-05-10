@@ -1,11 +1,15 @@
 import React from "react";
-import { JaegerGroup } from "src/api/jaeger-types";
+import { JaegerGroup, JaegerValue } from "src/api/jaeger-types";
 import dayjs from "dayjs";
 import "./styles.scss";
 import { formattedDuration } from "./utils";
 
 type JaegerDetailProps = {
   group: JaegerGroup;
+};
+
+const extractSpanGroupValue = (value: JaegerValue): string => {
+  return value.stringValue || value.doubleValue || `${value.boolValue}`;
 };
 
 export const JaegerDetail = ({ group }: JaegerDetailProps) => {
@@ -45,7 +49,7 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
               {attribute.key}:
             </div>
             <div className="spanDetailsWrapper__details_body">
-              {attribute.value.stringValue || attribute.value.doubleValue}
+              {extractSpanGroupValue(attribute.value)}
             </div>
           </div>
         ))}
