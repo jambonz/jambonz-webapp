@@ -40,6 +40,7 @@ export interface JaegerAttribute {
 export interface JaegerValue {
   stringValue: string;
   doubleValue: string;
+  boolValue: string;
 }
 
 export interface JaegerGroup {
