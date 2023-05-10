@@ -8,6 +8,7 @@ import type { RecentCall } from "src/api/types";
 import { Tabs, Tab } from "@jambonz/ui-kit";
 import CallDetail from "./call-detail";
 import CallTracing from "./call-tracing";
+import { DISABLE_JAEGER_TRACING } from "src/api/constants";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -58,7 +59,8 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             </div>
           </div>
         </summary>
-        {call.trace_id === "00000000000000000000000000000000" ? (
+        {call.trace_id === "00000000000000000000000000000000" ||
+        DISABLE_JAEGER_TRACING ? (
           <CallDetail call={call} />
         ) : (
           <Tabs active={[activeTab, setActiveTab]}>
