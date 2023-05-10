@@ -185,11 +185,11 @@
   border-radius: ui-vars.$px01;
   color: ui-vars.$dark;
   font-size: ui-vars.$mxs-size;
-  width: fit-content;
+  max-width: ui-vars.$width-tablet-2;
 
   &__detailsWrapper {
     height: 100%;
-    padding: 20px;
+    padding: 10px;
     font-size: 0.9em;
 
     @media (max-width: 600px) {
@@ -208,7 +208,7 @@
   }
 
   &__details_header {
-    padding: 5px;
+    padding: 2px;
 
     @media (max-width: 600px) {
       min-width: 160px;
@@ -224,16 +224,16 @@
   }
 
   &__details_body {
-    flex-grow: 1;
-    white-space: pre;
+    // flex-grow: 1;
+    // white-space: pre-line;
+    padding: 2px;
     width: 100%;
-    padding: 5px;
   }
 
   &__header {
-    background-color: #fff;
+    background-color: ui-vars.$white;
     color: ui-vars.$jambonz;
-    padding: 20px 20px 20px 30px;
-    border-bottom: thin solid #ccc;
+    padding: 5px 10px 10px 10px;
+    border-bottom: thin solid ui-vars.$grey;
   }
 }
