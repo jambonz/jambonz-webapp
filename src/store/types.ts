@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { UserJWT, ServiceProvider } from "src/api/types";
+import type { UserJWT, ServiceProvider, Lcr } from "src/api/types";
 
 export type IMessage = string | JSX.Element;
 
@@ -39,6 +39,8 @@ export interface State {
   accessControl: ACL;
   /** available service providers */
   serviceProviders: ServiceProvider[];
+  /** Least route routing */
+  lcr?: Lcr;
   /** current selected service provider */
   currentServiceProvider?: ServiceProvider;
 }

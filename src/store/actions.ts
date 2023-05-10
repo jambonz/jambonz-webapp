@@ -1,10 +1,10 @@
-import { getServiceProviders } from "src/api";
+import { getLcrs, getServiceProviders } from "src/api";
 import { sortLocaleName } from "src/utils";
 import { getToken, parseJwt } from "src/router/auth";
 
 import type { State, Action, UserData } from "./types";
 import { Scope } from "./types";
-import { ServiceProvider } from "src/api/types";
+import { Lcr, ServiceProvider } from "src/api/types";
 
 /** A generic action assumes action.type is ALWAYS our state key */
 /** Since this is how we're designing our state interface we cool */
@@ -75,4 +75,12 @@ export const serviceProvidersAsyncAction = async (): Promise<
 > => {
   const response = await getServiceProviders();
   return response.json;
+};
+
+export const lcrAsyncAction = async (): Promise<Lcr> => {
+  const { json } = await getLcrs();
+  if (json && json.length > 0) {
+    return json[0];
+  }
+  return {} as Lcr;
 };

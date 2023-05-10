@@ -207,7 +207,7 @@ fieldset {
   padding: ui-vars.$px02;
   border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$grey;
-  max-width: vars.$widthinput;
+  max-width: ui-vars.$width-mobile;
   position: relative;
 
   > div {
@@ -216,7 +216,7 @@ fieldset {
     align-items: center;
 
     &:nth-child(1) {
-      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 25% [col] 25%;
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 20% [col] 30%;
 
       @include mixins.small() {
         grid-template-columns: [col] 100%;
@@ -264,6 +264,25 @@ fieldset {
         transform: none;
         position: relative;
         margin-top: ui-vars.$px02;
+      }
+    }
+  }
+}
+
+.lcr {
+  @extend .gateway;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+    margin-left: 3%;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(50% - #{ui-vars.$px02 * 2}) [col] 50%;
+
+      @include mixins.small() {
+        grid-template-columns: [col] 100%;
       }
     }
   }

@@ -11,3 +11,4 @@ export const ROUTE_INTERNAL_CARRIERS = "/internal/carriers";
 export const ROUTE_INTERNAL_SPEECH = "/internal/speech-services";
 export const ROUTE_INTERNAL_PHONE_NUMBERS = "/internal/phone-numbers";
 export const ROUTE_INTERNAL_MS_TEAMS_TENANTS = "/internal/ms-teams-tenants";
+export const ROUTE_INTERNAL_LEST_COST_ROUTING = "/internal/least-cost-routing";

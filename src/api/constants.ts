@@ -38,6 +38,11 @@ export const ENABLE_FORGOT_PASSWORD: boolean = JSON.parse(
   import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false"
 );
 
+/** Disable Lcr */
+export const DISABLE_LCR: boolean = JSON.parse(
+  import.meta.env.VITE_APP_LCR_DISABLED || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
@@ -79,7 +84,6 @@ export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
   inbound: 1,
   outbound: 1,
 };
-
 /** Netmask Bits */
 export const NETMASK_BITS = Array(32)
   .fill(0)
@@ -90,6 +94,26 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   name: bit.toString(),
   value: bit.toString(),
 }));
+
+/** SIP Gateway Protocol */
+export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
+  {
+    name: "UDP",
+    value: "udp",
+  },
+  {
+    name: "TCP",
+    value: "tcp",
+  },
+  {
+    name: "TLS",
+    value: "tls",
+  },
+  {
+    name: "TLS/SRTP",
+    value: "tls/srtp",
+  },
+];
 
 /** Password Length options */
 
@@ -212,3 +236,7 @@ export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
 export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;
 export const API_FORGOT_PASSWORD = `${API_BASE_URL}/forgot-password`;
+export const API_SYSTEM_INFORMATION = `${API_BASE_URL}/SystemInformation`;
+export const API_LCRS = `${API_BASE_URL}/Lcrs`;
+export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
+export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries`;

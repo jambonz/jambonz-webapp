@@ -20,6 +20,10 @@ import {
   API_FORGOT_PASSWORD,
   USER_ACCOUNT,
   API_LOGOUT,
+  API_SYSTEM_INFORMATION,
+  API_LCR_ROUTES,
+  API_LCR_CARRIER_SET_ENTRIES,
+  API_LCRS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -61,8 +65,13 @@ import type {
   LimitCategories,
   PasswordSettings,
   ForgotPassword,
+  SystemInformation,
+  Lcr,
+  LcrRoute,
+  LcrCarrierSetEntry,
 } from "./types";
 import { StatusCodes } from "./types";
+import { JaegerRoot } from "./jaeger-types";
 
 /** Wrap all requests to normalize response handling */
 const fetchTransport = <Type>(
@@ -360,6 +369,30 @@ export const postForgotPassword = (payload: Partial<ForgotPassword>) => {
     payload
   );
 };
+
+export const postSystemInformation = (payload: Partial<SystemInformation>) => {
+  return postFetch<SystemInformation, Partial<SystemInformation>>(
+    API_SYSTEM_INFORMATION,
+    payload
+  );
+};
+
+export const postLcr = (payload: Partial<Lcr>) => {
+  return postFetch<SidResponse, Partial<Lcr>>(API_LCRS, payload);
+};
+
+export const postLcrRoute = (payload: Partial<LcrRoute>) => {
+  return postFetch<SidResponse, Partial<LcrRoute>>(API_LCR_ROUTES, payload);
+};
+
+export const postLcrCarrierSetEntry = (
+  payload: Partial<LcrCarrierSetEntry>
+) => {
+  return postFetch<SidResponse, Partial<LcrCarrierSetEntry>>(
+    API_LCR_CARRIER_SET_ENTRIES,
+    payload
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -452,6 +485,27 @@ export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
   );
 };
 
+export const putLcr = (sid: string, payload: Partial<Lcr>) => {
+  return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
+};
+
+export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
+  return putFetch<EmptyResponse, Partial<LcrRoute>>(
+    `${API_LCR_ROUTES}/${sid}`,
+    payload
+  );
+};
+
+export const putLcrCarrierSetEntries = (
+  sid: string,
+  payload: Partial<LcrCarrierSetEntry>
+) => {
+  return putFetch<EmptyResponse, Partial<LcrCarrierSetEntry>>(
+    `${API_LCR_CARRIER_SET_ENTRIES}/${sid}`,
+    payload
+  );
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteUser = (sid: string) => {
@@ -515,6 +569,14 @@ export const deleteAccountLimit = (sid: string, cat: LimitCategories) => {
   );
 };
 
+export const deleteLcr = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_LCRS}/${sid}`);
+};
+
+export const deleteLcrRoute = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_LCR_ROUTES}/${sid}`);
+};
+
 /** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {
@@ -528,6 +590,28 @@ export const getServiceProviders = () => {
 export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
     `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
+  );
+};
+
+export const getLcrs = () => {
+  return getFetch<Lcr[]>(API_LCRS);
+};
+
+export const getLcr = (sid: string) => {
+  return getFetch<Lcr>(`${API_LCRS}/${sid}`);
+};
+
+export const getLcrRoutes = (sid: string) => {
+  return getFetch<LcrRoute[]>(`${API_LCR_ROUTES}?lcr_sid=${sid}`);
+};
+
+export const getLcrRoute = (sid: string) => {
+  return getFetch<LcrRoute>(`${API_LCR_ROUTES}/${sid}`);
+};
+
+export const getLcrCarrierSetEtries = (sid: string) => {
+  return getFetch<LcrCarrierSetEntry[]>(
+    `${API_LCR_CARRIER_SET_ENTRIES}?lcr_route_sid=${sid}`
   );
 };
 
@@ -556,6 +640,14 @@ export const getPcap = (sid: string, sipCallId: string) => {
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/pcap`
       : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/pcap`
+  );
+};
+
+export const getJaegerTrace = (sid: string, traceId: string) => {
+  return getFetch<JaegerRoot>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/trace/${traceId}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/trace/${traceId}`
   );
 };
 

@@ -48,6 +48,7 @@ app.get(
         remote_host: "3.55.24.34",
         direction: 0 === i % 2 ? "inbound" : "outbound",
         trunk: 0 === i % 2 ? "twilio" : "user",
+        trace_id: nanoid(),
       };
       data.push(call);
     }
@@ -133,6 +134,17 @@ app.get(
         "Content-Disposition": "attachment",
       })
       .send(pcap); // server: Buffer => client: Blob
+  }
+);
+
+app.get(
+  "/api/Accounts/:account_sid/RecentCalls/trace/:trace_id",
+  (req: Request, res: Response) => {
+    const json = fs.readFileSync(
+      path.resolve(process.cwd(), "server", "sample-jaeger.json"),
+      { encoding: "utf8" }
+    );
+    res.status(200).json(JSON.parse(json));
   }
 );
 
