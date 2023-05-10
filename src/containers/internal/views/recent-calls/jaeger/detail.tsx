@@ -9,7 +9,9 @@ type JaegerDetailProps = {
 };
 
 const extractSpanGroupValue = (value: JaegerValue): string => {
-  return value.stringValue || value.doubleValue || `${value.boolValue}`;
+  const ret =
+    value.stringValue || `${value.doubleValue}` || `${value.boolValue}`;
+  return ret.replaceAll(",", ", ");
 };
 
 export const JaegerDetail = ({ group }: JaegerDetailProps) => {
