@@ -90,6 +90,26 @@ export const NETMASK_OPTIONS = NETMASK_BITS.map((bit) => ({
   value: bit.toString(),
 }));
 
+/** SIP Gateway Protocol */
+export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
+  {
+    name: "UDP",
+    value: "udp",
+  },
+  {
+    name: "TCP",
+    value: "tcp",
+  },
+  {
+    name: "TLS",
+    value: "tls",
+  },
+  {
+    name: "TLS/SRTP",
+    value: "tls/srtp",
+  },
+];
+
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;

@@ -23,6 +23,7 @@ import {
   FQDN_TOP_LEVEL,
   INVALID,
   NETMASK_OPTIONS,
+  SIP_GATEWAY_PROTOCOL_OPTIONS,
   TCP_MAX_PORT,
   TECH_PREFIX_MINLENGTH,
   USER_ACCOUNT,
@@ -975,18 +976,33 @@ export const CarrierForm = ({
                           }
                         />
                       </div>
-                      <div>
-                        <Selector
-                          id={`sip_netmask_${i}`}
-                          name={`sip_netmask${i}`}
-                          placeholder="32"
-                          value={g.netmask}
-                          options={NETMASK_OPTIONS}
-                          onChange={(e) => {
-                            updateSipGateways(i, "netmask", e.target.value);
-                          }}
-                        />
-                      </div>
+                      {g.outbound ? (
+                        <div>
+                          <Selector
+                            id={`sip_protocol_${i}`}
+                            name={`sip_protocol${i}`}
+                            placeholder=""
+                            value={g.protocol}
+                            options={SIP_GATEWAY_PROTOCOL_OPTIONS}
+                            onChange={(e) => {
+                              updateSipGateways(i, "protocol", e.target.value);
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <Selector
+                            id={`sip_netmask_${i}`}
+                            name={`sip_netmask${i}`}
+                            placeholder="32"
+                            value={g.netmask}
+                            options={NETMASK_OPTIONS}
+                            onChange={(e) => {
+                              updateSipGateways(i, "netmask", e.target.value);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <div>
