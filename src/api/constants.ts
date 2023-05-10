@@ -104,6 +104,10 @@ export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
     name: "TLS",
     value: "tls",
   },
+  {
+    name: "TLS/SRTP",
+    value: "tls/srtp",
+  },
 ];
 
 /** Password Length options */
