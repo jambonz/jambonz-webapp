@@ -122,6 +122,10 @@
   }
 }
 
+.barContainer {
+  display: grid;
+}
+
 .barWrapper {
   width: 100%;
 
@@ -176,11 +180,12 @@
   border-radius: ui-vars.$px01;
   @include mixins.code();
   text-align: left;
-  padding: ui-vars.$px03;
-  color: ui-vars.$pink;
-  background-color: ui-vars.$dark;
+  padding: ui-vars.$px01;
+  background-color: ui-vars.$white;
   border-radius: ui-vars.$px01;
-  margin-top: ui-vars.$px02;
+  color: ui-vars.$dark;
+  font-size: ui-vars.$mxs-size;
+  width: fit-content;
 
   &__detailsWrapper {
     height: 100%;
