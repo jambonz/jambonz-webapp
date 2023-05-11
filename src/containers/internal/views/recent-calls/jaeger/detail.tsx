@@ -11,6 +11,7 @@ type JaegerDetailProps = {
 const extractSpanGroupValue = (value: JaegerValue): string => {
   const ret =
     value.stringValue || `${value.doubleValue}` || `${value.boolValue}`;
+  // add white space for wrap the line
   return ret.replaceAll(",", ", ");
 };
 

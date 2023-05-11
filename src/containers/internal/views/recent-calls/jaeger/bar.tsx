@@ -52,7 +52,7 @@ export const Bar = ({ group }: BarProps) => {
         <ModalClose handleClose={() => setJaegerDetail(null)}>
           <div className="spanDetailsWrapper__header">
             <P>
-              <strong>Span:</strong> {group.name}
+              <strong>Span:</strong> {group.name.replaceAll(",", ", ")}
             </P>
           </div>
           <JaegerDetail group={jaegerDetail} />
