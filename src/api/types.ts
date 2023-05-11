@@ -113,6 +113,10 @@ export interface PasswordSettings {
   require_special_character: number;
 }
 
+export interface ForgotPassword {
+  email: string;
+}
+
 export interface SystemInformation {
   domain_name: string;
   sip_domain_name: string;

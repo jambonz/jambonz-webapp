@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, H1 } from "@jambonz/ui-kit";
-import { useLocation, Navigate } from "react-router-dom";
+import { useLocation, Navigate, Link } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { useAuth } from "src/router/auth";
@@ -14,8 +14,9 @@ import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_APPLICATIONS,
+  ROUTE_FORGOT_PASSWORD,
 } from "src/router/routes";
-import { USER_ACCOUNT } from "src/api/constants";
+import { USER_ACCOUNT, ENABLE_FORGOT_PASSWORD } from "src/api/constants";
 
 export const Login = () => {
   const { signin, authorized } = useAuth();
@@ -90,6 +91,13 @@ export const Login = () => {
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
+        {ENABLE_FORGOT_PASSWORD && (
+          <div>
+            <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
+              <p>Forgot Password</p>
+            </Link>
+          </div>
+        )}
       </form>
     </>
   );
