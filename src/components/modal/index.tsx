@@ -91,9 +91,19 @@ export const ModalForm = ({
 
 export const ModalClose = ({ children, handleClose }: CloseProps) => {
   return ReactDOM.createPortal(
-    <div className="modal">
-      <div className="modal__box">
-        <div className="modal__stuff">{children}</div>
+    <div className="modal" role="presentation" onClick={handleClose}>
+      <div
+        className="modal__box"
+        role="presentation"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="modal__stuff"
+          role="presentation"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
         <ButtonGroup right>
           <Button type="button" small subStyle="grey" onClick={handleClose}>
             Close

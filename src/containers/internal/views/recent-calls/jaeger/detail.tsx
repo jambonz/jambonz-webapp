@@ -1,5 +1,5 @@
 import React from "react";
-import { JaegerGroup } from "src/api/jaeger-types";
+import { JaegerGroup, JaegerValue } from "src/api/jaeger-types";
 import dayjs from "dayjs";
 import "./styles.scss";
 import { formattedDuration } from "./utils";
@@ -8,17 +8,26 @@ type JaegerDetailProps = {
   group: JaegerGroup;
 };
 
+const extractSpanGroupValue = (value: JaegerValue): string => {
+  const ret = String(value.stringValue || value.doubleValue || value.boolValue);
+  // add white space for wrap the line
+  return ret.replaceAll(",", ", ");
+};
+
 export const JaegerDetail = ({ group }: JaegerDetailProps) => {
   return (
     <div className="spanDetailsWrapper">
-      <div className="spanDetailsWrapper__header">Span: {group.name}</div>
       <div className="spanDetailsWrapper__detailsWrapper">
         <div className="spanDetailsWrapper__details">
-          <div className="spanDetailsWrapper__details_header">Span ID:</div>
+          <div className="spanDetailsWrapper__details_header">
+            <strong>Span ID:</strong>
+          </div>
           <div className="spanDetailsWrapper__details_body">{group.spanId}</div>
         </div>
         <div className="spanDetailsWrapper__details">
-          <div className="spanDetailsWrapper__details_header">Span Start:</div>
+          <div className="spanDetailsWrapper__details_header">
+            <strong>Span Start:</strong>
+          </div>
           <div className="spanDetailsWrapper__details_body">
             {dayjs
               .unix(group.startTimeUnixNano / 1000000000)
@@ -26,7 +35,9 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
           </div>
         </div>
         <div className="spanDetailsWrapper__details">
-          <div className="spanDetailsWrapper__details_header">Span End:</div>
+          <div className="spanDetailsWrapper__details_header">
+            <strong>Span End:</strong>
+          </div>
           <div className="spanDetailsWrapper__details_body">
             {dayjs
               .unix(group.endTimeUnixNano / 1000000000)
@@ -34,7 +45,9 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
           </div>
         </div>
         <div className="spanDetailsWrapper__details">
-          <div className="spanDetailsWrapper__details_header">Duration:</div>
+          <div className="spanDetailsWrapper__details_header">
+            <strong>Duration:</strong>
+          </div>
           <div className="spanDetailsWrapper__details_body">
             {formattedDuration(group.durationMs)}
           </div>
@@ -42,10 +55,10 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
         {group.attributes.map((attribute) => (
           <div key={attribute.key} className="spanDetailsWrapper__details">
             <div className="spanDetailsWrapper__details_header">
-              {attribute.key}:
+              <strong>{attribute.key}</strong>:
             </div>
             <div className="spanDetailsWrapper__details_body">
-              {attribute.value.stringValue || attribute.value.doubleValue}
+              {extractSpanGroupValue(attribute.value)}
             </div>
           </div>
         ))}

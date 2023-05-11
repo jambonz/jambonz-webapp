@@ -4,7 +4,6 @@ import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
 import { getJaegerTrace } from "src/api";
 import { toastError } from "src/store";
 import { RecentCall } from "src/api/types";
-import { JaegerDetail } from "./jaeger/detail";
 
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
@@ -33,7 +32,6 @@ export type CallTracingProps = {
 export const CallTracing = ({ call }: CallTracingProps) => {
   const [jaegerRoot, setJaegerRoot] = useState<JaegerRoot>();
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
-  const [jaegerDetail, setJaegerDetail] = useState<JaegerGroup>();
   const windowSize = useWindowSize();
 
   const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
@@ -125,7 +123,6 @@ export const CallTracing = ({ call }: CallTracingProps) => {
           rootGroup,
           groups
         );
-        setJaegerDetail(rootGroup);
         setJaegerGroup(rootGroup);
       }
     }
@@ -168,10 +165,9 @@ export const CallTracing = ({ call }: CallTracingProps) => {
       <>
         <div className="item__details">
           <div className="barGroup">
-            <Bar group={jaegerGroup} handleRowSelect={setJaegerDetail} />
+            <Bar group={jaegerGroup} />
           </div>
         </div>
-        {jaegerDetail && <JaegerDetail group={jaegerDetail} />}
       </>
     );
   }

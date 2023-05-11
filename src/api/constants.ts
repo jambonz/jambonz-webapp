@@ -43,6 +43,11 @@ export const DISABLE_LCR: boolean = JSON.parse(
   import.meta.env.VITE_APP_LCR_DISABLED || "false"
 );
 
+/** Disable jaeger tracing */
+export const DISABLE_JAEGER_TRACING: boolean = JSON.parse(
+  import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
