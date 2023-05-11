@@ -2,108 +2,6 @@
 @use "src/styles/mixins";
 @use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
 
-.jaegerModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  min-height: 100%;
-  min-width: 100%;
-  background-color: #fff;
-  z-index: vars.$zindex00;
-  overflow-y: hidden;
-}
-
-.modalHeader button {
-  min-height: 28px;
-
-  @media (max-width: 820px) {
-    height: 34px;
-  }
-
-  @media (min-width: 820px) {
-    height: 40px;
-  }
-}
-
-.modalHeader {
-  display: flex;
-  background-color: white;
-  padding: 20px;
-  vertical-align: middle;
-  justify-content: left;
-  height: 8vh;
-
-  @media (max-width: 380px) {
-    padding: 10px;
-    height: 10vh;
-    font-size: 0.9em;
-    font-weight: lighter;
-  }
-
-  @media (min-width: 410px) {
-    padding: 10px;
-    height: 8vh;
-    font-weight: lighter;
-  }
-
-  @media (min-width: 600px) {
-    padding: 20px;
-    font-weight: lighter;
-    font-size: small;
-  }
-
-  @media (min-width: 820px) {
-    padding: 20px;
-    font-weight: lighter;
-    font-size: small;
-  }
-
-  @media (min-width: 910px) {
-    font-weight: bolder;
-  }
-
-  &__header_item {
-    padding-top: 10px;
-    margin-left: 20px;
-    display: flex;
-    font-weight: bolder;
-
-    @media (max-width: 380px) {
-      padding-top: 8px;
-      margin-left: 15px;
-      font-size: 0.8em;
-    }
-
-    @media (min-width: 380px) {
-      padding-top: 12px;
-      margin-left: 15px;
-      font-size: 0.7em;
-      font-weight: lighter;
-    }
-
-    @media (min-width: 410px) {
-      padding-top: 11px;
-      margin-left: 15px;
-      font-size: 0.7em;
-      font-weight: lighter;
-    }
-
-    @media (min-width: 820px) {
-      padding-top: 10px;
-      font-weight: bolder;
-      font-size: medium;
-    }
-
-    @media (min-width: 910px) {
-      padding-top: 12px;
-      font-weight: bolder;
-      font-size: 1.2em;
-    }
-  }
-}
-
 .barGroup {
   border-radius: ui-vars.$px01;
   @include mixins.code();
@@ -120,10 +18,6 @@
     padding: 15px;
     height: 40vh;
   }
-}
-
-.barContainer {
-  display: grid;
 }
 
 .barWrapper {
@@ -186,6 +80,8 @@
   color: ui-vars.$dark;
   font-size: ui-vars.$mxs-size;
   max-width: ui-vars.$width-tablet-2;
+  max-height: 500px;
+  overflow-y: scroll;
 
   &__detailsWrapper {
     height: 100%;
@@ -208,24 +104,13 @@
   }
 
   &__details_header {
-    padding: 2px;
-
-    @media (max-width: 600px) {
-      min-width: 160px;
-    }
-
-    @media (min-width: 600px) {
-      min-width: 200px;
-    }
-
-    @media (min-width: 900px) {
-      min-width: 300px;
-    }
+    padding: 3px;
+    min-width: 150px;
   }
 
   &__details_body {
-    // flex-grow: 1;
-    // white-space: pre-line;
+    flex-grow: 1;
+    white-space: pre-line;
     padding: 2px;
     width: 100%;
   }
