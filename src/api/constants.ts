@@ -33,6 +33,11 @@ export const DISABLE_CUSTOM_SPEECH: boolean = JSON.parse(
   import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false"
 );
 
+/** Enable Forgot Password */
+export const ENABLE_FORGOT_PASSWORD: boolean = JSON.parse(
+  import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false"
+);
+
 /** Disable Lcr */
 export const DISABLE_LCR: boolean = JSON.parse(
   import.meta.env.VITE_APP_LCR_DISABLED || "false"
@@ -230,6 +235,7 @@ export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
 export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
 export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;
+export const API_FORGOT_PASSWORD = `${API_BASE_URL}/forgot-password`;
 export const API_SYSTEM_INFORMATION = `${API_BASE_URL}/SystemInformation`;
 export const API_LCRS = `${API_BASE_URL}/Lcrs`;
 export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
