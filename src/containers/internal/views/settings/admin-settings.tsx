@@ -15,8 +15,8 @@ import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
     useApiData<PasswordSettings>("PasswordSettings");
-  // const [systemInformatin, systemInformationFetcher] =
-  //   useApiData<SystemInformation>("SystemInformation");
+  const [systemInformatin, systemInformationFetcher] =
+    useApiData<SystemInformation>("SystemInformation");
   // Min value is 8
   const [minPasswordLength, setMinPasswordLength] = useState(PASSWORD_MIN);
   const [requireDigit, setRequireDigit] = useState(false);
@@ -44,7 +44,7 @@ export const AdminSettings = () => {
     ])
       .then(() => {
         passwordSettingsFetcher();
-        // systemInformationFetcher();
+        systemInformationFetcher();
         toastSuccess("Password settings successfully updated");
       })
       .catch((error) => {
@@ -67,7 +67,7 @@ export const AdminSettings = () => {
     //   setSipDomainName(systemInformatin.sip_domain_name);
     //   setMonitoringDomainName(systemInformatin.monitoring_domain_name);
     // }
-  }, [passwordSettings]); // systemInformatin
+  }, [passwordSettings, systemInformatin]); //
 
   return (
     <>
