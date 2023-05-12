@@ -24,6 +24,7 @@ export const PcapButton = ({
   const [pcap, setPcap] = useState<Pcap>();
 
   useEffect(() => {
+    if (!sipCallId) return;
     const p = accountSid
       ? getRecentCall(accountSid, sipCallId)
       : getServiceProviderRecentCall(serviceProviderSid, sipCallId);
