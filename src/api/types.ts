@@ -242,7 +242,11 @@ export interface Account {
   registration_hook: null | WebHook;
   service_provider_sid: string;
   device_calling_application_sid: null | string;
-  lcr_sid: null | string;
+  record_all_call: boolean;
+  bucket_vendor: null | string;
+  bucket_name: null | string;
+  bucket_access_key_id: null | string;
+  bucket_secret_access_key: null | string;
 }
 
 export interface Application {
@@ -258,6 +262,7 @@ export interface Application {
   speech_synthesis_language: null | string;
   speech_recognizer_vendor: null | Lowercase<Vendor>;
   speech_recognizer_language: null | string;
+  record_all_calls: boolean;
 }
 
 export interface PhoneNumber {

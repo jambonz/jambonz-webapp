@@ -22,7 +22,9 @@ import {
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
+  BUCKET_VENDOR_OPTIONS,
   DEFAULT_WEBHOOK,
+  ENABLE_RECORD_ALL_CALLS,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
 } from "src/api/constants";
@@ -60,6 +62,11 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const [initialRegHook, setInitialRegHook] = useState(false);
   const [initialQueueHook, setInitialQueueHook] = useState(false);
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
+  const [recordAllCalls, setRecordAllCalls] = useState(false);
+  const [bucketVendor, setBucketVendor] = useState("");
+  const [bucketName, setBucketName] = useState("");
+  const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
+  const [BucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -189,6 +196,12 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         queue_event_hook: queueHook || account.data.queue_event_hook,
         registration_hook: regHook || account.data.registration_hook,
         device_calling_application_sid: appId || null,
+        bucket_vendor: bucketVendor || null,
+        ...(bucketVendor === "aws_s3" && {
+          bucket_name: bucketName || null,
+          bucket_access_key_id: bucketAccessKeyId || null,
+          bucket_secret_access_key: BucketSecretAccessKey || null,
+        }),
       })
         .then(() => {
           account.refetch();
@@ -263,6 +276,11 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
           setInitialQueueHook(false);
         }
       }
+
+      setBucketVendor(account.data.bucket_vendor ?? "");
+      setBucketName(account.data.bucket_name ?? "");
+      setBucketAccessKeyId(account.data.bucket_access_key_id ?? "");
+      setBucketSecretAccessKey(account.data.bucket_secret_access_key ?? "");
     }
   }, [account]);
 
@@ -446,6 +464,79 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
               </fieldset>
             );
           })}
+          {ENABLE_RECORD_ALL_CALLS && (
+            <>
+              <fieldset>
+                <label htmlFor="record_all_call" className="chk">
+                  <input
+                    id="record_all_call"
+                    name="record_all_call"
+                    type="checkbox"
+                    onChange={(e) => setRecordAllCalls(e.target.checked)}
+                    defaultChecked={recordAllCalls}
+                  />
+                  <div>Record all calls</div>
+                </label>
+              </fieldset>
+              <fieldset>
+                <div>
+                  <label htmlFor="vendor">
+                    Bucket Vendor{recordAllCalls && <span>*</span>}
+                  </label>
+                  <Selector
+                    required={recordAllCalls}
+                    id={"record_bucket_vendor"}
+                    name={"record_bucket_vendor"}
+                    value={bucketVendor}
+                    options={BUCKET_VENDOR_OPTIONS}
+                    onChange={(e) => {
+                      setBucketVendor(e.target.value);
+                    }}
+                  />
+                </div>
+                {bucketVendor === "aws_s3" && (
+                  <>
+                    <label htmlFor="bucket_name">
+                      Bucket Name<span>*</span>
+                    </label>
+                    <input
+                      id="bucket_name"
+                      required
+                      type="text"
+                      name="bucket_name"
+                      placeholder="Bucket"
+                      value={bucketName}
+                      onChange={(e) => setBucketName(e.target.value)}
+                    />
+                    <label htmlFor="bucket_aws_access_key">
+                      Access key ID<span>*</span>
+                    </label>
+                    <input
+                      id="bucket_aws_access_key"
+                      required
+                      type="text"
+                      name="bucket_aws_access_key"
+                      placeholder="Access Key ID"
+                      value={bucketAccessKeyId}
+                      onChange={(e) => setBucketAccessKeyId(e.target.value)}
+                    />
+                    <label htmlFor="bucket_aws_secret_key">
+                      Secret access key<span>*</span>
+                    </label>
+                    <Passwd
+                      id="bucket_aws_secret_key"
+                      required
+                      name="bucketaws_secret_key"
+                      placeholder="Secret Access Key"
+                      value={BucketSecretAccessKey}
+                      onChange={(e) => setBucketSecretAccessKey(e.target.value)}
+                    />
+                  </>
+                )}
+              </fieldset>
+            </>
+          )}
+
           {message && (
             <fieldset>
               <Message message={message} />
