@@ -48,6 +48,11 @@ export const DISABLE_JAEGER_TRACING: boolean = JSON.parse(
   import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false"
 );
 
+/** Enable Record All Call Feature */
+export const ENABLE_RECORD_ALL_CALLS: boolean = JSON.parse(
+  import.meta.env.VITE_APP_RECORD_ALL_CALLS_ENABLED || "false"
+);
+
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
@@ -119,7 +124,19 @@ export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
     value: "tls/srtp",
   },
 ];
-
+/**
+ * Record bucket type
+ */
+export const BUCKET_VENDOR_OPTIONS = [
+  {
+    name: "NONE",
+    value: "",
+  },
+  {
+    name: "AWS S3",
+    value: "aws_s3",
+  },
+];
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;
