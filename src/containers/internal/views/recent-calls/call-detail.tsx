@@ -15,7 +15,7 @@ export const CallDetail = ({ call }: CallDetailProps) => {
               <div>{key}:</div>
               <div>
                 {call[key as keyof typeof call]
-                  ? call[key as keyof typeof call].toString()
+                  ? String(call[key as keyof typeof call])
                   : "null"}
               </div>
             </React.Fragment>

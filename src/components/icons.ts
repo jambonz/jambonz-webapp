@@ -42,6 +42,8 @@ import {
   Share2,
   ArrowUp,
   ArrowDown,
+  Play,
+  Pause,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -94,4 +96,6 @@ export const Icons: IconMap = {
   Share2,
   ArrowUp,
   ArrowDown,
+  Play,
+  Pause,
 };

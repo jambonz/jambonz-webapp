@@ -299,6 +299,7 @@ export interface RecentCall {
   direction: string;
   trunk: string;
   trace_id: string;
+  recording_url?: string;
 }
 
 export interface SpeechCredential {

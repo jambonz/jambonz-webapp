@@ -31,9 +31,10 @@ app.get(
     for (let i = 0; i < 500; i++) {
       const attempted_at = new Date(start.getTime() + i * increment);
       const failed = 0 === i % 5;
+      const call_sid = nanoid();
       const call: RecentCall = {
         account_sid: req.params.account_sid,
-        call_sid: nanoid(),
+        call_sid,
         from: "15083084809",
         to: "18882349999",
         answered: !failed,
@@ -49,6 +50,7 @@ app.get(
         direction: 0 === i % 2 ? "inbound" : "outbound",
         trunk: 0 === i % 2 ? "twilio" : "user",
         trace_id: nanoid(),
+        recording_url: `http://127.0.0.1:3002/api/Accounts/${req.params.account_sid}/RecentCalls/${call_sid}/record`,
       };
       data.push(call);
     }
@@ -134,6 +136,24 @@ app.get(
         "Content-Disposition": "attachment",
       })
       .send(pcap); // server: Buffer => client: Blob
+  }
+);
+
+app.get(
+  "/api/Accounts/:account_sid/RecentCalls/:call_sid/record",
+  (req: Request, res: Response) => {
+    /** Sample pcap file from: https://wiki.wireshark.org/SampleCaptures#sip-and-rtp */
+    const wav: Buffer = fs.readFileSync(
+      path.resolve(process.cwd(), "server", "example.wav")
+    );
+
+    res
+      .status(200)
+      .set({
+        "Content-Type": "audio/wav",
+        "Content-Disposition": "attachment",
+      })
+      .send(wav); // server: Buffer => client: Blob
   }
 );
 
