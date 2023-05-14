@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 
 import { Icons } from "src/components";
-import { formatPhoneNumber } from "src/utils";
+import { formatPhoneNumber, hasValue } from "src/utils";
 import { PcapButton } from "./pcap";
 import type { RecentCall } from "src/api/types";
 import { Tabs, Tab } from "@jambonz/ui-kit";
 import CallDetail from "./call-detail";
 import CallTracing from "./call-tracing";
 import { DISABLE_JAEGER_TRACING } from "src/api/constants";
+import { Player } from "./player";
+import "./styles.scss";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -73,15 +75,17 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
           </Tabs>
         )}
         {open && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "300px",
-            }}
-          >
-            <PcapButton call={call} />
-          </div>
+          <>
+            <div className="footer">
+              {hasValue(call.recording_url) && (
+                <Player url={call.recording_url} />
+              )}
+
+              <div className="footer_buttons">
+                <PcapButton call={call} />
+              </div>
+            </div>
+          </>
         )}
       </details>
     </div>
