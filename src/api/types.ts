@@ -87,7 +87,7 @@ export interface SelectorOptions {
   value: string;
 }
 
-export interface Pcap {
+export interface DownloadedBlob {
   data_url: string;
   file_name: string;
 }
