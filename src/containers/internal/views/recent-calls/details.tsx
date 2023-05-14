@@ -11,6 +11,7 @@ import CallTracing from "./call-tracing";
 import { DISABLE_JAEGER_TRACING } from "src/api/constants";
 import { Player } from "./player";
 import "./styles.scss";
+import DownloadRecord from "./record";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -81,8 +82,14 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
                 <Player url={call.recording_url} />
               )}
 
-              <div className="footer_buttons">
+              <div className="footer__buttons">
                 <PcapButton call={call} />
+                {call.recording_url && (
+                  <DownloadRecord
+                    url={call.recording_url}
+                    call_sid={call.call_sid}
+                  />
+                )}
               </div>
             </div>
           </>

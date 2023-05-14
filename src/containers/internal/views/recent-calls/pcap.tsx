@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import { getPcap } from "src/api";
 import { toastError } from "src/store";
 
-import type { Pcap, RecentCall } from "src/api/types";
+import type { DownloadedBlob, RecentCall } from "src/api/types";
 
 type PcapButtonProps = {
   call: RecentCall;
 };
 
 export const PcapButton = ({ call }: PcapButtonProps) => {
-  const [pcap, setPcap] = useState<Pcap>();
+  const [pcap, setPcap] = useState<DownloadedBlob>();
 
   useEffect(() => {
     getPcap(call.account_sid, call.sip_callid)

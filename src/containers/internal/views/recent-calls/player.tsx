@@ -77,44 +77,46 @@ export const Player = ({ url }: PlayerProps) => {
 
   return (
     <>
-      <div id={wavesurferId} />
       <div className="media-container">
-        <button
-          className="btnty"
-          type="button"
-          onClick={() => {
-            setPlaybackJump(-JUMP_DURATION);
-          }}
-          title="Jump left"
-          disabled={!isReady}
-        >
-          <Icon>
-            <Icons.ChevronLeft />
-          </Icon>
-        </button>
-        <button
-          className="btnty"
-          type="button"
-          onClick={togglePlayback}
-          title="play/pause"
-          disabled={!isReady}
-        >
-          <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
-        </button>
+        <div id={wavesurferId} />
+        <div className="media-container__buttons">
+          <button
+            className="btnty"
+            type="button"
+            onClick={() => {
+              setPlaybackJump(-JUMP_DURATION);
+            }}
+            title="Jump left"
+            disabled={!isReady}
+          >
+            <Icon>
+              <Icons.ChevronsLeft />
+            </Icon>
+          </button>
+          <button
+            className="btnty"
+            type="button"
+            onClick={togglePlayback}
+            title="play/pause"
+            disabled={!isReady}
+          >
+            <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
+          </button>
 
-        <button
-          className="btnty"
-          type="button"
-          onClick={() => {
-            setPlaybackJump(JUMP_DURATION);
-          }}
-          title="Jump right"
-          disabled={!isReady}
-        >
-          <Icon>
-            <Icons.ChevronRight />
-          </Icon>
-        </button>
+          <button
+            className="btnty"
+            type="button"
+            onClick={() => {
+              setPlaybackJump(JUMP_DURATION);
+            }}
+            title="Jump right"
+            disabled={!isReady}
+          >
+            <Icon>
+              <Icons.ChevronsRight />
+            </Icon>
+          </button>
+        </div>
       </div>
     </>
   );

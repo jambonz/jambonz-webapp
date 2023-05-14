@@ -9,29 +9,35 @@
 
   &__buttons {
     padding: ui-vars.$px02;
-    display: "flex";
-    justify-content: "space-between";
-    width: "300px";
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: ui-vars.$px02;
   }
 }
 
 .media-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  grid-gap: ui-vars.$px01;
-  margin-top: ui-vars.$px01;
+  border: 1px solid black;
+  border-radius: ui-vars.$px01;
+  padding: 13px;
 
-  button {
-    background-color: transparent;
-    width: auto;
-    height: auto;
-    border: 0;
-    padding: 0;
-  }
+  &__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-gap: ui-vars.$px01;
+    margin-top: ui-vars.$px01;
 
-  .ico {
-    color: ui-vars.$white;
-    @include mixins.icosize();
+    button {
+      background-color: transparent;
+      width: auto;
+      height: auto;
+      border: 0;
+      padding: 0;
+    }
+
+    .ico {
+      color: ui-vars.$white;
+      @include mixins.icosize();
+    }
   }
 }

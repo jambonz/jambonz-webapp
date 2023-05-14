@@ -44,6 +44,8 @@ import {
   ArrowDown,
   Play,
   Pause,
+  ChevronsLeft,
+  ChevronsRight,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -98,4 +100,6 @@ export const Icons: IconMap = {
   ArrowDown,
   Play,
   Pause,
+  ChevronsLeft,
+  ChevronsRight,
 };
