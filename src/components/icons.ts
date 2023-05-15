@@ -46,6 +46,7 @@ import {
   Pause,
   ChevronsLeft,
   ChevronsRight,
+  Download,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -102,4 +103,5 @@ export const Icons: IconMap = {
   Pause,
   ChevronsLeft,
   ChevronsRight,
+  Download,
 };
