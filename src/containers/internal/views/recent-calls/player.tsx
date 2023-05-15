@@ -4,22 +4,36 @@ import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@jambonz/ui-kit";
 import { Icons } from "src/components";
-import { v4 } from "uuid";
+import { getBlob } from "src/api";
+import { DownloadedBlob } from "src/api/types";
 
 type PlayerProps = {
+  call_sid: string;
   url: string;
 };
 
-export const Player = ({ url }: PlayerProps) => {
+export const Player = ({ url, call_sid }: PlayerProps) => {
   const JUMP_DURATION = 15; //seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  const wavesurferId = `wavesurfer--${v4()}`;
+  const wavesurferId = `wavesurfer--${call_sid}`;
   const waveSufferRef = useRef<WaveSurfer | null>(null);
 
+  const [record, setRecord] = useState<DownloadedBlob | null>(null);
   useEffect(() => {
-    if (waveSufferRef.current !== null) return;
+    getBlob(url).then(({ blob }) => {
+      if (blob) {
+        setRecord({
+          data_url: URL.createObjectURL(blob),
+          file_name: `callid-${call_sid}.raw`,
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (waveSufferRef.current !== null || !record) return;
     waveSufferRef.current = WaveSurfer.create({
       container: `#${wavesurferId}`,
       waveColor: "grey",
@@ -33,7 +47,7 @@ export const Player = ({ url }: PlayerProps) => {
       fillParent: true,
     });
 
-    waveSufferRef.current.load(url);
+    waveSufferRef.current.load(record?.data_url);
     // All event should be after load
     waveSufferRef.current.on("finish", () => {
       setIsPlaying(false);
@@ -50,7 +64,7 @@ export const Player = ({ url }: PlayerProps) => {
     waveSufferRef.current.on("ready", () => {
       setIsReady(true);
     });
-  }, []);
+  }, [record]);
 
   const togglePlayback = () => {
     if (waveSufferRef.current) {
@@ -74,6 +88,8 @@ export const Player = ({ url }: PlayerProps) => {
       waveSufferRef.current.setCurrentTime(value);
     }
   };
+
+  if (!record) return null;
 
   return (
     <>
@@ -116,6 +132,15 @@ export const Player = ({ url }: PlayerProps) => {
               <Icons.ChevronsRight />
             </Icon>
           </button>
+          <a
+            href={record.data_url}
+            download={record.file_name}
+            className="btnty"
+          >
+            <Icon>
+              <Icons.Download />
+            </Icon>
+          </a>
         </div>
       </div>
     </>
