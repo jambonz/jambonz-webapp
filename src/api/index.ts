@@ -69,6 +69,8 @@ import type {
   Lcr,
   LcrRoute,
   LcrCarrierSetEntry,
+  BucketCredential,
+  BucketCredentialTestResult,
 } from "./types";
 import { StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -264,6 +266,16 @@ export const postApiKey = (payload: Partial<ApiKey>) => {
 
 export const postAccount = (payload: Partial<Account>) => {
   return postFetch<SidResponse, Partial<Account>>(API_ACCOUNTS, payload);
+};
+
+export const postAccountBucketCredentialTest = (
+  sid: string,
+  payload: Partial<BucketCredential>
+) => {
+  return postFetch<BucketCredentialTestResult, Partial<BucketCredential>>(
+    `${API_ACCOUNTS}/${sid}/BucketCredentialTest`,
+    payload
+  );
 };
 
 export const postApplication = (payload: Partial<Application>) => {

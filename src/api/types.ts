@@ -102,6 +102,11 @@ export interface CredentialTestResult {
   tts: CredentialTest;
 }
 
+export interface BucketCredentialTestResult {
+  status: CredentialStatus;
+  reason: string;
+}
+
 export interface LimitField {
   label: string;
   category: LimitCategories;
@@ -242,11 +247,15 @@ export interface Account {
   registration_hook: null | WebHook;
   service_provider_sid: string;
   device_calling_application_sid: null | string;
-  record_all_call: boolean;
-  bucket_vendor: null | string;
-  bucket_name: null | string;
-  bucket_access_key_id: null | string;
-  bucket_secret_access_key: null | string;
+  record_all_calls: number;
+  bucket_credential: null | BucketCredential;
+}
+
+export interface BucketCredential {
+  vendor: null | string;
+  name?: null | string;
+  access_key_id?: null | string;
+  secret_access_key?: null | string;
 }
 
 export interface Application {
@@ -262,7 +271,7 @@ export interface Application {
   speech_synthesis_language: null | string;
   speech_recognizer_vendor: null | Lowercase<Vendor>;
   speech_recognizer_language: null | string;
-  record_all_calls: boolean;
+  record_all_calls: number;
 }
 
 export interface PhoneNumber {

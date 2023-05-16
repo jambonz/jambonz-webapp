@@ -183,7 +183,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       speech_synthesis_voice: synthVoice || null,
       speech_recognizer_vendor: recogVendor || null,
       speech_recognizer_language: recogLang || null,
-      record_all_calls: recordAllCalls,
+      record_all_calls: recordAllCalls ? 1 : 0,
     };
 
     if (application && application.data) {
@@ -249,7 +249,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
-      setRecordAllCalls(application.data.record_all_calls ?? false);
+      setRecordAllCalls(application.data.record_all_calls ? true : false);
       if (!applicationJson) {
         setApplicationJson(application.data.app_json || "");
       }
@@ -693,7 +693,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         {ENABLE_RECORD_ALL_CALLS &&
           accounts?.filter((a) => a.account_sid === accountSid).length &&
           !accounts?.filter((a) => a.account_sid === accountSid)[0]
-            .record_all_call && (
+            .record_all_calls && (
             <fieldset>
               <label htmlFor="record_all_call" className="chk">
                 <input
@@ -701,7 +701,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                   name="record_all_call"
                   type="checkbox"
                   onChange={(e) => setRecordAllCalls(e.target.checked)}
-                  defaultChecked={recordAllCalls}
+                  checked={recordAllCalls}
                 />
                 <div>Record all calls</div>
               </label>

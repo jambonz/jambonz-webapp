@@ -45,6 +45,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
       normalize: true,
       responsive: true,
       fillParent: true,
+      splitChannels: true,
     });
 
     waveSufferRef.current.load(record?.data_url);
