@@ -8,7 +8,7 @@ import type { RecentCall } from "src/api/types";
 import { Tabs, Tab } from "@jambonz/ui-kit";
 import CallDetail from "./call-detail";
 import CallTracing from "./call-tracing";
-import { DISABLE_JAEGER_TRACING } from "src/api/constants";
+import { API_BASE_URL, DISABLE_JAEGER_TRACING } from "src/api/constants";
 import { Player } from "./player";
 import "./styles.scss";
 
@@ -78,7 +78,10 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
           <>
             <div className="footer">
               {hasValue(call.recording_url) && (
-                <Player url={call.recording_url} call_sid={call.call_sid} />
+                <Player
+                  url={`${API_BASE_URL}${call.recording_url}`}
+                  call_sid={call.call_sid}
+                />
               )}
 
               <div className="footer__buttons">
