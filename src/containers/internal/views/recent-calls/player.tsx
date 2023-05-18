@@ -26,7 +26,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
       if (blob) {
         setRecord({
           data_url: URL.createObjectURL(blob),
-          file_name: `callid-${call_sid}.raw`,
+          file_name: `callid-${call_sid}.wav`,
         });
       }
     });
