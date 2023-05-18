@@ -253,6 +253,7 @@ export interface Account {
 
 export interface BucketCredential {
   vendor: null | string;
+  region?: null | string;
   name?: null | string;
   access_key_id?: null | string;
   secret_access_key?: null | string;

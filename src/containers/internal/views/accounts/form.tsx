@@ -68,6 +68,8 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const [recordAllCalls, setRecordAllCalls] = useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
   const [tmpBucketVendor, setTmpBucketVendor] = useState("");
+  const [bucketRegion, setBucketRegion] = useState("us-east-1");
+  const [tmpBucketRegion, setTmpBucketRegion] = useState("");
   const [bucketName, setBucketName] = useState("");
   const [tmpBucketName, setTmpBucketName] = useState("");
   const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
@@ -124,6 +126,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
     if (!account || !account.data) return;
     const cred: BucketCredential = {
       vendor: bucketVendor,
+      region: bucketRegion,
       name: bucketName,
       access_key_id: bucketAccessKeyId,
       secret_access_key: bucketSecretAccessKey,
@@ -225,15 +228,15 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         registration_hook: regHook || account.data.registration_hook,
         device_calling_application_sid: appId || null,
         record_all_calls: recordAllCalls ? 1 : 0,
-        ...(bucketVendor === "aws_s3" &&
-          !bucketSecretAccessKey.endsWith("XXXXXX") && {
-            bucket_credential: {
-              vendor: bucketVendor || null,
-              name: bucketName || null,
-              access_key_id: bucketAccessKeyId || null,
-              secret_access_key: bucketSecretAccessKey || null,
-            },
-          }),
+        ...(bucketVendor === "aws_s3" && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            region: bucketRegion || null,
+            name: bucketName || null,
+            access_key_id: bucketAccessKeyId || null,
+            secret_access_key: bucketSecretAccessKey || null,
+          },
+        }),
         ...(bucketVendor === "" && {
           bucket_credential: {
             vendor: bucketVendor,
@@ -338,6 +341,12 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
           : account.data.bucket_credential?.secret_access_key || ""
       );
       setTmpBucketSecretAccessKey(bucketSecretAccessKey);
+      setBucketRegion(
+        tmpBucketRegion
+          ? tmpBucketRegion
+          : account.data.bucket_credential?.region || "us-east-1"
+      );
+      setTmpBucketRegion(bucketRegion);
       setRecordAllCalls(account.data.record_all_calls ? true : false);
     }
   }, [account]);
@@ -568,6 +577,21 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                       onChange={(e) => {
                         setBucketName(e.target.value);
                         setTmpBucketName(e.target.value);
+                      }}
+                    />
+                    <label htmlFor="bucket_aws_region">
+                      Region<span>*</span>
+                    </label>
+                    <input
+                      id="bucket_aws_region"
+                      required
+                      type="text"
+                      name="bucket_aws_region"
+                      placeholder="us-east-1"
+                      value={bucketRegion}
+                      onChange={(e) => {
+                        setBucketRegion(e.target.value);
+                        setTmpBucketRegion(e.target.value);
                       }}
                     />
                     <label htmlFor="bucket_aws_access_key">
