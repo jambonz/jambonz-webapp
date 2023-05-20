@@ -546,98 +546,105 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                 </label>
               </fieldset>
               <fieldset>
-                <div>
-                  <label htmlFor="vendor">
-                    Bucket Vendor{recordAllCalls && <span>*</span>}
-                  </label>
-                  <Selector
-                    required={recordAllCalls}
-                    id={"record_bucket_vendor"}
-                    name={"record_bucket_vendor"}
-                    value={bucketVendor}
-                    options={BUCKET_VENDOR_OPTIONS}
-                    onChange={(e) => {
-                      setBucketVendor(e.target.value);
-                      setTmpBucketVendor(e.target.value);
-                    }}
-                  />
-                </div>
-                {bucketVendor === "aws_s3" && (
-                  <>
-                    <label htmlFor="bucket_name">
-                      Bucket Name<span>*</span>
+                <Checkzone
+                  hidden
+                  name="bucket_credential"
+                  label="Bucket Credential"
+                  initialCheck={true}
+                >
+                  <div>
+                    <label htmlFor="vendor">
+                      Bucket Vendor{recordAllCalls && <span>*</span>}
                     </label>
-                    <input
-                      id="bucket_name"
-                      required
-                      type="text"
-                      name="bucket_name"
-                      placeholder="Bucket"
-                      value={bucketName}
+                    <Selector
+                      required={recordAllCalls}
+                      id={"record_bucket_vendor"}
+                      name={"record_bucket_vendor"}
+                      value={bucketVendor}
+                      options={BUCKET_VENDOR_OPTIONS}
                       onChange={(e) => {
-                        setBucketName(e.target.value);
-                        setTmpBucketName(e.target.value);
+                        setBucketVendor(e.target.value);
+                        setTmpBucketVendor(e.target.value);
                       }}
                     />
-                    <label htmlFor="bucket_aws_region">
-                      Region<span>*</span>
-                    </label>
-                    <input
-                      id="bucket_aws_region"
-                      required
-                      type="text"
-                      name="bucket_aws_region"
-                      placeholder="us-east-1"
-                      value={bucketRegion}
-                      onChange={(e) => {
-                        setBucketRegion(e.target.value);
-                        setTmpBucketRegion(e.target.value);
-                      }}
-                    />
-                    <label htmlFor="bucket_aws_access_key">
-                      Access key ID<span>*</span>
-                    </label>
-                    <input
-                      id="bucket_aws_access_key"
-                      required
-                      type="text"
-                      name="bucket_aws_access_key"
-                      placeholder="Access Key ID"
-                      value={bucketAccessKeyId}
-                      onChange={(e) => {
-                        setBucketAccessKeyId(e.target.value);
-                        setTmpBucketAccessKeyId(e.target.value);
-                      }}
-                    />
-                    <label htmlFor="bucket_aws_secret_key">
-                      Secret access key<span>*</span>
-                    </label>
-                    <Passwd
-                      id="bucket_aws_secret_key"
-                      required
-                      name="bucketaws_secret_key"
-                      placeholder="Secret Access Key"
-                      value={bucketSecretAccessKey}
-                      onChange={(e) => {
-                        setBucketSecretAccessKey(e.target.value);
-                        setTmpBucketSecretAccessKey(e.target.value);
-                      }}
-                    />
-                    <ButtonGroup left>
-                      <Button
-                        onClick={handleTestBucketCredential}
-                        small
-                        disabled={
-                          !bucketName ||
-                          !bucketAccessKeyId ||
-                          !bucketSecretAccessKey
-                        }
-                      >
-                        Test
-                      </Button>
-                    </ButtonGroup>
-                  </>
-                )}
+                  </div>
+                  {bucketVendor === "aws_s3" && (
+                    <>
+                      <label htmlFor="bucket_name">
+                        Bucket Name<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_name"
+                        required
+                        type="text"
+                        name="bucket_name"
+                        placeholder="Bucket"
+                        value={bucketName}
+                        onChange={(e) => {
+                          setBucketName(e.target.value);
+                          setTmpBucketName(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="bucket_aws_region">
+                        Region<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_aws_region"
+                        required
+                        type="text"
+                        name="bucket_aws_region"
+                        placeholder="us-east-1"
+                        value={bucketRegion}
+                        onChange={(e) => {
+                          setBucketRegion(e.target.value);
+                          setTmpBucketRegion(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="bucket_aws_access_key">
+                        Access key ID<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_aws_access_key"
+                        required
+                        type="text"
+                        name="bucket_aws_access_key"
+                        placeholder="Access Key ID"
+                        value={bucketAccessKeyId}
+                        onChange={(e) => {
+                          setBucketAccessKeyId(e.target.value);
+                          setTmpBucketAccessKeyId(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="bucket_aws_secret_key">
+                        Secret access key<span>*</span>
+                      </label>
+                      <Passwd
+                        id="bucket_aws_secret_key"
+                        required
+                        name="bucketaws_secret_key"
+                        placeholder="Secret Access Key"
+                        value={bucketSecretAccessKey}
+                        onChange={(e) => {
+                          setBucketSecretAccessKey(e.target.value);
+                          setTmpBucketSecretAccessKey(e.target.value);
+                        }}
+                      />
+                      <ButtonGroup left>
+                        <Button
+                          onClick={handleTestBucketCredential}
+                          small
+                          disabled={
+                            !bucketName ||
+                            !bucketAccessKeyId ||
+                            !bucketSecretAccessKey
+                          }
+                        >
+                          Test
+                        </Button>
+                      </ButtonGroup>
+                    </>
+                  )}
+                </Checkzone>
               </fieldset>
             </>
           )}
