@@ -16,6 +16,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
   const JUMP_DURATION = 15; //seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [playBackTime, setPlayBackTime] = useState("");
 
   const wavesurferId = `wavesurfer--${call_sid}`;
   const waveSufferRef = useRef<WaveSurfer | null>(null);
@@ -32,16 +33,24 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
     });
   }, []);
 
+  function formatTime(seconds: number) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
+  }
+
   useEffect(() => {
     if (waveSufferRef.current !== null || !record) return;
     waveSufferRef.current = WaveSurfer.create({
       container: `#${wavesurferId}`,
-      waveColor: "grey",
-      progressColor: "#da1c5c",
-      height: 70,
+      waveColor: "#da1c5c",
+      progressColor: "grey",
+      height: 50,
       cursorWidth: 1,
       cursorColor: "lightgray",
-      barWidth: 2,
       normalize: true,
       responsive: true,
       fillParent: true,
@@ -64,6 +73,11 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
 
     waveSufferRef.current.on("ready", () => {
       setIsReady(true);
+      setPlayBackTime(formatTime(waveSufferRef.current?.getDuration() || 0));
+    });
+
+    waveSufferRef.current.on("audioprocess", () => {
+      setPlayBackTime(formatTime(waveSufferRef.current?.getCurrentTime() || 0));
     });
   }, [record]);
 
@@ -95,8 +109,14 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
   return (
     <>
       <div className="media-container">
-        <div id={wavesurferId} />
-        <div className="media-container__buttons">
+        <div id={wavesurferId} className="wavesuffer">
+          <div className="center-line-top"></div>
+          <div className="center-line-bottom"></div>
+        </div>
+        <div className="media-container__center">
+          <strong>{playBackTime}</strong>
+        </div>
+        <div className="media-container__center">
           <button
             className="btnty"
             type="button"
@@ -137,6 +157,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
             href={record.data_url}
             download={record.file_name}
             className="btnty"
+            title="Download wav file"
           >
             <Icon>
               <Icons.Download />

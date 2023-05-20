@@ -2,6 +2,26 @@
 @use "src/styles/mixins";
 @use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
 
+.center-line-top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
+  height: 0.5px;
+  background-color: ui-vars.$jambonz;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.center-line-bottom {
+  @extend .center-line-top;
+  top: 75%;
+}
+
+.wavesuffer {
+  position: relative;
+}
+
 .footer {
   display: grid;
   width: 100%;
@@ -20,7 +40,7 @@
   border-radius: ui-vars.$px01;
   padding: 13px;
 
-  &__buttons {
+  &__center {
     display: flex;
     align-items: center;
     justify-content: center;
