@@ -234,7 +234,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         ...(bucketVendor === "aws_s3" && {
           bucket_credential: {
             vendor: bucketVendor || null,
-            region: bucketRegion || null,
+            region: bucketRegion || "us-east-1",
             name: bucketName || null,
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
