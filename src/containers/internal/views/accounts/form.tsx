@@ -676,7 +676,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                                   required
                                   value={b.Key}
                                   onChange={(e) => {
-                                    updateBucketTags(i, "name", e.target.value);
+                                    updateBucketTags(i, "Key", e.target.value);
                                   }}
                                 />
                               </div>
@@ -691,7 +691,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                                   onChange={(e) => {
                                     updateBucketTags(
                                       i,
-                                      "value",
+                                      "Value",
                                       e.target.value
                                     );
                                   }}
