@@ -373,8 +373,8 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
     setBucketTags((curr) => [
       ...curr,
       {
-        name: "",
-        value: "",
+        Key: "",
+        Value: "",
       },
     ]);
   };
@@ -674,7 +674,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                                   type="text"
                                   placeholder="Name"
                                   required
-                                  value={b.name}
+                                  value={b.Key}
                                   onChange={(e) => {
                                     updateBucketTags(i, "name", e.target.value);
                                   }}
@@ -687,7 +687,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                                   type="text"
                                   placeholder="Value"
                                   required
-                                  value={b.value}
+                                  value={b.Value}
                                   onChange={(e) => {
                                     updateBucketTags(
                                       i,

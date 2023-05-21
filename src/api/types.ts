@@ -252,8 +252,8 @@ export interface Account {
 }
 
 export interface AwsTag {
-  name: string;
-  value: string;
+  Key: string;
+  Value: string;
 }
 
 export interface BucketCredential {
