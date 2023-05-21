@@ -101,6 +101,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
           ? waveSufferRef.current.getDuration() - 1
           : idx;
       waveSufferRef.current.setCurrentTime(value);
+      setPlayBackTime(formatTime(value));
     }
   };
 
@@ -109,10 +110,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
   return (
     <>
       <div className="media-container">
-        <div id={wavesurferId} className="wavesuffer">
-          <div className="center-line-top"></div>
-          <div className="center-line-bottom"></div>
-        </div>
+        <div id={wavesurferId} />
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>

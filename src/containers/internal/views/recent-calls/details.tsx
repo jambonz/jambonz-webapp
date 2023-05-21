@@ -20,6 +20,12 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("");
 
+  const transformRecentCall = (call: RecentCall): RecentCall => {
+    const newCall = { ...call };
+    delete newCall.recording_url;
+    return newCall;
+  };
+
   return (
     <div className="item">
       <details
@@ -63,11 +69,11 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
         </summary>
         {call.trace_id === "00000000000000000000000000000000" ||
         DISABLE_JAEGER_TRACING ? (
-          <CallDetail call={call} />
+          <CallDetail call={transformRecentCall(call)} />
         ) : (
           <Tabs active={[activeTab, setActiveTab]}>
             <Tab id="details" label="Details">
-              <CallDetail call={call} />
+              <CallDetail call={transformRecentCall(call)} />
             </Tab>
             <Tab id="tracing" label="Tracing">
               <CallTracing call={call} />

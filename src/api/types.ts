@@ -251,12 +251,18 @@ export interface Account {
   bucket_credential: null | BucketCredential;
 }
 
+export interface AwsTag {
+  name: string;
+  value: string;
+}
+
 export interface BucketCredential {
   vendor: null | string;
   region?: null | string;
   name?: null | string;
   access_key_id?: null | string;
   secret_access_key?: null | string;
+  tags?: null | AwsTag[];
 }
 
 export interface Application {
