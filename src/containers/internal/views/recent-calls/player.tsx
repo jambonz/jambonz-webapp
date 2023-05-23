@@ -2,35 +2,124 @@ import React from "react";
 
 import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState } from "react";
-import { Icon } from "@jambonz/ui-kit";
-import { Icons } from "src/components";
-import { getBlob } from "src/api";
-import { DownloadedBlob } from "src/api/types";
+import { Icon, P } from "@jambonz/ui-kit";
+import { Icons, ModalClose } from "src/components";
+import { getBlob, getJaegerTrace } from "src/api";
+import { DownloadedBlob, RecentCall } from "src/api/types";
+import RegionsPlugin from "wavesurfer.js/src/plugin/regions";
+import TimelinePlugin from "wavesurfer.js/src/plugin/timeline";
+import { API_BASE_URL } from "src/api/constants";
+import { JaegerRoot, WaveSufferSttResult } from "src/api/jaeger-types";
+import { toastError } from "src/store";
+import {
+  getSpanAttributeByName,
+  getSpansByName,
+  getSpansByNameRegex,
+  getSpansFromJaegerRoot,
+} from "./utils";
 
 type PlayerProps = {
-  call_sid: string;
-  url: string;
+  call: RecentCall;
 };
 
-export const Player = ({ url, call_sid }: PlayerProps) => {
+export const Player = ({ call }: PlayerProps) => {
+  const { recording_url, call_sid } = call;
+  const url = `${API_BASE_URL}${recording_url}`;
   const JUMP_DURATION = 15; //seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [playBackTime, setPlayBackTime] = useState("");
+  const [jaegerRoot, setJeagerRoot] = useState<JaegerRoot>();
+  const [waveSufferRegionData, setWaveSufferRegionData] =
+    useState<WaveSufferSttResult | null>();
 
   const wavesurferId = `wavesurfer--${call_sid}`;
+  const wavesurferTimelineId = `timeline-${wavesurferId}`;
   const waveSufferRef = useRef<WaveSurfer | null>(null);
 
   const [record, setRecord] = useState<DownloadedBlob | null>(null);
+
+  const buildWavesufferRegion = () => {
+    if (jaegerRoot) {
+      const spans = getSpansFromJaegerRoot(jaegerRoot);
+      const [startPoint] = getSpansByName(spans, "background-listen:listen");
+      // there should be only one startPoint for background listen
+      if (startPoint) {
+        const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
+        gatherSpans.forEach((s) => {
+          if (waveSufferRef.current) {
+            const r = waveSufferRef.current.regions.list[s.spanId];
+            if (!r) {
+              const start =
+                (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
+                1_000_000_000;
+              const end =
+                (s.endTimeUnixNano - startPoint.startTimeUnixNano) /
+                1_000_000_000;
+
+              const region = waveSufferRef.current.addRegion({
+                id: s.spanId,
+                start,
+                end,
+                color: "rgba(255, 0, 0, 0.15)",
+                drag: false,
+                loop: false,
+              });
+              const [sttResult] = getSpanAttributeByName(
+                s.attributes,
+                "stt.result"
+              );
+              let att: WaveSufferSttResult;
+              if (sttResult) {
+                const data = JSON.parse(sttResult.value.stringValue);
+                att = {
+                  vendor: data.vendor.name,
+                  transcript: data.alternatives[0].transcript,
+                  confidence: data.alternatives[0].confidence,
+                };
+              } else {
+                att = {
+                  vendor: "gather-killed",
+                  transcript: "",
+                  confidence: 0,
+                };
+              }
+
+              region.on("click", () => {
+                setWaveSufferRegionData(att);
+              });
+            }
+          }
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    buildWavesufferRegion();
+  }, [jaegerRoot, isReady]);
+
   useEffect(() => {
     getBlob(url).then(({ blob }) => {
       if (blob) {
         setRecord({
           data_url: URL.createObjectURL(blob),
-          file_name: `callid-${call_sid}.wav`,
+          file_name: `callid-${call_sid}.mp3`,
         });
       }
     });
+
+    if (call.trace_id && call.trace_id != "00000000000000000000000000000000") {
+      getJaegerTrace(call.account_sid, call.trace_id)
+        .then(({ json }) => {
+          if (json) {
+            setJeagerRoot(json);
+          }
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
   }, []);
 
   function formatTime(seconds: number) {
@@ -56,6 +145,12 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
       fillParent: true,
       splitChannels: true,
       scrollParent: true,
+      plugins: [
+        RegionsPlugin.create({}),
+        TimelinePlugin.create({
+          container: `#${wavesurferTimelineId}`,
+        }),
+      ],
     });
 
     waveSufferRef.current.load(record?.data_url);
@@ -112,6 +207,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
     <>
       <div className="media-container">
         <div id={wavesurferId} />
+        <div id={wavesurferTimelineId} />
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>
@@ -156,7 +252,7 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
             href={record.data_url}
             download={record.file_name}
             className="btnty"
-            title="Download wav file"
+            title="Download record file"
           >
             <Icon>
               <Icons.Download />
@@ -164,6 +260,43 @@ export const Player = ({ url, call_sid }: PlayerProps) => {
           </a>
         </div>
       </div>
+      {waveSufferRegionData && (
+        <ModalClose handleClose={() => setWaveSufferRegionData(null)}>
+          <div className="spanDetailsWrapper__header">
+            <P>
+              <strong>Speech to text result</strong>
+            </P>
+          </div>
+          <div className="spanDetailsWrapper">
+            <div className="spanDetailsWrapper__detailsWrapper">
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Vendor:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSufferRegionData.vendor}
+                </div>
+              </div>
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Confidence:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSufferRegionData.confidence}
+                </div>
+              </div>
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Transcript:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSufferRegionData.transcript}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ModalClose>
+      )}
     </>
   );
 };
