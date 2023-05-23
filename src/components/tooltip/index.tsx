@@ -9,14 +9,15 @@ import "./styles.scss";
 type TooltipProps = {
   text: IMessage;
   children: React.ReactNode;
+  subStyle?: string;
 };
 
-export const Tooltip = ({ text, children }: TooltipProps) => {
+export const Tooltip = ({ text, children, subStyle }: TooltipProps) => {
   return (
     <div className="tooltip">
       <div className="tooltip__reveal">{text}</div>
       {children}
-      <Icons.HelpCircle />
+      {subStyle === "info" ? <Icons.Info /> : <Icons.HelpCircle />}
     </div>
   );
 };

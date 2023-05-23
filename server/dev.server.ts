@@ -144,7 +144,7 @@ app.get(
   (req: Request, res: Response) => {
     /** Sample pcap file from: https://wiki.wireshark.org/SampleCaptures#sip-and-rtp */
     const wav: Buffer = fs.readFileSync(
-      path.resolve(process.cwd(), "server", "example.wav")
+      path.resolve(process.cwd(), "server", "example.mp3")
     );
 
     res

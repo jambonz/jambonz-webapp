@@ -562,22 +562,10 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
           {ENABLE_RECORD_ALL_CALLS && (
             <>
               <fieldset>
-                <label htmlFor="record_all_call" className="chk">
-                  <input
-                    id="record_all_call"
-                    name="record_all_call"
-                    type="checkbox"
-                    onChange={(e) => setRecordAllCalls(e.target.checked)}
-                    checked={recordAllCalls}
-                  />
-                  <div>Record all calls</div>
-                </label>
-              </fieldset>
-              <fieldset>
                 <Checkzone
                   hidden
                   name="bucket_credential"
-                  label="Bucket Credential"
+                  label="Enable call recording"
                   initialCheck={
                     hasValue(bucketVendor) && bucketVendor.length !== 0
                   }
@@ -743,6 +731,24 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                     </>
                   )}
                 </Checkzone>
+              </fieldset>
+              <fieldset>
+                <label htmlFor="record_all_call" className="chk">
+                  <input
+                    id="record_all_call"
+                    name="record_all_call"
+                    type="checkbox"
+                    onChange={(e) => setRecordAllCalls(e.target.checked)}
+                    checked={recordAllCalls}
+                  />
+                  <div></div>
+                  <Tooltip
+                    text="You can also record calls only to specific applications"
+                    subStyle="info"
+                  >
+                    Record all calls for this account
+                  </Tooltip>
+                </label>
               </fieldset>
             </>
           )}
