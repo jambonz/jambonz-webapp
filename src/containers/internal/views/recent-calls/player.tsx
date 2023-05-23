@@ -32,6 +32,7 @@ export const Player = ({ call }: PlayerProps) => {
   const [jaegerRoot, setJeagerRoot] = useState<JaegerRoot>();
   const [waveSufferRegionData, setWaveSufferRegionData] =
     useState<WaveSufferSttResult | null>();
+  const [regionChecked, setRegionChecked] = useState(true);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
   const wavesurferTimelineId = `timeline-${wavesurferId}`;
@@ -64,7 +65,9 @@ export const Player = ({ call }: PlayerProps) => {
                 color: "rgba(255, 0, 0, 0.15)",
                 drag: false,
                 loop: false,
+                resize: false,
               });
+              console.log(s);
               const [sttResult] = getSpanAttributeByName(
                 s.attributes,
                 "stt.result"
@@ -76,12 +79,14 @@ export const Player = ({ call }: PlayerProps) => {
                   vendor: data.vendor.name,
                   transcript: data.alternatives[0].transcript,
                   confidence: data.alternatives[0].confidence,
+                  language_code: data.language_code,
                 };
               } else {
                 att = {
                   vendor: "gather-killed",
                   transcript: "",
                   confidence: 0,
+                  language_code: "",
                 };
               }
 
@@ -211,53 +216,79 @@ export const Player = ({ call }: PlayerProps) => {
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>
-        <div className="media-container__center">
-          <button
-            className="btnty"
-            type="button"
-            onClick={() => {
-              setPlaybackJump(-JUMP_DURATION);
-            }}
-            title="Jump left"
-            disabled={!isReady}
-          >
-            <Icon>
-              <Icons.ChevronsLeft />
-            </Icon>
-          </button>
-          <button
-            className="btnty"
-            type="button"
-            onClick={togglePlayback}
-            title="play/pause"
-            disabled={!isReady}
-          >
-            <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
-          </button>
+        <div className="media-container-footer">
+          <div className="left-item">
+            <label htmlFor="is_active" className="chk">
+              <input
+                id="is_active"
+                name="is_active"
+                type="checkbox"
+                checked={regionChecked}
+                onChange={(e) => {
+                  setRegionChecked(e.target.checked);
+                  if (waveSufferRef.current) {
+                    const regionsList = waveSufferRef.current.regions.list;
+                    for (const [, region] of Object.entries(regionsList)) {
+                      region.element.style.display = e.target.checked
+                        ? ""
+                        : "none";
+                    }
+                  }
+                }}
+              />
+              <div>Overlay STT results</div>
+            </label>
+          </div>
+          <div className="media-container__center">
+            <div className="center-items">
+              <button
+                className="btnty"
+                type="button"
+                onClick={() => {
+                  setPlaybackJump(-JUMP_DURATION);
+                }}
+                title="Jump left"
+                disabled={!isReady}
+              >
+                <Icon>
+                  <Icons.ChevronsLeft />
+                </Icon>
+              </button>
+              <button
+                className="btnty"
+                type="button"
+                onClick={togglePlayback}
+                title="play/pause"
+                disabled={!isReady}
+              >
+                <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
+              </button>
 
-          <button
-            className="btnty"
-            type="button"
-            onClick={() => {
-              setPlaybackJump(JUMP_DURATION);
-            }}
-            title="Jump right"
-            disabled={!isReady}
-          >
-            <Icon>
-              <Icons.ChevronsRight />
-            </Icon>
-          </button>
-          <a
-            href={record.data_url}
-            download={record.file_name}
-            className="btnty"
-            title="Download record file"
-          >
-            <Icon>
-              <Icons.Download />
-            </Icon>
-          </a>
+              <button
+                className="btnty"
+                type="button"
+                onClick={() => {
+                  setPlaybackJump(JUMP_DURATION);
+                }}
+                title="Jump right"
+                disabled={!isReady}
+              >
+                <Icon>
+                  <Icons.ChevronsRight />
+                </Icon>
+              </button>
+              <a
+                href={record.data_url}
+                download={record.file_name}
+                className="btnty"
+                title="Download record file"
+              >
+                <Icon>
+                  <Icons.Download />
+                </Icon>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       {waveSufferRegionData && (
@@ -277,12 +308,22 @@ export const Player = ({ call }: PlayerProps) => {
                   {waveSufferRegionData.vendor}
                 </div>
               </div>
+              {waveSufferRegionData.confidence !== 0 && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Confidence:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSufferRegionData.confidence}
+                  </div>
+                </div>
+              )}
               <div className="spanDetailsWrapper__details">
                 <div className="spanDetailsWrapper__details_header">
-                  <strong>Confidence:</strong>
+                  <strong>Language code:</strong>
                 </div>
                 <div className="spanDetailsWrapper__details_body">
-                  {waveSufferRegionData.confidence}
+                  {waveSufferRegionData.language_code}
                 </div>
               </div>
               <div className="spanDetailsWrapper__details">

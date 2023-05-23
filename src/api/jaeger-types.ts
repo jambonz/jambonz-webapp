@@ -41,6 +41,7 @@ export interface WaveSufferSttResult {
   vendor: string;
   transcript: string;
   confidence: number;
+  language_code: string;
 }
 
 export interface JaegerValue {
