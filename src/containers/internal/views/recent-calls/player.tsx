@@ -24,7 +24,10 @@ type PlayerProps = {
 
 export const Player = ({ call }: PlayerProps) => {
   const { recording_url, call_sid } = call;
-  const url = `${API_BASE_URL}${recording_url}`;
+  const url =
+    recording_url && recording_url.startsWith("http://")
+      ? recording_url
+      : `${API_BASE_URL}${recording_url}`;
   const JUMP_DURATION = 15; //seconds
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -216,80 +219,72 @@ export const Player = ({ call }: PlayerProps) => {
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>
-        <div className="media-container-footer">
-          <div className="left-item">
-            <label htmlFor="is_active" className="chk">
-              <input
-                id="is_active"
-                name="is_active"
-                type="checkbox"
-                checked={regionChecked}
-                onChange={(e) => {
-                  setRegionChecked(e.target.checked);
-                  if (waveSufferRef.current) {
-                    const regionsList = waveSufferRef.current.regions.list;
-                    for (const [, region] of Object.entries(regionsList)) {
-                      region.element.style.display = e.target.checked
-                        ? ""
-                        : "none";
-                    }
-                  }
-                }}
-              />
-              <div>Overlay STT results</div>
-            </label>
-          </div>
-          <div className="media-container__center">
-            <div className="center-items">
-              <button
-                className="btnty"
-                type="button"
-                onClick={() => {
-                  setPlaybackJump(-JUMP_DURATION);
-                }}
-                title="Jump left"
-                disabled={!isReady}
-              >
-                <Icon>
-                  <Icons.ChevronsLeft />
-                </Icon>
-              </button>
-              <button
-                className="btnty"
-                type="button"
-                onClick={togglePlayback}
-                title="play/pause"
-                disabled={!isReady}
-              >
-                <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
-              </button>
+        <div className="media-container__center">
+          <button
+            className="btnty"
+            type="button"
+            onClick={() => {
+              setPlaybackJump(-JUMP_DURATION);
+            }}
+            title="Jump left"
+            disabled={!isReady}
+          >
+            <Icon>
+              <Icons.ChevronsLeft />
+            </Icon>
+          </button>
+          <button
+            className="btnty"
+            type="button"
+            onClick={togglePlayback}
+            title="play/pause"
+            disabled={!isReady}
+          >
+            <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
+          </button>
 
-              <button
-                className="btnty"
-                type="button"
-                onClick={() => {
-                  setPlaybackJump(JUMP_DURATION);
-                }}
-                title="Jump right"
-                disabled={!isReady}
-              >
-                <Icon>
-                  <Icons.ChevronsRight />
-                </Icon>
-              </button>
-              <a
-                href={record.data_url}
-                download={record.file_name}
-                className="btnty"
-                title="Download record file"
-              >
-                <Icon>
-                  <Icons.Download />
-                </Icon>
-              </a>
-            </div>
-          </div>
+          <button
+            className="btnty"
+            type="button"
+            onClick={() => {
+              setPlaybackJump(JUMP_DURATION);
+            }}
+            title="Jump right"
+            disabled={!isReady}
+          >
+            <Icon>
+              <Icons.ChevronsRight />
+            </Icon>
+          </button>
+          <a
+            href={record.data_url}
+            download={record.file_name}
+            className="btnty"
+            title="Download record file"
+          >
+            <Icon>
+              <Icons.Download />
+            </Icon>
+          </a>
         </div>
+        <label htmlFor="is_active" className="chk">
+          <input
+            id="is_active"
+            name="is_active"
+            type="checkbox"
+            checked={regionChecked}
+            onChange={(e) => {
+              setRegionChecked(e.target.checked);
+              if (waveSufferRef.current) {
+                const regionsList = waveSufferRef.current.regions.list;
+                for (const [, region] of Object.entries(regionsList)) {
+                  region.element.style.display = e.target.checked ? "" : "none";
+                }
+              }
+            }}
+          />
+          <div>Overlay STT results</div>
+        </label>
       </div>
       {waveSufferRegionData && (
         <ModalClose handleClose={() => setWaveSufferRegionData(null)}>
