@@ -23,6 +23,7 @@
   border: 1px solid black;
   border-radius: ui-vars.$px01;
   padding: 13px;
+  position: relative;
 
   &__center {
     display: flex;
@@ -44,4 +45,13 @@
       @include mixins.icosize();
     }
   }
+}
+
+.media-container-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 20px;
 }
