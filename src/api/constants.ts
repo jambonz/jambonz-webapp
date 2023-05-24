@@ -13,6 +13,10 @@ import type {
 /** The API url is constructed with the docker containers `ip:port` */
 interface JambonzWindowObject {
   API_BASE_URL: string;
+  DISABLE_LCR: string;
+  DISABLE_JAEGER_TRACING: string;
+  DISABLE_CUSTOM_SPEECH: string;
+  ENABLE_FORGOT_PASSWORD: string;
 }
 
 declare global {
@@ -29,24 +33,23 @@ export const API_BASE_URL =
 export const DEV_BASE_URL = import.meta.env.VITE_DEV_BASE_URL;
 
 /** Disable custom speech vendor*/
-export const DISABLE_CUSTOM_SPEECH: boolean = JSON.parse(
-  import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false"
-);
+export const DISABLE_CUSTOM_SPEECH: boolean =
+  window.JAMBONZ?.DISABLE_CUSTOM_SPEECH === "true" ||
+  JSON.parse(import.meta.env.VITE_DISABLE_CUSTOM_SPEECH || "false");
 
 /** Enable Forgot Password */
-export const ENABLE_FORGOT_PASSWORD: boolean = JSON.parse(
-  import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false"
-);
-
+export const ENABLE_FORGOT_PASSWORD: boolean =
+  window.JAMBONZ?.ENABLE_FORGOT_PASSWORD === "true" ||
+  JSON.parse(import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false");
 /** Disable Lcr */
-export const DISABLE_LCR: boolean = JSON.parse(
-  import.meta.env.VITE_APP_LCR_DISABLED || "false"
-);
+export const DISABLE_LCR: boolean =
+  window.JAMBONZ?.DISABLE_LCR === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_LCR_DISABLED || "false");
 
 /** Disable jaeger tracing */
-export const DISABLE_JAEGER_TRACING: boolean = JSON.parse(
-  import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false"
-);
+export const DISABLE_JAEGER_TRACING: boolean =
+  window.JAMBONZ?.DISABLE_JAEGER_TRACING === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false");
 
 /** Enable Record All Call Feature */
 export const ENABLE_RECORD_ALL_CALLS: boolean = JSON.parse(

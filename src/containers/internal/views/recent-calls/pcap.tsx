@@ -13,7 +13,7 @@ export const PcapButton = ({ call }: PcapButtonProps) => {
   const [pcap, setPcap] = useState<DownloadedBlob | null>(null);
 
   useEffect(() => {
-    if (pcap === null) {
+    if (!pcap) {
       getPcap(call.account_sid, call.sip_callid, "invite")
         .then(({ blob }) => {
           if (blob) {
