@@ -35,7 +35,7 @@ export const Player = ({ call }: PlayerProps) => {
   const [jaegerRoot, setJeagerRoot] = useState<JaegerRoot>();
   const [waveSufferRegionData, setWaveSufferRegionData] =
     useState<WaveSufferSttResult | null>();
-  const [regionChecked, setRegionChecked] = useState(true);
+  const [regionChecked, setRegionChecked] = useState(false);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
   const wavesurferTimelineId = `timeline-${wavesurferId}`;
