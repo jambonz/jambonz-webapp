@@ -70,7 +70,6 @@ export const Player = ({ call }: PlayerProps) => {
                 loop: false,
                 resize: false,
               });
-              console.log(s);
               const [sttResult] = getSpanAttributeByName(
                 s.attributes,
                 "stt.result"

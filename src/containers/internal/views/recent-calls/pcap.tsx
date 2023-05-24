@@ -10,7 +10,7 @@ type PcapButtonProps = {
 };
 
 export const PcapButton = ({ call }: PcapButtonProps) => {
-  const [pcap, setPcap] = useState<DownloadedBlob>();
+  const [pcap, setPcap] = useState<DownloadedBlob | null>(null);
 
   useEffect(() => {
     getPcap(call.account_sid, call.sip_callid, "invite")
