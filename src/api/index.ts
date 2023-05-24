@@ -635,11 +635,11 @@ export const getRecentCall = (sid: string, sipCallId: string) => {
   );
 };
 
-export const getPcap = (sid: string, sipCallId: string) => {
+export const getPcap = (sid: string, sipCallId: string, method: string) => {
   return getBlob(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/pcap`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/pcap`
+      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
   );
 };
 
@@ -662,11 +662,15 @@ export const getServiceProviderRecentCall = (
   );
 };
 
-export const getServiceProviderPcap = (sid: string, sipCallId: string) => {
+export const getServiceProviderPcap = (
+  sid: string,
+  sipCallId: string,
+  method: string
+) => {
   return getBlob(
     import.meta.env.DEV
-      ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}/pcap`
-      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}/pcap`
+      ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
+      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
   );
 };
 
