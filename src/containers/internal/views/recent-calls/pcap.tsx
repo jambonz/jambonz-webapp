@@ -10,24 +10,27 @@ type PcapButtonProps = {
 };
 
 export const PcapButton = ({ call }: PcapButtonProps) => {
-  const [pcap, setPcap] = useState<DownloadedBlob>();
+  const [pcap, setPcap] = useState<DownloadedBlob | null>(null);
 
   useEffect(() => {
-    getPcap(call.account_sid, call.sip_callid)
-      .then(({ blob }) => {
-        if (blob) {
-          setPcap({
-            data_url: URL.createObjectURL(blob),
-            file_name: `callid-${call.sip_callid}.pcap`,
-          });
-        }
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      });
+    if (pcap === null) {
+      getPcap(call.account_sid, call.sip_callid, "invite")
+        .then(({ blob }) => {
+          if (blob) {
+            setPcap({
+              data_url: URL.createObjectURL(blob),
+              file_name: `callid-${call.sip_callid}.pcap`,
+            });
+          }
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
   }, []);
 
   if (pcap) {
+    console.log(pcap);
     return (
       <a
         href={pcap.data_url}
