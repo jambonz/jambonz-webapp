@@ -70,6 +70,7 @@ export const Player = ({ call }: PlayerProps) => {
                 loop: false,
                 resize: false,
               });
+              region.element.style.display = regionChecked ? "" : "none";
               const [sttResult] = getSpanAttributeByName(
                 s.attributes,
                 "stt.result"
