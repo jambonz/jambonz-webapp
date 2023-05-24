@@ -31,8 +31,8 @@ export const PcapButton = ({
     p.then(({ json }) => {
       if (json.total > 0) {
         const p1 = accountSid
-          ? getPcap(accountSid, sipCallId)
-          : getServiceProviderPcap(serviceProviderSid, sipCallId);
+          ? getPcap(accountSid, sipCallId, "register")
+          : getServiceProviderPcap(serviceProviderSid, sipCallId, "register");
         p1.then(({ blob }) => {
           if (blob) {
             setPcap({
