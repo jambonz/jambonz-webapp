@@ -30,7 +30,6 @@ export const PcapButton = ({ call }: PcapButtonProps) => {
   }, []);
 
   if (pcap) {
-    console.log(pcap);
     return (
       <a
         href={pcap.data_url}
