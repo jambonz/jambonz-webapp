@@ -24,6 +24,7 @@ import {
   API_LCR_ROUTES,
   API_LCR_CARRIER_SET_ENTRIES,
   API_LCRS,
+  API_TTS_CACHE,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -587,6 +588,10 @@ export const deleteLcr = (sid: string) => {
 
 export const deleteLcrRoute = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_LCR_ROUTES}/${sid}`);
+};
+
+export const deleteTtsCache = () => {
+  return deleteFetch<EmptyResponse>(API_TTS_CACHE);
 };
 
 /** Named wrappers for `getFetch` */
