@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import { ButtonGroup, Button } from "@jambonz/ui-kit";
+import { ButtonGroup, Button, MS } from "@jambonz/ui-kit";
 import {
   useApiData,
   postPasswordSettings,
   postSystemInformation,
+  deleteTtsCache,
 } from "src/api";
-import { PasswordSettings, SystemInformation } from "src/api/types";
+import { PasswordSettings, SystemInformation, TtsCache } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
@@ -15,8 +16,9 @@ import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
     useApiData<PasswordSettings>("PasswordSettings");
-  const [systemInformatin, systemInformationFetcher] =
+  const [systemInformation, systemInformationFetcher] =
     useApiData<SystemInformation>("SystemInformation");
+  const [ttsCache, ttsCacheFetcher] = useApiData<TtsCache>("TtsCache");
   // Min value is 8
   const [minPasswordLength, setMinPasswordLength] = useState(PASSWORD_MIN);
   const [requireDigit, setRequireDigit] = useState(false);
@@ -24,6 +26,18 @@ export const AdminSettings = () => {
   const [domainName, setDomainName] = useState("");
   const [sipDomainName, setSipDomainName] = useState("");
   const [monitoringDomainName, setMonitoringDomainName] = useState("");
+
+  const handleClearCache = (e: React.FormEvent) => {
+    e.preventDefault();
+    deleteTtsCache()
+      .then(() => {
+        ttsCacheFetcher();
+        toastSuccess("Tts Cache successfully cleaned");
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +76,12 @@ export const AdminSettings = () => {
         setMinPasswordLength(passwordSettings.min_password_length);
       }
     }
-    if (hasValue(systemInformatin)) {
-      setDomainName(systemInformatin.domain_name);
-      setSipDomainName(systemInformatin.sip_domain_name);
-      setMonitoringDomainName(systemInformatin.monitoring_domain_name);
+    if (hasValue(systemInformation)) {
+      setDomainName(systemInformation.domain_name);
+      setSipDomainName(systemInformation.sip_domain_name);
+      setMonitoringDomainName(systemInformation.monitoring_domain_name);
     }
-  }, [passwordSettings, systemInformatin]);
+  }, [passwordSettings, systemInformation]);
 
   return (
     <>
@@ -131,6 +145,18 @@ export const AdminSettings = () => {
           />
           <div>Password require special character</div>
         </label>
+      </fieldset>
+      <fieldset>
+        <ButtonGroup left>
+          <Button
+            onClick={handleClearCache}
+            small
+            disabled={!ttsCache || ttsCache.size === 0}
+          >
+            Clear TTS Cache
+          </Button>
+        </ButtonGroup>
+        <MS>{`There are ${ttsCache?.size} cached TTS prompts`}</MS>
       </fieldset>
       <fieldset>
         <ButtonGroup left>
