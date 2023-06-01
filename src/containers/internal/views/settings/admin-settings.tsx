@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { ButtonGroup, Button, MS } from "@jambonz/ui-kit";
+import { ButtonGroup, Button, MS, P } from "@jambonz/ui-kit";
 import {
   useApiData,
   postPasswordSettings,
@@ -12,6 +12,7 @@ import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue } from "src/utils";
 import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
+import { Modal } from "src/components";
 
 export const AdminSettings = () => {
   const [passwordSettings, passwordSettingsFetcher] =
@@ -26,12 +27,13 @@ export const AdminSettings = () => {
   const [domainName, setDomainName] = useState("");
   const [sipDomainName, setSipDomainName] = useState("");
   const [monitoringDomainName, setMonitoringDomainName] = useState("");
+  const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
 
-  const handleClearCache = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClearCache = () => {
     deleteTtsCache()
       .then(() => {
         ttsCacheFetcher();
+        setClearTtsCacheFlag(false);
         toastSuccess("Tts Cache successfully cleaned");
       })
       .catch((error) => {
@@ -149,14 +151,19 @@ export const AdminSettings = () => {
       <fieldset>
         <ButtonGroup left>
           <Button
-            onClick={handleClearCache}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              setClearTtsCacheFlag(true);
+            }}
             small
             disabled={!ttsCache || ttsCache.size === 0}
           >
             Clear TTS Cache
           </Button>
         </ButtonGroup>
-        <MS>{`There are ${ttsCache?.size} cached TTS prompts`}</MS>
+        <MS>{`There are ${
+          ttsCache ? ttsCache.size : 0
+        } cached TTS prompts`}</MS>
       </fieldset>
       <fieldset>
         <ButtonGroup left>
@@ -165,6 +172,14 @@ export const AdminSettings = () => {
           </Button>
         </ButtonGroup>
       </fieldset>
+      {clearTtsCacheFlag && (
+        <Modal
+          handleSubmit={handleClearCache}
+          handleCancel={() => setClearTtsCacheFlag(false)}
+        >
+          <P>Are you sure you want to clean TTS cache?</P>
+        </Modal>
+      )}
     </>
   );
 };
