@@ -57,7 +57,7 @@ export const Player = ({ call }: PlayerProps) => {
               const start =
                 (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
                   1_000_000_000 +
-                0.1; // add magic 0.01 second in each region start time to isolate 2 near regions
+                0.05; // add magic 0.01 second in each region start time to isolate 2 near regions
               const end =
                 (s.endTimeUnixNano - startPoint.startTimeUnixNano) /
                 1_000_000_000;
