@@ -56,7 +56,8 @@ export const Player = ({ call }: PlayerProps) => {
             if (!r) {
               const start =
                 (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
-                1_000_000_000;
+                  1_000_000_000 +
+                0.01; // add magic 0.01 second in each region start time to isolate 2 near regions
               const end =
                 (s.endTimeUnixNano - startPoint.startTimeUnixNano) /
                 1_000_000_000;
@@ -66,7 +67,7 @@ export const Player = ({ call }: PlayerProps) => {
                 start,
                 end,
                 color: "rgba(255, 0, 0, 0.15)",
-                drag: false,
+                // drag: false,
                 loop: false,
                 resize: false,
               });
@@ -85,12 +86,26 @@ export const Player = ({ call }: PlayerProps) => {
                   language_code: data.language_code,
                 };
               } else {
-                att = {
-                  vendor: "gather-killed",
-                  transcript: "",
-                  confidence: 0,
-                  language_code: "",
-                };
+                const [sttResolve] = getSpanAttributeByName(
+                  s.attributes,
+                  "stt.resolve"
+                );
+                if (sttResolve && sttResolve.value.stringValue === "timeout") {
+                  att = {
+                    vendor: "",
+                    transcript: "None (speech session timeout)",
+                    confidence: 0,
+                    language_code: "",
+                  };
+                } else {
+                  att = {
+                    vendor: "",
+                    transcript:
+                      "None (call disconnected or speech session terminated)",
+                    confidence: 0,
+                    language_code: "",
+                  };
+                }
               }
 
               region.on("click", () => {
@@ -295,14 +310,16 @@ export const Player = ({ call }: PlayerProps) => {
           </div>
           <div className="spanDetailsWrapper">
             <div className="spanDetailsWrapper__detailsWrapper">
-              <div className="spanDetailsWrapper__details">
-                <div className="spanDetailsWrapper__details_header">
-                  <strong>Vendor:</strong>
+              {waveSufferRegionData.vendor && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Vendor:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSufferRegionData.vendor}
+                  </div>
                 </div>
-                <div className="spanDetailsWrapper__details_body">
-                  {waveSufferRegionData.vendor}
-                </div>
-              </div>
+              )}
               {waveSufferRegionData.confidence !== 0 && (
                 <div className="spanDetailsWrapper__details">
                   <div className="spanDetailsWrapper__details_header">
@@ -313,22 +330,26 @@ export const Player = ({ call }: PlayerProps) => {
                   </div>
                 </div>
               )}
-              <div className="spanDetailsWrapper__details">
-                <div className="spanDetailsWrapper__details_header">
-                  <strong>Language code:</strong>
+              {waveSufferRegionData.language_code && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Language code:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSufferRegionData.language_code}
+                  </div>
                 </div>
-                <div className="spanDetailsWrapper__details_body">
-                  {waveSufferRegionData.language_code}
+              )}
+              {waveSufferRegionData.transcript && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Transcript:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSufferRegionData.transcript}
+                  </div>
                 </div>
-              </div>
-              <div className="spanDetailsWrapper__details">
-                <div className="spanDetailsWrapper__details_header">
-                  <strong>Transcript:</strong>
-                </div>
-                <div className="spanDetailsWrapper__details_body">
-                  {waveSufferRegionData.transcript}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </ModalClose>

@@ -17,6 +17,7 @@ interface JambonzWindowObject {
   DISABLE_JAEGER_TRACING: string;
   DISABLE_CUSTOM_SPEECH: string;
   ENABLE_FORGOT_PASSWORD: string;
+  RECORD_ALL_CALLS_ENABLED: string;
 }
 
 declare global {
@@ -52,9 +53,9 @@ export const DISABLE_JAEGER_TRACING: boolean =
   JSON.parse(import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false");
 
 /** Enable Record All Call Feature */
-export const ENABLE_RECORD_ALL_CALLS: boolean = JSON.parse(
-  import.meta.env.VITE_APP_RECORD_ALL_CALLS_ENABLED || "false"
-);
+export const ENABLE_RECORD_ALL_CALLS: boolean =
+  window.JAMBONZ?.RECORD_ALL_CALLS_ENABLED === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_RECORD_ALL_CALLS_ENABLED || "true");
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;

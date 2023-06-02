@@ -241,7 +241,9 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
             ...(hasLength(bucketTags) && { tags: bucketTags }),
           },
         }),
+        // Alway put this at the bottom to clear above bucket credential setting.
         ...(!bucketCredentialChecked && {
+          record_all_calls: 0,
           bucket_credential: {
             vendor: "none",
           },
@@ -730,25 +732,23 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                       </ButtonGroup>
                     </>
                   )}
+                  <label htmlFor="record_all_call" className="chk">
+                    <input
+                      id="record_all_call"
+                      name="record_all_call"
+                      type="checkbox"
+                      onChange={(e) => setRecordAllCalls(e.target.checked)}
+                      checked={recordAllCalls}
+                    />
+                    <div></div>
+                    <Tooltip
+                      text="You can also record calls only to specific applications"
+                      subStyle="info"
+                    >
+                      Record all calls for this account
+                    </Tooltip>
+                  </label>
                 </Checkzone>
-              </fieldset>
-              <fieldset>
-                <label htmlFor="record_all_call" className="chk">
-                  <input
-                    id="record_all_call"
-                    name="record_all_call"
-                    type="checkbox"
-                    onChange={(e) => setRecordAllCalls(e.target.checked)}
-                    checked={recordAllCalls}
-                  />
-                  <div></div>
-                  <Tooltip
-                    text="You can also record calls only to specific applications"
-                    subStyle="info"
-                  >
-                    Record all calls for this account
-                  </Tooltip>
-                </label>
               </fieldset>
             </>
           )}
