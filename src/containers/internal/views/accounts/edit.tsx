@@ -7,7 +7,7 @@ import { useApiData } from "src/api";
 import { toastError, useSelectState } from "src/store";
 import { AccountForm } from "./form";
 
-import type { Account, Application, Limit } from "src/api/types";
+import type { Account, Application, Limit, TtsCache } from "src/api/types";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
@@ -25,6 +25,9 @@ export const EditAccount = () => {
     `Accounts/${params.account_sid}/Limits`
   );
   const [apps] = useApiData<Application[]>("Applications");
+  const [ttsCache, ttsCacheFetcher] = useApiData<TtsCache>(
+    `Accounts/${params.account_sid}/TtsCache`
+  );
 
   useScopedRedirect(
     Scope.account,
@@ -50,6 +53,7 @@ export const EditAccount = () => {
         apps={apps}
         account={{ data, refetch, error }}
         limits={{ data: limitsData, refetch: refetchLimits }}
+        ttsCache={{ data: ttsCache, refetch: ttsCacheFetcher }}
       />
       <ApiKeys
         path={`Accounts/${params.account_sid}/ApiKeys`}
