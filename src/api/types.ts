@@ -128,6 +128,10 @@ export interface SystemInformation {
   monitoring_domain_name: string;
 }
 
+export interface TtsCache {
+  size: number;
+}
+
 /** API responses/payloads */
 
 export interface User {
