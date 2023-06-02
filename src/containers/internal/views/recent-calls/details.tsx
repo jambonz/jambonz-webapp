@@ -40,7 +40,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
           <div className="item__info">
             <div className="item__title">
               <strong>
-                {dayjs(call.attempted_at).format("YYYY MM.DD hh:mm a")}
+                {dayjs(call.attempted_at).format("YYYY MM.DD hh:mm:ss a")}
               </strong>
               <span className="i txt--dark">
                 {call.direction === "inbound" ? (
