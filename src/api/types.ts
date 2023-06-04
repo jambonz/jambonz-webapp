@@ -51,6 +51,7 @@ export enum StatusCodes {
 /** Fetch transport interfaces */
 
 export interface FetchTransport<Type> {
+  headers: Headers;
   status: StatusCodes;
   json: Type;
   blob?: Blob;
@@ -267,6 +268,7 @@ export interface BucketCredential {
   access_key_id?: null | string;
   secret_access_key?: null | string;
   tags?: null | AwsTag[];
+  output_format?: null | string;
 }
 
 export interface Application {

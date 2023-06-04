@@ -123,11 +123,12 @@ export const Player = ({ call }: PlayerProps) => {
   }, [jaegerRoot, isReady]);
 
   useEffect(() => {
-    getBlob(url).then(({ blob }) => {
+    getBlob(url).then(({ blob, headers }) => {
       if (blob) {
+        const ext = headers.get("Content-Type") === "audio/wav" ? "wav" : "mp3";
         setRecord({
           data_url: URL.createObjectURL(blob),
-          file_name: `callid-${call_sid}.mp3`,
+          file_name: `callid-${call_sid}.${ext}`,
         });
       }
     });

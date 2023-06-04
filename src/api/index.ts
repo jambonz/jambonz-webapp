@@ -85,6 +85,7 @@ const fetchTransport = <Type>(
     try {
       const response = await fetch(url, options);
       const transport: FetchTransport<Type> = {
+        headers: response.headers,
         status: response.status,
         json: <Type>{},
       };

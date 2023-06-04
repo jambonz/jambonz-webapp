@@ -23,6 +23,7 @@ import {
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
+  AUDIO_FORMAT_OPTIONS,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
   DEFAULT_WEBHOOK,
@@ -68,6 +69,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
   const [recordAllCalls, setRecordAllCalls] = useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
+  const [outputFormat, setOutputFormat] = useState("mp3");
   const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
   const [tmpBucketRegion, setTmpBucketRegion] = useState("");
@@ -233,6 +235,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         record_all_calls: recordAllCalls ? 1 : 0,
         ...(bucketVendor === "aws_s3" && {
           bucket_credential: {
+            output_format: outputFormat || "mp3",
             vendor: bucketVendor || null,
             region: bucketRegion || "us-east-1",
             name: bucketName || null,
@@ -241,7 +244,6 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
             ...(hasLength(bucketTags) && { tags: bucketTags }),
           },
         }),
-        // Alway put this at the bottom to clear above bucket credential setting.
         ...(!bucketCredentialChecked && {
           record_all_calls: 0,
           bucket_credential: {
@@ -358,6 +360,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         hasValue(bucketVendor) && bucketVendor.length !== 0
       );
       setBucketTags(account.data.bucket_credential?.tags || []);
+      setOutputFormat(account.data.bucket_credential?.output_format || "mp3");
     }
   }, [account]);
 
@@ -575,6 +578,18 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                     setBucketCredentialChecked(e.target.checked);
                   }}
                 >
+                  <div>
+                    <label htmlFor="audio_format">Audio Format</label>
+                    <Selector
+                      id={"audio_format"}
+                      name={"audio_format"}
+                      value={outputFormat}
+                      options={AUDIO_FORMAT_OPTIONS}
+                      onChange={(e) => {
+                        setOutputFormat(e.target.value);
+                      }}
+                    />
+                  </div>
                   <div>
                     <label htmlFor="vendor">
                       Bucket Vendor{recordAllCalls && <span>*</span>}

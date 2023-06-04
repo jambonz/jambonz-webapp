@@ -141,6 +141,17 @@ export const BUCKET_VENDOR_OPTIONS = [
     value: "aws_s3",
   },
 ];
+
+export const AUDIO_FORMAT_OPTIONS = [
+  {
+    name: "Mp3",
+    value: "mp3",
+  },
+  {
+    name: "Wav",
+    value: "wav",
+  },
+];
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;
