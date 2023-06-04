@@ -69,7 +69,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
   const [recordAllCalls, setRecordAllCalls] = useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
-  const [outputFormat, setOutputFormat] = useState("mp3");
+  const [recordFormat, setRecordFormat] = useState("mp3");
   const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
   const [tmpBucketRegion, setTmpBucketRegion] = useState("");
@@ -233,9 +233,9 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         registration_hook: regHook || account.data.registration_hook,
         device_calling_application_sid: appId || null,
         record_all_calls: recordAllCalls ? 1 : 0,
+        record_format: recordFormat ? recordFormat : "mp3",
         ...(bucketVendor === "aws_s3" && {
           bucket_credential: {
-            output_format: outputFormat || "mp3",
             vendor: bucketVendor || null,
             region: bucketRegion || "us-east-1",
             name: bucketName || null,
@@ -360,7 +360,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
         hasValue(bucketVendor) && bucketVendor.length !== 0
       );
       setBucketTags(account.data.bucket_credential?.tags || []);
-      setOutputFormat(account.data.bucket_credential?.output_format || "mp3");
+      setRecordFormat(account.data.record_format || "mp3");
     }
   }, [account]);
 
@@ -583,10 +583,10 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
                     <Selector
                       id={"audio_format"}
                       name={"audio_format"}
-                      value={outputFormat}
+                      value={recordFormat}
                       options={AUDIO_FORMAT_OPTIONS}
                       onChange={(e) => {
-                        setOutputFormat(e.target.value);
+                        setRecordFormat(e.target.value);
                       }}
                     />
                   </div>

@@ -253,6 +253,7 @@ export interface Account {
   service_provider_sid: string;
   device_calling_application_sid: null | string;
   record_all_calls: number;
+  record_format?: null | string;
   bucket_credential: null | BucketCredential;
 }
 
@@ -268,7 +269,6 @@ export interface BucketCredential {
   access_key_id?: null | string;
   secret_access_key?: null | string;
   tags?: null | AwsTag[];
-  output_format?: null | string;
 }
 
 export interface Application {
