@@ -9,7 +9,11 @@ import { DownloadedBlob, RecentCall } from "src/api/types";
 import RegionsPlugin from "wavesurfer.js/src/plugin/regions";
 import TimelinePlugin from "wavesurfer.js/src/plugin/timeline";
 import { API_BASE_URL } from "src/api/constants";
-import { JaegerRoot, WaveSufferSttResult } from "src/api/jaeger-types";
+import {
+  JaegerRoot,
+  JaegerSpan,
+  WaveSufferSttResult,
+} from "src/api/jaeger-types";
 import { toastError } from "src/store";
 import {
   getSpanAttributeByName,
@@ -43,6 +47,66 @@ export const Player = ({ call }: PlayerProps) => {
 
   const [record, setRecord] = useState<DownloadedBlob | null>(null);
 
+  const drawRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
+    if (waveSufferRef.current) {
+      const r = waveSufferRef.current.regions.list[s.spanId];
+      if (!r) {
+        const start =
+          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000 +
+          0.05; // add magic 0.01 second in each region start time to isolate 2 near regions
+        const end =
+          (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
+
+        const region = waveSufferRef.current.addRegion({
+          id: s.spanId,
+          start,
+          end,
+          color: "rgba(255, 0, 0, 0.15)",
+          drag: false,
+          loop: false,
+          resize: false,
+        });
+        region.element.style.display = regionChecked ? "" : "none";
+        const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
+        let att: WaveSufferSttResult;
+        if (sttResult) {
+          const data = JSON.parse(sttResult.value.stringValue);
+          att = {
+            vendor: data.vendor.name,
+            transcript: data.alternatives[0].transcript,
+            confidence: data.alternatives[0].confidence,
+            language_code: data.language_code,
+          };
+        } else {
+          const [sttResolve] = getSpanAttributeByName(
+            s.attributes,
+            "stt.resolve"
+          );
+          if (sttResolve && sttResolve.value.stringValue === "timeout") {
+            att = {
+              vendor: "",
+              transcript: "None (speech session timeout)",
+              confidence: 0,
+              language_code: "",
+            };
+          } else {
+            att = {
+              vendor: "",
+              transcript:
+                "None (call disconnected or speech session terminated)",
+              confidence: 0,
+              language_code: "",
+            };
+          }
+        }
+
+        region.on("click", () => {
+          setWaveSufferRegionData(att);
+        });
+      }
+    }
+  };
+
   const buildWavesufferRegion = () => {
     if (jaegerRoot) {
       const spans = getSpansFromJaegerRoot(jaegerRoot);
@@ -51,68 +115,12 @@ export const Player = ({ call }: PlayerProps) => {
       if (startPoint) {
         const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
         gatherSpans.forEach((s) => {
-          if (waveSufferRef.current) {
-            const r = waveSufferRef.current.regions.list[s.spanId];
-            if (!r) {
-              const start =
-                (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
-                  1_000_000_000 +
-                0.05; // add magic 0.01 second in each region start time to isolate 2 near regions
-              const end =
-                (s.endTimeUnixNano - startPoint.startTimeUnixNano) /
-                1_000_000_000;
+          drawRegionForSpan(s, startPoint);
+        });
 
-              const region = waveSufferRef.current.addRegion({
-                id: s.spanId,
-                start,
-                end,
-                color: "rgba(255, 0, 0, 0.15)",
-                // drag: false,
-                loop: false,
-                resize: false,
-              });
-              region.element.style.display = regionChecked ? "" : "none";
-              const [sttResult] = getSpanAttributeByName(
-                s.attributes,
-                "stt.result"
-              );
-              let att: WaveSufferSttResult;
-              if (sttResult) {
-                const data = JSON.parse(sttResult.value.stringValue);
-                att = {
-                  vendor: data.vendor.name,
-                  transcript: data.alternatives[0].transcript,
-                  confidence: data.alternatives[0].confidence,
-                  language_code: data.language_code,
-                };
-              } else {
-                const [sttResolve] = getSpanAttributeByName(
-                  s.attributes,
-                  "stt.resolve"
-                );
-                if (sttResolve && sttResolve.value.stringValue === "timeout") {
-                  att = {
-                    vendor: "",
-                    transcript: "None (speech session timeout)",
-                    confidence: 0,
-                    language_code: "",
-                  };
-                } else {
-                  att = {
-                    vendor: "",
-                    transcript:
-                      "None (call disconnected or speech session terminated)",
-                    confidence: 0,
-                    language_code: "",
-                  };
-                }
-              }
-
-              region.on("click", () => {
-                setWaveSufferRegionData(att);
-              });
-            }
-          }
+        const childSpans = getSpansByNameRegex(spans, /stt-listen:/);
+        childSpans.forEach((cs) => {
+          drawRegionForSpan(cs, startPoint);
         });
       }
     }
