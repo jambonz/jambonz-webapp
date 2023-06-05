@@ -64,8 +64,7 @@ export const Player = ({ call }: PlayerProps) => {
             (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
             1_000_000_000;
           const duration =
-            Number(durationValue.value.stringValue.replace("ms", "")) /
-            1_000_000;
+            Number(durationValue.value.stringValue.replace("ms", "")) / 1_000;
           // as duration of DTMF is short, cannot be shown in wavesuffer,
           // adjust region width here.
           const delta = duration <= 0.1 ? 0.1 : duration;
