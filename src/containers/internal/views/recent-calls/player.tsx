@@ -347,7 +347,7 @@ export const Player = ({ call }: PlayerProps) => {
         </div>
         <label htmlFor="is_active" className="chk">
           <input
-            id="is_active"
+            id={`is_active${call.call_sid}`}
             name="is_active"
             type="checkbox"
             checked={regionChecked}
