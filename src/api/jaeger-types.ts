@@ -44,6 +44,11 @@ export interface WaveSufferSttResult {
   language_code: string;
 }
 
+export interface WaveSufferDtmfResult {
+  dtmf: string;
+  duration: string;
+}
+
 export interface JaegerValue {
   stringValue: string;
   doubleValue: string;

@@ -144,11 +144,11 @@ export const BUCKET_VENDOR_OPTIONS = [
 
 export const AUDIO_FORMAT_OPTIONS = [
   {
-    name: "Mp3",
+    name: "mp3",
     value: "mp3",
   },
   {
-    name: "Wav",
+    name: "wav",
     value: "wav",
   },
 ];

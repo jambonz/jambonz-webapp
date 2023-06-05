@@ -12,6 +12,7 @@ import { API_BASE_URL } from "src/api/constants";
 import {
   JaegerRoot,
   JaegerSpan,
+  WaveSufferDtmfResult,
   WaveSufferSttResult,
 } from "src/api/jaeger-types";
 import { toastError } from "src/store";
@@ -39,6 +40,8 @@ export const Player = ({ call }: PlayerProps) => {
   const [jaegerRoot, setJeagerRoot] = useState<JaegerRoot>();
   const [waveSufferRegionData, setWaveSufferRegionData] =
     useState<WaveSufferSttResult | null>();
+  const [waveSufferDtmfData, setWaveSufferDtmfData] =
+    useState<WaveSufferDtmfResult | null>();
   const [regionChecked, setRegionChecked] = useState(false);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
@@ -47,7 +50,53 @@ export const Player = ({ call }: PlayerProps) => {
 
   const [record, setRecord] = useState<DownloadedBlob | null>(null);
 
-  const drawRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
+  const drawDtmfRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
+    if (waveSufferRef.current) {
+      const r = waveSufferRef.current.regions.list[s.spanId];
+      if (!r) {
+        const [dtmfValue] = getSpanAttributeByName(s.attributes, "dtmf");
+        const [durationValue] = getSpanAttributeByName(
+          s.attributes,
+          "duration"
+        );
+        if (dtmfValue && durationValue) {
+          const start =
+            (s.startTimeUnixNano - startPoint.startTimeUnixNano) /
+            1_000_000_000;
+          const duration =
+            Number(durationValue.value.stringValue.replace("ms", "")) / 1000;
+          // as duration of DTMF is short, cannot be shown in wavesuffer,
+          // adjust region width here.
+          const delta = duration <= 0.2 ? 0.2 : duration;
+          console.log(duration);
+          const end = start + delta;
+          console.log(delta);
+
+          const region = waveSufferRef.current.addRegion({
+            id: s.spanId,
+            start,
+            end,
+            color: "rgba(138, 43, 226, 0.15)",
+            drag: false,
+            loop: false,
+            resize: false,
+          });
+          region.element.style.display = regionChecked ? "" : "none";
+
+          const att: WaveSufferDtmfResult = {
+            dtmf: dtmfValue.value.stringValue,
+            duration: durationValue.value.stringValue,
+          };
+
+          region.on("click", () => {
+            setWaveSufferDtmfData(att);
+          });
+        }
+      }
+    }
+  };
+
+  const drawSttRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
     if (waveSufferRef.current) {
       const r = waveSufferRef.current.regions.list[s.spanId];
       if (!r) {
@@ -115,12 +164,17 @@ export const Player = ({ call }: PlayerProps) => {
       if (startPoint) {
         const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
         gatherSpans.forEach((s) => {
-          drawRegionForSpan(s, startPoint);
+          drawSttRegionForSpan(s, startPoint);
         });
 
-        const childSpans = getSpansByNameRegex(spans, /stt-listen:/);
-        childSpans.forEach((cs) => {
-          drawRegionForSpan(cs, startPoint);
+        const transcribeSpans = getSpansByNameRegex(spans, /stt-listen:/);
+        transcribeSpans.forEach((cs) => {
+          drawSttRegionForSpan(cs, startPoint);
+        });
+
+        const dtmfSpans = getSpansByNameRegex(spans, /dtmf:/);
+        dtmfSpans.forEach((ds) => {
+          drawDtmfRegionForSpan(ds, startPoint);
         });
       }
     }
@@ -307,7 +361,7 @@ export const Player = ({ call }: PlayerProps) => {
               }
             }}
           />
-          <div>Overlay STT results</div>
+          <div>Overlay STT and DTMF events</div>
         </label>
       </div>
       {waveSufferRegionData && (
@@ -359,6 +413,36 @@ export const Player = ({ call }: PlayerProps) => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </ModalClose>
+      )}
+      {waveSufferDtmfData && (
+        <ModalClose handleClose={() => setWaveSufferDtmfData(null)}>
+          <div className="spanDetailsWrapper__header">
+            <P>
+              <strong>Dtmf result</strong>
+            </P>
+          </div>
+          <div className="spanDetailsWrapper">
+            <div className="spanDetailsWrapper__detailsWrapper">
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Dtmf:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSufferDtmfData.dtmf}
+                </div>
+              </div>
+
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Duration:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSufferDtmfData.duration}
+                </div>
+              </div>
             </div>
           </div>
         </ModalClose>
