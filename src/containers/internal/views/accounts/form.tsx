@@ -10,6 +10,7 @@ import {
   useApiData,
   postAccountLimit,
   deleteAccountLimit,
+  deleteAccountTtsCache,
   postAccountBucketCredentialTest,
 } from "src/api";
 import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
@@ -40,6 +41,7 @@ import type {
   WebhookMethod,
   UseApiDataMap,
   Limit,
+  TtsCache,
   BucketCredential,
   AwsTag,
 } from "src/api/types";
@@ -49,9 +51,15 @@ type AccountFormProps = {
   apps?: Application[];
   limits?: UseApiDataMap<Limit[]>;
   account?: UseApiDataMap<Account>;
+  ttsCache?: UseApiDataMap<TtsCache>;
 };
 
-export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
+export const AccountForm = ({
+  apps,
+  limits,
+  account,
+  ttsCache,
+}: AccountFormProps) => {
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -67,6 +75,7 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
   const [initialRegHook, setInitialRegHook] = useState(false);
   const [initialQueueHook, setInitialQueueHook] = useState(false);
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
+  const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
   const [recordAllCalls, setRecordAllCalls] = useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
   const [recordFormat, setRecordFormat] = useState("mp3");
@@ -180,6 +189,20 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
           toastError(error.msg);
         });
     }
+  };
+
+  const handleClearCache = () => {
+    deleteAccountTtsCache(account?.data?.account_sid || "")
+      .then(() => {
+        if (ttsCache) {
+          ttsCache.refetch();
+        }
+        setClearTtsCacheFlag(false);
+        toastSuccess("Tts Cache successfully cleaned");
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -564,6 +587,25 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
               </fieldset>
             );
           })}
+          {ttsCache && (
+            <fieldset>
+              <ButtonGroup left>
+                <Button
+                  onClick={(e: React.FormEvent) => {
+                    e.preventDefault();
+                    setClearTtsCacheFlag(true);
+                  }}
+                  small
+                  disabled={ttsCache.data?.size === 0}
+                >
+                  Clear TTS Cache
+                </Button>
+              </ButtonGroup>
+              <MS>{`There are ${
+                ttsCache.data ? ttsCache.data.size : 0
+              } cached TTS prompts`}</MS>
+            </fieldset>
+          )}
           {ENABLE_RECORD_ALL_CALLS && (
             <>
               <fieldset>
@@ -796,6 +838,14 @@ export const AccountForm = ({ apps, limits, account }: AccountFormProps) => {
             Confirm generating a new webhook signing secret. Note: this will
             immediately invalidate the old webhook signing secret.
           </P>
+        </Modal>
+      )}
+      {clearTtsCacheFlag && (
+        <Modal
+          handleSubmit={handleClearCache}
+          handleCancel={() => setClearTtsCacheFlag(false)}
+        >
+          <P>Are you sure you want to clean TTS cache for this account?</P>
         </Modal>
       )}
     </>

@@ -595,6 +595,10 @@ export const deleteTtsCache = () => {
   return deleteFetch<EmptyResponse>(API_TTS_CACHE);
 };
 
+export const deleteAccountTtsCache = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_BASE_URL}/Accounts/${sid}/TtsCache`);
+};
+
 /** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {
