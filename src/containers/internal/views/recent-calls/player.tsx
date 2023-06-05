@@ -6,7 +6,7 @@ import { Icon, P } from "@jambonz/ui-kit";
 import { Icons, ModalClose } from "src/components";
 import { getBlob, getJaegerTrace } from "src/api";
 import { DownloadedBlob, RecentCall } from "src/api/types";
-import RegionsPlugin from "wavesurfer.js/src/plugin/regions";
+import RegionsPlugin, { Region } from "wavesurfer.js/src/plugin/regions";
 import TimelinePlugin from "wavesurfer.js/src/plugin/timeline";
 import { API_BASE_URL } from "src/api/constants";
 import {
@@ -68,9 +68,7 @@ export const Player = ({ call }: PlayerProps) => {
           // as duration of DTMF is short, cannot be shown in wavesuffer,
           // adjust region width here.
           const delta = duration <= 0.1 ? 0.1 : duration;
-          console.log(duration);
           const end = start + delta;
-          console.log(delta);
 
           const region = waveSufferRef.current.addRegion({
             id: s.spanId,
@@ -81,7 +79,7 @@ export const Player = ({ call }: PlayerProps) => {
             loop: false,
             resize: false,
           });
-          region.element.style.display = regionChecked ? "" : "none";
+          changeRegionMouseStyle(region);
 
           const att: WaveSufferDtmfResult = {
             dtmf: dtmfValue.value.stringValue,
@@ -94,6 +92,18 @@ export const Player = ({ call }: PlayerProps) => {
         }
       }
     }
+  };
+
+  const changeRegionMouseStyle = (region: Region) => {
+    region.element.style.display = regionChecked ? "" : "none";
+
+    region.element.addEventListener("mouseenter", () => {
+      region.element.style.cursor = "pointer"; // Change to your desired cursor style
+    });
+
+    region.element.addEventListener("mouseleave", () => {
+      region.element.style.cursor = "default";
+    });
   };
 
   const drawSttRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
@@ -115,7 +125,7 @@ export const Player = ({ call }: PlayerProps) => {
           loop: false,
           resize: false,
         });
-        region.element.style.display = regionChecked ? "" : "none";
+        changeRegionMouseStyle(region);
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSufferSttResult;
         if (sttResult) {
