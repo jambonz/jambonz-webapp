@@ -17,7 +17,6 @@ import {
   MSG_SOMETHING_WRONG,
   MSG_CAPSLOCK,
   MSG_PASSWD_MATCH,
-  MSG_PASSWD_CRITERIA,
 } from "src/constants";
 
 import type { IMessage } from "src/store/types";
@@ -50,7 +49,22 @@ export const CreatePassword = () => {
     }
 
     if (passwdSettings && !isValidPasswd(password, passwdSettings)) {
-      setMessage(MSG_PASSWD_CRITERIA);
+      setMessage(
+        <>
+          Password must:
+          <ul>
+            <li>
+              Be at least {passwdSettings.min_password_length} characters long
+            </li>
+            {passwdSettings.require_digit && (
+              <li>Contain at least one number</li>
+            )}
+            {passwdSettings.require_special_character && (
+              <li>Contain at least one special character</li>
+            )}
+          </ul>
+        </>
+      );
       return;
     }
 
