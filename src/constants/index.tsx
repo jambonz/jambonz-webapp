@@ -13,16 +13,6 @@ export const MSG_PASSWD_MATCH = "Passwords do not match";
 export const MSG_SERVER_DOWN = "The server cannot be reached";
 export const MSG_LOGGED_OUT = "You've successfully logged out.";
 export const MSG_MUST_LOGIN = "You must log in to view that page";
-export const MSG_PASSWD_CRITERIA = (
-  <>
-    Password must:
-    <ul>
-      <li>Be at least 6 characters</li>
-      <li>Contain at least one letter</li>
-      <li>Contain at least one number</li>
-    </ul>
-  </>
-);
 export const MSG_REQUIRED_FIELDS = (
   <>
     Fields marked with an asterisk<span>*</span> are required.
