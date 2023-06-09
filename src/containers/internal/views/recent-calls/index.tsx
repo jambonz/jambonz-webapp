@@ -15,6 +15,7 @@ import {
   Spinner,
   Pagination,
   SelectFilter,
+  SearchFilter,
 } from "src/components";
 import { hasLength, hasValue } from "src/utils";
 import { DetailsItem } from "./details";
@@ -47,6 +48,8 @@ export const RecentCalls = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [directionFilter, setDirectionFilter] = useState("io");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fromFilter, setFromFilter] = useState("");
+  const [toFilter, setToFilter] = useState("");
 
   const [pageNumber, setPageNumber] = useState(1);
   const [perPageFilter, setPerPageFilter] = useState("25");
@@ -64,6 +67,8 @@ export const RecentCalls = () => {
         : { days: Number(dateFilter) }),
       ...(statusFilter !== "all" && { answered: statusFilter }),
       ...(directionFilter !== "io" && { direction: directionFilter }),
+      ...(fromFilter && { from: fromFilter }),
+      ...(toFilter && { to: toFilter }),
     };
 
     getRecentCalls(accountSid, payload)
@@ -94,7 +99,15 @@ export const RecentCalls = () => {
     if (accountSid) {
       handleFilterChange();
     }
-  }, [accountSid, pageNumber, dateFilter, directionFilter, statusFilter]);
+  }, [
+    accountSid,
+    pageNumber,
+    dateFilter,
+    directionFilter,
+    statusFilter,
+    fromFilter,
+    toFilter,
+  ]);
 
   /** Reset page number when filters change */
   useEffect(() => {
@@ -135,6 +148,16 @@ export const RecentCalls = () => {
           label="Status"
           filter={[statusFilter, setStatusFilter]}
           options={statusSelection}
+        />
+        <SearchFilter
+          placeholder="Filter From"
+          filter={[fromFilter, setFromFilter]}
+          delay={1000}
+        />
+        <SearchFilter
+          placeholder="Filter To"
+          filter={[toFilter, setToFilter]}
+          delay={1000}
         />
       </section>
       <Section {...(hasLength(calls) && { slim: true })}>
