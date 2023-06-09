@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { classNames } from "@jambonz/ui-kit";
 
 import { Icons } from "src/components/icons";
@@ -7,14 +7,18 @@ import "./styles.scss";
 
 type SearchFilterProps = JSX.IntrinsicElements["input"] & {
   filter: [string, React.Dispatch<React.SetStateAction<string>>];
+  delay?: number | null;
 };
 
 export const SearchFilter = ({
   placeholder,
   filter: [filterValue, setFilterValue],
+  delay,
 }: SearchFilterProps) => {
   const [focus, setFocus] = useState(false);
+  const [tmpFilterValue, setTmpFilterValue] = useState(filterValue);
   const [appearance, setAppearance] = useState(false);
+  const typingTimeoutRef = useRef<number | null>(null);
   const classes = {
     "search-filter": true,
     focused: focus,
@@ -23,7 +27,18 @@ export const SearchFilter = ({
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFilterValue(e.target.value.toLowerCase());
+      setTmpFilterValue(e.target.value.toLowerCase());
+      if (delay) {
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        typingTimeoutRef.current = setTimeout(() => {
+          setFilterValue(e.target.value.toLowerCase());
+        }, delay);
+      } else {
+        setFilterValue(e.target.value.toLowerCase());
+      }
 
       if (e.target.value) {
         setAppearance(true);
@@ -51,7 +66,7 @@ export const SearchFilter = ({
         type="search"
         name="search_filter"
         placeholder={placeholder}
-        value={filterValue}
+        value={tmpFilterValue}
         onChange={handleChange}
         onFocus={() => {
           setFocus(true);
