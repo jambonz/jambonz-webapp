@@ -46,6 +46,7 @@ import type {
   AwsTag,
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
+import { useRegionVendors } from "src/vendor";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -77,19 +78,17 @@ export const AccountForm = ({
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
   const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
   const [recordAllCalls, setRecordAllCalls] = useState(false);
+  const [initialCheckRecordAllCall, setInitialCheckRecordAllCall] =
+    useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
   const [recordFormat, setRecordFormat] = useState("mp3");
-  const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
-  const [tmpBucketRegion, setTmpBucketRegion] = useState("");
   const [bucketName, setBucketName] = useState("");
-  const [tmpBucketName, setTmpBucketName] = useState("");
   const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
-  const [tmpBucketAccessKeyId, setTmpBucketAccessKeyId] = useState("");
   const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
-  const [tmpBucketSecretAccessKey, setTmpBucketSecretAccessKey] = useState("");
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
+  const regions = useRegionVendors();
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -348,42 +347,22 @@ export const AccountForm = ({
         }
       }
 
-      setBucketVendor(
-        tmpBucketVendor
-          ? tmpBucketVendor
-          : account.data.bucket_credential?.vendor || ""
-      );
-      setTmpBucketVendor(bucketVendor);
-      setBucketName(
-        tmpBucketName
-          ? tmpBucketName
-          : account.data.bucket_credential?.name || ""
-      );
-      setTmpBucketName(bucketName);
-      setBucketAccessKeyId(
-        tmpBucketAccessKeyId
-          ? tmpBucketAccessKeyId
-          : account.data.bucket_credential?.access_key_id || ""
-      );
-      setTmpBucketAccessKeyId(bucketAccessKeyId);
+      setBucketVendor(account.data.bucket_credential?.vendor || "");
+      setBucketName(account.data.bucket_credential?.name || "");
+      setBucketAccessKeyId(account.data.bucket_credential?.access_key_id || "");
       setBucketSecretAccessKey(
-        tmpBucketSecretAccessKey
-          ? tmpBucketSecretAccessKey
-          : account.data.bucket_credential?.secret_access_key || ""
+        account.data.bucket_credential?.secret_access_key || ""
       );
-      setTmpBucketSecretAccessKey(bucketSecretAccessKey);
-      setBucketRegion(
-        tmpBucketRegion
-          ? tmpBucketRegion
-          : account.data.bucket_credential?.region || "us-east-1"
-      );
-      setTmpBucketRegion(bucketRegion);
+      setBucketRegion(account.data.bucket_credential?.region || "us-east-1");
       setRecordAllCalls(account.data.record_all_calls ? true : false);
       setBucketCredentialChecked(
         hasValue(bucketVendor) && bucketVendor.length !== 0
       );
       setBucketTags(account.data.bucket_credential?.tags || []);
       setRecordFormat(account.data.record_format || "mp3");
+      setInitialCheckRecordAllCall(
+        hasValue(bucketVendor) && bucketVendor.length !== 0
+      );
     }
   }, [account]);
 
@@ -613,9 +592,7 @@ export const AccountForm = ({
                   hidden
                   name="bucket_credential"
                   label="Enable call recording"
-                  initialCheck={
-                    hasValue(bucketVendor) && bucketVendor.length !== 0
-                  }
+                  initialCheck={initialCheckRecordAllCall}
                   handleChecked={(e) => {
                     setBucketCredentialChecked(e.target.checked);
                   }}
@@ -644,7 +621,6 @@ export const AccountForm = ({
                       options={BUCKET_VENDOR_OPTIONS}
                       onChange={(e) => {
                         setBucketVendor(e.target.value);
-                        setTmpBucketVendor(e.target.value);
                       }}
                     />
                   </div>
@@ -662,24 +638,28 @@ export const AccountForm = ({
                         value={bucketName}
                         onChange={(e) => {
                           setBucketName(e.target.value);
-                          setTmpBucketName(e.target.value);
                         }}
                       />
-                      <label htmlFor="bucket_aws_region">
-                        Region<span>*</span>
-                      </label>
-                      <input
-                        id="bucket_aws_region"
-                        required
-                        type="text"
-                        name="bucket_aws_region"
-                        placeholder="us-east-1"
-                        value={bucketRegion}
-                        onChange={(e) => {
-                          setBucketRegion(e.target.value);
-                          setTmpBucketRegion(e.target.value);
-                        }}
-                      />
+                      {regions && regions["aws"] && (
+                        <>
+                          <label htmlFor="bucket_aws_region">
+                            Region<span>*</span>
+                          </label>
+                          <Selector
+                            id="region"
+                            name="region"
+                            value={bucketRegion}
+                            required
+                            options={[
+                              {
+                                name: "Select a region",
+                                value: "",
+                              },
+                            ].concat(regions["aws"])}
+                            onChange={(e) => setBucketRegion(e.target.value)}
+                          />
+                        </>
+                      )}
                       <label htmlFor="bucket_aws_access_key">
                         Access key ID<span>*</span>
                       </label>
@@ -692,7 +672,6 @@ export const AccountForm = ({
                         value={bucketAccessKeyId}
                         onChange={(e) => {
                           setBucketAccessKeyId(e.target.value);
-                          setTmpBucketAccessKeyId(e.target.value);
                         }}
                       />
                       <label htmlFor="bucket_aws_secret_key">
@@ -706,7 +685,6 @@ export const AccountForm = ({
                         value={bucketSecretAccessKey}
                         onChange={(e) => {
                           setBucketSecretAccessKey(e.target.value);
-                          setTmpBucketSecretAccessKey(e.target.value);
                         }}
                       />
                       <label htmlFor="aws_s3_tags">S3 Tags</label>
