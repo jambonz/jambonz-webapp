@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "./jaeger/bar";
 import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
 import { getJaegerTrace } from "src/api";
-import { toastError } from "src/store";
 import { RecentCall } from "src/api/types";
 import { getSpansFromJaegerRoot } from "./utils";
 
@@ -120,15 +119,11 @@ export const CallTracing = ({ call }: CallTracingProps) => {
 
   useEffect(() => {
     if (call.trace_id && call.trace_id != "00000000000000000000000000000000") {
-      getJaegerTrace(call.account_sid, call.trace_id)
-        .then(({ json }) => {
-          if (json) {
-            buildSpans(json);
-          }
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
+      getJaegerTrace(call.account_sid, call.trace_id).then(({ json }) => {
+        if (json) {
+          buildSpans(json);
+        }
+      });
     }
   }, []);
 

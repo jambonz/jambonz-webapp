@@ -15,7 +15,6 @@ import {
   WaveSufferDtmfResult,
   WaveSufferSttResult,
 } from "src/api/jaeger-types";
-import { toastError } from "src/store";
 import {
   getSpanAttributeByName,
   getSpansByName,
@@ -206,15 +205,11 @@ export const Player = ({ call }: PlayerProps) => {
     });
 
     if (call.trace_id && call.trace_id != "00000000000000000000000000000000") {
-      getJaegerTrace(call.account_sid, call.trace_id)
-        .then(({ json }) => {
-          if (json) {
-            setJeagerRoot(json);
-          }
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
+      getJaegerTrace(call.account_sid, call.trace_id).then(({ json }) => {
+        if (json) {
+          setJeagerRoot(json);
+        }
+      });
     }
   }, []);
 
