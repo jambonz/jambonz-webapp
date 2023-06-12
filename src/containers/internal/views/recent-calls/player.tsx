@@ -93,8 +93,10 @@ export const Player = ({ call }: PlayerProps) => {
     }
   };
 
-  const changeRegionMouseStyle = (region: Region) => {
+  const changeRegionMouseStyle = (region: Region, channel = 0) => {
     region.element.style.display = regionChecked ? "" : "none";
+    region.element.style.height = "49%";
+    region.element.style.top = channel === 0 ? "0" : "51%";
 
     region.element.addEventListener("mouseenter", () => {
       region.element.style.cursor = "pointer"; // Change to your desired cursor style
@@ -105,7 +107,11 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
-  const drawSttRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
+  const drawSttRegionForSpan = (
+    s: JaegerSpan,
+    startPoint: JaegerSpan,
+    channel = 0
+  ) => {
     if (waveSufferRef.current) {
       const r = waveSufferRef.current.regions.list[s.spanId];
       if (!r) {
@@ -124,7 +130,7 @@ export const Player = ({ call }: PlayerProps) => {
           loop: false,
           resize: false,
         });
-        changeRegionMouseStyle(region);
+        changeRegionMouseStyle(region, channel);
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSufferSttResult;
         if (sttResult) {
@@ -178,7 +184,13 @@ export const Player = ({ call }: PlayerProps) => {
 
         const transcribeSpans = getSpansByNameRegex(spans, /stt-listen:/);
         transcribeSpans.forEach((cs) => {
-          drawSttRegionForSpan(cs, startPoint);
+          // Channel start from 0
+          const channel = Number(cs.name.split(":")[1]);
+          drawSttRegionForSpan(
+            cs,
+            startPoint,
+            channel > 0 ? channel - 1 : channel
+          );
         });
 
         const dtmfSpans = getSpansByNameRegex(spans, /dtmf:/);
