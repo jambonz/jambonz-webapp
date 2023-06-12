@@ -347,19 +347,37 @@ export const AccountForm = ({
         }
       }
 
-      setBucketVendor(account.data.bucket_credential?.vendor || "");
-      setBucketName(account.data.bucket_credential?.name || "");
-      setBucketAccessKeyId(account.data.bucket_credential?.access_key_id || "");
-      setBucketSecretAccessKey(
-        account.data.bucket_credential?.secret_access_key || ""
-      );
-      setBucketRegion(account.data.bucket_credential?.region || "us-east-1");
-      setRecordAllCalls(account.data.record_all_calls ? true : false);
+      if (account.data.bucket_credential?.vendor) {
+        setBucketVendor(account.data.bucket_credential?.vendor);
+      }
+
+      if (account.data.bucket_credential?.name) {
+        setBucketName(account.data.bucket_credential?.name);
+      }
+
+      if (account.data.bucket_credential?.access_key_id) {
+        setBucketAccessKeyId(account.data.bucket_credential?.access_key_id);
+      }
+      if (account.data.bucket_credential?.secret_access_key) {
+        setBucketSecretAccessKey(
+          account.data.bucket_credential?.secret_access_key
+        );
+      }
+      if (account.data.bucket_credential?.region) {
+        setBucketRegion(account.data.bucket_credential?.region);
+      }
+      if (account.data.record_all_calls) {
+        setRecordAllCalls(account.data.record_all_calls ? true : false);
+      }
       setBucketCredentialChecked(
         hasValue(bucketVendor) && bucketVendor.length !== 0
       );
-      setBucketTags(account.data.bucket_credential?.tags || []);
-      setRecordFormat(account.data.record_format || "mp3");
+      if (account.data.bucket_credential?.tags) {
+        setBucketTags(account.data.bucket_credential?.tags);
+      }
+      if (account.data.record_format) {
+        setRecordFormat(account.data.record_format || "mp3");
+      }
       setInitialCheckRecordAllCall(
         hasValue(bucketVendor) && bucketVendor.length !== 0
       );
