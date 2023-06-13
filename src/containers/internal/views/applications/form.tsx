@@ -35,7 +35,7 @@ import {
 } from "src/router/routes";
 import {
   DEFAULT_WEBHOOK,
-  ENABLE_RECORD_ALL_CALLS,
+  DISABLE_CALL_RECORDING,
   WEBHOOK_METHODS,
 } from "src/api/constants";
 
@@ -690,7 +690,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             </Checkzone>
           </fieldset>
         )}
-        {ENABLE_RECORD_ALL_CALLS &&
+        {!DISABLE_CALL_RECORDING &&
           accounts?.filter((a) => a.account_sid === accountSid).length &&
           !accounts?.filter((a) => a.account_sid === accountSid)[0]
             .record_all_calls && (

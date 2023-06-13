@@ -28,7 +28,7 @@ import {
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
   DEFAULT_WEBHOOK,
-  ENABLE_RECORD_ALL_CALLS,
+  DISABLE_CALL_RECORDING,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
 } from "src/api/constants";
@@ -603,7 +603,7 @@ export const AccountForm = ({
               } cached TTS prompts`}</MS>
             </fieldset>
           )}
-          {ENABLE_RECORD_ALL_CALLS && (
+          {!DISABLE_CALL_RECORDING && (
             <>
               <fieldset>
                 <Checkzone

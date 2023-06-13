@@ -14,6 +14,7 @@ DISABLE_LCR=${DISABLE_LCR:-false}
 DISABLE_JAEGER_TRACING=${DISABLE_JAEGER_TRACING:-false}
 DISABLE_CUSTOM_SPEECH=${DISABLE_CUSTOM_SPEECH:-false}
 ENABLE_FORGOT_PASSWORD=${ENABLE_FORGOT_PASSWORD:-false}
+DISABLE_CALL_RECORDING=${DISABLE_CALL_RECORDING:-false}
 
 # Serialize window global to provide the API URL to static frontend dist
 # This is declared and utilized in the web app: src/api/constants.ts
