@@ -33,7 +33,11 @@ import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
 } from "src/router/routes";
-import { DEFAULT_WEBHOOK, WEBHOOK_METHODS } from "src/api/constants";
+import {
+  DEFAULT_WEBHOOK,
+  DISABLE_CALL_RECORDING,
+  WEBHOOK_METHODS,
+} from "src/api/constants";
 
 import type {
   RecognizerVendors,
@@ -96,6 +100,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
   const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
   const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
+  const [recordAllCalls, setRecordAllCalls] = useState(false);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -178,6 +183,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       speech_synthesis_voice: synthVoice || null,
       speech_recognizer_vendor: recogVendor || null,
       speech_recognizer_language: recogLang || null,
+      record_all_calls: recordAllCalls ? 1 : 0,
     };
 
     if (application && application.data) {
@@ -243,6 +249,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
+      setRecordAllCalls(application.data.record_all_calls ? true : false);
       if (!applicationJson) {
         setApplicationJson(application.data.app_json || "");
       }
@@ -683,6 +690,23 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             </Checkzone>
           </fieldset>
         )}
+        {!DISABLE_CALL_RECORDING &&
+          accounts?.filter((a) => a.account_sid === accountSid).length &&
+          !accounts?.filter((a) => a.account_sid === accountSid)[0]
+            .record_all_calls && (
+            <fieldset>
+              <label htmlFor="record_all_call" className="chk">
+                <input
+                  id="record_all_call"
+                  name="record_all_call"
+                  type="checkbox"
+                  onChange={(e) => setRecordAllCalls(e.target.checked)}
+                  checked={recordAllCalls}
+                />
+                <div>Record all calls</div>
+              </label>
+            </fieldset>
+          )}
         {message && <fieldset>{<Message message={message} />}</fieldset>}
         <fieldset>
           <ButtonGroup left>

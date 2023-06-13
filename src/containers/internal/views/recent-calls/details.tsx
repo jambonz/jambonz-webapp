@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 
 import { Icons } from "src/components";
-import { formatPhoneNumber } from "src/utils";
+import { formatPhoneNumber, hasValue } from "src/utils";
 import { PcapButton } from "./pcap";
 import type { RecentCall } from "src/api/types";
 import { Tabs, Tab } from "@jambonz/ui-kit";
 import CallDetail from "./call-detail";
 import CallTracing from "./call-tracing";
 import { DISABLE_JAEGER_TRACING } from "src/api/constants";
+import { Player } from "./player";
+import "./styles.scss";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -17,6 +19,12 @@ type DetailsItemProps = {
 export const DetailsItem = ({ call }: DetailsItemProps) => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("");
+
+  const transformRecentCall = (call: RecentCall): RecentCall => {
+    const newCall = { ...call };
+    delete newCall.recording_url;
+    return newCall;
+  };
 
   return (
     <div className="item">
@@ -61,11 +69,11 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
         </summary>
         {call.trace_id === "00000000000000000000000000000000" ||
         DISABLE_JAEGER_TRACING ? (
-          <CallDetail call={call} />
+          <CallDetail call={transformRecentCall(call)} />
         ) : (
           <Tabs active={[activeTab, setActiveTab]}>
             <Tab id="details" label="Details">
-              <CallDetail call={call} />
+              <CallDetail call={transformRecentCall(call)} />
             </Tab>
             <Tab id="tracing" label="Tracing">
               <CallTracing call={call} />
@@ -73,15 +81,14 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
           </Tabs>
         )}
         {open && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "300px",
-            }}
-          >
-            <PcapButton call={call} />
-          </div>
+          <>
+            <div className="footer">
+              {hasValue(call.recording_url) && <Player call={call} />}
+              <div className="footer__buttons">
+                <PcapButton call={call} />
+              </div>
+            </div>
+          </>
         )}
       </details>
     </div>

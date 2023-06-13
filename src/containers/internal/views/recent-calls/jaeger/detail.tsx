@@ -44,14 +44,17 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
               .format("DD/MM/YY HH:mm:ss.SSS")}
           </div>
         </div>
-        <div className="spanDetailsWrapper__details">
-          <div className="spanDetailsWrapper__details_header">
-            <strong>Duration:</strong>
+        {!(group.name && group.name.startsWith("dtmf:")) && (
+          <div className="spanDetailsWrapper__details">
+            <div className="spanDetailsWrapper__details_header">
+              <strong>Duration:</strong>
+            </div>
+            <div className="spanDetailsWrapper__details_body">
+              {formattedDuration(group.durationMs)}
+            </div>
           </div>
-          <div className="spanDetailsWrapper__details_body">
-            {formattedDuration(group.durationMs)}
-          </div>
-        </div>
+        )}
+
         {group.attributes.map((attribute) => (
           <div key={attribute.key} className="spanDetailsWrapper__details">
             <div className="spanDetailsWrapper__details_header">

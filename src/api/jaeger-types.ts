@@ -37,6 +37,18 @@ export interface JaegerAttribute {
   value: JaegerValue;
 }
 
+export interface WaveSufferSttResult {
+  vendor: string;
+  transcript: string;
+  confidence: number;
+  language_code: string;
+}
+
+export interface WaveSufferDtmfResult {
+  dtmf: string;
+  duration: string;
+}
+
 export interface JaegerValue {
   stringValue: string;
   doubleValue: string;

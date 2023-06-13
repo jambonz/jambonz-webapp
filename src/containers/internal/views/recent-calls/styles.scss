@@ -1,0 +1,48 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+
+.wavesuffer {
+  position: relative;
+}
+
+.footer {
+  display: grid;
+  width: 100%;
+  margin-top: ui-vars.$px02;
+
+  &__buttons {
+    padding: ui-vars.$px02;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: ui-vars.$px02;
+  }
+}
+
+.media-container {
+  border: 1px solid black;
+  border-radius: ui-vars.$px01;
+  padding: 13px;
+  position: relative;
+
+  &__center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-gap: ui-vars.$px01;
+    margin-top: ui-vars.$px01;
+
+    button {
+      background-color: transparent;
+      width: auto;
+      height: auto;
+      border: 0;
+      padding: 0;
+    }
+
+    .ico {
+      color: ui-vars.$white;
+      @include mixins.icosize();
+    }
+  }
+}

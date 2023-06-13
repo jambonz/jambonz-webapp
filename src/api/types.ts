@@ -51,6 +51,7 @@ export enum StatusCodes {
 /** Fetch transport interfaces */
 
 export interface FetchTransport<Type> {
+  headers: Headers;
   status: StatusCodes;
   json: Type;
   blob?: Blob;
@@ -87,7 +88,7 @@ export interface SelectorOptions {
   value: string;
 }
 
-export interface Pcap {
+export interface DownloadedBlob {
   data_url: string;
   file_name: string;
 }
@@ -100,6 +101,11 @@ export interface CredentialTest {
 export interface CredentialTestResult {
   stt: CredentialTest;
   tts: CredentialTest;
+}
+
+export interface BucketCredentialTestResult {
+  status: CredentialStatus;
+  reason: string;
 }
 
 export interface LimitField {
@@ -246,7 +252,23 @@ export interface Account {
   registration_hook: null | WebHook;
   service_provider_sid: string;
   device_calling_application_sid: null | string;
-  lcr_sid: null | string;
+  record_all_calls: number;
+  record_format?: null | string;
+  bucket_credential: null | BucketCredential;
+}
+
+export interface AwsTag {
+  Key: string;
+  Value: string;
+}
+
+export interface BucketCredential {
+  vendor: null | string;
+  region?: null | string;
+  name?: null | string;
+  access_key_id?: null | string;
+  secret_access_key?: null | string;
+  tags?: null | AwsTag[];
 }
 
 export interface Application {
@@ -262,6 +284,7 @@ export interface Application {
   speech_synthesis_language: null | string;
   speech_recognizer_vendor: null | Lowercase<Vendor>;
   speech_recognizer_language: null | string;
+  record_all_calls: number;
 }
 
 export interface PhoneNumber {
@@ -298,6 +321,7 @@ export interface RecentCall {
   direction: string;
   trunk: string;
   trace_id: string;
+  recording_url?: string;
 }
 
 export interface SpeechCredential {

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "./jaeger/bar";
 import { JaegerGroup, JaegerRoot, JaegerSpan } from "src/api/jaeger-types";
 import { getJaegerTrace } from "src/api";
-import { toastError } from "src/store";
 import { RecentCall } from "src/api/types";
+import { getSpansFromJaegerRoot } from "./utils";
 
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
@@ -34,30 +34,6 @@ export const CallTracing = ({ call }: CallTracingProps) => {
   const [jaegerGroup, setJaegerGroup] = useState<JaegerGroup>();
   const windowSize = useWindowSize();
 
-  const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
-    setJaegerRoot(trace);
-    const spans: JaegerSpan[] = [];
-    trace.resourceSpans.forEach((resourceSpan) => {
-      resourceSpan.instrumentationLibrarySpans.forEach(
-        (instrumentationLibrarySpan) => {
-          instrumentationLibrarySpan.spans.forEach((value) => {
-            const attrs = value.attributes.filter(
-              (attr) =>
-                !(
-                  attr.key.startsWith("telemetry") ||
-                  attr.key.startsWith("internal")
-                )
-            );
-            value.attributes = attrs;
-            spans.push(value);
-          });
-        }
-      );
-    });
-    spans.sort((a, b) => a.startTimeUnixNano - b.startTimeUnixNano);
-    return spans;
-  };
-
   const getGroupsByParent = (spanId: string, groups: JaegerGroup[]) => {
     groups.sort((a, b) => a.startTimeUnixNano - b.startTimeUnixNano);
     return groups.filter((value) => value.parentSpanId === spanId);
@@ -87,6 +63,7 @@ export const CallTracing = ({ call }: CallTracingProps) => {
   };
 
   const buildSpans = (root: JaegerRoot) => {
+    setJaegerRoot(root);
     const spans = getSpansFromJaegerRoot(root);
     const rootSpan = getRootSpan(spans);
     if (rootSpan) {
@@ -142,15 +119,11 @@ export const CallTracing = ({ call }: CallTracingProps) => {
 
   useEffect(() => {
     if (call.trace_id && call.trace_id != "00000000000000000000000000000000") {
-      getJaegerTrace(call.account_sid, call.trace_id)
-        .then(({ json }) => {
-          if (json) {
-            buildSpans(json);
-          }
-        })
-        .catch((error) => {
-          toastError(error.msg);
-        });
+      getJaegerTrace(call.account_sid, call.trace_id).then(({ json }) => {
+        if (json) {
+          buildSpans(json);
+        }
+      });
     }
   }, []);
 

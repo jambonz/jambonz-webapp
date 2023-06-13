@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { P, Button, ButtonGroup, MS } from "@jambonz/ui-kit";
+import { P, Button, ButtonGroup, MS, Icon } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -11,6 +11,7 @@ import {
   postAccountLimit,
   deleteAccountLimit,
   deleteAccountTtsCache,
+  postAccountBucketCredentialTest,
 } from "src/api";
 import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
 import {
@@ -23,7 +24,11 @@ import {
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
+  AUDIO_FORMAT_OPTIONS,
+  BUCKET_VENDOR_OPTIONS,
+  CRED_OK,
   DEFAULT_WEBHOOK,
+  DISABLE_CALL_RECORDING,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
 } from "src/api/constants";
@@ -37,8 +42,11 @@ import type {
   UseApiDataMap,
   Limit,
   TtsCache,
+  BucketCredential,
+  AwsTag,
 } from "src/api/types";
-import { hasLength } from "src/utils";
+import { hasLength, hasValue } from "src/utils";
+import { useRegionVendors } from "src/vendor";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -69,6 +77,18 @@ export const AccountForm = ({
   const [initialQueueHook, setInitialQueueHook] = useState(false);
   const [localLimits, setLocalLimits] = useState<Limit[]>([]);
   const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
+  const [recordAllCalls, setRecordAllCalls] = useState(false);
+  const [initialCheckRecordAllCall, setInitialCheckRecordAllCall] =
+    useState(false);
+  const [bucketVendor, setBucketVendor] = useState("");
+  const [recordFormat, setRecordFormat] = useState("mp3");
+  const [bucketRegion, setBucketRegion] = useState("us-east-1");
+  const [bucketName, setBucketName] = useState("");
+  const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
+  const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
+  const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
+  const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
+  const regions = useRegionVendors();
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -112,6 +132,28 @@ export const AccountForm = ({
 
   const handleCancel = () => {
     setModal(false);
+  };
+
+  const handleTestBucketCredential = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!account || !account.data) return;
+    const cred: BucketCredential = {
+      vendor: bucketVendor,
+      region: bucketRegion,
+      name: bucketName,
+      access_key_id: bucketAccessKeyId,
+      secret_access_key: bucketSecretAccessKey,
+    };
+
+    postAccountBucketCredentialTest(account?.data?.account_sid, cred).then(
+      ({ json }) => {
+        if (json.status === CRED_OK) {
+          toastSuccess("Bucket Credential is valid.");
+        } else {
+          toastError(json.reason);
+        }
+      }
+    );
   };
 
   const handleRefresh = () => {
@@ -212,6 +254,24 @@ export const AccountForm = ({
         queue_event_hook: queueHook || account.data.queue_event_hook,
         registration_hook: regHook || account.data.registration_hook,
         device_calling_application_sid: appId || null,
+        record_all_calls: recordAllCalls ? 1 : 0,
+        record_format: recordFormat ? recordFormat : "mp3",
+        ...(bucketVendor === "aws_s3" && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            region: bucketRegion || "us-east-1",
+            name: bucketName || null,
+            access_key_id: bucketAccessKeyId || null,
+            secret_access_key: bucketSecretAccessKey || null,
+            ...(hasLength(bucketTags) && { tags: bucketTags }),
+          },
+        }),
+        ...(!bucketCredentialChecked && {
+          record_all_calls: 0,
+          bucket_credential: {
+            vendor: "none",
+          },
+        }),
       })
         .then(() => {
           account.refetch();
@@ -286,8 +346,63 @@ export const AccountForm = ({
           setInitialQueueHook(false);
         }
       }
+
+      if (account.data.bucket_credential?.vendor) {
+        setBucketVendor(account.data.bucket_credential?.vendor);
+      }
+
+      if (account.data.bucket_credential?.name) {
+        setBucketName(account.data.bucket_credential?.name);
+      }
+
+      if (account.data.bucket_credential?.access_key_id) {
+        setBucketAccessKeyId(account.data.bucket_credential?.access_key_id);
+      }
+      if (account.data.bucket_credential?.secret_access_key) {
+        setBucketSecretAccessKey(
+          account.data.bucket_credential?.secret_access_key
+        );
+      }
+      if (account.data.bucket_credential?.region) {
+        setBucketRegion(account.data.bucket_credential?.region);
+      }
+      if (account.data.record_all_calls) {
+        setRecordAllCalls(account.data.record_all_calls ? true : false);
+      }
+      setBucketCredentialChecked(
+        hasValue(bucketVendor) && bucketVendor.length !== 0
+      );
+      if (account.data.bucket_credential?.tags) {
+        setBucketTags(account.data.bucket_credential?.tags);
+      }
+      if (account.data.record_format) {
+        setRecordFormat(account.data.record_format || "mp3");
+      }
+      setInitialCheckRecordAllCall(
+        hasValue(bucketVendor) && bucketVendor.length !== 0
+      );
     }
   }, [account]);
+
+  const updateBucketTags = (
+    index: number,
+    key: string,
+    value: typeof bucketTags[number][keyof AwsTag]
+  ) => {
+    setBucketTags(
+      bucketTags.map((b, i) => (i === index ? { ...b, [key]: value } : b))
+    );
+  };
+
+  const addBucketTag = () => {
+    setBucketTags((curr) => [
+      ...curr,
+      {
+        Key: "",
+        Value: "",
+      },
+    ]);
+  };
 
   return (
     <>
@@ -488,6 +603,209 @@ export const AccountForm = ({
               } cached TTS prompts`}</MS>
             </fieldset>
           )}
+          {!DISABLE_CALL_RECORDING && (
+            <>
+              <fieldset>
+                <Checkzone
+                  hidden
+                  name="bucket_credential"
+                  label="Enable call recording"
+                  initialCheck={initialCheckRecordAllCall}
+                  handleChecked={(e) => {
+                    setBucketCredentialChecked(e.target.checked);
+                  }}
+                >
+                  <div>
+                    <label htmlFor="audio_format">Audio Format</label>
+                    <Selector
+                      id={"audio_format"}
+                      name={"audio_format"}
+                      value={recordFormat}
+                      options={AUDIO_FORMAT_OPTIONS}
+                      onChange={(e) => {
+                        setRecordFormat(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="vendor">
+                      Bucket Vendor{recordAllCalls && <span>*</span>}
+                    </label>
+                    <Selector
+                      required={recordAllCalls}
+                      id={"record_bucket_vendor"}
+                      name={"record_bucket_vendor"}
+                      value={bucketVendor}
+                      options={BUCKET_VENDOR_OPTIONS}
+                      onChange={(e) => {
+                        setBucketVendor(e.target.value);
+                      }}
+                    />
+                  </div>
+                  {bucketVendor === "aws_s3" && (
+                    <>
+                      <label htmlFor="bucket_name">
+                        Bucket Name<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_name"
+                        required
+                        type="text"
+                        name="bucket_name"
+                        placeholder="Bucket"
+                        value={bucketName}
+                        onChange={(e) => {
+                          setBucketName(e.target.value);
+                        }}
+                      />
+                      {regions && regions["aws"] && (
+                        <>
+                          <label htmlFor="bucket_aws_region">
+                            Region<span>*</span>
+                          </label>
+                          <Selector
+                            id="region"
+                            name="region"
+                            value={bucketRegion}
+                            required
+                            options={[
+                              {
+                                name: "Select a region",
+                                value: "",
+                              },
+                            ].concat(regions["aws"])}
+                            onChange={(e) => setBucketRegion(e.target.value)}
+                          />
+                        </>
+                      )}
+                      <label htmlFor="bucket_aws_access_key">
+                        Access key ID<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_aws_access_key"
+                        required
+                        type="text"
+                        name="bucket_aws_access_key"
+                        placeholder="Access Key ID"
+                        value={bucketAccessKeyId}
+                        onChange={(e) => {
+                          setBucketAccessKeyId(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="bucket_aws_secret_key">
+                        Secret access key<span>*</span>
+                      </label>
+                      <Passwd
+                        id="bucket_aws_secret_key"
+                        required
+                        name="bucketaws_secret_key"
+                        placeholder="Secret Access Key"
+                        value={bucketSecretAccessKey}
+                        onChange={(e) => {
+                          setBucketSecretAccessKey(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="aws_s3_tags">S3 Tags</label>
+                      {hasLength(bucketTags) &&
+                        bucketTags.map((b, i) => (
+                          <div key={`s3_tags_${i}`} className="bucket_tag">
+                            <div>
+                              <div>
+                                <input
+                                  id={`bucket_tag_name_${i}`}
+                                  name={`bucket_tag_name_${i}`}
+                                  type="text"
+                                  placeholder="Name"
+                                  required
+                                  value={b.Key}
+                                  onChange={(e) => {
+                                    updateBucketTags(i, "Key", e.target.value);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <input
+                                  id={`bucket_tag_value_${i}`}
+                                  name={`bucket_tag_value_${i}`}
+                                  type="text"
+                                  placeholder="Value"
+                                  required
+                                  value={b.Value}
+                                  onChange={(e) => {
+                                    updateBucketTags(
+                                      i,
+                                      "Value",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <button
+                              className="btnty"
+                              title="Delete Aws Tag"
+                              type="button"
+                              onClick={() => {
+                                setBucketTags(
+                                  bucketTags.filter((g2, i2) => i2 !== i)
+                                );
+                              }}
+                            >
+                              <Icon>
+                                <Icons.Trash2 />
+                              </Icon>
+                            </button>
+                          </div>
+                        ))}
+                      <ButtonGroup left>
+                        <button
+                          className="btnty"
+                          type="button"
+                          onClick={addBucketTag}
+                          title="Add S3 Tags"
+                        >
+                          <Icon subStyle="teal">
+                            <Icons.Plus />
+                          </Icon>
+                        </button>
+                      </ButtonGroup>
+
+                      <ButtonGroup left>
+                        <Button
+                          onClick={handleTestBucketCredential}
+                          small
+                          disabled={
+                            !bucketName ||
+                            !bucketAccessKeyId ||
+                            !bucketSecretAccessKey
+                          }
+                        >
+                          Test
+                        </Button>
+                      </ButtonGroup>
+                    </>
+                  )}
+                  <label htmlFor="record_all_call" className="chk">
+                    <input
+                      id="record_all_call"
+                      name="record_all_call"
+                      type="checkbox"
+                      onChange={(e) => setRecordAllCalls(e.target.checked)}
+                      checked={recordAllCalls}
+                    />
+                    <div></div>
+                    <Tooltip
+                      text="You can also record calls only to specific applications"
+                      subStyle="info"
+                    >
+                      Record all calls for this account
+                    </Tooltip>
+                  </label>
+                </Checkzone>
+              </fieldset>
+            </>
+          )}
+
           {message && (
             <fieldset>
               <Message message={message} />

@@ -17,6 +17,7 @@ interface JambonzWindowObject {
   DISABLE_JAEGER_TRACING: string;
   DISABLE_CUSTOM_SPEECH: string;
   ENABLE_FORGOT_PASSWORD: string;
+  DISABLE_CALL_RECORDING: string;
 }
 
 declare global {
@@ -50,6 +51,11 @@ export const DISABLE_LCR: boolean =
 export const DISABLE_JAEGER_TRACING: boolean =
   window.JAMBONZ?.DISABLE_JAEGER_TRACING === "true" ||
   JSON.parse(import.meta.env.VITE_APP_JAEGER_TRACING_DISABLED || "false");
+
+/** Enable Record All Call Feature */
+export const DISABLE_CALL_RECORDING: boolean =
+  window.JAMBONZ?.DISABLE_CALL_RECORDING === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_DISABLE_CALL_RECORDING || "false");
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
@@ -122,7 +128,30 @@ export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
     value: "tls/srtp",
   },
 ];
+/**
+ * Record bucket type
+ */
+export const BUCKET_VENDOR_OPTIONS = [
+  {
+    name: "NONE",
+    value: "",
+  },
+  {
+    name: "AWS S3",
+    value: "aws_s3",
+  },
+];
 
+export const AUDIO_FORMAT_OPTIONS = [
+  {
+    name: "mp3",
+    value: "mp3",
+  },
+  {
+    name: "wav",
+    value: "wav",
+  },
+];
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;
