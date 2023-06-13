@@ -28,6 +28,8 @@ export const languages: VoiceLanguage[] = [
     voices: [
       { value: "da-DK-Standard-A", name: "Standard-A (Female)" },
       { value: "da-DK-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "da-DK-Neural2-D", name: "Neural2-D (Female)" },
+      { value: "da-DK-Neural2-F", name: "Neural2-F (Male)" },
     ],
   },
   {
@@ -58,6 +60,10 @@ export const languages: VoiceLanguage[] = [
       { value: "en-AU-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "en-AU-Wavenet-C", name: "Wavenet-C (Female)" },
       { value: "en-AU-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "en-AU-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "en-AU-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "en-AU-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "en-AU-Neural2-D", name: "Neural2-D (Male)" },
     ],
   },
   {
@@ -86,6 +92,11 @@ export const languages: VoiceLanguage[] = [
       { value: "en-GB-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "en-GB-Wavenet-C", name: "Wavenet-C (Female)" },
       { value: "en-GB-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "en-GB-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "en-GB-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "en-GB-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "en-GB-Neural2-D", name: "Neural2-D (Male)" },
+      { value: "en-GB-Neural2-F", name: "Neural2-F (Female)" },
     ],
   },
   {
@@ -102,6 +113,17 @@ export const languages: VoiceLanguage[] = [
       { value: "en-US-Wavenet-D", name: "Wavenet-D (Male)" },
       { value: "en-US-Wavenet-E", name: "Wavenet-E (Female)" },
       { value: "en-US-Wavenet-F", name: "Wavenet-F (Female)" },
+      { value: "en-US-Neural2-A", name: "Neural2-A (Male)" },
+      { value: "en-US-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "en-US-Neural2-D", name: "Neural2-D (Male)" },
+      { value: "en-US-Neural2-E", name: "Neural2-E (Female)" },
+      { value: "en-US-Neural2-F", name: "Neural2-F (Female)" },
+      { value: "en-US-Neural2-G", name: "Neural2-G (Female)" },
+      { value: "en-US-Neural2-H", name: "Neural2-H (Female)" },
+      { value: "en-US-Neural2-I", name: "Neural2-I (Male)" },
+      { value: "en-US-Neural2-J", name: "Neural2-J (Male)" },
+      { value: "en-US-Studio-M", name: "Studio-M (Male)" },
+      { value: "en-US-Studio-O", name: "Studio-M (Female)" },
     ],
   },
   {
@@ -110,6 +132,8 @@ export const languages: VoiceLanguage[] = [
     voices: [
       { value: "fil-PH-Standard-A", name: "Standard-A (Female)" },
       { value: "fil-PH-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "fil-ph-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "fil-ph-Neural2-D", name: "Neural2-A (Male)" },
     ],
   },
   {
@@ -132,6 +156,10 @@ export const languages: VoiceLanguage[] = [
       { value: "fr-CA-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "fr-CA-Wavenet-C", name: "Wavenet-C (Female)" },
       { value: "fr-CA-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "fr-CA-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "fr-CA-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "fr-CA-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "fr-CA-Neural2-D", name: "Neural2-D (Male)" },
     ],
   },
   {
@@ -148,6 +176,11 @@ export const languages: VoiceLanguage[] = [
       { value: "fr-FR-Wavenet-C", name: "Wavenet-C (Female)" },
       { value: "fr-FR-Wavenet-D", name: "Wavenet-D (Male)" },
       { value: "fr-FR-Wavenet-E", name: "Wavenet-E (Female)" },
+      { value: "fr-FR-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "fr-FR-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "fr-FR-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "fr-FR-Neural2-D", name: "Neural2-D (Male)" },
+      { value: "fr-FR-Neural2-E", name: "Neural2-E (Female)" },
     ],
   },
   {
@@ -164,6 +197,10 @@ export const languages: VoiceLanguage[] = [
       { value: "de-DE-Wavenet-D", name: "Wavenet-D (Male)" },
       { value: "de-DE-Wavenet-E", name: "Wavenet-E (Male)" },
       { value: "de-DE-Wavenet-F", name: "Wavenet-F (Female)" },
+      { value: "de-DE-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "de-DE-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "de-DE-Neural2-D", name: "Neural2-D (Male)" },
+      { value: "de-DE-Neural2-F", name: "Neural2-F (Female)" },
     ],
   },
   {
@@ -186,6 +223,10 @@ export const languages: VoiceLanguage[] = [
       { value: "hi-IN-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "hi-IN-Wavenet-C", name: "Wavenet-C (Male)" },
       { value: "hi-IN-Wavenet-D", name: "Wavenet-D (Female)" },
+      { value: "hi-IN-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "hi-IN-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "hi-IN-Neural2-C", name: "Neural2-C (Male)" },
+      { value: "hi-IN-Neural2-D", name: "Neural2-D (Female)" },
     ],
   },
   {
@@ -222,6 +263,8 @@ export const languages: VoiceLanguage[] = [
       { value: "it-IT-Wavenet-B", name: "Wavenet-B (Female)" },
       { value: "it-IT-Wavenet-C", name: "Wavenet-C (Male)" },
       { value: "it-IT-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "it-IT-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "it-IT-Neural2-C", name: "Neural2-C (Male)" },
     ],
   },
   {
@@ -236,6 +279,9 @@ export const languages: VoiceLanguage[] = [
       { value: "ja-JP-Wavenet-B", name: "Wavenet-B (Female)" },
       { value: "ja-JP-Wavenet-C", name: "Wavenet-C (Male)" },
       { value: "ja-JP-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "ja-JP-Neural2-B", name: "Neural2-B (Female)" },
+      { value: "ja-JP-Neural2-C", name: "Neural2-C (Male)" },
+      { value: "ja-JP-Neural2-D", name: "Neural2-D (Male)" },
     ],
   },
   {
@@ -250,6 +296,9 @@ export const languages: VoiceLanguage[] = [
       { value: "ko-KR-Wavenet-B", name: "Wavenet-B (Female)" },
       { value: "ko-KR-Wavenet-C", name: "Wavenet-C (Male)" },
       { value: "ko-KR-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "ko-KR-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "ko-KR-Neural2-B", name: "Neural2-B (Female)" },
+      { value: "ko-KR-Neural2-C", name: "Neural2-C (Male)" },
     ],
   },
   {
@@ -316,6 +365,9 @@ export const languages: VoiceLanguage[] = [
     voices: [
       { value: "pt-BR-Standard-A", name: "Standard-A (Female)" },
       { value: "pt-BR-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "pt-BR-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "pt-BR-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "pt-BR-Neural2-C", name: "Neural2-C (Female)" },
     ],
   },
   {
@@ -359,7 +411,25 @@ export const languages: VoiceLanguage[] = [
   {
     code: "es-ES",
     name: "Spanish (Spain)",
-    voices: [{ value: "es-ES-Standard-A", name: "Standard-A (Female)" }],
+    voices: [
+      { value: "es-ES-Standard-A", name: "Standard-A (Female)" },
+      { value: "es-ES-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "es-ES-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "es-ES-Neural2-C", name: "Neural2-C (Female)" },
+      { value: "es-ES-Neural2-D", name: "Neural2-D (Female)" },
+      { value: "es-ES-Neural2-E", name: "Neural2-E (Female)" },
+      { value: "es-ES-Neural2-F", name: "Neural2-F (Male)" },
+    ],
+  },
+  {
+    code: "es-US",
+    name: "Spanish (US)",
+    voices: [
+      { value: "es-US-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "es-US-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "es-US-Neural2-C", name: "Neural2-C (Male)" },
+      { value: "es-US-Studio-B", name: "Studio-B (Male)" },
+    ],
   },
   {
     code: "sv-SE",
@@ -394,6 +464,11 @@ export const languages: VoiceLanguage[] = [
     ],
   },
   {
+    code: "th-TH",
+    name: "Thai (Thailand)",
+    voices: [{ value: "th-TH-Neural2-C", name: "Neural2-C (Female)" }],
+  },
+  {
     code: "vi-VN",
     name: "Vietnamese (Vietnam)",
     voices: [
@@ -405,6 +480,8 @@ export const languages: VoiceLanguage[] = [
       { value: "vi-VN-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "vi-VN-Wavenet-C", name: "Wavenet-C (Female)" },
       { value: "vi-VN-Wavenet-D", name: "Wavenet-D (Male)" },
+      { value: "vi-VN-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "vi-VN-Neural2-D", name: "Neural2-D (Male)" },
     ],
   },
 ];
