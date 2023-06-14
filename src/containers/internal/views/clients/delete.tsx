@@ -18,7 +18,7 @@ export const ClientsDelete = ({
       <Modal handleCancel={handleCancel} handleSubmit={handleSubmit}>
         <P>
           Are you sure you want to delete the client{" "}
-          <strong>{client.user_name}</strong>?
+          <strong>{client.username}</strong>?
         </P>
       </Modal>
     </>

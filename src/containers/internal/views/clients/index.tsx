@@ -48,7 +48,7 @@ export const Clients = () => {
         .then(() => {
           toastSuccess(
             <>
-              Deleted outbound call route <strong>{client.user_name}</strong>
+              Deleted outbound call route <strong>{client.username}</strong>
             </>
           );
           setClient(null);
@@ -100,7 +100,7 @@ export const Clients = () => {
                       title="Edit outbound call routes"
                       className="i"
                     >
-                      <strong>{c.user_name}</strong>
+                      <strong>{c.username}</strong>
                       <Icons.ArrowRight />
                     </Link>
                   </div>

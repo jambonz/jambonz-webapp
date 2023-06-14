@@ -48,7 +48,7 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
 
       postClient({
         account_sid: accountSid,
-        user_name: username,
+        username: username,
         password: password,
         is_active: isActive,
       })
@@ -62,7 +62,7 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
     } else {
       putClient(client.data?.client_sid || "", {
         account_sid: accountSid,
-        user_name: username,
+        username: username,
         ...(password && { password: password }),
         is_active: isActive,
       })
@@ -103,8 +103,8 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
 
   useEffect(() => {
     if (client && client.data) {
-      if (client.data.user_name) {
-        setUsername(client.data.user_name);
+      if (client.data.username) {
+        setUsername(client.data.username);
       }
 
       if (client.data.account_sid) {
@@ -128,8 +128,8 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
                   User Name<span>*</span>
                 </label>
                 <input
-                  id="client_user_name"
-                  name="client_user_name"
+                  id="client_username"
+                  name="client_username"
                   type="text"
                   placeholder="user name"
                   value={username}
