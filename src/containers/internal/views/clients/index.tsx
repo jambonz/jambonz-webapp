@@ -81,7 +81,7 @@ export const Clients = () => {
           <AccountFilter
             account={[accountSid, setAccountSid]}
             accounts={accounts}
-            label="Used by"
+            label="Showed By"
             defaultOption
           />
         </ScopedAccess>
@@ -115,6 +115,20 @@ export const Clients = () => {
                           <Icons.XCircle />
                         )}
                         <span>{c.is_active ? "Active" : "Inactive"}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        className={`i txt--${c.account_sid ? "teal" : "grey"}`}
+                      >
+                        <Icons.Activity />
+                        <span>
+                          {
+                            accounts?.find(
+                              (acct) => acct.account_sid === c.account_sid
+                            )?.name
+                          }
+                        </span>
                       </div>
                     </div>
                   </div>
