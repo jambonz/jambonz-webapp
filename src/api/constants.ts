@@ -278,3 +278,4 @@ export const API_LCRS = `${API_BASE_URL}/Lcrs`;
 export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
 export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries`;
 export const API_TTS_CACHE = `${API_BASE_URL}/TtsCache`;
+export const API_CLIENTS = `${API_BASE_URL}/Clients`;

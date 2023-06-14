@@ -1,0 +1,215 @@
+import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  deleteClient,
+  postClient,
+  putClient,
+  useApiData,
+  useServiceProviderData,
+} from "src/api";
+import { DEFAULT_PSWD_SETTINGS, USER_ACCOUNT } from "src/api/constants";
+import {
+  Account,
+  Client,
+  PasswordSettings,
+  UseApiDataMap,
+} from "src/api/types";
+import { Section } from "src/components";
+import { AccountSelect, Passwd } from "src/components/forms";
+import { MSG_REQUIRED_FIELDS } from "src/constants";
+import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
+import { toastError, toastSuccess, useSelectState } from "src/store";
+import ClientsDelete from "./delete";
+import { hasValue, isValidPasswd } from "src/utils";
+import { IMessage } from "src/store/types";
+
+type ClientsFormProps = {
+  client?: UseApiDataMap<Client>;
+};
+
+export const ClientsForm = ({ client }: ClientsFormProps) => {
+  const user = useSelectState("user");
+  const [accounts] = useServiceProviderData<Account[]>("Accounts");
+  const [pwdSettings] =
+    useApiData<PasswordSettings>("PasswordSettings") || DEFAULT_PSWD_SETTINGS;
+  const navigate = useNavigate();
+
+  const [accountSid, setAccountSid] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [modal, setModal] = useState(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!client) {
+      if (!passwdCheck()) return;
+
+      postClient({
+        account_sid: accountSid,
+        user_name: username,
+        password: password,
+        is_active: isActive,
+      })
+        .then(() => {
+          toastSuccess("Client created successfully");
+          navigate(ROUTE_INTERNAL_CLIENTS);
+        })
+        .catch((error: { msg: IMessage }) => {
+          toastError(error.msg);
+        });
+    } else {
+      putClient(client.data?.client_sid || "", {
+        account_sid: accountSid,
+        user_name: username,
+        ...(password && { password: password }),
+        is_active: isActive,
+      })
+        .then(() => {
+          toastSuccess("Client updated successfully");
+          navigate(ROUTE_INTERNAL_CLIENTS);
+        })
+        .catch((error: { msg: IMessage }) => {
+          toastError(error.msg);
+        });
+    }
+  };
+
+  const passwdCheck = () => {
+    if (pwdSettings && !isValidPasswd(password, pwdSettings)) {
+      toastError("Invalid password.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleCancel = () => {
+    setModal(false);
+  };
+
+  const handleDelete = () => {
+    if (client) {
+      deleteClient(client.data?.client_sid || "")
+        .then(() => {
+          toastSuccess("Client deleted successfully");
+          navigate(ROUTE_INTERNAL_CLIENTS);
+        })
+        .catch((error: { msg: IMessage }) => {
+          toastError(error.msg);
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (client && client.data) {
+      if (client.data.user_name) {
+        setUsername(client.data.user_name);
+      }
+
+      if (client.data.account_sid) {
+        setAccountSid(client.data.account_sid);
+      }
+
+      setIsActive(client.data.is_active);
+    }
+  }, [client]);
+  return (
+    <>
+      <Section slim>
+        <form className="form form--internal" onSubmit={handleSubmit}>
+          <fieldset>
+            <MS>{MSG_REQUIRED_FIELDS}</MS>
+          </fieldset>
+          <fieldset>
+            <div className="multi">
+              <div className="inp">
+                <label htmlFor="lcr_name">
+                  User Name<span>*</span>
+                </label>
+                <input
+                  id="client_user_name"
+                  name="client_user_name"
+                  type="text"
+                  placeholder="user name"
+                  value={username}
+                  required={true}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+            </div>
+            <label htmlFor="is_active" className="chk">
+              <input
+                id="is_active"
+                name="is_active"
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
+              <div>Active</div>
+            </label>
+          </fieldset>
+          <fieldset>
+            <label htmlFor="password">
+              Password{!hasValue(client) && <span>*</span>}
+            </label>
+            <Passwd
+              id="password"
+              required={!hasValue(client)}
+              name="password"
+              value={password}
+              placeholder="Password"
+              setValue={setPassword}
+            />
+          </fieldset>
+          {user?.scope !== USER_ACCOUNT && (
+            <fieldset>
+              <AccountSelect
+                accounts={accounts}
+                account={[accountSid, setAccountSid]}
+                label="Used by"
+                required={true}
+                defaultOption={false}
+                disabled={hasValue(client)}
+              />
+            </fieldset>
+          )}
+          <fieldset>
+            <ButtonGroup left className={client && "btns--spaced"}>
+              <Button
+                small
+                subStyle="grey"
+                as={Link}
+                to={ROUTE_INTERNAL_CLIENTS}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" small>
+                Save
+              </Button>
+              {client && client.data && (
+                <Button
+                  small
+                  type="button"
+                  subStyle="grey"
+                  onClick={() => setModal(true)}
+                >
+                  Delete User
+                </Button>
+              )}
+            </ButtonGroup>
+          </fieldset>
+        </form>
+      </Section>
+      {client && client.data && modal && (
+        <ClientsDelete
+          client={client.data}
+          handleCancel={handleCancel}
+          handleSubmit={handleDelete}
+        />
+      )}
+    </>
+  );
+};
+
+export default ClientsForm;

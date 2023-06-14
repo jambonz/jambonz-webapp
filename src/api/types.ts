@@ -453,6 +453,14 @@ export interface LcrCarrierSetEntry {
   priority: number;
 }
 
+export interface Client {
+  client_sid?: null | string;
+  account_sid: null | string;
+  user_name: null | string;
+  password?: null | string;
+  is_active: boolean;
+}
+
 export interface PageQuery {
   page: number;
   count: number;

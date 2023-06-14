@@ -25,6 +25,7 @@ import {
   API_LCR_CARRIER_SET_ENTRIES,
   API_LCRS,
   API_TTS_CACHE,
+  API_CLIENTS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -72,6 +73,7 @@ import type {
   LcrCarrierSetEntry,
   BucketCredential,
   BucketCredentialTestResult,
+  Client,
 } from "./types";
 import { StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -407,6 +409,10 @@ export const postLcrCarrierSetEntry = (
     payload
   );
 };
+
+export const postClient = (payload: Partial<Client>) => {
+  return postFetch<SidResponse, Partial<Client>>(API_CLIENTS, payload);
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -520,6 +526,12 @@ export const putLcrCarrierSetEntries = (
   );
 };
 
+export const putClient = (sid: string, payload: Partial<Client>) => {
+  return putFetch<EmptyResponse, Partial<Client>>(
+    `${API_CLIENTS}/${sid}`,
+    payload
+  );
+};
 /** Named wrappers for `deleteFetch` */
 
 export const deleteUser = (sid: string) => {
@@ -599,6 +611,9 @@ export const deleteAccountTtsCache = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_BASE_URL}/Accounts/${sid}/TtsCache`);
 };
 
+export const deleteClient = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_CLIENTS}/${sid}`);
+};
 /** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {
@@ -635,6 +650,14 @@ export const getLcrCarrierSetEtries = (sid: string) => {
   return getFetch<LcrCarrierSetEntry[]>(
     `${API_LCR_CARRIER_SET_ENTRIES}?lcr_route_sid=${sid}`
   );
+};
+
+export const getClients = () => {
+  return getFetch<Client[]>(API_CLIENTS);
+};
+
+export const getClient = (sid: string) => {
+  return getFetch<Client[]>(`${API_CLIENTS}/${sid}`);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */

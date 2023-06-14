@@ -183,7 +183,7 @@ export const Lcrs = () => {
                   <div className="item__actions">
                     <Link
                       to={`${ROUTE_INTERNAL_LEST_COST_ROUTING}/${lcr.lcr_sid}/edit`}
-                      title="Edit carrier"
+                      title="Edit Client"
                     >
                       <Icons.Edit3 />
                     </Link>
