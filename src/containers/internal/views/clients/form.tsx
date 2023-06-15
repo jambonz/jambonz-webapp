@@ -112,6 +112,10 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
         setAccountSid(client.data.account_sid);
       }
 
+      if (client.data.password) {
+        setPassword(client.data.password);
+      }
+
       setIsActive(client.data.is_active);
     }
   }, [client]);
