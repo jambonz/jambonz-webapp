@@ -16,7 +16,7 @@ import {
   UseApiDataMap,
 } from "src/api/types";
 import { Section } from "src/components";
-import { AccountSelect, Passwd } from "src/components/forms";
+import { AccountSelect, Message, Passwd } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -40,6 +40,7 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   const [username, setUsername] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [modal, setModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -114,12 +115,25 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
       setIsActive(client.data.is_active);
     }
   }, [client]);
+
+  useEffect(() => {
+    const acc = accounts?.find((a) => a.account_sid === accountSid);
+    if (!accountSid || !accounts || !acc) return;
+    if (!acc?.sip_realm) {
+      setErrorMessage(`Sip realm is not set for the account.`);
+    } else if (!acc?.device_calling_application_sid) {
+      setErrorMessage(`Device calling application is not set for the account.`);
+    } else {
+      setErrorMessage("");
+    }
+  }, [accountSid]);
   return (
     <>
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
+            {errorMessage && <Message message={errorMessage} />}
           </fieldset>
           <fieldset>
             <div className="multi">
@@ -184,7 +198,7 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
               >
                 Cancel
               </Button>
-              <Button type="submit" small>
+              <Button type="submit" small disabled={errorMessage !== ""}>
                 Save
               </Button>
               {client && client.data && (
