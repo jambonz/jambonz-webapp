@@ -4,6 +4,7 @@ export const ROUTE_FORGOT_PASSWORD = "/forgot-password";
 export const ROUTE_INTERNAL_USERS = "/internal/users";
 export const ROUTE_INTERNAL_SETTINGS = "/internal/settings";
 export const ROUTE_INTERNAL_ACCOUNTS = "/internal/accounts";
+export const ROUTE_INTERNAL_CLIENTS = "/internal/clients";
 export const ROUTE_INTERNAL_APPLICATIONS = "/internal/applications";
 export const ROUTE_INTERNAL_RECENT_CALLS = "/internal/recent-calls";
 export const ROUTE_INTERNAL_ALERTS = "/internal/alerts";

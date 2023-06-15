@@ -42,6 +42,9 @@ import MSTeamsTenantsEdit from "src/containers/internal/views/ms-teams-tenants/e
 import Lcrs from "src/containers/internal/views/least-cost-routing";
 import LcrsAdd from "src/containers/internal/views/least-cost-routing/add";
 import LcrsEdit from "src/containers/internal/views/least-cost-routing/edit";
+import Clients from "src/containers/internal/views/clients";
+import ClientsAdd from "src/containers/internal/views/clients/add";
+import ClientsEdit from "src/containers/internal/views/clients/edit";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -136,6 +139,13 @@ export const Router = () => {
                   <Route
                     path="least-cost-routing/:lcr_sid/edit"
                     element={<LcrsEdit />}
+                  />
+
+                  <Route path="clients" element={<Clients />} />
+                  <Route path="clients/add" element={<ClientsAdd />} />
+                  <Route
+                    path="clients/:client_sid/edit"
+                    element={<ClientsEdit />}
                   />
 
                   {/* 404 page not found */}

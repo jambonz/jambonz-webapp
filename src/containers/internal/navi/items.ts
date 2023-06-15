@@ -10,6 +10,7 @@ import {
   ROUTE_INTERNAL_PHONE_NUMBERS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
   ROUTE_INTERNAL_LEST_COST_ROUTING,
+  ROUTE_INTERNAL_CLIENTS,
 } from "src/router/routes";
 import { Icons } from "src/components";
 import { Scope, UserData } from "src/store/types";
@@ -52,6 +53,11 @@ export const naviTop: NaviItem[] = [
     route: (user) => `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
     scope: Scope.account,
     restrict: true,
+  },
+  {
+    label: "Clients",
+    icon: Icons.Smartphone,
+    route: () => ROUTE_INTERNAL_CLIENTS,
   },
   {
     label: "Applications",
