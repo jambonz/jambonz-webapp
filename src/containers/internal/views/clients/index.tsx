@@ -81,7 +81,7 @@ export const Clients = () => {
           <AccountFilter
             account={[accountSid, setAccountSid]}
             accounts={accounts}
-            label="Showed By"
+            label=""
             defaultOption
           />
         </ScopedAccess>

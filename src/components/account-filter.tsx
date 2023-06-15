@@ -38,7 +38,7 @@ export const AccountFilter = ({
 
   return (
     <div className={classNames(classes)}>
-      <label htmlFor="account_filter">{label}:</label>
+      {label && <label htmlFor="account_filter">{label}:</label>}
       <div>
         <select
           id="account_filter"
