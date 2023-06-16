@@ -5,23 +5,17 @@ import {
   deleteClient,
   postClient,
   putClient,
-  useApiData,
   useServiceProviderData,
 } from "src/api";
-import { DEFAULT_PSWD_SETTINGS, USER_ACCOUNT } from "src/api/constants";
-import {
-  Account,
-  Client,
-  PasswordSettings,
-  UseApiDataMap,
-} from "src/api/types";
+import { USER_ACCOUNT } from "src/api/constants";
+import { Account, Client, UseApiDataMap } from "src/api/types";
 import { Section } from "src/components";
 import { AccountSelect, Message, Passwd } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import ClientsDelete from "./delete";
-import { hasValue, isValidPasswd } from "src/utils";
+import { hasValue } from "src/utils";
 import { IMessage } from "src/store/types";
 
 type ClientsFormProps = {
@@ -31,8 +25,6 @@ type ClientsFormProps = {
 export const ClientsForm = ({ client }: ClientsFormProps) => {
   const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
-  const [pwdSettings] =
-    useApiData<PasswordSettings>("PasswordSettings") || DEFAULT_PSWD_SETTINGS;
   const navigate = useNavigate();
 
   const [accountSid, setAccountSid] = useState("");
@@ -45,8 +37,6 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
     e.preventDefault();
 
     if (!client) {
-      if (!passwdCheck()) return;
-
       postClient({
         account_sid: accountSid,
         username: username,
@@ -77,14 +67,6 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
     }
   };
 
-  const passwdCheck = () => {
-    if (pwdSettings && !isValidPasswd(password, pwdSettings)) {
-      toastError("Invalid password.");
-      return false;
-    }
-    return true;
-  };
-
   const handleCancel = () => {
     setModal(false);
   };
@@ -110,6 +92,10 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
 
       if (client.data.account_sid) {
         setAccountSid(client.data.account_sid);
+      }
+
+      if (client.data.password) {
+        setPassword(client.data.password);
       }
 
       setIsActive(client.data.is_active);
