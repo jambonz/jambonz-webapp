@@ -16,7 +16,6 @@ import {
   Section,
   SelectFilter,
   Spinner,
-  Icons,
 } from "src/components";
 
 import type { Account, Alert, PageQuery } from "src/api/types";
@@ -27,6 +26,7 @@ import {
   getQueryFilter,
   setLocation,
 } from "src/store/localStore";
+import AlertDetailItem from "./alert-detail-item";
 
 export const Alerts = () => {
   const user = useSelectState("user");
@@ -112,21 +112,7 @@ export const Alerts = () => {
             <Spinner />
           ) : hasLength(alerts) ? (
             alerts.map((alert) => (
-              <div className="item" key={`${alert.alert_type}-${alert.time}`}>
-                <div className="item__info">
-                  <div className="item__title txt--jam">
-                    <strong>
-                      {dayjs(alert.time).format("YYYY MM.DD hh:mm a")}
-                    </strong>
-                  </div>
-                  <div className="item__meta">
-                    <div className="i">
-                      <Icons.AlertCircle />
-                      <span>{alert.message}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <AlertDetailItem key={alert.time} alert={alert} />
             ))
           ) : (
             <M>No data.</M>
