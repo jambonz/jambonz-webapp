@@ -16,7 +16,12 @@ import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_FORGOT_PASSWORD,
 } from "src/router/routes";
-import { USER_ACCOUNT, ENABLE_FORGOT_PASSWORD } from "src/api/constants";
+import {
+  USER_ACCOUNT,
+  ENABLE_FORGOT_PASSWORD,
+  ENABLE_ClOUD_PLATFORM,
+} from "src/api/constants";
+import { Icons } from "src/components";
 
 export const Login = () => {
   const { signin, authorized } = useAuth();
@@ -91,12 +96,35 @@ export const Login = () => {
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
-        {ENABLE_FORGOT_PASSWORD && (
-          <div>
-            <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
-              <p>Forgot Password</p>
-            </Link>
+        {(ENABLE_FORGOT_PASSWORD || ENABLE_ClOUD_PLATFORM) && (
+          <div className={ENABLE_ClOUD_PLATFORM ? "mast" : ""}>
+            {ENABLE_ClOUD_PLATFORM && (
+              <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
+                <p>Register</p>
+              </Link>
+            )}
+            {ENABLE_FORGOT_PASSWORD && (
+              <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
+                <p>Forgot Password</p>
+              </Link>
+            )}
           </div>
+        )}
+        {ENABLE_ClOUD_PLATFORM && (
+          <>
+            <Button mainStyle="hollow">
+              <div className="mast">
+                <Icons.Youtube />
+                <span>Sign In With Google</span>
+              </div>
+            </Button>
+            <Button mainStyle="hollow">
+              <div className="mast">
+                <Icons.GitHub />
+                <span>Sign In With Github</span>
+              </div>
+            </Button>
+          </>
         )}
       </form>
     </>

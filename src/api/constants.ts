@@ -17,6 +17,7 @@ interface JambonzWindowObject {
   DISABLE_JAEGER_TRACING: string;
   DISABLE_CUSTOM_SPEECH: string;
   ENABLE_FORGOT_PASSWORD: string;
+  ENABLE_ClOUD_PLATFORM: string;
   DISABLE_CALL_RECORDING: string;
 }
 
@@ -41,7 +42,12 @@ export const DISABLE_CUSTOM_SPEECH: boolean =
 /** Enable Forgot Password */
 export const ENABLE_FORGOT_PASSWORD: boolean =
   window.JAMBONZ?.ENABLE_FORGOT_PASSWORD === "true" ||
-  JSON.parse(import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false");
+  JSON.parse(import.meta.env.VITE_APP_ENABLE_FORGOT_PASSWORD || "false");
+
+/** Enable Cloud version */
+export const ENABLE_ClOUD_PLATFORM: boolean =
+  window.JAMBONZ?.ENABLE_ClOUD_PLATFORM === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_ENABLE_ClOUD_PLATFORM || "false");
 /** Disable Lcr */
 export const DISABLE_LCR: boolean =
   window.JAMBONZ?.DISABLE_LCR === "true" ||
