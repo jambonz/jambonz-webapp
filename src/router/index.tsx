@@ -6,7 +6,10 @@ import { useSelectState } from "src/store";
 import { Login, Layout as LoginLayout } from "src/containers/login";
 import { Layout as InternalLayout } from "src/containers/internal";
 import { NotFound } from "src/containers/notfound";
-import { ENABLE_FORGOT_PASSWORD } from "src/api/constants";
+import {
+  ENABLE_ClOUD_PLATFORM,
+  ENABLE_FORGOT_PASSWORD,
+} from "src/api/constants";
 
 /** Login */
 import CreatePassword from "src/containers/login/create-password";
@@ -46,6 +49,8 @@ import Clients from "src/containers/internal/views/clients";
 import ClientsAdd from "src/containers/internal/views/clients/add";
 import ClientsEdit from "src/containers/internal/views/clients/edit";
 import OauthCallback from "src/containers/login/oauth-callback";
+import Register from "src/containers/login/register";
+import RegisterEmail from "src/containers/login/register-email";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -68,8 +73,16 @@ export const Router = () => {
           {ENABLE_FORGOT_PASSWORD && (
             <Route path="forgot-password" element={<ForgotPassword />} />
           )}
-          <Route path="oauth-callback/:provider" element={<OauthCallback />} />
-
+          {ENABLE_ClOUD_PLATFORM && (
+            <>
+              <Route path="register" element={<Register />} />
+              <Route path="register/email" element={<RegisterEmail />} />
+              <Route
+                path="oauth-callback/:provider"
+                element={<OauthCallback />}
+              />
+            </>
+          )}
           {/* 404 page not found */}
           <Route path="*" element={<NotFound />} />
         </Route>

@@ -1,4 +1,6 @@
 export const ROUTE_LOGIN = "/";
+export const ROUTE_REGISTER = "/register";
+export const ROUTE_REGISTER_EMAIL = "/register/email";
 export const ROUTE_CREATE_PASSWORD = "/create-password";
 export const ROUTE_FORGOT_PASSWORD = "/forgot-password";
 export const ROUTE_INTERNAL_USERS = "/internal/users";

@@ -281,6 +281,9 @@ export const CRED_NOT_TESTED = "not tested";
 export const CARRIER_REG_OK = "ok";
 export const CARRIER_REG_FAIL = "fail";
 
+export const PRIVACY_POLICY = "https://jambonz.org/privacy";
+export const TERMS_OF_SERVICE = "https://jambonz.org/terms";
+
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;
 export const API_LOGOUT = `${API_BASE_URL}/logout`;

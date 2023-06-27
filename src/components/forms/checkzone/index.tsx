@@ -7,6 +7,7 @@ type CheckzoneProps = {
   id?: string;
   name: string;
   label: string;
+  labelNode?: React.ReactNode;
   hidden?: boolean;
   children: React.ReactNode;
   initialCheck: boolean;
@@ -22,6 +23,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
       id,
       name,
       label,
+      labelNode,
       hidden = false,
       children,
       initialCheck,
@@ -62,6 +64,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
             checked={checked}
           />
           <div>{label}</div>
+          {labelNode && labelNode}
         </label>
         {checked && <div className={classesIn}>{children}</div>}
       </div>
