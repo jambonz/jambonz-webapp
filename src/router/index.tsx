@@ -51,6 +51,7 @@ import ClientsEdit from "src/containers/internal/views/clients/edit";
 import OauthCallback from "src/containers/login/oauth-callback";
 import Register from "src/containers/login/register";
 import RegisterEmail from "src/containers/login/register-email";
+import EmailVerify from "src/containers/login/register-verify-email";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -77,6 +78,10 @@ export const Router = () => {
             <>
               <Route path="register" element={<Register />} />
               <Route path="register/email" element={<RegisterEmail />} />
+              <Route
+                path="register/verify-your-email"
+                element={<EmailVerify />}
+              />
               <Route
                 path="oauth-callback/:provider"
                 element={<OauthCallback />}

@@ -5,7 +5,7 @@ import { Passwd } from "src/components/forms";
 import { ROUTE_LOGIN } from "src/router/routes";
 
 export const RegisterEmail = () => {
-  const [username, setUsername] = useState("");
+  const [yourName, setYourName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,9 +20,9 @@ export const RegisterEmail = () => {
           required
           type="text"
           name="username"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Your Name"
+          value={yourName}
+          onChange={(e) => setYourName(e.target.value)}
         />
         <input
           required
@@ -40,7 +40,7 @@ export const RegisterEmail = () => {
           setValue={setPassword}
         />
         <Button type="submit">Continue →</Button>
-        <Link to={ROUTE_LOGIN} title="Forgot Password">
+        <Link to={ROUTE_LOGIN} title="Go back">
           <p>Go back</p>
         </Link>
       </form>
