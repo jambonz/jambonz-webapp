@@ -58,6 +58,34 @@ export const removeQueryFilter = () => {
   return localStorage.removeItem(storeQueryFilter);
 };
 
+/**Oauth2 */
+const oauthStateKey = "oauth-state";
+export const getOauthState = () => {
+  return localStorage.getItem(oauthStateKey) || "";
+};
+
+export const setOauthState = (token: string) => {
+  localStorage.setItem(oauthStateKey, token);
+};
+
+export const removeOauthState = () => {
+  return localStorage.removeItem(oauthStateKey);
+};
+
+const locationBeforeOauthKey = "location-before-oauth";
+
+export const getLocationBeforeOauth = () => {
+  return localStorage.getItem(locationBeforeOauthKey) || "";
+};
+
+export const setLocationBeforeOauth = (token: string) => {
+  localStorage.setItem(locationBeforeOauthKey, token);
+};
+
+export const removeLocationBeforeOauth = () => {
+  return localStorage.removeItem(locationBeforeOauthKey);
+};
+
 /**
  * Methods to get/set the location from local storage
  */

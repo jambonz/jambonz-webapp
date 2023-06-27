@@ -20,10 +20,22 @@ import {
   USER_ACCOUNT,
   ENABLE_FORGOT_PASSWORD,
   ENABLE_ClOUD_PLATFORM,
+  GITHUB_CLIENT_ID,
+  GOOGLE_REDIRECT_URI,
+  GOOGLE_CLIENT_ID,
 } from "src/api/constants";
 import { Icons } from "src/components";
+import { v4 as uuid } from "uuid";
+import { setLocationBeforeOauth, setOauthState } from "src/store/localStore";
 
 export const Login = () => {
+  const state = uuid();
+  setOauthState(state);
+  setLocationBeforeOauth("/");
+  const GITHUB_OAUTH2_URL = `https://github.com/login/oauth/authorize?
+client_id=${GITHUB_CLIENT_ID}&state=${state}&scope=user:email&allow_signup=false`;
+  const GOOGLE_OAUTH2_URL = `https://accounts.google.com/o/oauth2/v2/auth?scope=email+profile&access_type=offline&
+include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${GOOGLE_REDIRECT_URI}&client_id=${GOOGLE_CLIENT_ID}`;
   const { signin, authorized } = useAuth();
   const location = useLocation();
   const user = useSelectState("user");
@@ -112,18 +124,18 @@ export const Login = () => {
         )}
         {ENABLE_ClOUD_PLATFORM && (
           <>
-            <Button mainStyle="hollow">
+            <a href={GOOGLE_OAUTH2_URL} className="btn btn--hollow">
               <div className="mast">
                 <Icons.Youtube />
                 <span>Sign In With Google</span>
               </div>
-            </Button>
-            <Button mainStyle="hollow">
+            </a>
+            <a href={GITHUB_OAUTH2_URL} className="btn btn--hollow">
               <div className="mast">
                 <Icons.GitHub />
                 <span>Sign In With Github</span>
               </div>
-            </Button>
+            </a>
           </>
         )}
       </form>

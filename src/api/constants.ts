@@ -19,6 +19,10 @@ interface JambonzWindowObject {
   ENABLE_FORGOT_PASSWORD: string;
   ENABLE_ClOUD_PLATFORM: string;
   DISABLE_CALL_RECORDING: string;
+  GITHUB_CLIENT_ID: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_REDIRECT_URI: string;
+  DEFAULT_SERVICE_PROVIDER_SID: string;
 }
 
 declare global {
@@ -62,6 +66,20 @@ export const DISABLE_JAEGER_TRACING: boolean =
 export const DISABLE_CALL_RECORDING: boolean =
   window.JAMBONZ?.DISABLE_CALL_RECORDING === "true" ||
   JSON.parse(import.meta.env.VITE_APP_DISABLE_CALL_RECORDING || "false");
+
+export const DEFAULT_SERVICE_PROVIDER_SID: string =
+  window.JAMBONZ?.DEFAULT_SERVICE_PROVIDER_SID ||
+  import.meta.env.VITE_APP_DEFAULT_SERVICE_PROVIDER_SID;
+
+export const GITHUB_CLIENT_ID: string =
+  window.JAMBONZ?.GITHUB_CLIENT_ID || import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
+
+export const GOOGLE_REDIRECT_URI: string =
+  window.JAMBONZ?.GOOGLE_REDIRECT_URI ||
+  import.meta.env.VITE_APP_GOOGLE_REDIRECT_URI;
+
+export const GOOGLE_CLIENT_ID: string =
+  window.JAMBONZ?.GOOGLE_CLIENT_ID || import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
@@ -285,3 +303,4 @@ export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
 export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries`;
 export const API_TTS_CACHE = `${API_BASE_URL}/TtsCache`;
 export const API_CLIENTS = `${API_BASE_URL}/Clients`;
+export const API_REGISTER = `${API_BASE_URL}/register`;

@@ -26,6 +26,7 @@ import {
   API_LCRS,
   API_TTS_CACHE,
   API_CLIENTS,
+  API_REGISTER,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -74,6 +75,8 @@ import type {
   BucketCredential,
   BucketCredentialTestResult,
   Client,
+  RegisterRequest,
+  RegisterResponse,
 } from "./types";
 import { StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -412,6 +415,13 @@ export const postLcrCarrierSetEntry = (
 
 export const postClient = (payload: Partial<Client>) => {
   return postFetch<SidResponse, Partial<Client>>(API_CLIENTS, payload);
+};
+
+export const postRegister = (payload: Partial<RegisterRequest>) => {
+  return postFetch<RegisterResponse, Partial<RegisterRequest>>(
+    API_REGISTER,
+    payload
+  );
 };
 /** Named wrappers for `putFetch` */
 

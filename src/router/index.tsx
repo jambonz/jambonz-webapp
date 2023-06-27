@@ -45,6 +45,7 @@ import LcrsEdit from "src/containers/internal/views/least-cost-routing/edit";
 import Clients from "src/containers/internal/views/clients";
 import ClientsAdd from "src/containers/internal/views/clients/add";
 import ClientsEdit from "src/containers/internal/views/clients/edit";
+import OauthCallback from "src/containers/login/oauth-callback";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -67,6 +68,7 @@ export const Router = () => {
           {ENABLE_FORGOT_PASSWORD && (
             <Route path="forgot-password" element={<ForgotPassword />} />
           )}
+          <Route path="oauth-callback/:provider" element={<OauthCallback />} />
 
           {/* 404 page not found */}
           <Route path="*" element={<NotFound />} />

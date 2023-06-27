@@ -1,0 +1,74 @@
+import React, { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { postRegister } from "src/api";
+import {
+  DEFAULT_SERVICE_PROVIDER_SID,
+  GITHUB_CLIENT_ID,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_REDIRECT_URI,
+} from "src/api/constants";
+import { Spinner } from "src/components";
+import { setToken } from "src/router/auth";
+import { ROUTE_LOGIN } from "src/router/routes";
+import { toastError } from "src/store";
+import {
+  getLocationBeforeOauth,
+  getOauthState,
+  removeLocationBeforeOauth,
+  removeOauthState,
+} from "src/store/localStore";
+
+export const OauthCallback = () => {
+  const queryParams = new URLSearchParams(location.search);
+  const code = queryParams.get("code");
+  const newState = queryParams.get("state");
+  const originalState = getOauthState();
+  const previousLocation = getLocationBeforeOauth();
+  const { provider } = useParams();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (provider !== "github" && provider !== "google") {
+      toastError(`${provider} is not a valid OAuth provider`);
+      navigate(ROUTE_LOGIN);
+      return;
+    }
+    if (!code || !originalState || !newState || newState !== originalState) {
+      toastError("Invalid state");
+      navigate(ROUTE_LOGIN);
+    }
+
+    let oauth2_client_id;
+    let oauth2_redirect_uri;
+
+    if (provider === "github") {
+      oauth2_client_id = GITHUB_CLIENT_ID;
+      oauth2_redirect_uri = GOOGLE_REDIRECT_URI;
+    } else if (provider === "google") {
+      oauth2_client_id = GOOGLE_CLIENT_ID;
+      oauth2_redirect_uri = GOOGLE_REDIRECT_URI;
+    }
+
+    removeOauthState();
+    removeLocationBeforeOauth();
+
+    postRegister({
+      service_provider_sid: DEFAULT_SERVICE_PROVIDER_SID,
+      provider,
+      oauth2_code: code || "",
+      oauth2_state: originalState,
+      oauth2_client_id,
+      oauth2_redirect_uri,
+      locationBeforeAuth: previousLocation,
+    })
+      .then(({ json }) => {
+        setToken(json.jwt);
+      })
+      .catch((error) => {
+        toastError(error);
+        navigate(ROUTE_LOGIN);
+      });
+  }, []);
+  return <Spinner />;
+};
+
+export default OauthCallback;
