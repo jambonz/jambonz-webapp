@@ -147,7 +147,7 @@ export const RecentCalls = () => {
           options={statusSelection}
         />
         <SearchFilter
-          placeholder="Filter From, To, Call-Sid"
+          placeholder="Filter"
           filter={[filter, setFilter]}
           delay={1000}
         />
