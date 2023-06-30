@@ -48,8 +48,7 @@ export const RecentCalls = () => {
   const [dateFilter, setDateFilter] = useState("today");
   const [directionFilter, setDirectionFilter] = useState("io");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [fromFilter, setFromFilter] = useState("");
-  const [toFilter, setToFilter] = useState("");
+  const [filter, setFilter] = useState("");
 
   const [pageNumber, setPageNumber] = useState(1);
   const [perPageFilter, setPerPageFilter] = useState("25");
@@ -67,8 +66,7 @@ export const RecentCalls = () => {
         : { days: Number(dateFilter) }),
       ...(statusFilter !== "all" && { answered: statusFilter }),
       ...(directionFilter !== "io" && { direction: directionFilter }),
-      ...(fromFilter && { from: fromFilter }),
-      ...(toFilter && { to: toFilter }),
+      ...(filter && { filter }),
     };
 
     getRecentCalls(accountSid, payload)
@@ -105,8 +103,7 @@ export const RecentCalls = () => {
     dateFilter,
     directionFilter,
     statusFilter,
-    fromFilter,
-    toFilter,
+    filter,
   ]);
 
   /** Reset page number when filters change */
@@ -150,13 +147,8 @@ export const RecentCalls = () => {
           options={statusSelection}
         />
         <SearchFilter
-          placeholder="Filter From"
-          filter={[fromFilter, setFromFilter]}
-          delay={1000}
-        />
-        <SearchFilter
-          placeholder="Filter To"
-          filter={[toFilter, setToFilter]}
+          placeholder="Filter From, To, Call-Sid"
+          filter={[filter, setFilter]}
           delay={1000}
         />
       </section>
