@@ -86,6 +86,20 @@ export const removeLocationBeforeOauth = () => {
   return localStorage.removeItem(locationBeforeOauthKey);
 };
 
+// Email register
+const rootDomainKey = "root-domain";
+export const setRootDomain = (domain: string) => {
+  return localStorage.setItem(rootDomainKey, domain);
+};
+
+export const getRootDomain = () => {
+  return localStorage.getItem(rootDomainKey);
+};
+
+export const removeRootDomain = () => {
+  return localStorage.removeItem(rootDomainKey);
+};
+
 /**
  * Methods to get/set the location from local storage
  */

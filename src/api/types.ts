@@ -507,11 +507,16 @@ export interface TotalResponse {
 export interface RegisterRequest {
   service_provider_sid: string;
   provider: string;
-  oauth2_code: string;
-  oauth2_state: string;
-  oauth2_client_id: string;
-  oauth2_redirect_uri: string;
-  locationBeforeAuth: string;
+  oauth2_code?: string;
+  oauth2_state?: string;
+  oauth2_client_id?: string;
+  oauth2_redirect_uri?: string;
+  locationBeforeAuth?: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  email_activation_code?: string;
+  inviteCode?: string;
 }
 
 export interface RegisterResponse {
@@ -519,4 +524,13 @@ export interface RegisterResponse {
   user_sid: string;
   account_sid: string;
   root_domain: string;
+}
+
+export interface ActivationCode {
+  user_sid: string;
+  type: string;
+}
+
+export interface Availability {
+  available: boolean;
 }

@@ -52,6 +52,7 @@ import OauthCallback from "src/containers/login/oauth-callback";
 import Register from "src/containers/login/register";
 import RegisterEmail from "src/containers/login/register-email";
 import EmailVerify from "src/containers/login/register-verify-email";
+import RegisterChooseSubdomain from "src/containers/login/sub-domain";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -79,8 +80,12 @@ export const Router = () => {
               <Route path="register" element={<Register />} />
               <Route path="register/email" element={<RegisterEmail />} />
               <Route
-                path="register/verify-your-email"
+                path="register/email/verify-your-email"
                 element={<EmailVerify />}
+              />
+              <Route
+                path="register/choose-a-subdomain"
+                element={<RegisterChooseSubdomain />}
               />
               <Route
                 path="oauth-callback/:provider"

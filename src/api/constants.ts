@@ -307,3 +307,5 @@ export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries
 export const API_TTS_CACHE = `${API_BASE_URL}/TtsCache`;
 export const API_CLIENTS = `${API_BASE_URL}/Clients`;
 export const API_REGISTER = `${API_BASE_URL}/register`;
+export const API_ACTIVATION_CODE = `${API_BASE_URL}/ActivationCode`;
+export const API_AVAILABILITY = `${API_BASE_URL}/Availability`;

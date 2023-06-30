@@ -27,6 +27,8 @@ import {
   API_TTS_CACHE,
   API_CLIENTS,
   API_REGISTER,
+  API_ACTIVATION_CODE,
+  API_AVAILABILITY,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -77,8 +79,9 @@ import type {
   Client,
   RegisterRequest,
   RegisterResponse,
+  ActivationCode,
 } from "./types";
-import { StatusCodes } from "./types";
+import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
 
 /** Wrap all requests to normalize response handling */
@@ -166,7 +169,7 @@ const getAuthHeaders = () => {
 
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 };
 
@@ -423,6 +426,12 @@ export const postRegister = (payload: Partial<RegisterRequest>) => {
     payload
   );
 };
+
+export const postSipRealms = (accountSid: string, domain: string) => {
+  return postFetch<EmptyResponse>(
+    `${API_ACCOUNTS}/${accountSid}/SipRealms/${domain}`
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -539,6 +548,16 @@ export const putLcrCarrierSetEntries = (
 export const putClient = (sid: string, payload: Partial<Client>) => {
   return putFetch<EmptyResponse, Partial<Client>>(
     `${API_CLIENTS}/${sid}`,
+    payload
+  );
+};
+
+export const putActivationCode = (
+  code: string,
+  payload: Partial<ActivationCode>
+) => {
+  return putFetch<EmptyResponse, Partial<ActivationCode>>(
+    `${API_ACTIVATION_CODE}/${code}`,
     payload
   );
 };
@@ -668,6 +687,12 @@ export const getClients = () => {
 
 export const getClient = (sid: string) => {
   return getFetch<Client[]>(`${API_CLIENTS}/${sid}`);
+};
+
+export const getAvailability = (domain: string) => {
+  return getFetch<Availability>(
+    `${API_AVAILABILITY}?type=subdomain&value=${domain}`
+  );
 };
 
 /** Wrappers for APIs that can have a mock dev server response */
