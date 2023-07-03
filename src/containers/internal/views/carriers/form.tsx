@@ -776,7 +776,7 @@ export const CarrierForm = ({
                   Does your carrier require authentication on outbound calls?
                 </MS>
                 <label htmlFor="sip_username">
-                  Username {sipPass || sipRegister ? <span>*</span> : ""}
+                  Auth username {sipPass || sipRegister ? <span>*</span> : ""}
                 </label>
                 <input
                   id="sip_username"
@@ -831,7 +831,7 @@ export const CarrierForm = ({
                       required={sipRegister}
                       onChange={(e) => setSipRealm(e.target.value)}
                     />
-                    <label htmlFor="from_user">SIP from user</label>
+                    <label htmlFor="from_user">Username</label>
                     <input
                       id="from_user"
                       name="from_user"
