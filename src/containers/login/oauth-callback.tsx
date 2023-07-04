@@ -9,13 +9,14 @@ import {
 } from "src/api/constants";
 import { Spinner } from "src/components";
 import { setToken } from "src/router/auth";
-import { ROUTE_LOGIN } from "src/router/routes";
+import { ROUTE_LOGIN, ROUTE_REGISTER_SUB_DOMAIN } from "src/router/routes";
 import { toastError } from "src/store";
 import {
   getLocationBeforeOauth,
   getOauthState,
   removeLocationBeforeOauth,
   removeOauthState,
+  setRootDomain,
 } from "src/store/localStore";
 
 export const OauthCallback = () => {
@@ -62,6 +63,8 @@ export const OauthCallback = () => {
     })
       .then(({ json }) => {
         setToken(json.jwt);
+        setRootDomain(json.root_domain);
+        navigate(ROUTE_REGISTER_SUB_DOMAIN);
       })
       .catch((error) => {
         toastError(error);
