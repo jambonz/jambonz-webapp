@@ -1,7 +1,7 @@
 import React from "react";
 import { getGithubOauthUrl, getGoogleOauthUrl } from "./utils";
 import { v4 as uuid } from "uuid";
-import { setOauthState } from "src/store/localStore";
+import { setLocationBeforeOauth, setOauthState } from "src/store/localStore";
 import { Icons } from "src/components";
 import { Button, H1 } from "@jambonz/ui-kit";
 import { PRIVACY_POLICY, TERMS_OF_SERVICE } from "src/api/constants";
@@ -12,6 +12,7 @@ import { ROUTE_REGISTER_EMAIL } from "src/router/routes";
 export const Register = () => {
   const state = uuid();
   setOauthState(state);
+  setLocationBeforeOauth("/register");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

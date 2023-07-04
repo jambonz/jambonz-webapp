@@ -9,7 +9,11 @@ import {
 } from "src/api/constants";
 import { Spinner } from "src/components";
 import { setToken } from "src/router/auth";
-import { ROUTE_LOGIN, ROUTE_REGISTER_SUB_DOMAIN } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_ACCOUNTS,
+  ROUTE_LOGIN,
+  ROUTE_REGISTER_SUB_DOMAIN,
+} from "src/router/routes";
 import { toastError } from "src/store";
 import {
   getLocationBeforeOauth,
@@ -64,7 +68,11 @@ export const OauthCallback = () => {
       .then(({ json }) => {
         setToken(json.jwt);
         setRootDomain(json.root_domain);
-        navigate(ROUTE_REGISTER_SUB_DOMAIN);
+        if (previousLocation === "/register") {
+          navigate(ROUTE_REGISTER_SUB_DOMAIN);
+        } else {
+          navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${json.account_sid}/edit`);
+        }
       })
       .catch((error) => {
         toastError(error);
