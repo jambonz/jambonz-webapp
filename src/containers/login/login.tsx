@@ -30,7 +30,7 @@ import { getGithubOauthUrl, getGoogleOauthUrl } from "./utils";
 export const Login = () => {
   const state = uuid();
   setOauthState(state);
-  setLocationBeforeOauth("/");
+  setLocationBeforeOauth("/sign-in");
   const { signin, authorized } = useAuth();
   const location = useLocation();
   const user = useSelectState("user");

@@ -12,6 +12,7 @@ import { setToken } from "src/router/auth";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_LOGIN,
+  ROUTE_REGISTER,
   ROUTE_REGISTER_SUB_DOMAIN,
 } from "src/router/routes";
 import { toastError } from "src/store";
@@ -76,7 +77,7 @@ export const OauthCallback = () => {
       })
       .catch((error) => {
         toastError(error);
-        navigate(ROUTE_LOGIN);
+        navigate(ROUTE_REGISTER);
       });
   }, []);
   return <Spinner />;
