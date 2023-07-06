@@ -75,8 +75,7 @@ export const OauthCallback = () => {
           navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${json.account_sid}/edit`);
         }
       })
-      .catch((error) => {
-        toastError(error);
+      .catch(() => {
         navigate(ROUTE_REGISTER);
       });
   }, []);
