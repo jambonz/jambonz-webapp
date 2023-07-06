@@ -41,7 +41,10 @@ export const Register = () => {
           initialCheck={false}
         >
           <Button as={Link} to={ROUTE_REGISTER_EMAIL} mainStyle="hollow">
-            Sign Up with Email
+            <div className="mast">
+              <Icons.Mail />
+              <span>Sign Up With Email</span>
+            </div>
           </Button>
           <a href={getGoogleOauthUrl(state)} className="btn btn--hollow">
             <div className="mast">

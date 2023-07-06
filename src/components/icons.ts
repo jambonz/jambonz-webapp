@@ -49,6 +49,7 @@ import {
   Download,
   Smartphone,
   Youtube,
+  Mail,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -108,4 +109,5 @@ export const Icons: IconMap = {
   Download,
   Smartphone,
   Youtube,
+  Mail,
 };
