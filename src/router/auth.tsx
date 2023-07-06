@@ -136,14 +136,14 @@ export const useProvideAuth = (): AuthStateContext => {
   };
 
   const signout = () => {
-    window.location.href = ROUTE_LOGIN;
     return new Promise((resolve, reject) => {
       postLogout()
         .then((response) => {
-          if (response.status === StatusCodes.OK) {
+          if (response.status === StatusCodes.NO_CONTENT) {
             localStorage.clear();
             sessionStorage.clear();
             sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+            window.location.href = ROUTE_LOGIN;
             resolve(response.json);
           }
         })
@@ -151,6 +151,7 @@ export const useProvideAuth = (): AuthStateContext => {
           localStorage.clear();
           sessionStorage.clear();
           sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+          window.location.href = ROUTE_LOGIN;
           if (error) {
             reject(error);
           }
