@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { postRegister } from "src/api";
+import { getMe, postRegister } from "src/api";
 import {
   DEFAULT_SERVICE_PROVIDER_SID,
   GITHUB_CLIENT_ID,
@@ -72,7 +72,17 @@ export const OauthCallback = () => {
         if (previousLocation === "/register") {
           navigate(ROUTE_REGISTER_SUB_DOMAIN);
         } else {
-          navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${json.account_sid}/edit`);
+          getMe()
+            .then(({ json: me }) => {
+              if (!me.account?.sip_realm) {
+                navigate(ROUTE_REGISTER_SUB_DOMAIN);
+              } else {
+                navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${json.account_sid}/edit`);
+              }
+            })
+            .catch((error) => {
+              toastError(error.msg);
+            });
         }
       })
       .catch(() => {

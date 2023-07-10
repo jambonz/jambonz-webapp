@@ -186,6 +186,7 @@ export interface UserJWT {
 
 export interface CurrentUserData {
   user: User;
+  account?: Account;
 }
 
 export interface ServiceProvider {

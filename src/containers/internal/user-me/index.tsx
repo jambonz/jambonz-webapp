@@ -1,18 +1,30 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Icons } from "src/components";
-import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_USERS,
+  ROUTE_REGISTER_SUB_DOMAIN,
+} from "src/router/routes";
 import { useApiData } from "src/api";
 import { useSelectState } from "src/store";
 
 import type { CurrentUserData } from "src/api/types";
 
 import "./styles.scss";
+import { ENABLE_ClOUD_PLATFORM } from "src/api/constants";
 
 export const UserMe = () => {
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If hosted platform is enabled, the account should have sip realm
+    if (ENABLE_ClOUD_PLATFORM && !userData?.account?.sip_realm) {
+      navigate(ROUTE_REGISTER_SUB_DOMAIN);
+    }
+  }, [userData]);
 
   return (
     <div className="user">

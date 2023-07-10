@@ -4,13 +4,14 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { postLogin, postLogout } from "src/api";
+import { getMe, postLogin, postLogout } from "src/api";
 import { StatusCodes } from "src/api/types";
 import {
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_LOGIN,
+  ROUTE_REGISTER_SUB_DOMAIN,
 } from "./routes";
 import {
   SESS_OLD_PASSWORD,
@@ -23,8 +24,9 @@ import {
 } from "src/constants";
 
 import type { UserLogin } from "src/api/types";
-import { USER_ACCOUNT } from "src/api/constants";
+import { ENABLE_ClOUD_PLATFORM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
+import { toastError } from "src/store";
 
 interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
@@ -103,7 +105,23 @@ export const useProvideAuth = (): AuthStateContext => {
             setToken(token);
             userData = parseJwt(token);
 
-            if (response.json.force_change) {
+            if (ENABLE_ClOUD_PLATFORM) {
+              getMe()
+                .then(({ json }) => {
+                  if (!json.account?.sip_realm) {
+                    navigate(ROUTE_REGISTER_SUB_DOMAIN);
+                  } else {
+                    navigate(
+                      userData.scope !== USER_ACCOUNT
+                        ? ROUTE_INTERNAL_ACCOUNTS
+                        : ROUTE_INTERNAL_APPLICATIONS
+                    );
+                  }
+                })
+                .catch((error) => {
+                  toastError(error.msg);
+                });
+            } else if (response.json.force_change) {
               sessionStorage.setItem(SESS_USER_SID, response.json.user_sid);
               sessionStorage.setItem(SESS_OLD_PASSWORD, password);
               navigate(ROUTE_CREATE_PASSWORD);

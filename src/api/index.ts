@@ -80,6 +80,7 @@ import type {
   RegisterRequest,
   RegisterResponse,
   ActivationCode,
+  CurrentUserData,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -696,6 +697,10 @@ export const getAvailability = (domain: string) => {
 };
 
 /** Wrappers for APIs that can have a mock dev server response */
+
+export const getMe = () => {
+  return getFetch<CurrentUserData>(`${API_USERS}/me`);
+};
 
 export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
   const qryStr = getQuery<Partial<CallQuery>>(query);
