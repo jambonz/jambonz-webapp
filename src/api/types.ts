@@ -246,6 +246,7 @@ export interface Smpp {
 export interface Account {
   name: string;
   sip_realm: null | string;
+  root_domain?: null | string;
   account_sid: string;
   webhook_secret: string;
   siprec_hook_sid: null | string;
