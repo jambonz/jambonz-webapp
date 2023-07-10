@@ -22,7 +22,7 @@ export const UserMe = () => {
 
   useEffect(() => {
     // If hosted platform is enabled, the account should have sip realm
-    if (ENABLE_ClOUD_PLATFORM && !userData?.account?.sip_realm) {
+    if (ENABLE_ClOUD_PLATFORM && userData && !userData.account?.sip_realm) {
       setRootDomain(userData?.account?.root_domain || "");
       navigate(ROUTE_REGISTER_SUB_DOMAIN);
     }
