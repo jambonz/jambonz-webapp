@@ -1,4 +1,5 @@
 import type {
+  Currency,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -267,6 +268,16 @@ export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
   require_special_character: 0,
 };
 
+export const PlanType = {
+  PAID: "paid",
+  TRIAL: "trial",
+  FREE: "free",
+};
+
+export const CurrencySymbol: Currency = {
+  usd: "$",
+};
+
 /** User scope values values */
 export const USER_ADMIN = "admin";
 export const USER_SP = "service_provider";
@@ -309,3 +320,4 @@ export const API_CLIENTS = `${API_BASE_URL}/Clients`;
 export const API_REGISTER = `${API_BASE_URL}/register`;
 export const API_ACTIVATION_CODE = `${API_BASE_URL}/ActivationCode`;
 export const API_AVAILABILITY = `${API_BASE_URL}/Availability`;
+export const API_PRICE = `${API_BASE_URL}/Prices`;

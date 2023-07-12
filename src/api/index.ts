@@ -29,6 +29,7 @@ import {
   API_REGISTER,
   API_ACTIVATION_CODE,
   API_AVAILABILITY,
+  API_PRICE,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -81,6 +82,7 @@ import type {
   RegisterResponse,
   ActivationCode,
   CurrentUserData,
+  PriceInfo,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -767,6 +769,10 @@ export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
       ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts?${qryStr}`
       : `${API_ACCOUNTS}/${sid}/Alerts?${qryStr}`
   );
+};
+
+export const getPrice = () => {
+  return getFetch<PriceInfo[]>(API_PRICE);
 };
 
 /** Hooks for components to fetch data with refetch method */

@@ -187,6 +187,7 @@ export interface UserJWT {
 export interface CurrentUserData {
   user: User;
   account?: Account;
+  subscription?: null | Subscription;
 }
 
 export interface ServiceProvider {
@@ -257,6 +258,21 @@ export interface Account {
   record_all_calls: number;
   record_format?: null | string;
   bucket_credential: null | BucketCredential;
+  plan_type?: string;
+  device_to_call_ratio?: number;
+  trial_end_date?: null | string;
+}
+
+export interface Product {
+  name: string;
+  quantity: number;
+}
+
+export interface Subscription {
+  account_subscription_sid?: null | string;
+  products: null | Product[];
+  start_date: string;
+  status: string;
 }
 
 export interface AwsTag {
@@ -535,4 +551,72 @@ export interface ActivationCode {
 
 export interface Availability {
   available: boolean;
+}
+
+export interface Invoice {
+  total: number;
+  currency: null | string;
+  next_payment_attempt: null | string;
+}
+
+export type Currency = {
+  [key: string]: null | string;
+};
+
+export interface Recurring {
+  aggregate_usage: null | string;
+  interval: null | string;
+  interval_count: number;
+  trial_period_days: null | string;
+  usage_type: string;
+}
+
+export interface Price {
+  billing_scheme: string;
+  currency: string;
+  recurring: Recurring;
+  stripe_price_id: null | string;
+  tiers_mode: null | string;
+  type: null | string;
+  unit_amount: number;
+  unit_amount_decimal: null | string;
+}
+
+export interface PriceInfo {
+  category: null | string;
+  description: null | string;
+  name: null | string;
+  prices: Price[];
+  product_sid: null | string;
+  stripe_product_id: null | string;
+  unit_label: null | string;
+}
+
+export interface Tier {
+  up_to: number;
+  flat_amount: number;
+  unit_amount: number;
+}
+
+export interface ServiceData {
+  category: null | string;
+  name: null | string;
+  service: null | string;
+  fees: number;
+  feesLabel: null | string;
+  cost: number;
+  capacity: number;
+  invalid: boolean;
+  currency: null | string;
+  min: number;
+  max: number;
+  dirty: boolean;
+  visible: boolean;
+  required: boolean;
+  billing_scheme?: null | string;
+  stripe_price_id?: null | string;
+  unit_label?: null | string;
+  product_sid?: null | string;
+  stripe_product_id?: null | string;
+  tiers?: Tier[];
 }

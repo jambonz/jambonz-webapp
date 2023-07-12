@@ -53,6 +53,7 @@ import Register from "src/containers/login/register";
 import RegisterEmail from "src/containers/login/register-email";
 import EmailVerify from "src/containers/login/register-verify-email";
 import RegisterChooseSubdomain from "src/containers/login/sub-domain";
+import Subscription from "src/containers/internal/views/accounts/subscription";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -115,6 +116,12 @@ export const Router = () => {
                     path="accounts/:account_sid/edit"
                     element={<AccountEdit />}
                   />
+                  {ENABLE_ClOUD_PLATFORM && (
+                    <Route
+                      path="accounts/:account_sid/subscription"
+                      element={<Subscription />}
+                    />
+                  )}
                   <Route path="applications" element={<Applications />} />
                   <Route path="applications/add" element={<ApplicationAdd />} />
                   <Route

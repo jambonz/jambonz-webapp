@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { P, Button, ButtonGroup, MS, Icon } from "@jambonz/ui-kit";
+import { P, Button, ButtonGroup, MS, Icon, H1 } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -27,14 +27,17 @@ import {
   AUDIO_FORMAT_OPTIONS,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
+  CurrencySymbol,
   DEFAULT_WEBHOOK,
   DISABLE_CALL_RECORDING,
+  ENABLE_ClOUD_PLATFORM,
+  PlanType,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
 } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
-import type {
+import {
   WebHook,
   Account,
   Application,
@@ -44,9 +47,12 @@ import type {
   TtsCache,
   BucketCredential,
   AwsTag,
+  Invoice,
+  CurrentUserData,
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
+import dayjs from "dayjs";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -65,6 +71,8 @@ export const AccountForm = ({
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
+  const [invoice] = useApiData<Invoice>("Invoices");
+  const [userData] = useApiData<CurrentUserData>("Users/me");
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
   const [appId, setAppId] = useState("");
@@ -89,6 +97,7 @@ export const AccountForm = ({
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
   const regions = useRegionVendors();
+  const [subscriptionDescription, setSubscriptionDescription] = useState("");
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -384,6 +393,64 @@ export const AccountForm = ({
     }
   }, [account]);
 
+  if (ENABLE_ClOUD_PLATFORM) {
+    useEffect(() => {
+      if (userData && userData.account) {
+        const pType = userData.account.plan_type;
+        const { products } = userData.subscription || {};
+        const registeredDeviceRecord = products
+          ? products.find((item) => item.name === "registered device") || {
+              quantity: 0,
+            }
+          : { quantity: 0 };
+        const callSessionRecord = products
+          ? products.find(
+              (item) => item.name === "concurrent call session"
+            ) || { quantity: 0 }
+          : { quantity: 0 };
+        const quantity =
+          (userData.account.device_to_call_ratio || 0) *
+            callSessionRecord.quantity +
+          (registeredDeviceRecord.quantity || 0);
+        const { trial_end_date } = userData.account || {};
+        switch (pType) {
+          case PlanType.TRIAL:
+            setSubscriptionDescription(
+              `You are currently on the Free plan (trial period). You are limited to ${
+                callSessionRecord.quantity
+              } simultaneous calls and ${quantity} registered devices.${
+                trial_end_date
+                  ? ` Your free trial will end on ${dayjs(
+                      trial_end_date
+                    ).format("MMM DD, YYYY")}`
+                  : ""
+              }`
+            );
+            break;
+          case PlanType.PAID:
+            if (invoice) {
+              setSubscriptionDescription(
+                `Your paid subscription includes capacity for ${
+                  callSessionRecord.quantity
+                } simultaneous calls, and ${quantity} registered devices. You are billed ${
+                  CurrencySymbol[invoice.currency || "usd"]
+                }${invoice.total || 0} on ${
+                  invoice.next_payment_attempt || ""
+                }.`
+              );
+            }
+
+            break;
+          case PlanType.FREE:
+            setSubscriptionDescription(
+              `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`
+            );
+            break;
+        }
+      }
+    }, [userData, invoice]);
+  }
+
   const updateBucketTags = (
     index: number,
     key: string,
@@ -406,6 +473,21 @@ export const AccountForm = ({
 
   return (
     <>
+      {subscriptionDescription && (
+        <Section>
+          <H1 className="h4">Your Subscription</H1>
+          <P>{subscriptionDescription}</P>
+          <br />
+          <ButtonGroup right>
+            <Button
+              as={Link}
+              to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
+            >
+              Upgrade to a Paid Subscription
+            </Button>
+          </ButtonGroup>
+        </Section>
+      )}
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>

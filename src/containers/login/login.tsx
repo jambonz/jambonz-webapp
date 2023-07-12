@@ -13,7 +13,6 @@ import { Passwd, Message } from "src/components/forms";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_CREATE_PASSWORD,
-  ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_FORGOT_PASSWORD,
   ROUTE_REGISTER,
 } from "src/router/routes";
@@ -68,13 +67,13 @@ export const Login = () => {
         />
       );
     }
-
+    console.log(user);
     return (
       <Navigate
         to={
           user?.scope !== USER_ACCOUNT
             ? ROUTE_INTERNAL_ACCOUNTS
-            : ROUTE_INTERNAL_APPLICATIONS
+            : `${ROUTE_INTERNAL_ACCOUNTS}/${user.account_sid}/edit`
         }
         state={{ from: location }}
         replace

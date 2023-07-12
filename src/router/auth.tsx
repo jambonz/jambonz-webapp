@@ -9,7 +9,6 @@ import { StatusCodes } from "src/api/types";
 import {
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
-  ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_LOGIN,
   ROUTE_REGISTER_SUB_DOMAIN,
 } from "./routes";
@@ -27,6 +26,10 @@ import type { UserLogin } from "src/api/types";
 import { ENABLE_ClOUD_PLATFORM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
 import { toastError } from "src/store";
+import {
+  removeLocationBeforeOauth,
+  removeOauthState,
+} from "src/store/localStore";
 
 interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
@@ -114,7 +117,7 @@ export const useProvideAuth = (): AuthStateContext => {
                     navigate(
                       userData.scope !== USER_ACCOUNT
                         ? ROUTE_INTERNAL_ACCOUNTS
-                        : ROUTE_INTERNAL_APPLICATIONS
+                        : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
                     );
                   }
                 })
@@ -129,7 +132,7 @@ export const useProvideAuth = (): AuthStateContext => {
               navigate(
                 userData.scope !== USER_ACCOUNT
                   ? ROUTE_INTERNAL_ACCOUNTS
-                  : ROUTE_INTERNAL_APPLICATIONS
+                  : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
               );
             }
 
@@ -149,6 +152,10 @@ export const useProvideAuth = (): AuthStateContext => {
           }
 
           reject(MSG_SOMETHING_WRONG);
+        })
+        .finally(() => {
+          removeOauthState();
+          removeLocationBeforeOauth();
         });
     });
   };
