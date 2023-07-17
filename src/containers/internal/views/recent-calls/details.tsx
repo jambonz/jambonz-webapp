@@ -76,7 +76,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
               <CallDetail call={transformRecentCall(call)} />
             </Tab>
             <Tab id="tracing" label="Tracing">
-              <CallTracing call={call} />
+              {open && <CallTracing call={call} />}
             </Tab>
           </Tabs>
         )}
