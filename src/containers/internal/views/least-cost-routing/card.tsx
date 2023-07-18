@@ -122,6 +122,7 @@ export const Card = ({
       className={`lcr lcr--route lcr-card lcr-card-${
         isDragging ? "disappear" : "appear"
       }`}
+      // eslint-disable-next-line react/no-unknown-property
       handler-id={handlerId}
     >
       <div>
