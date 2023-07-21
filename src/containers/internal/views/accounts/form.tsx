@@ -420,9 +420,9 @@ export const AccountForm = ({
                 callSessionRecord.quantity
               } simultaneous calls and ${quantity} registered devices.${
                 trial_end_date
-                  ? ` Your free trial will end on ${dayjs(
-                      trial_end_date
-                    ).format("MMM DD, YYYY")}.`
+                  ? ` Your free trial will end on ${dayjs
+                      .unix(Number(trial_end_date))
+                      .format("MMM DD, YYYY")}.`
                   : ""
               }`
             );
@@ -434,9 +434,9 @@ export const AccountForm = ({
                   callSessionRecord.quantity
                 } simultaneous calls, and ${quantity} registered devices. You are billed ${
                   CurrencySymbol[invoice.currency || "usd"]
-                }${(invoice.total || 0) / 100} on ${dayjs(
-                  invoice.next_payment_attempt
-                ).format("MMM DD, YYYY")}.`
+                }${(invoice.total || 0) / 100} on ${dayjs
+                  .unix(Number(invoice.next_payment_attempt))
+                  .format("MMM DD, YYYY")}.`
               );
             }
 
