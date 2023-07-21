@@ -278,6 +278,7 @@ export interface Subscription {
   products?: null | Product[];
   start_date?: string;
   status?: string;
+  client_secret?: null | string;
 }
 
 export interface AwsTag {

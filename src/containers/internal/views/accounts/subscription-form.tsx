@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, H1, P } from "@jambonz/ui-kit";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { postSubscriptions, useApiData } from "src/api";
 import { CurrencySymbol } from "src/api/constants";
 import {
@@ -19,7 +19,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { PaymentMethod } from "@stripe/stripe-js";
-import { toastError } from "src/store";
+import { toastError, toastSuccess } from "src/store";
 
 const SubscriptionForm = () => {
   const [userData] = useApiData<CurrentUserData>("Users/me");
@@ -27,6 +27,7 @@ const SubscriptionForm = () => {
   const [userStripeInfo] = useApiData<StripeCustomerId>("/StripeCustomerId");
   const [total, setTotal] = useState(0);
   const [cardErrorCase, setCardErrorCase] = useState(false);
+  const navigate = useNavigate();
 
   const stripe = useStripe();
   const elements = useElements();
@@ -54,9 +55,27 @@ const SubscriptionForm = () => {
 
     postSubscriptions(body)
       .then(({ json }) => {
-        console.log(json);
         if (json.status === "success") {
+          toastSuccess("Payment completed successfully");
+          navigate(
+            `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+          );
         } else if (json.status === "action required") {
+          if (stripe) {
+            stripe
+              .confirmPayment({
+                clientSecret: json.client_secret || "",
+                confirmParams: {
+                  return_url: `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
+                },
+              })
+              .then((error) => {
+                if (error) {
+                  toastError(error.error.message || "");
+                  return;
+                }
+              });
+          }
         } else if (json.status === "card error") {
           setCardErrorCase(true);
         }
