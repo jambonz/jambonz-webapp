@@ -30,6 +30,7 @@ import {
   API_ACTIVATION_CODE,
   API_AVAILABILITY,
   API_PRICE,
+  API_SUBSCRIPTIONS,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -83,6 +84,7 @@ import type {
   ActivationCode,
   CurrentUserData,
   PriceInfo,
+  Subscription,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -433,6 +435,13 @@ export const postRegister = (payload: Partial<RegisterRequest>) => {
 export const postSipRealms = (accountSid: string, domain: string) => {
   return postFetch<EmptyResponse>(
     `${API_ACCOUNTS}/${accountSid}/SipRealms/${domain}`
+  );
+};
+
+export const postSubscriptions = (payload: Partial<Subscription>) => {
+  return postFetch<Subscription, Partial<Subscription>>(
+    API_SUBSCRIPTIONS,
+    payload
   );
 };
 /** Named wrappers for `putFetch` */

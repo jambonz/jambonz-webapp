@@ -264,15 +264,20 @@ export interface Account {
 }
 
 export interface Product {
-  name: string;
-  quantity: number;
+  price_id?: null | string;
+  product_sid?: null | string;
+  name?: string;
+  quantity?: number;
 }
 
 export interface Subscription {
+  action?: null | string;
+  payment_method_id?: null | string;
   account_subscription_sid?: null | string;
-  products: null | Product[];
-  start_date: string;
-  status: string;
+  stripe_customer_id?: null | string;
+  products?: null | Product[];
+  start_date?: string;
+  status?: string;
 }
 
 export interface AwsTag {
@@ -590,6 +595,10 @@ export interface PriceInfo {
   product_sid: null | string;
   stripe_product_id: null | string;
   unit_label: null | string;
+}
+
+export interface StripeCustomerId {
+  stripe_customer_id: null | string;
 }
 
 export interface Tier {

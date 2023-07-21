@@ -51,7 +51,8 @@
     "react-feather": "^2.0.10",
     "react-router-dom": "^6.3.0",
     "wavesurfer.js": "^6.6.3",
-    "react-credit-cards-2": "^1.0.1"
+    "@stripe/react-stripe-js": "^2.1.1",
+    "@stripe/stripe-js": "^1.54.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

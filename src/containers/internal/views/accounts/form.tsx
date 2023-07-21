@@ -410,7 +410,7 @@ export const AccountForm = ({
           : { quantity: 0 };
         const quantity =
           (userData.account.device_to_call_ratio || 0) *
-            callSessionRecord.quantity +
+            (callSessionRecord.quantity || 0) +
           (registeredDeviceRecord.quantity || 0);
         const { trial_end_date } = userData.account || {};
         switch (pType) {
@@ -422,7 +422,7 @@ export const AccountForm = ({
                 trial_end_date
                   ? ` Your free trial will end on ${dayjs(
                       trial_end_date
-                    ).format("MMM DD, YYYY")}`
+                    ).format("MMM DD, YYYY")}.`
                   : ""
               }`
             );
@@ -434,9 +434,9 @@ export const AccountForm = ({
                   callSessionRecord.quantity
                 } simultaneous calls, and ${quantity} registered devices. You are billed ${
                   CurrencySymbol[invoice.currency || "usd"]
-                }${invoice.total || 0} on ${
-                  invoice.next_payment_attempt || ""
-                }.`
+                }${(invoice.total || 0) / 100} on ${dayjs(
+                  invoice.next_payment_attempt
+                ).format("MMM DD, YYYY")}.`
               );
             }
 
@@ -478,13 +478,33 @@ export const AccountForm = ({
           <H1 className="h4">Your Subscription</H1>
           <P>{subscriptionDescription}</P>
           <br />
+
           <ButtonGroup right>
-            <Button
-              as={Link}
-              to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
-            >
-              Upgrade to a Paid Subscription
-            </Button>
+            {userData?.account?.plan_type === PlanType.PAID ? (
+              <>
+                <Button
+                  small
+                  as={Link}
+                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
+                >
+                  Manage Payment Info
+                </Button>
+                <Button
+                  small
+                  as={Link}
+                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
+                >
+                  Modify My Subscription
+                </Button>
+              </>
+            ) : (
+              <Button
+                as={Link}
+                to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
+              >
+                Upgrade to a Paid Subscription
+              </Button>
+            )}
           </ButtonGroup>
         </Section>
       )}

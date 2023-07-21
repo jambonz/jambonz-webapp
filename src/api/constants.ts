@@ -24,6 +24,7 @@ interface JambonzWindowObject {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_REDIRECT_URI: string;
   DEFAULT_SERVICE_PROVIDER_SID: string;
+  STRIPE_PUBLISHABLE_KEY: string;
 }
 
 declare global {
@@ -81,6 +82,10 @@ export const GOOGLE_REDIRECT_URI: string =
 
 export const GOOGLE_CLIENT_ID: string =
   window.JAMBONZ?.GOOGLE_CLIENT_ID || import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
+
+export const STRIPE_PUBLISHABLE_KEY: string =
+  window.JAMBONZ?.STRIPE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY;
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
@@ -321,3 +326,4 @@ export const API_REGISTER = `${API_BASE_URL}/register`;
 export const API_ACTIVATION_CODE = `${API_BASE_URL}/ActivationCode`;
 export const API_AVAILABILITY = `${API_BASE_URL}/Availability`;
 export const API_PRICE = `${API_BASE_URL}/Prices`;
+export const API_SUBSCRIPTIONS = `${API_BASE_URL}/Subscriptions`;
