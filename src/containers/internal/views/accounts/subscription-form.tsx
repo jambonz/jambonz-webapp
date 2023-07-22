@@ -590,7 +590,7 @@ const SubscriptionForm = () => {
                   Cancel
                 </Button>
 
-                <Button type="submit">Delete Account</Button>
+                <Button type="submit">PERMANENTLY DELETE MY ACCOUNT</Button>
               </ButtonGroup>
             </fieldset>
           </form>
