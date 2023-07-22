@@ -465,6 +465,7 @@ const SubscriptionForm = () => {
                 {isModifySubscription && (
                   <ButtonGroup right>
                     <Button
+                      type="button"
                       subStyle="grey"
                       mainStyle="hollow"
                       onClick={handleReturnToFreePlan}
@@ -473,6 +474,7 @@ const SubscriptionForm = () => {
                     </Button>
 
                     <Button
+                      type="button"
                       mainStyle="hollow"
                       subStyle="grey"
                       onClick={handleDeleteAccount}
