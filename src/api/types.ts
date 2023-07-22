@@ -148,6 +148,7 @@ export interface User {
   service_provider_name?: string | null;
   initial_password?: string;
   permissions?: UserPermissions[];
+  provider?: null | string;
 }
 
 export interface UserLogin {

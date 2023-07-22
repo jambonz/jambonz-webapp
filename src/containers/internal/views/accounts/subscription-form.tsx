@@ -21,6 +21,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { PaymentMethod } from "@stripe/stripe-js";
 import { toastError, toastSuccess } from "src/store";
+import { Passwd } from "src/components/forms";
 
 const SubscriptionForm = () => {
   const [userData] = useApiData<CurrentUserData>("Users/me");
@@ -29,6 +30,10 @@ const SubscriptionForm = () => {
   const [total, setTotal] = useState(0);
   const [cardErrorCase, setCardErrorCase] = useState(false);
   const [isReviewChanges, setIsReviewChanges] = useState(false);
+  const [isReturnToFreePlan, setIsReturnToFreePlan] = useState(false);
+  const [isDeleteAccount, setIsDeleteAccount] = useState(false);
+  const [deleteAccountPasswd, setDeleteAccountPasswd] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const isModifySubscription = location.pathname.includes(
@@ -38,6 +43,7 @@ const SubscriptionForm = () => {
     prorated_cost: 10,
     monthly_cost: 10,
   });
+  const [requiresPassword, setRequiresPassword] = useState(true);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -295,6 +301,10 @@ const SubscriptionForm = () => {
     if (userData && priceInfo) {
       setProductsInfo(userData);
     }
+
+    if (userData) {
+      setRequiresPassword(userData.user.provider !== "local");
+    }
   }, [priceInfo, userData]);
 
   useEffect(() => {
@@ -315,8 +325,12 @@ const SubscriptionForm = () => {
         >
           <H1 className="h4">Confirm Changes</H1>
           <P>
-            By pressing &ldquo;Confirm Changes&rdquo; below, your plan will be
-            immediately adjusted to the following levels:
+            By pressing{" "}
+            <span>
+              <strong>Confirm</strong>
+            </span>{" "}
+            below, your plan will be immediately adjusted to the following
+            levels:
           </P>
           <ul className="m">
             <li>{`- ${serviceData[0].capacity} simultaneous calls`}</li>
@@ -344,6 +358,21 @@ const SubscriptionForm = () => {
               }, and you will receive a credit of $${
                 -billingChange.prorated_cost / 100
               } on your next invoice to reflect changes made during the current billing period.`}
+          </P>
+        </Modal>
+      )}
+      {isReturnToFreePlan && (
+        <Modal
+          handleCancel={() => setIsReturnToFreePlan(false)}
+          handleSubmit={handleReturnToFreePlan}
+        >
+          <H1 className="h4">Return to Free Plan</H1>
+          <P>
+            Returning to the free plan will reduce your capacity to a maximum of
+            1 simultaneous call session and 1 registered device. Your current
+            plan and capacity will continue through the rest of the billing
+            cycle and your plan change will take effect at the beginning of the
+            next billing cycle. Are you sure you want to continue?
           </P>
         </Modal>
       )}
@@ -468,7 +497,7 @@ const SubscriptionForm = () => {
                       type="button"
                       subStyle="grey"
                       mainStyle="hollow"
-                      onClick={handleReturnToFreePlan}
+                      onClick={() => setIsReturnToFreePlan(true)}
                     >
                       Return to free plan
                     </Button>
@@ -477,7 +506,7 @@ const SubscriptionForm = () => {
                       type="button"
                       mainStyle="hollow"
                       subStyle="grey"
-                      onClick={handleDeleteAccount}
+                      onClick={() => setIsDeleteAccount(true)}
                     >
                       Delete Account
                     </Button>
@@ -505,6 +534,68 @@ const SubscriptionForm = () => {
           </fieldset>
         </form>
       </Section>
+      {isDeleteAccount && (
+        <Section slim>
+          <form className="form form--internal" onSubmit={handleDeleteAccount}>
+            <fieldset>
+              <H1 className="h4">Delete Account</H1>
+              <P>
+                <span>
+                  <strong>Warning!</strong>
+                </span>{" "}
+                This will permantly delete all of your data from our database.
+                You will not be able to restore your account. You must{" "}
+                {requiresPassword && "provide your password and"} type “delete
+                my account” into the Delete Message field.
+              </P>
+            </fieldset>
+            <fieldset>
+              {requiresPassword && (
+                <>
+                  <label htmlFor="password">
+                    Password<span>*</span>
+                  </label>
+                  <Passwd
+                    id="delete_account_password"
+                    name="delete_account_password"
+                    value={deleteAccountPasswd}
+                    placeholder="Password"
+                    required
+                    onChange={(e) => {
+                      setDeleteAccountPasswd(e.target.value);
+                    }}
+                  />
+                </>
+              )}
+              <label htmlFor="deleteMessage">
+                Delete Message<span>*</span>
+              </label>
+              <input
+                id="deleteMessage"
+                required
+                type="text"
+                name="deleteMessage"
+                placeholder="Delete Message"
+                value={deleteMessage}
+                onChange={(e) => setDeleteMessage(e.target.value)}
+              />
+            </fieldset>
+            <fieldset>
+              <ButtonGroup right>
+                <Button
+                  subStyle="grey"
+                  type="button"
+                  onClick={() => setIsDeleteAccount(false)}
+                >
+                  Cancel
+                </Button>
+
+                <Button type="submit">Delete Account</Button>
+              </ButtonGroup>
+            </fieldset>
+          </form>
+        </Section>
+      )}
     </>
   );
 };
