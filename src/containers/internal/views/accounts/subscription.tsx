@@ -5,7 +5,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import SubscriptionForm from "./subscription-form";
 
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 export const Subscription = () => {
   return (

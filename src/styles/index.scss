@@ -173,6 +173,13 @@ details {
   margin-top: ui-vars.$px02;
 }
 
+.pre-grid-white {
+  @extend .pre-grid;
+  background-color: ui-vars.$white;
+  color: ui-vars.$dark;
+  font-size: 1.2em;
+}
+
 .pcap {
   margin-top: ui-vars.$px02;
 }

@@ -279,6 +279,15 @@ export interface Subscription {
   start_date?: string;
   status?: string;
   client_secret?: null | string;
+  last4?: null | string;
+  exp_month?: null | string;
+  exp_year?: null | string;
+  card_type?: null | string;
+}
+
+export interface BillingChange {
+  prorated_cost: number;
+  monthly_cost: number;
 }
 
 export interface AwsTag {

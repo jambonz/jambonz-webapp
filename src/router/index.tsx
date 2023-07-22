@@ -55,7 +55,6 @@ import EmailVerify from "src/containers/login/register-verify-email";
 import RegisterChooseSubdomain from "src/containers/login/sub-domain";
 import Subscription from "src/containers/internal/views/accounts/subscription";
 import ManagePayment from "src/containers/internal/views/accounts/manage-payment";
-import ModifySubscription from "src/containers/internal/views/accounts/modify-subscription";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -130,7 +129,7 @@ export const Router = () => {
                       />
                       <Route
                         path="accounts/:account_sid/modify-subscription"
-                        element={<ModifySubscription />}
+                        element={<Subscription />}
                       />
                     </>
                   )}

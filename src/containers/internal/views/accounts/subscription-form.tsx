@@ -1,16 +1,17 @@
 import { Button, ButtonGroup, H1, P } from "@jambonz/ui-kit";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { postSubscriptions, useApiData } from "src/api";
 import { CurrencySymbol } from "src/api/constants";
 import {
+  BillingChange,
   CurrentUserData,
   PriceInfo,
   ServiceData,
   StripeCustomerId,
   Subscription,
 } from "src/api/types";
-import { Section } from "src/components";
+import { Modal, Section } from "src/components";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { hasValue } from "src/utils";
 import {
@@ -27,7 +28,16 @@ const SubscriptionForm = () => {
   const [userStripeInfo] = useApiData<StripeCustomerId>("/StripeCustomerId");
   const [total, setTotal] = useState(0);
   const [cardErrorCase, setCardErrorCase] = useState(false);
+  const [isReviewChanges, setIsReviewChanges] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isModifySubscription = location.pathname.includes(
+    "modify-subscription"
+  );
+  const [billingChange] = useState<BillingChange>({
+    prorated_cost: 10,
+    monthly_cost: 10,
+  });
 
   const stripe = useStripe();
   const elements = useElements();
@@ -87,6 +97,10 @@ const SubscriptionForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isModifySubscription) {
+      setIsReviewChanges(true);
+      return;
+    }
     if (!stripe || !elements) {
       return;
     }
@@ -107,6 +121,18 @@ const SubscriptionForm = () => {
     }
 
     createSubscription(paymentMethod);
+  };
+
+  const handleReturnToFreePlan = () => {
+    console.log("will implement soon");
+  };
+
+  const handleDeleteAccount = () => {
+    console.log("will implement soon");
+  };
+
+  const handleReviewChangeSubmit = () => {
+    console.log("will implement soon");
   };
   // subscription categories
   const [serviceData, setServiceData] = useState<ServiceData[]>([
@@ -277,7 +303,50 @@ const SubscriptionForm = () => {
 
   return (
     <>
-      <H1 className="h2">Upgrade your Subscription</H1>
+      <H1 className="h2">
+        {isModifySubscription
+          ? "Configure Your Subscription"
+          : "Upgrade your Subscription"}
+      </H1>
+      {isReviewChanges && (
+        <Modal
+          handleCancel={() => setIsReviewChanges(false)}
+          handleSubmit={handleReviewChangeSubmit}
+        >
+          <H1 className="h4">Confirm Changes</H1>
+          <P>
+            By pressing &ldquo;Confirm Changes&rdquo; below, your plan will be
+            immediately adjusted to the following levels:
+          </P>
+          <ul className="m">
+            <li>{`- ${serviceData[0].capacity} simultaneous calls`}</li>
+            {userData?.account && userData?.account.device_to_call_ratio && (
+              <li>{`- ${
+                userData?.account.device_to_call_ratio *
+                (serviceData[0].capacity + serviceData[1].capacity)
+              } registered devices`}</li>
+            )}
+          </ul>
+          <P>
+            {billingChange.prorated_cost > 0 &&
+              `Your new monthly charge will be $${
+                billingChange.monthly_cost / 100
+              }, and you will immediately be charged a one-time prorated amount of $${
+                billingChange.prorated_cost / 100
+              } to cover the remainder of the current billing period.`}
+            {billingChange.prorated_cost === 0 &&
+              `Your monthly charge will be $${
+                billingChange.monthly_cost / 100
+              }.`}
+            {billingChange.prorated_cost < 0 &&
+              `Your new monthly charge will be $${
+                billingChange.monthly_cost / 100
+              }, and you will receive a credit of $${
+                -billingChange.prorated_cost / 100
+              } on your next invoice to reflect changes made during the current billing period.`}
+          </P>
+        </Modal>
+      )}
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <div className="grid grid--col4--users">
@@ -378,31 +447,59 @@ const SubscriptionForm = () => {
                 </P>
               </div>
             </div>
-            <fieldset>
-              <label htmlFor="total">Payment Information</label>
-              <div className="grid__row">
-                <div></div>
-                <div>
-                  <PaymentElement />
+            {!isModifySubscription && (
+              <fieldset>
+                <label htmlFor="total">Payment Information</label>
+                <div className="grid__row">
+                  <div></div>
+                  <div>
+                    <PaymentElement />
+                  </div>
                 </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            )}
           </div>
           <fieldset>
-            <ButtonGroup right>
-              <Button
-                subStyle="grey"
-                as={Link}
-                to={`${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`}
-              >
-                Cancel
-              </Button>
+            <>
+              <div className={isModifySubscription ? "mast" : ""}>
+                {isModifySubscription && (
+                  <ButtonGroup right>
+                    <Button
+                      subStyle="grey"
+                      mainStyle="hollow"
+                      onClick={handleReturnToFreePlan}
+                    >
+                      Return to free plan
+                    </Button>
 
-              <Button type="submit" disabled={!elements || !stripe}>
-                Pay {CurrencySymbol[serviceData[0].currency || "usd"]}
-                {total} and Upgrade to Paid Plan
-              </Button>
-            </ButtonGroup>
+                    <Button
+                      mainStyle="hollow"
+                      subStyle="grey"
+                      onClick={handleDeleteAccount}
+                    >
+                      Delete Account
+                    </Button>
+                  </ButtonGroup>
+                )}
+
+                <ButtonGroup right>
+                  <Button
+                    subStyle="grey"
+                    as={Link}
+                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button type="submit">
+                    {isModifySubscription
+                      ? "Review Changes"
+                      : `Pay ${CurrencySymbol[serviceData[0].currency || "usd"]}
+                ${total} and Upgrade to Paid Plan`}
+                  </Button>
+                </ButtonGroup>
+              </div>
+            </>
           </fieldset>
         </form>
       </Section>
