@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, H1, P } from "@jambonz/ui-kit";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { postSubscriptions, useApiData } from "src/api";
+import { deleteAccount, postSubscriptions, useApiData } from "src/api";
 import { CurrencySymbol } from "src/api/constants";
 import {
   BillingChange,
@@ -22,8 +22,10 @@ import {
 import { PaymentMethod } from "@stripe/stripe-js";
 import { toastError, toastSuccess } from "src/store";
 import { Passwd } from "src/components/forms";
+import { useAuth } from "src/router/auth";
 
 const SubscriptionForm = () => {
+  const { signout } = useAuth();
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [priceInfo] = useApiData<PriceInfo[]>("/Prices");
   const [userStripeInfo] = useApiData<StripeCustomerId>("/StripeCustomerId");
@@ -34,6 +36,7 @@ const SubscriptionForm = () => {
   const [isDeleteAccount, setIsDeleteAccount] = useState(false);
   const [deleteAccountPasswd, setDeleteAccountPasswd] = useState("");
   const [deleteMessage, setDeleteMessage] = useState("");
+  const deleteMessageRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isModifySubscription = location.pathname.includes(
@@ -133,8 +136,38 @@ const SubscriptionForm = () => {
     console.log("will implement soon");
   };
 
-  const handleDeleteAccount = () => {
-    console.log("will implement soon");
+  const handleDeleteAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!deleteMessage) {
+      toastError(
+        "You must type the delete message in order to delete your account."
+      );
+      if (
+        deleteMessageRef.current &&
+        deleteMessageRef.current !== document.activeElement
+      ) {
+        deleteMessageRef.current.focus();
+      }
+    } else if (deleteMessage !== "delete my account") {
+      toastError(
+        "You must type the delete message correctly in order to delete your account."
+      );
+      if (
+        deleteMessageRef.current &&
+        deleteMessageRef.current !== document.activeElement
+      ) {
+        deleteMessageRef.current.focus();
+      }
+    }
+
+    deleteAccount(userData?.account?.account_sid || "")
+      .then(() => {
+        signout();
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
   };
 
   const handleReviewChangeSubmit = () => {
@@ -577,6 +610,7 @@ const SubscriptionForm = () => {
                 name="deleteMessage"
                 placeholder="Delete Message"
                 value={deleteMessage}
+                ref={deleteMessageRef}
                 onChange={(e) => setDeleteMessage(e.target.value)}
               />
             </fieldset>
