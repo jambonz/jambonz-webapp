@@ -116,6 +116,7 @@ const SubscriptionForm = () => {
     const { error: elementsError } = await elements.submit();
     if (elementsError) {
       toastError(elementsError.message || "");
+      return;
     }
     const card = elements.getElement(PaymentElement);
     if (!card) {
@@ -133,7 +134,20 @@ const SubscriptionForm = () => {
   };
 
   const handleReturnToFreePlan = () => {
-    console.log("will implement soon");
+    const body: Subscription = {
+      action: "downgrade-to-free",
+    };
+
+    postSubscriptions(body)
+      .then(() => {
+        toastSuccess("Downgrade to free plan completed successfully");
+        navigate(
+          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+        );
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
   };
 
   const handleDeleteAccount = (e: React.FormEvent) => {

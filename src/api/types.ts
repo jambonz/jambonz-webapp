@@ -284,6 +284,7 @@ export interface Subscription {
   exp_month?: null | string;
   exp_year?: null | string;
   card_type?: null | string;
+  reason?: null | string;
 }
 
 export interface BillingChange {
