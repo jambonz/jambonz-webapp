@@ -114,3 +114,28 @@ export const ModalClose = ({ children, handleClose }: CloseProps) => {
     portal
   );
 };
+
+type LoaderProps = {
+  children: React.ReactNode;
+};
+
+export const ModalLoader = ({ children }: LoaderProps) => {
+  return ReactDOM.createPortal(
+    <div className="modal" role="presentation">
+      <div
+        className="modal__box"
+        role="presentation"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="modal__stuff"
+          role="presentation"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
+      </div>
+    </div>,
+    portal
+  );
+};

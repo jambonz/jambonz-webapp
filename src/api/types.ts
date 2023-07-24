@@ -285,11 +285,11 @@ export interface Subscription {
   exp_year?: null | string;
   card_type?: null | string;
   reason?: null | string;
-}
-
-export interface BillingChange {
-  prorated_cost: number;
-  monthly_cost: number;
+  dry_run?: boolean;
+  currency?: null | string;
+  prorated_cost?: number;
+  monthly_cost?: number;
+  next_invoice_date?: null | string;
 }
 
 export interface AwsTag {

@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { deleteAccount, postSubscriptions, useApiData } from "src/api";
 import { CurrencySymbol } from "src/api/constants";
 import {
-  BillingChange,
   CurrentUserData,
   PriceInfo,
   ServiceData,
@@ -23,6 +22,7 @@ import { PaymentMethod } from "@stripe/stripe-js";
 import { toastError, toastSuccess } from "src/store";
 import { Passwd } from "src/components/forms";
 import { useAuth } from "src/router/auth";
+import { ModalLoader } from "src/components/modal";
 
 const SubscriptionForm = () => {
   const { signout } = useAuth();
@@ -42,11 +42,13 @@ const SubscriptionForm = () => {
   const isModifySubscription = location.pathname.includes(
     "modify-subscription"
   );
-  const [billingChange] = useState<BillingChange>({
+  const [billingCharge, setBillingCharge] = useState<Subscription>({
     prorated_cost: 10,
     monthly_cost: 10,
   });
   const [requiresPassword, setRequiresPassword] = useState(true);
+  const [showModalLoader, setShowModalLoader] = useState(false);
+  const [disableSubmitButton, setDisableSubmitButton] = useState(false);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -104,10 +106,33 @@ const SubscriptionForm = () => {
       });
   };
 
+  const retrieveBillingChanges = async () => {
+    setDisableSubmitButton(true);
+    const updatedProducts = serviceData.map((product) => ({
+      price_id: product.stripe_price_id,
+      product_sid: product.product_sid,
+      quantity: product.capacity || 0,
+    }));
+
+    postSubscriptions({
+      action: "update-quantities",
+      dry_run: true,
+      products: updatedProducts,
+    })
+      .then(({ json }) => {
+        setBillingCharge(json);
+        setIsReviewChanges(true);
+      })
+      .catch((error) => {
+        toastError(error.msg || "Something went wrong, please try again.");
+        setDisableSubmitButton(false);
+      });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isModifySubscription) {
-      setIsReviewChanges(true);
+      retrieveBillingChanges();
       return;
     }
     if (!stripe || !elements) {
@@ -184,8 +209,38 @@ const SubscriptionForm = () => {
       });
   };
 
-  const handleReviewChangeSubmit = () => {
-    console.log("will implement soon");
+  const handleReviewChangeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowModalLoader(true);
+
+    const updatedProducts = serviceData.map((product) => ({
+      price_id: product.stripe_price_id,
+      product_sid: product.product_sid,
+      quantity: product.capacity,
+    }));
+
+    postSubscriptions({
+      action: "update-quantities",
+      products: updatedProducts,
+    })
+      .then(() => {
+        toastSuccess(
+          "Your subscription capacity has been successfully modified."
+        );
+        navigate(
+          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+        );
+      })
+      .catch(() => {
+        toastError(
+          `The additional capacity you that you requested could not be granted due to a failure processing payment.
+          Please configure a valid credit card for your account and the upgrade will be automatically processed`
+        );
+      })
+      .finally(() => {
+        setShowModalLoader(false);
+        setDisableSubmitButton(false);
+      });
   };
   // subscription categories
   const [serviceData, setServiceData] = useState<ServiceData[]>([
@@ -365,7 +420,15 @@ const SubscriptionForm = () => {
           ? "Configure Your Subscription"
           : "Upgrade your Subscription"}
       </H1>
-      {isReviewChanges && (
+      {showModalLoader && (
+        <ModalLoader>
+          <P>
+            Your requested changes are being processed. Please do not leave the
+            page or hit the back button until complete.
+          </P>
+        </ModalLoader>
+      )}
+      {isReviewChanges && !showModalLoader && (
         <Modal
           handleCancel={() => setIsReviewChanges(false)}
           handleSubmit={handleReviewChangeSubmit}
@@ -389,26 +452,26 @@ const SubscriptionForm = () => {
             )}
           </ul>
           <P>
-            {billingChange.prorated_cost > 0 &&
+            {(billingCharge.prorated_cost || 0) > 0 &&
               `Your new monthly charge will be $${
-                billingChange.monthly_cost / 100
+                (billingCharge.monthly_cost || 0) / 100
               }, and you will immediately be charged a one-time prorated amount of $${
-                billingChange.prorated_cost / 100
+                (billingCharge.prorated_cost || 0) / 100
               } to cover the remainder of the current billing period.`}
-            {billingChange.prorated_cost === 0 &&
+            {billingCharge.prorated_cost === 0 &&
               `Your monthly charge will be $${
-                billingChange.monthly_cost / 100
+                (billingCharge.monthly_cost || 0) / 100
               }.`}
-            {billingChange.prorated_cost < 0 &&
+            {(billingCharge.prorated_cost || 0) < 0 &&
               `Your new monthly charge will be $${
-                billingChange.monthly_cost / 100
+                (billingCharge.monthly_cost || 0) / 100
               }, and you will receive a credit of $${
-                -billingChange.prorated_cost / 100
+                -(billingCharge.prorated_cost || 0) / 100
               } on your next invoice to reflect changes made during the current billing period.`}
           </P>
         </Modal>
       )}
-      {isReturnToFreePlan && (
+      {isReturnToFreePlan && !showModalLoader && (
         <Modal
           handleCancel={() => setIsReturnToFreePlan(false)}
           handleSubmit={handleReturnToFreePlan}
@@ -569,7 +632,7 @@ const SubscriptionForm = () => {
                     Cancel
                   </Button>
 
-                  <Button type="submit">
+                  <Button type="submit" disabled={disableSubmitButton}>
                     {isModifySubscription
                       ? "Review Changes"
                       : `Pay ${CurrencySymbol[serviceData[0].currency || "usd"]}
