@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Button, ButtonGroup } from "@jambonz/ui-kit";
 
 import "./styles.scss";
+import { Spinner } from "../spinner";
 
 type ModalProps = {
   disabled?: boolean;
@@ -69,6 +70,7 @@ export const ModalForm = ({
         }}
       >
         <div className="modal__stuff">{children}</div>
+
         <ButtonGroup right>
           <Button
             small
@@ -133,6 +135,15 @@ export const ModalLoader = ({ children }: LoaderProps) => {
           onClick={(e) => e.stopPropagation()}
         >
           {children}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Spinner />
         </div>
       </div>
     </div>,

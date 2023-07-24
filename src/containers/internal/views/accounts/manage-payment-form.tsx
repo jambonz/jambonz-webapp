@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, H1 } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, H1, P } from "@jambonz/ui-kit";
 import {
   PaymentElement,
   useElements,
@@ -12,6 +12,7 @@ import { Section, Spinner } from "src/components";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { PaymentMethod } from "@stripe/stripe-js";
+import { ModalLoader } from "src/components/modal";
 
 export const ManagePaymentForm = () => {
   const user = useSelectState("user");
@@ -20,6 +21,7 @@ export const ManagePaymentForm = () => {
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [isChangePayment, setIsChangePayment] = useState(false);
   const [isSavingNewCard, setIsSavingNewCard] = useState(false);
+  const [isShowModalLoader, setIsShowModalLoader] = useState(false);
   const navigate = useNavigate();
 
   const createSubscription = async (paymentMethod: PaymentMethod) => {
@@ -50,16 +52,24 @@ export const ManagePaymentForm = () => {
                   return;
                 }
               })
-              .finally(() => setIsSavingNewCard(false));
+              .finally(() => {
+                setIsSavingNewCard(false);
+                setIsShowModalLoader(false);
+              });
           }
         } else if (json.status === "card error") {
+          setIsSavingNewCard(false);
+          setIsShowModalLoader(false);
           toastError(json.reason || "Something went wrong, please try again.");
         }
       })
       .catch((error) => {
         toastError(error.msg || "Something went wrong, please try again.");
       })
-      .finally(() => setIsSavingNewCard(false));
+      .finally(() => {
+        setIsSavingNewCard(false);
+        setIsShowModalLoader(false);
+      });
   };
 
   const handleSaveNewCard = async (e: React.FormEvent) => {
@@ -87,6 +97,7 @@ export const ManagePaymentForm = () => {
       return;
     }
     setIsSavingNewCard(true);
+    setIsShowModalLoader(true);
     createSubscription(paymentMethod);
   };
   return (
@@ -158,6 +169,14 @@ export const ManagePaymentForm = () => {
             </Button>
           </ButtonGroup>
         </Section>
+      )}
+      {isShowModalLoader && (
+        <ModalLoader>
+          <P>
+            Your requested changes are being processed. Please do not leave the
+            page or hit the back button until complete.
+          </P>
+        </ModalLoader>
       )}
     </>
   );

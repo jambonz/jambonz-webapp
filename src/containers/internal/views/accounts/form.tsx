@@ -49,6 +49,8 @@ import {
   AwsTag,
   Invoice,
   CurrentUserData,
+  Carrier,
+  SpeechCredential,
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
@@ -73,6 +75,10 @@ export const AccountForm = ({
   const [accounts] = useApiData<Account[]>("Accounts");
   const [invoice] = useApiData<Invoice>("Invoices");
   const [userData] = useApiData<CurrentUserData>("Users/me");
+  const [userCarriers] = useApiData<Carrier[]>(`VoipCarriers`);
+  const [userSpeechs] = useApiData<SpeechCredential[]>(
+    `/Accounts/${user?.account_sid}/SpeechCredentials`
+  );
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
   const [appId, setAppId] = useState("");
@@ -473,40 +479,77 @@ export const AccountForm = ({
 
   return (
     <>
-      {subscriptionDescription && (
-        <Section>
-          <H1 className="h4">Your Subscription</H1>
-          <P>{subscriptionDescription}</P>
-          <br />
+      {ENABLE_ClOUD_PLATFORM && (
+        <>
+          <Section>
+            <H1 className="h5">Your Subscription</H1>
+            <P>{subscriptionDescription}</P>
+            <br />
 
-          <ButtonGroup right>
-            {userData?.account?.plan_type === PlanType.PAID ? (
-              <>
+            <ButtonGroup right>
+              {userData?.account?.plan_type === PlanType.PAID ? (
+                <>
+                  <Button
+                    small
+                    as={Link}
+                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
+                  >
+                    Manage Payment Info
+                  </Button>
+                  <Button
+                    small
+                    as={Link}
+                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
+                  >
+                    Modify My Subscription
+                  </Button>
+                </>
+              ) : (
                 <Button
-                  small
                   as={Link}
-                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
+                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
                 >
-                  Manage Payment Info
+                  Upgrade to a Paid Subscription
                 </Button>
-                <Button
-                  small
-                  as={Link}
-                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
-                >
-                  Modify My Subscription
-                </Button>
-              </>
-            ) : (
-              <Button
-                as={Link}
-                to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
-              >
-                Upgrade to a Paid Subscription
-              </Button>
-            )}
-          </ButtonGroup>
-        </Section>
+              )}
+            </ButtonGroup>
+          </Section>
+          {(!userCarriers ||
+            userCarriers.length === 0 ||
+            !userSpeechs ||
+            userSpeechs.length === 0) && (
+            <Section>
+              <H1 className="h5">Finish Account Setup</H1>
+              <H1 className="h6">To do</H1>
+              {(!userCarriers || userCarriers.length === 0) && (
+                <>
+                  <br />
+                  <div>
+                    <span>
+                      <Icons.Edit />
+                      Add a <Link to="/internal/carriers">carrier</Link> to
+                      route calls
+                    </span>
+                  </div>
+                </>
+              )}
+              {(!userSpeechs || userSpeechs.length === 0) && (
+                <>
+                  <br />
+                  <div>
+                    <span>
+                      <Icons.Edit />
+                      Add <Link to="/internal/speech-services">
+                        speech
+                      </Link>{" "}
+                      credentials for text-to-speech and speech-to-text
+                    </span>
+                  </div>
+                </>
+              )}
+            </Section>
+          )}
+        </>
       )}
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>

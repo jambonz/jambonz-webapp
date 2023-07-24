@@ -47,8 +47,10 @@ const SubscriptionForm = () => {
     monthly_cost: 10,
   });
   const [requiresPassword, setRequiresPassword] = useState(true);
-  const [showModalLoader, setShowModalLoader] = useState(false);
-  const [disableSubmitButton, setDisableSubmitButton] = useState(false);
+  const [isShowModalLoader, setIsShowModalLoader] = useState(false);
+  const [isDisableSubmitButton, setIsDisableSubmitButton] = useState(false);
+  const [isDisableDeleteAccountButton, setIsDisableDeleteAccountButton] =
+    useState(false);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -95,19 +97,26 @@ const SubscriptionForm = () => {
                   toastError(error.error.message || "");
                   return;
                 }
+              })
+              .finally(() => {
+                setIsDisableSubmitButton(false);
+                setIsShowModalLoader(false);
               });
           }
         } else if (json.status === "card error") {
+          setIsDisableSubmitButton(false);
+          setIsShowModalLoader(false);
           setCardErrorCase(true);
         }
       })
       .catch((error) => {
+        setIsDisableSubmitButton(false);
+        setIsShowModalLoader(false);
         toastError(error.msg || "Something went wrong, please try again.");
       });
   };
 
   const retrieveBillingChanges = async () => {
-    setDisableSubmitButton(true);
     const updatedProducts = serviceData.map((product) => ({
       price_id: product.stripe_price_id,
       product_sid: product.product_sid,
@@ -125,32 +134,41 @@ const SubscriptionForm = () => {
       })
       .catch((error) => {
         toastError(error.msg || "Something went wrong, please try again.");
-        setDisableSubmitButton(false);
+        setIsDisableSubmitButton(false);
       });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsDisableSubmitButton(true);
     if (isModifySubscription) {
       retrieveBillingChanges();
       return;
     }
-    if (!stripe || !elements) {
-      return;
-    }
+    setIsShowModalLoader(true);
     const { error: elementsError } = await elements.submit();
     if (elementsError) {
+      setIsDisableSubmitButton(false);
+      setIsShowModalLoader(false);
       toastError(elementsError.message || "");
       return;
     }
     const card = elements.getElement(PaymentElement);
     if (!card) {
+      setIsDisableSubmitButton(false);
+      setIsShowModalLoader(false);
       return;
     }
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       element: card,
     });
     if (error) {
+      setIsDisableSubmitButton(false);
+      setIsShowModalLoader(false);
       toastError(error.message || "");
       return;
     }
@@ -159,6 +177,8 @@ const SubscriptionForm = () => {
   };
 
   const handleReturnToFreePlan = () => {
+    setIsReturnToFreePlan(false);
+    setIsShowModalLoader(true);
     const body: Subscription = {
       action: "downgrade-to-free",
     };
@@ -172,11 +192,14 @@ const SubscriptionForm = () => {
       })
       .catch((error) => {
         toastError(error.msg);
-      });
+      })
+      .finally(() => setIsShowModalLoader(false));
   };
 
   const handleDeleteAccount = (e: React.FormEvent) => {
     e.preventDefault();
+
+    setIsDisableDeleteAccountButton(true);
 
     if (!deleteMessage) {
       toastError(
@@ -199,6 +222,7 @@ const SubscriptionForm = () => {
         deleteMessageRef.current.focus();
       }
     }
+    setIsShowModalLoader(true);
 
     deleteAccount(userData?.account?.account_sid || "")
       .then(() => {
@@ -206,12 +230,16 @@ const SubscriptionForm = () => {
       })
       .catch((error) => {
         toastError(error.msg);
+      })
+      .finally(() => {
+        setIsDisableDeleteAccountButton(false);
+        setIsShowModalLoader(false);
       });
   };
 
   const handleReviewChangeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowModalLoader(true);
+    setIsShowModalLoader(true);
 
     const updatedProducts = serviceData.map((product) => ({
       price_id: product.stripe_price_id,
@@ -238,8 +266,8 @@ const SubscriptionForm = () => {
         );
       })
       .finally(() => {
-        setShowModalLoader(false);
-        setDisableSubmitButton(false);
+        setIsShowModalLoader(false);
+        setIsDisableSubmitButton(false);
       });
   };
   // subscription categories
@@ -420,7 +448,7 @@ const SubscriptionForm = () => {
           ? "Configure Your Subscription"
           : "Upgrade your Subscription"}
       </H1>
-      {showModalLoader && (
+      {isShowModalLoader && (
         <ModalLoader>
           <P>
             Your requested changes are being processed. Please do not leave the
@@ -428,7 +456,7 @@ const SubscriptionForm = () => {
           </P>
         </ModalLoader>
       )}
-      {isReviewChanges && !showModalLoader && (
+      {isReviewChanges && !isShowModalLoader && (
         <Modal
           handleCancel={() => setIsReviewChanges(false)}
           handleSubmit={handleReviewChangeSubmit}
@@ -471,7 +499,7 @@ const SubscriptionForm = () => {
           </P>
         </Modal>
       )}
-      {isReturnToFreePlan && !showModalLoader && (
+      {isReturnToFreePlan && !isShowModalLoader && (
         <Modal
           handleCancel={() => setIsReturnToFreePlan(false)}
           handleSubmit={handleReturnToFreePlan}
@@ -632,7 +660,7 @@ const SubscriptionForm = () => {
                     Cancel
                   </Button>
 
-                  <Button type="submit" disabled={disableSubmitButton}>
+                  <Button type="submit" disabled={isDisableSubmitButton}>
                     {isModifySubscription
                       ? "Review Changes"
                       : `Pay ${CurrencySymbol[serviceData[0].currency || "usd"]}
@@ -701,7 +729,9 @@ const SubscriptionForm = () => {
                   Cancel
                 </Button>
 
-                <Button type="submit">PERMANENTLY DELETE MY ACCOUNT</Button>
+                <Button type="submit" disabled={isDisableDeleteAccountButton}>
+                  PERMANENTLY DELETE MY ACCOUNT
+                </Button>
               </ButtonGroup>
             </fieldset>
           </form>
