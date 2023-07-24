@@ -39,11 +39,12 @@ export const ManagePaymentForm = () => {
           );
         } else if (json.status === "action required") {
           if (stripe) {
+            const location = window.location;
             stripe
               .confirmPayment({
                 clientSecret: json.client_secret || "",
                 confirmParams: {
-                  return_url: `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
+                  return_url: `${location.protocol}//${location.host}${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
                 },
               })
               .then((error) => {

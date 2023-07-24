@@ -12,7 +12,7 @@ import { useSelectState } from "src/store";
 import type { CurrentUserData } from "src/api/types";
 
 import "./styles.scss";
-import { ENABLE_ClOUD_PLATFORM } from "src/api/constants";
+import { ENABLE_HOSTED_SYSTEM } from "src/api/constants";
 import { setRootDomain } from "src/store/localStore";
 
 export const UserMe = () => {
@@ -22,7 +22,7 @@ export const UserMe = () => {
 
   useEffect(() => {
     // If hosted platform is enabled, the account should have sip realm
-    if (ENABLE_ClOUD_PLATFORM && userData && !userData.account?.sip_realm) {
+    if (ENABLE_HOSTED_SYSTEM && userData && !userData.account?.sip_realm) {
       setRootDomain(userData?.account?.root_domain || "");
       navigate(ROUTE_REGISTER_SUB_DOMAIN);
     }

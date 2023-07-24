@@ -18,7 +18,7 @@ interface JambonzWindowObject {
   DISABLE_JAEGER_TRACING: string;
   DISABLE_CUSTOM_SPEECH: string;
   ENABLE_FORGOT_PASSWORD: string;
-  ENABLE_ClOUD_PLATFORM: string;
+  ENABLE_HOSTED_SYSTEM: string;
   DISABLE_CALL_RECORDING: string;
   GITHUB_CLIENT_ID: string;
   GOOGLE_CLIENT_ID: string;
@@ -51,9 +51,9 @@ export const ENABLE_FORGOT_PASSWORD: boolean =
   JSON.parse(import.meta.env.VITE_APP_ENABLE_FORGOT_PASSWORD || "false");
 
 /** Enable Cloud version */
-export const ENABLE_ClOUD_PLATFORM: boolean =
-  window.JAMBONZ?.ENABLE_ClOUD_PLATFORM === "true" ||
-  JSON.parse(import.meta.env.VITE_APP_ENABLE_ClOUD_PLATFORM || "false");
+export const ENABLE_HOSTED_SYSTEM: boolean =
+  window.JAMBONZ?.ENABLE_HOSTED_SYSTEM === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_ENABLE_HOSTED_SYSTEM || "false");
 /** Disable Lcr */
 export const DISABLE_LCR: boolean =
   window.JAMBONZ?.DISABLE_LCR === "true" ||

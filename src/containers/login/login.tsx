@@ -19,7 +19,7 @@ import {
 import {
   USER_ACCOUNT,
   ENABLE_FORGOT_PASSWORD,
-  ENABLE_ClOUD_PLATFORM,
+  ENABLE_HOSTED_SYSTEM,
 } from "src/api/constants";
 import { Icons } from "src/components";
 import { v4 as uuid } from "uuid";
@@ -102,9 +102,9 @@ export const Login = () => {
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
-        {(ENABLE_FORGOT_PASSWORD || ENABLE_ClOUD_PLATFORM) && (
-          <div className={ENABLE_ClOUD_PLATFORM ? "mast" : ""}>
-            {ENABLE_ClOUD_PLATFORM && (
+        {(ENABLE_FORGOT_PASSWORD || ENABLE_HOSTED_SYSTEM) && (
+          <div className={ENABLE_HOSTED_SYSTEM ? "mast" : ""}>
+            {ENABLE_HOSTED_SYSTEM && (
               <Link to={ROUTE_REGISTER} title="Forgot Password">
                 <p>Register</p>
               </Link>
@@ -116,7 +116,7 @@ export const Login = () => {
             )}
           </div>
         )}
-        {ENABLE_ClOUD_PLATFORM && (
+        {ENABLE_HOSTED_SYSTEM && (
           <>
             <a href={getGoogleOauthUrl(state)} className="btn btn--hollow">
               <div className="mast">

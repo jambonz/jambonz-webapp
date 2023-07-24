@@ -30,7 +30,7 @@ import {
   CurrencySymbol,
   DEFAULT_WEBHOOK,
   DISABLE_CALL_RECORDING,
-  ENABLE_ClOUD_PLATFORM,
+  ENABLE_HOSTED_SYSTEM,
   PlanType,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
@@ -399,7 +399,7 @@ export const AccountForm = ({
     }
   }, [account]);
 
-  if (ENABLE_ClOUD_PLATFORM) {
+  if (ENABLE_HOSTED_SYSTEM) {
     useEffect(() => {
       if (userData && userData.account) {
         const pType = userData.account.plan_type;
@@ -479,7 +479,7 @@ export const AccountForm = ({
 
   return (
     <>
-      {ENABLE_ClOUD_PLATFORM && (
+      {ENABLE_HOSTED_SYSTEM && (
         <>
           <Section>
             <H1 className="h5">Your Subscription</H1>
@@ -580,12 +580,14 @@ export const AccountForm = ({
               onChange={(e) => setName(e.target.value)}
             />
           </fieldset>
-          <fieldset>
-            <LocalLimits
-              data={limits && limits.data}
-              limits={[localLimits, setLocalLimits]}
-            />
-          </fieldset>
+          {!ENABLE_HOSTED_SYSTEM && (
+            <fieldset>
+              <LocalLimits
+                data={limits && limits.data}
+                limits={[localLimits, setLocalLimits]}
+              />
+            </fieldset>
+          )}
           <fieldset>
             <label htmlFor="sip_realm">SIP realm</label>
             <input

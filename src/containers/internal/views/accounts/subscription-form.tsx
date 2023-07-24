@@ -42,13 +42,11 @@ const SubscriptionForm = () => {
   const isModifySubscription = location.pathname.includes(
     "modify-subscription"
   );
-  const [billingCharge, setBillingCharge] = useState<Subscription>({
-    prorated_cost: 10,
-    monthly_cost: 10,
-  });
+  const [billingCharge, setBillingCharge] = useState<Subscription | null>(null);
   const [requiresPassword, setRequiresPassword] = useState(true);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
-  const [isDisableSubmitButton, setIsDisableSubmitButton] = useState(false);
+  const [isDisableSubmitButton, setIsDisableSubmitButton] =
+    useState(isModifySubscription);
   const [isDisableDeleteAccountButton, setIsDisableDeleteAccountButton] =
     useState(false);
 
@@ -85,11 +83,12 @@ const SubscriptionForm = () => {
           );
         } else if (json.status === "action required") {
           if (stripe) {
+            const location = window.location;
             stripe
               .confirmPayment({
                 clientSecret: json.client_secret || "",
                 confirmParams: {
-                  return_url: `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
+                  return_url: `${location.protocol}//${location.host}${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
                 },
               })
               .then((error) => {
@@ -305,6 +304,9 @@ const SubscriptionForm = () => {
       required: false,
     },
   ]);
+  const [originalServiceData, setOriginalServiceData] = useState<ServiceData[]>(
+    []
+  );
 
   const initFeesAndCost = (priceData: PriceInfo[]) => {
     serviceData.forEach((service) => {
@@ -403,6 +405,7 @@ const SubscriptionForm = () => {
     });
 
     setServiceData(services);
+    setOriginalServiceData([...services]);
   };
 
   const updateServiceData = (
@@ -438,6 +441,13 @@ const SubscriptionForm = () => {
   }, [priceInfo, userData]);
 
   useEffect(() => {
+    if (isModifySubscription && originalServiceData.length > 0) {
+      console.log(originalServiceData);
+      setIsDisableSubmitButton(
+        serviceData[0].capacity === originalServiceData[0].capacity &&
+          serviceData[1].capacity === originalServiceData[1].capacity
+      );
+    }
     setTotal(serviceData.reduce((res, service) => res + service.cost || 0, 0));
   }, [serviceData]);
 
@@ -458,7 +468,10 @@ const SubscriptionForm = () => {
       )}
       {isReviewChanges && !isShowModalLoader && (
         <Modal
-          handleCancel={() => setIsReviewChanges(false)}
+          handleCancel={() => {
+            setIsReviewChanges(false);
+            setIsDisableSubmitButton(false);
+          }}
           handleSubmit={handleReviewChangeSubmit}
         >
           <H1 className="h4">Confirm Changes</H1>
@@ -480,21 +493,21 @@ const SubscriptionForm = () => {
             )}
           </ul>
           <P>
-            {(billingCharge.prorated_cost || 0) > 0 &&
+            {(billingCharge?.prorated_cost || 0) > 0 &&
               `Your new monthly charge will be $${
-                (billingCharge.monthly_cost || 0) / 100
+                (billingCharge?.monthly_cost || 0) / 100
               }, and you will immediately be charged a one-time prorated amount of $${
-                (billingCharge.prorated_cost || 0) / 100
+                (billingCharge?.prorated_cost || 0) / 100
               } to cover the remainder of the current billing period.`}
-            {billingCharge.prorated_cost === 0 &&
+            {billingCharge?.prorated_cost === 0 &&
               `Your monthly charge will be $${
                 (billingCharge.monthly_cost || 0) / 100
               }.`}
-            {(billingCharge.prorated_cost || 0) < 0 &&
+            {(billingCharge?.prorated_cost || 0) < 0 &&
               `Your new monthly charge will be $${
-                (billingCharge.monthly_cost || 0) / 100
+                (billingCharge?.monthly_cost || 0) / 100
               }, and you will receive a credit of $${
-                -(billingCharge.prorated_cost || 0) / 100
+                -(billingCharge?.prorated_cost || 0) / 100
               } on your next invoice to reflect changes made during the current billing period.`}
           </P>
         </Modal>

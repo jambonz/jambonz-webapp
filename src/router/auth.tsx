@@ -23,7 +23,7 @@ import {
 } from "src/constants";
 
 import type { UserLogin } from "src/api/types";
-import { ENABLE_ClOUD_PLATFORM, USER_ACCOUNT } from "src/api/constants";
+import { ENABLE_HOSTED_SYSTEM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
 import { toastError } from "src/store";
 import {
@@ -108,7 +108,7 @@ export const useProvideAuth = (): AuthStateContext => {
             setToken(token);
             userData = parseJwt(token);
 
-            if (ENABLE_ClOUD_PLATFORM) {
+            if (ENABLE_HOSTED_SYSTEM) {
               getMe()
                 .then(({ json }) => {
                   if (!json.account?.sip_realm) {
