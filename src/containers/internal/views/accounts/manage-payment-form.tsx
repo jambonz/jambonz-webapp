@@ -130,10 +130,11 @@ export const ManagePaymentForm = () => {
               subStyle="grey"
               as={Link}
               to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`}
+              small
             >
               Cancel
             </Button>
-            <Button onClick={() => setIsChangePayment(true)}>
+            <Button onClick={() => setIsChangePayment(true)} small>
               Change Payment Info
             </Button>
           </ButtonGroup>
@@ -157,6 +158,7 @@ export const ManagePaymentForm = () => {
               type="button"
               subStyle="grey"
               onClick={() => setIsChangePayment(false)}
+              small
             >
               Cancel
             </Button>
@@ -164,6 +166,7 @@ export const ManagePaymentForm = () => {
               type="button"
               onClick={handleSaveNewCard}
               disabled={!stripe || isSavingNewCard}
+              small
             >
               Save New Card
             </Button>

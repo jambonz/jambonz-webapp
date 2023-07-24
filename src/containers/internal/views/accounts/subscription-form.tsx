@@ -636,6 +636,7 @@ const SubscriptionForm = () => {
                       subStyle="grey"
                       mainStyle="hollow"
                       onClick={() => setIsReturnToFreePlan(true)}
+                      small
                     >
                       Return to free plan
                     </Button>
@@ -645,6 +646,7 @@ const SubscriptionForm = () => {
                       mainStyle="hollow"
                       subStyle="grey"
                       onClick={() => setIsDeleteAccount(true)}
+                      small
                     >
                       Delete Account
                     </Button>
@@ -656,11 +658,12 @@ const SubscriptionForm = () => {
                     subStyle="grey"
                     as={Link}
                     to={`${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`}
+                    small
                   >
                     Cancel
                   </Button>
 
-                  <Button type="submit" disabled={isDisableSubmitButton}>
+                  <Button type="submit" disabled={isDisableSubmitButton} small>
                     {isModifySubscription
                       ? "Review Changes"
                       : `Pay ${CurrencySymbol[serviceData[0].currency || "usd"]}
@@ -725,11 +728,16 @@ const SubscriptionForm = () => {
                   subStyle="grey"
                   type="button"
                   onClick={() => setIsDeleteAccount(false)}
+                  small
                 >
                   Cancel
                 </Button>
 
-                <Button type="submit" disabled={isDisableDeleteAccountButton}>
+                <Button
+                  type="submit"
+                  disabled={isDisableDeleteAccountButton}
+                  small
+                >
                   PERMANENTLY DELETE MY ACCOUNT
                 </Button>
               </ButtonGroup>
