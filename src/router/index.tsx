@@ -55,6 +55,7 @@ import EmailVerify from "src/containers/login/register-verify-email";
 import RegisterChooseSubdomain from "src/containers/login/sub-domain";
 import Subscription from "src/containers/internal/views/accounts/subscription";
 import ManagePayment from "src/containers/internal/views/accounts/manage-payment";
+import EditSipRealm from "src/containers/internal/views/accounts/edit-sip-realm";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -130,6 +131,10 @@ export const Router = () => {
                       <Route
                         path="accounts/:account_sid/modify-subscription"
                         element={<Subscription />}
+                      />
+                      <Route
+                        path="accounts/:account_sid/sip-realm/edit"
+                        element={<EditSipRealm />}
                       />
                     </>
                   )}

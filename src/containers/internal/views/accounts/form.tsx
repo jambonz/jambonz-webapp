@@ -55,6 +55,7 @@ import {
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
 import dayjs from "dayjs";
+import { EditBoard } from "src/components/editboard";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -263,7 +264,7 @@ export const AccountForm = ({
     if (account && account.data) {
       putAccount(account.data.account_sid, {
         name,
-        sip_realm: realm || null,
+        ...(!ENABLE_HOSTED_SYSTEM && { sip_realm: realm || null }),
         webhook_secret: account.data.webhook_secret,
         siprec_hook_sid: recId || null,
         queue_event_hook: queueHook || account.data.queue_event_hook,
@@ -590,14 +591,24 @@ export const AccountForm = ({
           )}
           <fieldset>
             <label htmlFor="sip_realm">SIP realm</label>
-            <input
-              id="sip_realm"
-              type="text"
-              name="sip_realm"
-              placeholder="The domain name that SIP devices will register with"
-              value={realm}
-              onChange={(e) => setRealm(e.target.value)}
-            />
+            {ENABLE_HOSTED_SYSTEM ? (
+              <EditBoard
+                id="sip_realm"
+                name="sip_realm"
+                text={realm}
+                title="Change SIP Realm"
+                path={`/internal/accounts/${user?.account_sid}/sip-realm/edit`}
+              />
+            ) : (
+              <input
+                id="sip_realm"
+                type="text"
+                name="sip_realm"
+                placeholder="The domain name that SIP devices will register with"
+                value={realm}
+                onChange={(e) => setRealm(e.target.value)}
+              />
+            )}
           </fieldset>
           {account && account.data && (
             <fieldset>
