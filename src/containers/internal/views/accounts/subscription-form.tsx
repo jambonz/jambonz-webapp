@@ -198,19 +198,7 @@ const SubscriptionForm = () => {
   const handleDeleteAccount = (e: React.FormEvent) => {
     e.preventDefault();
 
-    setIsDisableDeleteAccountButton(true);
-
-    if (!deleteMessage) {
-      toastError(
-        "You must type the delete message in order to delete your account."
-      );
-      if (
-        deleteMessageRef.current &&
-        deleteMessageRef.current !== document.activeElement
-      ) {
-        deleteMessageRef.current.focus();
-      }
-    } else if (deleteMessage !== "delete my account") {
+    if (deleteMessage !== "delete my account") {
       toastError(
         "You must type the delete message correctly in order to delete your account."
       );
@@ -220,10 +208,14 @@ const SubscriptionForm = () => {
       ) {
         deleteMessageRef.current.focus();
       }
+      return;
     }
+    setIsDisableDeleteAccountButton(true);
     setIsShowModalLoader(true);
 
-    deleteAccount(userData?.account?.account_sid || "")
+    deleteAccount(userData?.account?.account_sid || "", {
+      password: deleteAccountPasswd,
+    })
       .then(() => {
         signout();
       })
@@ -313,6 +305,7 @@ const SubscriptionForm = () => {
       const record = priceData.find(
         (item) => item.category === service.category
       );
+      console.log(record);
 
       if (record) {
         const price = record.prices.find(
@@ -436,7 +429,7 @@ const SubscriptionForm = () => {
     }
 
     if (userData) {
-      setRequiresPassword(userData.user.provider !== "local");
+      setRequiresPassword(userData.user.provider === "local");
     }
   }, [priceInfo, userData]);
 
@@ -562,7 +555,7 @@ const SubscriptionForm = () => {
                             updateServiceData(
                               idx,
                               "capacity",
-                              Number(e.target.value)
+                              Number(e.target.value) || ""
                             );
                           }}
                         />

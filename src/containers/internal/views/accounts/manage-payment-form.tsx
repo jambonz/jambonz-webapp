@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { postSubscriptions, useApiData } from "src/api";
 import { CurrentUserData, Subscription } from "src/api/types";
-import { Section, Spinner } from "src/components";
+import { Section } from "src/components";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import { PaymentMethod } from "@stripe/stripe-js";
@@ -144,9 +144,7 @@ export const ManagePaymentForm = () => {
       {isChangePayment && (
         <Section>
           <div className="grid--col4--users">
-            <H1 className="h3">
-              New Payment Information {isSavingNewCard && <Spinner small />}
-            </H1>
+            <H1 className="h3">New Payment Information</H1>
             <div className="grid__row">
               <div></div>
               <div>

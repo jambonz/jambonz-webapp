@@ -641,3 +641,7 @@ export interface ServiceData {
   stripe_product_id?: null | string;
   tiers?: Tier[];
 }
+
+export interface DeleteAccount {
+  password: string;
+}

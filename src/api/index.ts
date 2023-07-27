@@ -85,6 +85,7 @@ import type {
   CurrentUserData,
   PriceInfo,
   Subscription,
+  DeleteAccount,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -247,6 +248,17 @@ export const deleteFetch = <Type>(url: string) => {
   return fetchTransport<Type>(url, {
     method: "DELETE",
     headers: getAuthHeaders(),
+  });
+};
+
+export const deleteFetchWithPayload = <Type, Payload>(
+  url: string,
+  payload: Payload
+) => {
+  return fetchTransport<Type>(url, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
   });
 };
 
@@ -587,8 +599,11 @@ export const deleteApiKey = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_API_KEYS}/${sid}`);
 };
 
-export const deleteAccount = (sid: string) => {
-  return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`);
+export const deleteAccount = (sid: string, payload: Partial<DeleteAccount>) => {
+  return deleteFetchWithPayload<EmptyResponse, Partial<DeleteAccount>>(
+    `${API_ACCOUNTS}/${sid}`,
+    payload
+  );
 };
 
 export const deleteApplication = (sid: string) => {
