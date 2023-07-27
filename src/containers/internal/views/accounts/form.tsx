@@ -971,14 +971,17 @@ export const AccountForm = ({
           )}
           <fieldset>
             <ButtonGroup left>
-              <Button
-                small
-                subStyle="grey"
-                as={Link}
-                to={ROUTE_INTERNAL_ACCOUNTS}
-              >
-                Cancel
-              </Button>
+              {user?.scope != USER_ACCOUNT && (
+                <Button
+                  small
+                  subStyle="grey"
+                  as={Link}
+                  to={ROUTE_INTERNAL_ACCOUNTS}
+                >
+                  Cancel
+                </Button>
+              )}
+
               <Button type="submit" small>
                 Save
               </Button>
