@@ -35,10 +35,14 @@ export const Clients = () => {
 
     return clients
       ? clients.filter((c) => {
-          return accountSid ? c.account_sid === accountSid : true;
+          return accountSid
+            ? c.account_sid === accountSid
+            : accounts
+            ? accounts.map((a) => a.account_sid).includes(c.account_sid || "")
+            : false;
         })
       : [];
-  }, [accountSid, clients]);
+  }, [accountSid, clients, accounts]);
 
   const filteredClients = useFilteredResults(filter, tmpFilteredClients);
 
