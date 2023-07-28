@@ -90,11 +90,14 @@ export const AccountForm = ({
   const [recordFormat, setRecordFormat] = useState("mp3");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
   const [bucketName, setBucketName] = useState("");
+  const [tmpBucketName, setTmpBucketName] = useState("");
   const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
   const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
   const [bucketGoogleServiceKey, setBucketGoogleServiceKey] =
+    useState<GoogleServiceKey | null>(null);
+  const [tmpBucketGoogleServiceKey, setTmpBucketGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
   const regions = useRegionVendors();
 
@@ -145,6 +148,7 @@ export const AccountForm = ({
   const handleFile = (file: File) => {
     const handleError = () => {
       setBucketGoogleServiceKey(null);
+      setTmpBucketGoogleServiceKey(null);
       toastError("Invalid service key file, could not parse as JSON.");
     };
 
@@ -156,8 +160,10 @@ export const AccountForm = ({
 
           if (json.private_key && json.client_email) {
             setBucketGoogleServiceKey(json);
+            setTmpBucketGoogleServiceKey(json);
           } else {
             setBucketGoogleServiceKey(null);
+            setTmpBucketGoogleServiceKey(null);
           }
         } catch (error) {
           handleError();
@@ -398,10 +404,11 @@ export const AccountForm = ({
         setBucketVendor(tmpBucketVendor);
       } else if (account.data.bucket_credential?.vendor) {
         setBucketVendor(account.data.bucket_credential?.vendor);
-        setTmpBucketVendor("");
       }
 
-      if (account.data.bucket_credential?.name) {
+      if (tmpBucketName) {
+        setBucketName(tmpBucketName);
+      } else if (account.data.bucket_credential?.name) {
         setBucketName(account.data.bucket_credential?.name);
       }
 
@@ -428,7 +435,9 @@ export const AccountForm = ({
       if (account.data.record_format) {
         setRecordFormat(account.data.record_format || "mp3");
       }
-      if (account.data.bucket_credential?.service_key) {
+      if (tmpBucketGoogleServiceKey) {
+        setBucketGoogleServiceKey(tmpBucketGoogleServiceKey);
+      } else if (account.data.bucket_credential?.service_key) {
         setBucketGoogleServiceKey(
           JSON.parse(account.data.bucket_credential?.service_key)
         );
@@ -710,6 +719,7 @@ export const AccountForm = ({
                     value={bucketName}
                     onChange={(e) => {
                       setBucketName(e.target.value);
+                      setTmpBucketName(e.target.value);
                     }}
                   />
                   {bucketVendor === BUCKET_VENDOR_AWS && (
