@@ -21,10 +21,13 @@ import {
   Message,
   ApplicationSelect,
   LocalLimits,
+  FileUpload,
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
   AUDIO_FORMAT_OPTIONS,
+  BUCKET_VENDOR_AWS,
+  BUCKET_VENDOR_GOOGLE,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
   DEFAULT_WEBHOOK,
@@ -47,6 +50,8 @@ import type {
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
+import { GoogleServiceKey } from "src/vendor/types";
+import { getObscuredGoogleServiceKey } from "../speech-services/utils";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -81,6 +86,7 @@ export const AccountForm = ({
   const [initialCheckRecordAllCall, setInitialCheckRecordAllCall] =
     useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
+  const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [recordFormat, setRecordFormat] = useState("mp3");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
   const [bucketName, setBucketName] = useState("");
@@ -88,6 +94,8 @@ export const AccountForm = ({
   const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
+  const [bucketGoogleServiceKey, setBucketGoogleServiceKey] =
+    useState<GoogleServiceKey | null>(null);
   const regions = useRegionVendors();
 
   /** This lets us map and render the same UI for each... */
@@ -134,15 +142,46 @@ export const AccountForm = ({
     setModal(false);
   };
 
+  const handleFile = (file: File) => {
+    const handleError = () => {
+      setBucketGoogleServiceKey(null);
+      toastError("Invalid service key file, could not parse as JSON.");
+    };
+
+    file
+      .text()
+      .then((text) => {
+        try {
+          const json: GoogleServiceKey = JSON.parse(text);
+
+          if (json.private_key && json.client_email) {
+            setBucketGoogleServiceKey(json);
+          } else {
+            setBucketGoogleServiceKey(null);
+          }
+        } catch (error) {
+          handleError();
+        }
+      })
+      .catch(() => {
+        handleError();
+      });
+  };
+
   const handleTestBucketCredential = (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !account.data) return;
     const cred: BucketCredential = {
       vendor: bucketVendor,
-      region: bucketRegion,
-      name: bucketName,
-      access_key_id: bucketAccessKeyId,
-      secret_access_key: bucketSecretAccessKey,
+      ...(bucketVendor === BUCKET_VENDOR_AWS && {
+        region: bucketRegion,
+        name: bucketName,
+        access_key_id: bucketAccessKeyId,
+        secret_access_key: bucketSecretAccessKey,
+      }),
+      ...(bucketVendor === BUCKET_VENDOR_GOOGLE && {
+        service_key: JSON.stringify(bucketGoogleServiceKey),
+      }),
     };
 
     postAccountBucketCredentialTest(account?.data?.account_sid, cred).then(
@@ -256,7 +295,7 @@ export const AccountForm = ({
         device_calling_application_sid: appId || null,
         record_all_calls: recordAllCalls ? 1 : 0,
         record_format: recordFormat ? recordFormat : "mp3",
-        ...(bucketVendor === "aws_s3" && {
+        ...(bucketVendor === BUCKET_VENDOR_AWS && {
           bucket_credential: {
             vendor: bucketVendor || null,
             region: bucketRegion || "us-east-1",
@@ -264,6 +303,12 @@ export const AccountForm = ({
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
             ...(hasLength(bucketTags) && { tags: bucketTags }),
+          },
+        }),
+        ...(bucketVendor === BUCKET_VENDOR_GOOGLE && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            service_key: JSON.stringify(bucketGoogleServiceKey),
           },
         }),
         ...(!bucketCredentialChecked && {
@@ -347,8 +392,11 @@ export const AccountForm = ({
         }
       }
 
-      if (account.data.bucket_credential?.vendor) {
+      if (tmpBucketVendor) {
+        setBucketVendor(tmpBucketVendor);
+      } else if (account.data.bucket_credential?.vendor) {
         setBucketVendor(account.data.bucket_credential?.vendor);
+        setTmpBucketVendor("");
       }
 
       if (account.data.bucket_credential?.name) {
@@ -639,25 +687,26 @@ export const AccountForm = ({
                       options={BUCKET_VENDOR_OPTIONS}
                       onChange={(e) => {
                         setBucketVendor(e.target.value);
+                        setTmpBucketVendor(e.target.value);
                       }}
                     />
                   </div>
-                  {bucketVendor === "aws_s3" && (
+                  <label htmlFor="bucket_name">
+                    Bucket Name<span>*</span>
+                  </label>
+                  <input
+                    id="bucket_name"
+                    required
+                    type="text"
+                    name="bucket_name"
+                    placeholder="Bucket"
+                    value={bucketName}
+                    onChange={(e) => {
+                      setBucketName(e.target.value);
+                    }}
+                  />
+                  {bucketVendor === BUCKET_VENDOR_AWS && (
                     <>
-                      <label htmlFor="bucket_name">
-                        Bucket Name<span>*</span>
-                      </label>
-                      <input
-                        id="bucket_name"
-                        required
-                        type="text"
-                        name="bucket_name"
-                        placeholder="Bucket"
-                        value={bucketName}
-                        onChange={(e) => {
-                          setBucketName(e.target.value);
-                        }}
-                      />
                       {regions && regions["aws"] && (
                         <>
                           <label htmlFor="bucket_aws_region">
@@ -769,22 +818,50 @@ export const AccountForm = ({
                           </Icon>
                         </button>
                       </ButtonGroup>
-
-                      <ButtonGroup left>
-                        <Button
-                          onClick={handleTestBucketCredential}
-                          small
-                          disabled={
-                            !bucketName ||
-                            !bucketAccessKeyId ||
-                            !bucketSecretAccessKey
-                          }
-                        >
-                          Test
-                        </Button>
-                      </ButtonGroup>
                     </>
                   )}
+                  {bucketVendor === BUCKET_VENDOR_GOOGLE && (
+                    <>
+                      <label htmlFor="google_service_key">
+                        Service key<span>*</span>
+                      </label>
+                      <FileUpload
+                        id="google_service_key"
+                        name="google_service_key"
+                        handleFile={handleFile}
+                        placeholder="Choose a file"
+                        required
+                      />
+                      {bucketGoogleServiceKey && (
+                        <pre>
+                          <code>
+                            {JSON.stringify(
+                              getObscuredGoogleServiceKey(
+                                bucketGoogleServiceKey
+                              ),
+                              null,
+                              2
+                            )}
+                          </code>
+                        </pre>
+                      )}
+                    </>
+                  )}
+                  <ButtonGroup left>
+                    <Button
+                      onClick={handleTestBucketCredential}
+                      small
+                      disabled={
+                        !bucketName ||
+                        (bucketVendor === BUCKET_VENDOR_AWS &&
+                          (!bucketAccessKeyId || !bucketSecretAccessKey)) ||
+                        (bucketVendor === BUCKET_VENDOR_GOOGLE &&
+                          !bucketGoogleServiceKey)
+                      }
+                    >
+                      Test
+                    </Button>
+                  </ButtonGroup>
                   <label htmlFor="record_all_call" className="chk">
                     <input
                       id="record_all_call"
@@ -793,7 +870,6 @@ export const AccountForm = ({
                       onChange={(e) => setRecordAllCalls(e.target.checked)}
                       checked={recordAllCalls}
                     />
-                    <div></div>
                     <Tooltip
                       text="You can also record calls only to specific applications"
                       subStyle="info"
