@@ -173,9 +173,9 @@ export const AccountForm = ({
     if (!account || !account.data) return;
     const cred: BucketCredential = {
       vendor: bucketVendor,
+      name: bucketName,
       ...(bucketVendor === BUCKET_VENDOR_AWS && {
         region: bucketRegion,
-        name: bucketName,
         access_key_id: bucketAccessKeyId,
         secret_access_key: bucketSecretAccessKey,
       }),
@@ -309,6 +309,7 @@ export const AccountForm = ({
           bucket_credential: {
             vendor: bucketVendor || null,
             service_key: JSON.stringify(bucketGoogleServiceKey),
+            name: bucketName || null,
           },
         }),
         ...(!bucketCredentialChecked && {
@@ -425,6 +426,11 @@ export const AccountForm = ({
       }
       if (account.data.record_format) {
         setRecordFormat(account.data.record_format || "mp3");
+      }
+      if (account.data.bucket_credential?.service_key) {
+        setBucketGoogleServiceKey(
+          JSON.parse(account.data.bucket_credential?.service_key)
+        );
       }
       setInitialCheckRecordAllCall(
         hasValue(bucketVendor) && bucketVendor.length !== 0
