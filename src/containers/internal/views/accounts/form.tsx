@@ -786,7 +786,13 @@ export const AccountForm = ({
                         required={!bucketGoogleServiceKey}
                       />
                       {bucketGoogleServiceKey && (
-                        <pre>
+                        <pre
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
                           <code>
                             {JSON.stringify(
                               getObscuredGoogleServiceKey(
