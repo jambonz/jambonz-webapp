@@ -310,6 +310,7 @@ export const AccountForm = ({
             vendor: bucketVendor || null,
             service_key: JSON.stringify(bucketGoogleServiceKey),
             name: bucketName || null,
+            ...(hasLength(bucketTags) && { tags: bucketTags }),
           },
         }),
         ...(!bucketCredentialChecked && {
@@ -760,70 +761,6 @@ export const AccountForm = ({
                           setBucketSecretAccessKey(e.target.value);
                         }}
                       />
-                      <label htmlFor="aws_s3_tags">S3 Tags</label>
-                      {hasLength(bucketTags) &&
-                        bucketTags.map((b, i) => (
-                          <div key={`s3_tags_${i}`} className="bucket_tag">
-                            <div>
-                              <div>
-                                <input
-                                  id={`bucket_tag_name_${i}`}
-                                  name={`bucket_tag_name_${i}`}
-                                  type="text"
-                                  placeholder="Name"
-                                  required
-                                  value={b.Key}
-                                  onChange={(e) => {
-                                    updateBucketTags(i, "Key", e.target.value);
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <input
-                                  id={`bucket_tag_value_${i}`}
-                                  name={`bucket_tag_value_${i}`}
-                                  type="text"
-                                  placeholder="Value"
-                                  required
-                                  value={b.Value}
-                                  onChange={(e) => {
-                                    updateBucketTags(
-                                      i,
-                                      "Value",
-                                      e.target.value
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <button
-                              className="btnty"
-                              title="Delete Aws Tag"
-                              type="button"
-                              onClick={() => {
-                                setBucketTags(
-                                  bucketTags.filter((g2, i2) => i2 !== i)
-                                );
-                              }}
-                            >
-                              <Icon>
-                                <Icons.Trash2 />
-                              </Icon>
-                            </button>
-                          </div>
-                        ))}
-                      <ButtonGroup left>
-                        <button
-                          className="btnty"
-                          type="button"
-                          onClick={addBucketTag}
-                          title="Add S3 Tags"
-                        >
-                          <Icon subStyle="teal">
-                            <Icons.Plus />
-                          </Icon>
-                        </button>
-                      </ButtonGroup>
                     </>
                   )}
                   {bucketVendor === BUCKET_VENDOR_GOOGLE && (
@@ -836,7 +773,7 @@ export const AccountForm = ({
                         name="google_service_key"
                         handleFile={handleFile}
                         placeholder="Choose a file"
-                        required
+                        required={!bucketGoogleServiceKey}
                       />
                       {bucketGoogleServiceKey && (
                         <pre>
@@ -853,6 +790,73 @@ export const AccountForm = ({
                       )}
                     </>
                   )}
+                  <label htmlFor="aws_s3_tags">
+                    {bucketVendor === BUCKET_VENDOR_AWS
+                      ? "S3"
+                      : bucketVendor === BUCKET_VENDOR_GOOGLE
+                      ? "Google Storage"
+                      : ""}{" "}
+                    Tags
+                  </label>
+                  {hasLength(bucketTags) &&
+                    bucketTags.map((b, i) => (
+                      <div key={`s3_tags_${i}`} className="bucket_tag">
+                        <div>
+                          <div>
+                            <input
+                              id={`bucket_tag_name_${i}`}
+                              name={`bucket_tag_name_${i}`}
+                              type="text"
+                              placeholder="Name"
+                              required
+                              value={b.Key}
+                              onChange={(e) => {
+                                updateBucketTags(i, "Key", e.target.value);
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <input
+                              id={`bucket_tag_value_${i}`}
+                              name={`bucket_tag_value_${i}`}
+                              type="text"
+                              placeholder="Value"
+                              required
+                              value={b.Value}
+                              onChange={(e) => {
+                                updateBucketTags(i, "Value", e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          className="btnty"
+                          title="Delete Aws Tag"
+                          type="button"
+                          onClick={() => {
+                            setBucketTags(
+                              bucketTags.filter((g2, i2) => i2 !== i)
+                            );
+                          }}
+                        >
+                          <Icon>
+                            <Icons.Trash2 />
+                          </Icon>
+                        </button>
+                      </div>
+                    ))}
+                  <ButtonGroup left>
+                    <button
+                      className="btnty"
+                      type="button"
+                      onClick={addBucketTag}
+                      title="Add S3 Tags"
+                    >
+                      <Icon subStyle="teal">
+                        <Icons.Plus />
+                      </Icon>
+                    </button>
+                  </ButtonGroup>
                   <ButtonGroup left>
                     <Button
                       onClick={handleTestBucketCredential}
