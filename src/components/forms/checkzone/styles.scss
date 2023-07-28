@@ -9,11 +9,14 @@
   width: 100%;
   max-width: vars.$widthinput;
 
-  > label {
+  .label-container {
     display: flex;
-    align-items: center;
+    justify-content: center;
+  }
 
+  > label {
     input {
+      margin-top: ui-vars.$px01;
       margin-right: ui-vars.$px02;
     }
   }

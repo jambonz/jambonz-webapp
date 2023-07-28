@@ -49,22 +49,24 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
     return (
       <div className={classesTop}>
         <label>
-          <input
-            ref={ref}
-            type="checkbox"
-            name={name}
-            id={id || name}
-            onChange={(e) => {
-              setChecked(e.target.checked);
+          <div className="label-container">
+            <input
+              ref={ref}
+              type="checkbox"
+              name={name}
+              id={id || name}
+              onChange={(e) => {
+                setChecked(e.target.checked);
 
-              if (handleChecked) {
-                handleChecked(e);
-              }
-            }}
-            checked={checked}
-          />
-          {label && <div>{label}</div>}
-          {labelNode && labelNode}
+                if (handleChecked) {
+                  handleChecked(e);
+                }
+              }}
+              checked={checked}
+            />
+            {label && <div>{label}</div>}
+            {labelNode && labelNode}
+          </div>
         </label>
         {checked && <div className={classesIn}>{children}</div>}
       </div>

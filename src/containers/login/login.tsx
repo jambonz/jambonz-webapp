@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, H1 } from "@jambonz/ui-kit";
 import { useLocation, Navigate, Link } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
-import { useAuth } from "src/router/auth";
+import { toastError, toastSuccess } from "src/store";
+import { getToken, parseJwt, useAuth } from "src/router/auth";
 import {
   SESS_FLASH_MSG,
   SESS_OLD_PASSWORD,
@@ -25,6 +25,7 @@ import { Icons } from "src/components";
 import { v4 as uuid } from "uuid";
 import { setLocationBeforeOauth, setOauthState } from "src/store/localStore";
 import { getGithubOauthUrl, getGoogleOauthUrl } from "./utils";
+import { UserData } from "src/store/types";
 
 export const Login = () => {
   const state = uuid();
@@ -32,7 +33,6 @@ export const Login = () => {
   setLocationBeforeOauth("/sign-in");
   const { signin, authorized } = useAuth();
   const location = useLocation();
-  const user = useSelectState("user");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -67,13 +67,13 @@ export const Login = () => {
         />
       );
     }
-    console.log(user);
+    const userData: UserData = parseJwt(getToken());
     return (
       <Navigate
         to={
-          user?.scope !== USER_ACCOUNT
+          userData?.scope !== USER_ACCOUNT
             ? ROUTE_INTERNAL_ACCOUNTS
-            : `${ROUTE_INTERNAL_ACCOUNTS}/${user.account_sid}/edit`
+            : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
         }
         state={{ from: location }}
         replace

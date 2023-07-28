@@ -305,7 +305,6 @@ const SubscriptionForm = () => {
       const record = priceData.find(
         (item) => item.category === service.category
       );
-      console.log(record);
 
       if (record) {
         const price = record.prices.find(
@@ -435,7 +434,6 @@ const SubscriptionForm = () => {
 
   useEffect(() => {
     if (isModifySubscription && originalServiceData.length > 0) {
-      console.log(originalServiceData);
       setIsDisableSubmitButton(
         serviceData[0].capacity === originalServiceData[0].capacity &&
           serviceData[1].capacity === originalServiceData[1].capacity
@@ -555,7 +553,7 @@ const SubscriptionForm = () => {
                             updateServiceData(
                               idx,
                               "capacity",
-                              Number(e.target.value) || ""
+                              e.target.value ? Number(e.target.value) : ""
                             );
                           }}
                         />
