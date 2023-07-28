@@ -786,13 +786,7 @@ export const AccountForm = ({
                         required={!bucketGoogleServiceKey}
                       />
                       {bucketGoogleServiceKey && (
-                        <pre
-                          style={{
-                            whiteSpace: "pre-wrap",
-                            wordWrap: "break-word",
-                            overflowWrap: "break-word",
-                          }}
-                        >
+                        <pre>
                           <code>
                             {JSON.stringify(
                               getObscuredGoogleServiceKey(
@@ -810,7 +804,7 @@ export const AccountForm = ({
                     {bucketVendor === BUCKET_VENDOR_AWS
                       ? "S3"
                       : bucketVendor === BUCKET_VENDOR_GOOGLE
-                      ? "Google Storage"
+                      ? "Google Cloud Storage"
                       : ""}{" "}
                     Tags
                   </label>
