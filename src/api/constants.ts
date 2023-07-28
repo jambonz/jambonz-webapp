@@ -143,7 +143,7 @@ export const BUCKET_VENDOR_OPTIONS = [
     value: BUCKET_VENDOR_AWS,
   },
   {
-    name: "Google Storage",
+    name: "Google Cloud Storage",
     value: BUCKET_VENDOR_GOOGLE,
   },
 ];
