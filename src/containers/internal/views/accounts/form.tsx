@@ -777,7 +777,10 @@ export const AccountForm = ({
                     <>
                       <label htmlFor="google_service_key">
                         Service key<span>*</span>
-                        <Tooltip text="Provide a JSON key for a Service Account with APIs enabled for Cloud Storage and Storage Transfer API">
+                        <Tooltip
+                          text="Provide a JSON key for a Service Account with APIs enabled for Cloud Storage and Storage Transfer API"
+                          subStyle="info"
+                        >
                           {" "}
                         </Tooltip>
                       </label>
