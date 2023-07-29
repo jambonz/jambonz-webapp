@@ -24,7 +24,7 @@ export const ForgotPassword = () => {
       .then((response) => {
         if (response.status === StatusCodes.NO_CONTENT) {
           toastSuccess(
-            "A password reset email has been sent to your email. Please check your inbox (and, possibly, span folder) and follow the instructions to reset your password."
+            "A password reset email has been sent to your email. Please check your inbox (and, possibly, spam folder) and follow the instructions to reset your password."
           );
           navigate(ROUTE_LOGIN);
         } else {
