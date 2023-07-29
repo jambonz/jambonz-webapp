@@ -31,6 +31,8 @@ import {
   API_AVAILABILITY,
   API_PRICE,
   API_SUBSCRIPTIONS,
+  API_CHANGE_PASSWORD,
+  API_SIGNIN,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -86,6 +88,8 @@ import type {
   PriceInfo,
   Subscription,
   DeleteAccount,
+  ChangePassword,
+  SignIn,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -455,6 +459,17 @@ export const postSubscriptions = (payload: Partial<Subscription>) => {
     API_SUBSCRIPTIONS,
     payload
   );
+};
+
+export const postChangepassword = (payload: Partial<ChangePassword>) => {
+  return postFetch<EmptyResponse, Partial<ChangePassword>>(
+    API_CHANGE_PASSWORD,
+    payload
+  );
+};
+
+export const postSignIn = (payload: Partial<SignIn>) => {
+  return postFetch<SignIn, Partial<SignIn>>(API_SIGNIN, payload);
 };
 /** Named wrappers for `putFetch` */
 

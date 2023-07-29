@@ -333,3 +333,5 @@ export const API_ACTIVATION_CODE = `${API_BASE_URL}/ActivationCode`;
 export const API_AVAILABILITY = `${API_BASE_URL}/Availability`;
 export const API_PRICE = `${API_BASE_URL}/Prices`;
 export const API_SUBSCRIPTIONS = `${API_BASE_URL}/Subscriptions`;
+export const API_CHANGE_PASSWORD = `${API_BASE_URL}/change-password`;
+export const API_SIGNIN = `${API_BASE_URL}/signin`;

@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, H1, P } from "@jambonz/ui-kit";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { deleteAccount, postSubscriptions, useApiData } from "src/api";
+import { postSubscriptions, useApiData } from "src/api";
 import { CurrencySymbol } from "src/api/constants";
 import {
   CurrentUserData,
@@ -20,12 +20,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { PaymentMethod } from "@stripe/stripe-js";
 import { toastError, toastSuccess } from "src/store";
-import { Passwd } from "src/components/forms";
-import { useAuth } from "src/router/auth";
 import { ModalLoader } from "src/components/modal";
 
 const SubscriptionForm = () => {
-  const { signout } = useAuth();
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [priceInfo] = useApiData<PriceInfo[]>("/Prices");
   const [userStripeInfo] = useApiData<StripeCustomerId>("/StripeCustomerId");
@@ -33,22 +30,15 @@ const SubscriptionForm = () => {
   const [cardErrorCase, setCardErrorCase] = useState(false);
   const [isReviewChanges, setIsReviewChanges] = useState(false);
   const [isReturnToFreePlan, setIsReturnToFreePlan] = useState(false);
-  const [isDeleteAccount, setIsDeleteAccount] = useState(false);
-  const [deleteAccountPasswd, setDeleteAccountPasswd] = useState("");
-  const [deleteMessage, setDeleteMessage] = useState("");
-  const deleteMessageRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isModifySubscription = location.pathname.includes(
     "modify-subscription"
   );
   const [billingCharge, setBillingCharge] = useState<Subscription | null>(null);
-  const [requiresPassword, setRequiresPassword] = useState(true);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
   const [isDisableSubmitButton, setIsDisableSubmitButton] =
     useState(isModifySubscription);
-  const [isDisableDeleteAccountButton, setIsDisableDeleteAccountButton] =
-    useState(false);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -193,39 +183,6 @@ const SubscriptionForm = () => {
         toastError(error.msg);
       })
       .finally(() => setIsShowModalLoader(false));
-  };
-
-  const handleDeleteAccount = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (deleteMessage !== "delete my account") {
-      toastError(
-        "You must type the delete message correctly in order to delete your account."
-      );
-      if (
-        deleteMessageRef.current &&
-        deleteMessageRef.current !== document.activeElement
-      ) {
-        deleteMessageRef.current.focus();
-      }
-      return;
-    }
-    setIsDisableDeleteAccountButton(true);
-    setIsShowModalLoader(true);
-
-    deleteAccount(userData?.account?.account_sid || "", {
-      password: deleteAccountPasswd,
-    })
-      .then(() => {
-        signout();
-      })
-      .catch((error) => {
-        toastError(error.msg);
-      })
-      .finally(() => {
-        setIsDisableDeleteAccountButton(false);
-        setIsShowModalLoader(false);
-      });
   };
 
   const handleReviewChangeSubmit = async (e: React.FormEvent) => {
@@ -425,10 +382,6 @@ const SubscriptionForm = () => {
 
     if (userData && priceInfo) {
       setProductsInfo(userData);
-    }
-
-    if (userData) {
-      setRequiresPassword(userData.user.provider === "local");
     }
   }, [priceInfo, userData]);
 
@@ -644,16 +597,6 @@ const SubscriptionForm = () => {
                     >
                       Return to free plan
                     </Button>
-
-                    <Button
-                      type="button"
-                      mainStyle="hollow"
-                      subStyle="grey"
-                      onClick={() => setIsDeleteAccount(true)}
-                      small
-                    >
-                      Delete Account
-                    </Button>
                   </ButtonGroup>
                 )}
 
@@ -679,76 +622,6 @@ const SubscriptionForm = () => {
           </fieldset>
         </form>
       </Section>
-      {isDeleteAccount && (
-        <Section slim>
-          <form className="form form--internal" onSubmit={handleDeleteAccount}>
-            <fieldset>
-              <H1 className="h4">Delete Account</H1>
-              <P>
-                <span>
-                  <strong>Warning!</strong>
-                </span>{" "}
-                This will permantly delete all of your data from our database.
-                You will not be able to restore your account. You must{" "}
-                {requiresPassword && "provide your password and"} type “delete
-                my account” into the Delete Message field.
-              </P>
-            </fieldset>
-            <fieldset>
-              {requiresPassword && (
-                <>
-                  <label htmlFor="password">
-                    Password<span>*</span>
-                  </label>
-                  <Passwd
-                    id="delete_account_password"
-                    name="delete_account_password"
-                    value={deleteAccountPasswd}
-                    placeholder="Password"
-                    required
-                    onChange={(e) => {
-                      setDeleteAccountPasswd(e.target.value);
-                    }}
-                  />
-                </>
-              )}
-              <label htmlFor="deleteMessage">
-                Delete Message<span>*</span>
-              </label>
-              <input
-                id="deleteMessage"
-                required
-                type="text"
-                name="deleteMessage"
-                placeholder="Delete Message"
-                value={deleteMessage}
-                ref={deleteMessageRef}
-                onChange={(e) => setDeleteMessage(e.target.value)}
-              />
-            </fieldset>
-            <fieldset>
-              <ButtonGroup right>
-                <Button
-                  subStyle="grey"
-                  type="button"
-                  onClick={() => setIsDeleteAccount(false)}
-                  small
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  type="submit"
-                  disabled={isDisableDeleteAccountButton}
-                  small
-                >
-                  PERMANENTLY DELETE MY ACCOUNT
-                </Button>
-              </ButtonGroup>
-            </fieldset>
-          </form>
-        </Section>
-      )}
     </>
   );
 };

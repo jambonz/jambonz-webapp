@@ -646,3 +646,14 @@ export interface ServiceData {
 export interface DeleteAccount {
   password: string;
 }
+
+export interface ChangePassword {
+  old_password: null | string;
+  new_password: null | string;
+}
+
+export interface SignIn {
+  link?: null | string;
+  jwt?: null | string;
+  account_sid?: null | string;
+}

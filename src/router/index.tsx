@@ -56,6 +56,7 @@ import RegisterChooseSubdomain from "src/containers/login/sub-domain";
 import Subscription from "src/containers/internal/views/accounts/subscription";
 import ManagePayment from "src/containers/internal/views/accounts/manage-payment";
 import EditSipRealm from "src/containers/internal/views/accounts/edit-sip-realm";
+import ResetPassword from "src/containers/login/reset-password";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -76,7 +77,10 @@ export const Router = () => {
             }
           />
           {ENABLE_FORGOT_PASSWORD && (
-            <Route path="forgot-password" element={<ForgotPassword />} />
+            <>
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:id" element={<ResetPassword />} />
+            </>
           )}
           {ENABLE_HOSTED_SYSTEM && (
             <>
