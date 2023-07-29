@@ -11,7 +11,6 @@ import { toastError } from "src/store";
 import { setRootDomain } from "src/store/localStore";
 
 export const RegisterEmail = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -22,7 +21,6 @@ export const RegisterEmail = () => {
     postRegister({
       service_provider_sid: DEFAULT_SERVICE_PROVIDER_SID,
       provider: "local",
-      name,
       email,
       password,
       email_activation_code,
@@ -42,14 +40,6 @@ export const RegisterEmail = () => {
       <H1 className="h2">Register</H1>
 
       <form className="form form--login" onSubmit={handleSubmit}>
-        <input
-          required
-          type="text"
-          name="username"
-          placeholder="Your Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
         <input
           required
           type="text"
