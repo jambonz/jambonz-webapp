@@ -64,6 +64,10 @@ export const languages: VoiceLanguage[] = [
       { value: "en-AU-Neural2-B", name: "Neural2-B (Male)" },
       { value: "en-AU-Neural2-C", name: "Neural2-C (Female)" },
       { value: "en-AU-Neural2-D", name: "Neural2-D (Male)" },
+      { value: "en-AU-Polyglot-1", name: "Polyglot-1 (Male)" },
+      { value: "en-AU-News-E", name: "News-E (Female)" },
+      { value: "en-AU-News-F", name: "News-F (Female)" },
+      { value: "en-AU-News-G", name: "News-G (Male)" },
     ],
   },
   {
@@ -97,6 +101,13 @@ export const languages: VoiceLanguage[] = [
       { value: "en-GB-Neural2-C", name: "Neural2-C (Female)" },
       { value: "en-GB-Neural2-D", name: "Neural2-D (Male)" },
       { value: "en-GB-Neural2-F", name: "Neural2-F (Female)" },
+      { value: "en-GB-News-G", name: "News-G (Female)" },
+      { value: "en-GB-News-H", name: "News-H (Female)" },
+      { value: "en-GB-News-I", name: "News-I (Female)" },
+      { value: "en-GB-News-J", name: "News-J (Male)" },
+      { value: "en-GB-News-K", name: "News-K (Male)" },
+      { value: "en-GB-News-L", name: "News-L (Male)" },
+      { value: "en-GB-News-M", name: "News-M (Male)" },
     ],
   },
   {
@@ -124,6 +135,11 @@ export const languages: VoiceLanguage[] = [
       { value: "en-US-Neural2-J", name: "Neural2-J (Male)" },
       { value: "en-US-Studio-M", name: "Studio-M (Male)" },
       { value: "en-US-Studio-O", name: "Studio-M (Female)" },
+      { value: "en-US-Polyglot-1", name: "Polyglot-1 (Male)" },
+      { value: "en-US-News-K", name: "News-K (Female)" },
+      { value: "en-US-News-L", name: "News-L (Female)" },
+      { value: "en-US-News-M", name: "News-M (Male)" },
+      { value: "en-US-News-N", name: "News-N (Male)" },
     ],
   },
   {
@@ -181,6 +197,7 @@ export const languages: VoiceLanguage[] = [
       { value: "fr-FR-Neural2-C", name: "Neural2-C (Female)" },
       { value: "fr-FR-Neural2-D", name: "Neural2-D (Male)" },
       { value: "fr-FR-Neural2-E", name: "Neural2-E (Female)" },
+      { value: "fr-FR-Polyglot-1", name: "Polyglot-1 (Male)" },
     ],
   },
   {
@@ -201,6 +218,7 @@ export const languages: VoiceLanguage[] = [
       { value: "de-DE-Neural2-C", name: "Neural2-C (Female)" },
       { value: "de-DE-Neural2-D", name: "Neural2-D (Male)" },
       { value: "de-DE-Neural2-F", name: "Neural2-F (Female)" },
+      { value: "de-DE-Polyglot-1", name: "Polyglot-1 (Male)" },
     ],
   },
   {
@@ -419,6 +437,7 @@ export const languages: VoiceLanguage[] = [
       { value: "es-ES-Neural2-D", name: "Neural2-D (Female)" },
       { value: "es-ES-Neural2-E", name: "Neural2-E (Female)" },
       { value: "es-ES-Neural2-F", name: "Neural2-F (Male)" },
+      { value: "es-ES-Polyglot-1", name: "Polyglot-1 (Male)" },
     ],
   },
   {
@@ -429,6 +448,11 @@ export const languages: VoiceLanguage[] = [
       { value: "es-US-Neural2-B", name: "Neural2-B (Male)" },
       { value: "es-US-Neural2-C", name: "Neural2-C (Male)" },
       { value: "es-US-Studio-B", name: "Studio-B (Male)" },
+      { value: "es-US-Polyglot-1", name: "Polyglot-1 (Male)" },
+      { value: "es-US-News-D", name: "News-D (Male)" },
+      { value: "es-US-News-E", name: "News-E (Male)" },
+      { value: "es-US-News-F", name: "News-F (Female)" },
+      { value: "es-US-News-G", name: "News-G (Female)" },
     ],
   },
   {
