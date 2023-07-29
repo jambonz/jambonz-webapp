@@ -611,33 +611,46 @@ export const AccountForm = ({
             <P>{subscriptionDescription}</P>
             <br />
 
-            <ButtonGroup right>
-              {userData?.account?.plan_type === PlanType.PAID ? (
-                <>
-                  <Button
-                    small
-                    as={Link}
-                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
-                  >
-                    Manage Payment Info
-                  </Button>
-                  <Button
-                    small
-                    as={Link}
-                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
-                  >
-                    Modify My Subscription
-                  </Button>
-                </>
-              ) : (
+            <div className="mast">
+              <ButtonGroup left>
                 <Button
-                  as={Link}
-                  to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
+                  type="button"
+                  mainStyle="hollow"
+                  subStyle="grey"
+                  small
+                  onClick={() => setIsDeleteAccount(true)}
                 >
-                  Upgrade to a Paid Subscription
+                  Delete Account
                 </Button>
-              )}
-            </ButtonGroup>
+              </ButtonGroup>
+              <ButtonGroup right>
+                {userData?.account?.plan_type === PlanType.PAID ? (
+                  <>
+                    <Button
+                      small
+                      as={Link}
+                      to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
+                    >
+                      Manage Payment Info
+                    </Button>
+                    <Button
+                      small
+                      as={Link}
+                      to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
+                    >
+                      Modify My Subscription
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    as={Link}
+                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
+                  >
+                    Upgrade to a Paid Subscription
+                  </Button>
+                )}
+              </ButtonGroup>
+            </div>
           </Section>
           {(!userCarriers ||
             userCarriers.length === 0 ||
@@ -1126,37 +1139,22 @@ export const AccountForm = ({
             </fieldset>
           )}
           <fieldset>
-            <div className="mast">
-              <ButtonGroup left>
-                {user?.scope != USER_ACCOUNT && (
-                  <Button
-                    small
-                    subStyle="grey"
-                    as={Link}
-                    to={ROUTE_INTERNAL_ACCOUNTS}
-                  >
-                    Cancel
-                  </Button>
-                )}
-
-                <Button type="submit" small>
-                  Save
+            <ButtonGroup left>
+              {user?.scope != USER_ACCOUNT && (
+                <Button
+                  small
+                  subStyle="grey"
+                  as={Link}
+                  to={ROUTE_INTERNAL_ACCOUNTS}
+                >
+                  Cancel
                 </Button>
-              </ButtonGroup>
-              {ENABLE_HOSTED_SYSTEM && (
-                <ButtonGroup right>
-                  <Button
-                    type="button"
-                    mainStyle="hollow"
-                    subStyle="grey"
-                    small
-                    onClick={() => setIsDeleteAccount(true)}
-                  >
-                    Delete Account
-                  </Button>
-                </ButtonGroup>
               )}
-            </div>
+
+              <Button type="submit" small>
+                Save
+              </Button>
+            </ButtonGroup>
           </fieldset>
         </form>
       </Section>
