@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { postChangepassword, postSignIn } from "src/api";
 import { Message, Passwd } from "src/components/forms";
 import { setToken } from "src/router/auth";
-import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { ROUTE_LOGIN } from "src/router/routes";
 import { toastError, toastSuccess } from "src/store";
 
 export const ResetPassword = () => {
@@ -14,7 +14,6 @@ export const ResetPassword = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isDisableSubmitButton, setIsDisableSubmitButton] = useState(false);
   const [message, setMessage] = useState("");
-  const [accountSid, setAccountSid] = useState("");
   const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +46,8 @@ export const ResetPassword = () => {
     })
       .then(() => {
         toastSuccess("New password was successfully set.");
-        navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${accountSid}/edit`);
+        setToken("");
+        navigate(ROUTE_LOGIN);
       })
       .catch((error) => {
         toastError(error.msg);
@@ -60,7 +60,6 @@ export const ResetPassword = () => {
     })
       .then(({ json }) => {
         setToken(json.jwt || "");
-        setAccountSid(json.account_sid || "");
       })
       .catch((error) => toastError(error.msg));
   }, []);
