@@ -652,6 +652,79 @@ export const AccountForm = ({
               </ButtonGroup>
             </div>
           </Section>
+          {isDeleteAccount && (
+            <Section slim>
+              <form
+                className="form form--internal"
+                onSubmit={handleDeleteAccount}
+              >
+                <fieldset>
+                  <H1 className="h4">Delete Account</H1>
+                  <P>
+                    <span>
+                      <strong>Warning!</strong>
+                    </span>{" "}
+                    This will permantly delete all of your data from our
+                    database. You will not be able to restore your account. You
+                    must {requiresPassword && "provide your password and"} type
+                    “delete my account” into the Delete Message field.
+                  </P>
+                </fieldset>
+                <fieldset>
+                  {requiresPassword && (
+                    <>
+                      <label htmlFor="password">
+                        Password<span>*</span>
+                      </label>
+                      <Passwd
+                        id="delete_account_password"
+                        name="delete_account_password"
+                        value={deleteAccountPasswd}
+                        placeholder="Password"
+                        required
+                        onChange={(e) => {
+                          setDeleteAccountPasswd(e.target.value);
+                        }}
+                      />
+                    </>
+                  )}
+                  <label htmlFor="deleteMessage">
+                    Delete Message<span>*</span>
+                  </label>
+                  <input
+                    id="deleteMessage"
+                    required
+                    type="text"
+                    name="deleteMessage"
+                    placeholder="Delete Message"
+                    value={deleteMessage}
+                    ref={deleteMessageRef}
+                    onChange={(e) => setDeleteMessage(e.target.value)}
+                  />
+                </fieldset>
+                <fieldset>
+                  <ButtonGroup right>
+                    <Button
+                      subStyle="grey"
+                      type="button"
+                      onClick={() => setIsDeleteAccount(false)}
+                      small
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      disabled={isDisableDeleteAccountButton}
+                      small
+                    >
+                      PERMANENTLY DELETE MY ACCOUNT
+                    </Button>
+                  </ButtonGroup>
+                </fieldset>
+              </form>
+            </Section>
+          )}
           {(!userCarriers ||
             userCarriers.length === 0 ||
             !userSpeechs ||
@@ -1158,76 +1231,6 @@ export const AccountForm = ({
           </fieldset>
         </form>
       </Section>
-      {isDeleteAccount && (
-        <Section slim>
-          <form className="form form--internal" onSubmit={handleDeleteAccount}>
-            <fieldset>
-              <H1 className="h4">Delete Account</H1>
-              <P>
-                <span>
-                  <strong>Warning!</strong>
-                </span>{" "}
-                This will permantly delete all of your data from our database.
-                You will not be able to restore your account. You must{" "}
-                {requiresPassword && "provide your password and"} type “delete
-                my account” into the Delete Message field.
-              </P>
-            </fieldset>
-            <fieldset>
-              {requiresPassword && (
-                <>
-                  <label htmlFor="password">
-                    Password<span>*</span>
-                  </label>
-                  <Passwd
-                    id="delete_account_password"
-                    name="delete_account_password"
-                    value={deleteAccountPasswd}
-                    placeholder="Password"
-                    required
-                    onChange={(e) => {
-                      setDeleteAccountPasswd(e.target.value);
-                    }}
-                  />
-                </>
-              )}
-              <label htmlFor="deleteMessage">
-                Delete Message<span>*</span>
-              </label>
-              <input
-                id="deleteMessage"
-                required
-                type="text"
-                name="deleteMessage"
-                placeholder="Delete Message"
-                value={deleteMessage}
-                ref={deleteMessageRef}
-                onChange={(e) => setDeleteMessage(e.target.value)}
-              />
-            </fieldset>
-            <fieldset>
-              <ButtonGroup right>
-                <Button
-                  subStyle="grey"
-                  type="button"
-                  onClick={() => setIsDeleteAccount(false)}
-                  small
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  type="submit"
-                  disabled={isDisableDeleteAccountButton}
-                  small
-                >
-                  PERMANENTLY DELETE MY ACCOUNT
-                </Button>
-              </ButtonGroup>
-            </fieldset>
-          </form>
-        </Section>
-      )}
       {modal && (
         <Modal handleSubmit={handleRefresh} handleCancel={handleCancel}>
           <P>
