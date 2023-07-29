@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MSG_SOMETHING_WRONG } from "src/constants";
 
 import { ROUTE_LOGIN } from "src/router/routes";
+import { toastSuccess } from "src/store";
 
 export const ForgotPassword = () => {
   const [message, setMessage] = useState("");
@@ -22,6 +23,9 @@ export const ForgotPassword = () => {
     postForgotPassword({ email })
       .then((response) => {
         if (response.status === StatusCodes.NO_CONTENT) {
+          toastSuccess(
+            "A password reset email has been sent to your inbox. Please check your email and follow the instructions to reset your password."
+          );
           navigate(ROUTE_LOGIN);
         } else {
           setMessage(MSG_SOMETHING_WRONG);
