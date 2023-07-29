@@ -161,6 +161,8 @@ export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
 /**
  * Record bucket type
  */
+export const BUCKET_VENDOR_AWS = "aws_s3";
+export const BUCKET_VENDOR_GOOGLE = "google";
 export const BUCKET_VENDOR_OPTIONS = [
   {
     name: "NONE",
@@ -168,7 +170,11 @@ export const BUCKET_VENDOR_OPTIONS = [
   },
   {
     name: "AWS S3",
-    value: "aws_s3",
+    value: BUCKET_VENDOR_AWS,
+  },
+  {
+    name: "Google Cloud Storage",
+    value: BUCKET_VENDOR_GOOGLE,
   },
 ];
 

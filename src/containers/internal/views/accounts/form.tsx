@@ -21,10 +21,13 @@ import {
   Message,
   ApplicationSelect,
   LocalLimits,
+  FileUpload,
 } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
   AUDIO_FORMAT_OPTIONS,
+  BUCKET_VENDOR_AWS,
+  BUCKET_VENDOR_GOOGLE,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
   CurrencySymbol,
@@ -54,6 +57,8 @@ import {
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
+import { GoogleServiceKey } from "src/vendor/types";
+import { getObscuredGoogleServiceKey } from "../speech-services/utils";
 import dayjs from "dayjs";
 import { EditBoard } from "src/components/editboard";
 
@@ -96,13 +101,19 @@ export const AccountForm = ({
   const [initialCheckRecordAllCall, setInitialCheckRecordAllCall] =
     useState(false);
   const [bucketVendor, setBucketVendor] = useState("");
+  const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [recordFormat, setRecordFormat] = useState("mp3");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
   const [bucketName, setBucketName] = useState("");
+  const [tmpBucketName, setTmpBucketName] = useState("");
   const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
   const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
+  const [bucketGoogleServiceKey, setBucketGoogleServiceKey] =
+    useState<GoogleServiceKey | null>(null);
+  const [tmpBucketGoogleServiceKey, setTmpBucketGoogleServiceKey] =
+    useState<GoogleServiceKey | null>(null);
   const regions = useRegionVendors();
   const [subscriptionDescription, setSubscriptionDescription] = useState("");
 
@@ -150,15 +161,49 @@ export const AccountForm = ({
     setModal(false);
   };
 
+  const handleFile = (file: File) => {
+    const handleError = () => {
+      setBucketGoogleServiceKey(null);
+      setTmpBucketGoogleServiceKey(null);
+      toastError("Invalid service key file, could not parse as JSON.");
+    };
+
+    file
+      .text()
+      .then((text) => {
+        try {
+          const json: GoogleServiceKey = JSON.parse(text);
+
+          if (json.private_key && json.client_email) {
+            setBucketGoogleServiceKey(json);
+            setTmpBucketGoogleServiceKey(json);
+          } else {
+            setBucketGoogleServiceKey(null);
+            setTmpBucketGoogleServiceKey(null);
+          }
+        } catch (error) {
+          handleError();
+        }
+      })
+      .catch(() => {
+        handleError();
+      });
+  };
+
   const handleTestBucketCredential = (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !account.data) return;
     const cred: BucketCredential = {
       vendor: bucketVendor,
-      region: bucketRegion,
       name: bucketName,
-      access_key_id: bucketAccessKeyId,
-      secret_access_key: bucketSecretAccessKey,
+      ...(bucketVendor === BUCKET_VENDOR_AWS && {
+        region: bucketRegion,
+        access_key_id: bucketAccessKeyId,
+        secret_access_key: bucketSecretAccessKey,
+      }),
+      ...(bucketVendor === BUCKET_VENDOR_GOOGLE && {
+        service_key: JSON.stringify(bucketGoogleServiceKey),
+      }),
     };
 
     postAccountBucketCredentialTest(account?.data?.account_sid, cred).then(
@@ -272,13 +317,21 @@ export const AccountForm = ({
         device_calling_application_sid: appId || null,
         record_all_calls: recordAllCalls ? 1 : 0,
         record_format: recordFormat ? recordFormat : "mp3",
-        ...(bucketVendor === "aws_s3" && {
+        ...(bucketVendor === BUCKET_VENDOR_AWS && {
           bucket_credential: {
             vendor: bucketVendor || null,
             region: bucketRegion || "us-east-1",
             name: bucketName || null,
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
+            ...(hasLength(bucketTags) && { tags: bucketTags }),
+          },
+        }),
+        ...(bucketVendor === BUCKET_VENDOR_GOOGLE && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            service_key: JSON.stringify(bucketGoogleServiceKey),
+            name: bucketName || null,
             ...(hasLength(bucketTags) && { tags: bucketTags }),
           },
         }),
@@ -363,11 +416,15 @@ export const AccountForm = ({
         }
       }
 
-      if (account.data.bucket_credential?.vendor) {
+      if (tmpBucketVendor) {
+        setBucketVendor(tmpBucketVendor);
+      } else if (account.data.bucket_credential?.vendor) {
         setBucketVendor(account.data.bucket_credential?.vendor);
       }
 
-      if (account.data.bucket_credential?.name) {
+      if (tmpBucketName) {
+        setBucketName(tmpBucketName);
+      } else if (account.data.bucket_credential?.name) {
         setBucketName(account.data.bucket_credential?.name);
       }
 
@@ -393,6 +450,13 @@ export const AccountForm = ({
       }
       if (account.data.record_format) {
         setRecordFormat(account.data.record_format || "mp3");
+      }
+      if (tmpBucketGoogleServiceKey) {
+        setBucketGoogleServiceKey(tmpBucketGoogleServiceKey);
+      } else if (account.data.bucket_credential?.service_key) {
+        setBucketGoogleServiceKey(
+          JSON.parse(account.data.bucket_credential?.service_key)
+        );
       }
       setInitialCheckRecordAllCall(
         hasValue(bucketVendor) && bucketVendor.length !== 0
@@ -797,25 +861,27 @@ export const AccountForm = ({
                       options={BUCKET_VENDOR_OPTIONS}
                       onChange={(e) => {
                         setBucketVendor(e.target.value);
+                        setTmpBucketVendor(e.target.value);
                       }}
                     />
                   </div>
-                  {bucketVendor === "aws_s3" && (
+                  <label htmlFor="bucket_name">
+                    Bucket Name<span>*</span>
+                  </label>
+                  <input
+                    id="bucket_name"
+                    required
+                    type="text"
+                    name="bucket_name"
+                    placeholder="Bucket"
+                    value={bucketName}
+                    onChange={(e) => {
+                      setBucketName(e.target.value);
+                      setTmpBucketName(e.target.value);
+                    }}
+                  />
+                  {bucketVendor === BUCKET_VENDOR_AWS && (
                     <>
-                      <label htmlFor="bucket_name">
-                        Bucket Name<span>*</span>
-                      </label>
-                      <input
-                        id="bucket_name"
-                        required
-                        type="text"
-                        name="bucket_name"
-                        placeholder="Bucket"
-                        value={bucketName}
-                        onChange={(e) => {
-                          setBucketName(e.target.value);
-                        }}
-                      />
                       {regions && regions["aws"] && (
                         <>
                           <label htmlFor="bucket_aws_region">
@@ -863,86 +929,120 @@ export const AccountForm = ({
                           setBucketSecretAccessKey(e.target.value);
                         }}
                       />
-                      <label htmlFor="aws_s3_tags">S3 Tags</label>
-                      {hasLength(bucketTags) &&
-                        bucketTags.map((b, i) => (
-                          <div key={`s3_tags_${i}`} className="bucket_tag">
-                            <div>
-                              <div>
-                                <input
-                                  id={`bucket_tag_name_${i}`}
-                                  name={`bucket_tag_name_${i}`}
-                                  type="text"
-                                  placeholder="Name"
-                                  required
-                                  value={b.Key}
-                                  onChange={(e) => {
-                                    updateBucketTags(i, "Key", e.target.value);
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <input
-                                  id={`bucket_tag_value_${i}`}
-                                  name={`bucket_tag_value_${i}`}
-                                  type="text"
-                                  placeholder="Value"
-                                  required
-                                  value={b.Value}
-                                  onChange={(e) => {
-                                    updateBucketTags(
-                                      i,
-                                      "Value",
-                                      e.target.value
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <button
-                              className="btnty"
-                              title="Delete Aws Tag"
-                              type="button"
-                              onClick={() => {
-                                setBucketTags(
-                                  bucketTags.filter((g2, i2) => i2 !== i)
-                                );
-                              }}
-                            >
-                              <Icon>
-                                <Icons.Trash2 />
-                              </Icon>
-                            </button>
-                          </div>
-                        ))}
-                      <ButtonGroup left>
-                        <button
-                          className="btnty"
-                          type="button"
-                          onClick={addBucketTag}
-                          title="Add S3 Tags"
-                        >
-                          <Icon subStyle="teal">
-                            <Icons.Plus />
-                          </Icon>
-                        </button>
-                      </ButtonGroup>
-
-                      <ButtonGroup left>
-                        <Button
-                          onClick={handleTestBucketCredential}
-                          small
-                          disabled={
-                            !bucketName ||
-                            !bucketAccessKeyId ||
-                            !bucketSecretAccessKey
-                          }
-                        >
-                          Test
-                        </Button>
-                      </ButtonGroup>
                     </>
                   )}
+                  {bucketVendor === BUCKET_VENDOR_GOOGLE && (
+                    <>
+                      <label htmlFor="google_service_key">
+                        Service key<span>*</span>
+                        <Tooltip text="Provide a JSON key for a Service Account with APIs enabled for Cloud Storage and Storage Transfer API">
+                          {" "}
+                        </Tooltip>
+                      </label>
+                      <FileUpload
+                        id="google_service_key"
+                        name="google_service_key"
+                        handleFile={handleFile}
+                        placeholder="Choose a file"
+                        required={!bucketGoogleServiceKey}
+                      />
+                      {bucketGoogleServiceKey && (
+                        <pre>
+                          <code>
+                            {JSON.stringify(
+                              getObscuredGoogleServiceKey(
+                                bucketGoogleServiceKey
+                              ),
+                              null,
+                              2
+                            )}
+                          </code>
+                        </pre>
+                      )}
+                    </>
+                  )}
+                  <label htmlFor="aws_s3_tags">
+                    {bucketVendor === BUCKET_VENDOR_AWS
+                      ? "S3"
+                      : bucketVendor === BUCKET_VENDOR_GOOGLE
+                      ? "Google Cloud Storage"
+                      : ""}{" "}
+                    Tags
+                  </label>
+                  {hasLength(bucketTags) &&
+                    bucketTags.map((b, i) => (
+                      <div key={`s3_tags_${i}`} className="bucket_tag">
+                        <div>
+                          <div>
+                            <input
+                              id={`bucket_tag_name_${i}`}
+                              name={`bucket_tag_name_${i}`}
+                              type="text"
+                              placeholder="Name"
+                              required
+                              value={b.Key}
+                              onChange={(e) => {
+                                updateBucketTags(i, "Key", e.target.value);
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <input
+                              id={`bucket_tag_value_${i}`}
+                              name={`bucket_tag_value_${i}`}
+                              type="text"
+                              placeholder="Value"
+                              required
+                              value={b.Value}
+                              onChange={(e) => {
+                                updateBucketTags(i, "Value", e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          className="btnty"
+                          title="Delete Aws Tag"
+                          type="button"
+                          onClick={() => {
+                            setBucketTags(
+                              bucketTags.filter((g2, i2) => i2 !== i)
+                            );
+                          }}
+                        >
+                          <Icon>
+                            <Icons.Trash2 />
+                          </Icon>
+                        </button>
+                      </div>
+                    ))}
+                  <ButtonGroup left>
+                    <button
+                      className="btnty"
+                      type="button"
+                      onClick={addBucketTag}
+                      title="Add S3 Tags"
+                    >
+                      <Icon subStyle="teal">
+                        <Icons.Plus />
+                      </Icon>
+                    </button>
+                  </ButtonGroup>
+                  <ButtonGroup left>
+                    <Button
+                      onClick={handleTestBucketCredential}
+                      small
+                      disabled={
+                        !bucketName ||
+                        (bucketVendor === BUCKET_VENDOR_AWS &&
+                          (!bucketAccessKeyId || !bucketSecretAccessKey)) ||
+                        (bucketVendor === BUCKET_VENDOR_GOOGLE &&
+                          !bucketGoogleServiceKey)
+                      }
+                    >
+                      Test
+                    </Button>
+                  </ButtonGroup>
                   <label htmlFor="record_all_call" className="chk">
                     <input
                       id="record_all_call"
@@ -951,11 +1051,7 @@ export const AccountForm = ({
                       onChange={(e) => setRecordAllCalls(e.target.checked)}
                       checked={recordAllCalls}
                     />
-                    <div></div>
-                    <Tooltip
-                      text="You can also record calls only to specific applications"
-                      subStyle="info"
-                    >
+                    <Tooltip text="You can also record calls only to specific applications">
                       Record all calls for this account
                     </Tooltip>
                   </label>
