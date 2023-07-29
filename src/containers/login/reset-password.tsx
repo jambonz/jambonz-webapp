@@ -28,12 +28,6 @@ export const ResetPassword = () => {
       setMessage("The password must be at least 7 characters long.");
       return;
     }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) {
-      setMessage(
-        "The password must include one special character (such as @, $, !, %, *, ?, &)."
-      );
-      return;
-    }
 
     if (!/[a-zA-Z]/.test(newPassword)) {
       setMessage("Password must contain a letter.");
