@@ -22,7 +22,7 @@ interface JambonzWindowObject {
   DISABLE_CALL_RECORDING: string;
   GITHUB_CLIENT_ID: string;
   GOOGLE_CLIENT_ID: string;
-  GOOGLE_REDIRECT_URI: string;
+  BASE_URL: string;
   DEFAULT_SERVICE_PROVIDER_SID: string;
   STRIPE_PUBLISHABLE_KEY: string;
 }
@@ -76,9 +76,8 @@ export const DEFAULT_SERVICE_PROVIDER_SID: string =
 export const GITHUB_CLIENT_ID: string =
   window.JAMBONZ?.GITHUB_CLIENT_ID || import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
 
-export const GOOGLE_REDIRECT_URI: string =
-  window.JAMBONZ?.GOOGLE_REDIRECT_URI ||
-  import.meta.env.VITE_APP_GOOGLE_REDIRECT_URI;
+export const BASE_URL: string =
+  window.JAMBONZ?.BASE_URL || import.meta.env.VITE_APP_BASE_URL;
 
 export const GOOGLE_CLIENT_ID: string =
   window.JAMBONZ?.GOOGLE_CLIENT_ID || import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;

@@ -1,7 +1,7 @@
 import {
   GITHUB_CLIENT_ID,
   GOOGLE_CLIENT_ID,
-  GOOGLE_REDIRECT_URI,
+  BASE_URL,
 } from "src/api/constants";
 
 export const getGithubOauthUrl = (state: string) => {
@@ -9,7 +9,7 @@ export const getGithubOauthUrl = (state: string) => {
 };
 
 export const getGoogleOauthUrl = (state: string) => {
-  return `https://accounts.google.com/o/oauth2/v2/auth?scope=email+profile&access_type=offline&include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${GOOGLE_REDIRECT_URI}&client_id=${GOOGLE_CLIENT_ID}`;
+  return `https://accounts.google.com/o/oauth2/v2/auth?scope=email+profile&access_type=offline&include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${BASE_URL}/oauth-callback/google&client_id=${GOOGLE_CLIENT_ID}`;
 };
 
 const length = 6;

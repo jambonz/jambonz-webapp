@@ -5,7 +5,7 @@ import {
   DEFAULT_SERVICE_PROVIDER_SID,
   GITHUB_CLIENT_ID,
   GOOGLE_CLIENT_ID,
-  GOOGLE_REDIRECT_URI,
+  BASE_URL,
 } from "src/api/constants";
 import { Spinner } from "src/components";
 import { setToken } from "src/router/auth";
@@ -48,10 +48,10 @@ export const OauthCallback = () => {
 
     if (provider === "github") {
       oauth2_client_id = GITHUB_CLIENT_ID;
-      oauth2_redirect_uri = GOOGLE_REDIRECT_URI;
+      oauth2_redirect_uri = `${BASE_URL}/oauth-callback/github`;
     } else if (provider === "google") {
       oauth2_client_id = GOOGLE_CLIENT_ID;
-      oauth2_redirect_uri = GOOGLE_REDIRECT_URI;
+      oauth2_redirect_uri = `${BASE_URL}/oauth-callback/google`;
     }
 
     removeOauthState();
