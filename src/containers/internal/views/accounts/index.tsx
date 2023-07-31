@@ -45,7 +45,7 @@ export const Accounts = () => {
         return;
       }
 
-      deleteAccount(account.account_sid)
+      deleteAccount(account.account_sid, {})
         .then(() => {
           refetch();
           setAccount(null);

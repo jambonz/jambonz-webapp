@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { P, Button, ButtonGroup, MS, Icon } from "@jambonz/ui-kit";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { P, Button, ButtonGroup, MS, Icon, H1 } from "@jambonz/ui-kit";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -12,6 +12,7 @@ import {
   deleteAccountLimit,
   deleteAccountTtsCache,
   postAccountBucketCredentialTest,
+  deleteAccount,
 } from "src/api";
 import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
 import {
@@ -30,14 +31,17 @@ import {
   BUCKET_VENDOR_GOOGLE,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
+  CurrencySymbol,
   DEFAULT_WEBHOOK,
   DISABLE_CALL_RECORDING,
+  ENABLE_HOSTED_SYSTEM,
+  PlanType,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
 } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
-import type {
+import {
   WebHook,
   Account,
   Application,
@@ -47,11 +51,19 @@ import type {
   TtsCache,
   BucketCredential,
   AwsTag,
+  Invoice,
+  CurrentUserData,
+  Carrier,
+  SpeechCredential,
 } from "src/api/types";
 import { hasLength, hasValue } from "src/utils";
 import { useRegionVendors } from "src/vendor";
 import { GoogleServiceKey } from "src/vendor/types";
 import { getObscuredGoogleServiceKey } from "../speech-services/utils";
+import dayjs from "dayjs";
+import { EditBoard } from "src/components/editboard";
+import { ModalLoader } from "src/components/modal";
+import { useAuth } from "src/router/auth";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -66,14 +78,22 @@ export const AccountForm = ({
   account,
   ttsCache,
 }: AccountFormProps) => {
+  const params = useParams();
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
+  const [invoice] = useApiData<Invoice>("Invoices");
+  const [userData] = useApiData<CurrentUserData>("Users/me");
+  const [userCarriers] = useApiData<Carrier[]>(`VoipCarriers`);
+  const [userSpeechs] = useApiData<SpeechCredential[]>(
+    `/Accounts/${params.account_sid}/SpeechCredentials`
+  );
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
   const [appId, setAppId] = useState("");
   const [recId, setRecId] = useState("");
+  const { signout } = useAuth();
   const [regHook, setRegHook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [queueHook, setQueueHook] = useState<WebHook>(DEFAULT_WEBHOOK);
   const [modal, setModal] = useState(false);
@@ -100,6 +120,15 @@ export const AccountForm = ({
   const [tmpBucketGoogleServiceKey, setTmpBucketGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
   const regions = useRegionVendors();
+  const [subscriptionDescription, setSubscriptionDescription] = useState("");
+  const [isDeleteAccount, setIsDeleteAccount] = useState(false);
+  const [requiresPassword, setRequiresPassword] = useState(true);
+  const [deleteAccountPasswd, setDeleteAccountPasswd] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [isDisableDeleteAccountButton, setIsDisableDeleteAccountButton] =
+    useState(false);
+  const deleteMessageRef = useRef<HTMLInputElement | null>(null);
+  const [isShowModalLoader, setIsShowModalLoader] = useState(false);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -134,6 +163,49 @@ export const AccountForm = ({
       stateSet: setRecId,
     },
   ];
+
+  useEffect(() => {
+    if (
+      isDeleteAccount &&
+      deleteMessageRef.current &&
+      deleteMessageRef.current !== document.activeElement
+    ) {
+      deleteMessageRef.current.focus();
+    }
+  }, [isDeleteAccount]);
+
+  const handleDeleteAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (deleteMessage !== "delete my account") {
+      toastError(
+        "You must type the delete message correctly in order to delete your account."
+      );
+      if (
+        deleteMessageRef.current &&
+        deleteMessageRef.current !== document.activeElement
+      ) {
+        deleteMessageRef.current.focus();
+      }
+      return;
+    }
+    setIsDisableDeleteAccountButton(true);
+    setIsShowModalLoader(true);
+
+    deleteAccount(userData?.account?.account_sid || "", {
+      password: deleteAccountPasswd,
+    })
+      .then(() => {
+        signout();
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      })
+      .finally(() => {
+        setIsDisableDeleteAccountButton(false);
+        setIsShowModalLoader(false);
+      });
+  };
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,7 +365,7 @@ export const AccountForm = ({
     if (account && account.data) {
       putAccount(account.data.account_sid, {
         name,
-        sip_realm: realm || null,
+        ...(!ENABLE_HOSTED_SYSTEM && { sip_realm: realm || null }),
         webhook_secret: account.data.webhook_secret,
         siprec_hook_sid: recId || null,
         queue_event_hook: queueHook || account.data.queue_event_hook,
@@ -448,6 +520,69 @@ export const AccountForm = ({
     }
   }, [account]);
 
+  if (ENABLE_HOSTED_SYSTEM) {
+    useEffect(() => {
+      if (userData && userData.user) {
+        setRequiresPassword(userData.user.provider === "local");
+      }
+      if (userData && userData.account) {
+        const pType = userData.account.plan_type;
+        const { products } = userData.subscription || {};
+        const registeredDeviceRecord = products
+          ? products.find((item) => item.name === "registered device") || {
+              quantity: 0,
+            }
+          : { quantity: 0 };
+        const callSessionRecord = products
+          ? products.find(
+              (item) => item.name === "concurrent call session"
+            ) || { quantity: 0 }
+          : { quantity: 0 };
+        const quantity =
+          (userData.account.device_to_call_ratio || 0) *
+            (callSessionRecord.quantity || 0) +
+          (registeredDeviceRecord.quantity || 0);
+        const { trial_end_date } = userData.account || {};
+        switch (pType) {
+          case PlanType.TRIAL:
+            setSubscriptionDescription(
+              `You are currently on the Free plan (trial period). You are limited to ${
+                callSessionRecord.quantity
+              } simultaneous calls and ${quantity} registered devices.${
+                trial_end_date
+                  ? ` Your free trial will end on ${dayjs(
+                      trial_end_date
+                    ).format("MMM DD, YYYY")}.`
+                  : ""
+              }`
+            );
+            break;
+          case PlanType.PAID:
+            if (invoice) {
+              setSubscriptionDescription(
+                `Your paid subscription includes capacity for ${
+                  callSessionRecord.quantity
+                } simultaneous calls, and ${quantity} registered devices. You are billed ${
+                  CurrencySymbol[invoice.currency || "usd"]
+                }${(invoice.total || 0) / 100} on ${dayjs
+                  .unix(Number(invoice.next_payment_attempt))
+                  .format("MMM DD, YYYY")}.`
+              );
+            }
+
+            break;
+          case PlanType.FREE:
+            setSubscriptionDescription(
+              `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`
+            );
+            break;
+        }
+        // Make sure Account page is alway scroll to top to see subscription
+        window.scrollTo(0, 0);
+      }
+    }, [userData, invoice]);
+  }
+
   const updateBucketTags = (
     index: number,
     key: string,
@@ -470,6 +605,164 @@ export const AccountForm = ({
 
   return (
     <>
+      {ENABLE_HOSTED_SYSTEM && (
+        <>
+          <Section>
+            <H1 className="h5">Your Subscription</H1>
+            <P>{subscriptionDescription}</P>
+            <br />
+
+            <div className="mast">
+              <ButtonGroup left>
+                <Button
+                  type="button"
+                  mainStyle="hollow"
+                  subStyle="grey"
+                  small
+                  onClick={() => setIsDeleteAccount(true)}
+                >
+                  Delete Account
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup right>
+                {userData?.account?.plan_type === PlanType.PAID ? (
+                  <>
+                    <Button
+                      small
+                      as={Link}
+                      to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/manage-payment`}
+                    >
+                      Manage Payment Info
+                    </Button>
+                    <Button
+                      small
+                      as={Link}
+                      to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/modify-subscription`}
+                    >
+                      Modify My Subscription
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    as={Link}
+                    to={`${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/subscription`}
+                  >
+                    Upgrade to a Paid Subscription
+                  </Button>
+                )}
+              </ButtonGroup>
+            </div>
+          </Section>
+          {isDeleteAccount && (
+            <Section slim>
+              <form
+                className="form form--internal"
+                onSubmit={handleDeleteAccount}
+              >
+                <fieldset>
+                  <H1 className="h4">Delete Account</H1>
+                  <P>
+                    <span>
+                      <strong>Warning!</strong>
+                    </span>{" "}
+                    This will permantly delete all of your data from our
+                    database. You will not be able to restore your account. You
+                    must {requiresPassword && "provide your password and"} type
+                    “delete my account” into the Delete Message field.
+                  </P>
+                </fieldset>
+                <fieldset>
+                  {requiresPassword && (
+                    <>
+                      <label htmlFor="password">
+                        Password<span>*</span>
+                      </label>
+                      <Passwd
+                        id="delete_account_password"
+                        name="delete_account_password"
+                        value={deleteAccountPasswd}
+                        placeholder="Password"
+                        required
+                        onChange={(e) => {
+                          setDeleteAccountPasswd(e.target.value);
+                        }}
+                      />
+                    </>
+                  )}
+                  <label htmlFor="deleteMessage">
+                    Delete Message<span>*</span>
+                  </label>
+                  <input
+                    id="deleteMessage"
+                    required
+                    type="text"
+                    name="deleteMessage"
+                    placeholder="Delete Message"
+                    value={deleteMessage}
+                    ref={deleteMessageRef}
+                    onChange={(e) => setDeleteMessage(e.target.value)}
+                  />
+                </fieldset>
+                <fieldset>
+                  <ButtonGroup right>
+                    <Button
+                      subStyle="grey"
+                      type="button"
+                      onClick={() => setIsDeleteAccount(false)}
+                      small
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      disabled={isDisableDeleteAccountButton}
+                      small
+                    >
+                      PERMANENTLY DELETE MY ACCOUNT
+                    </Button>
+                  </ButtonGroup>
+                </fieldset>
+              </form>
+            </Section>
+          )}
+          {(!userCarriers ||
+            userCarriers.length === 0 ||
+            !userSpeechs ||
+            userSpeechs.length === 0) && (
+            <Section>
+              <H1 className="h5">Finish Account Setup</H1>
+              <H1 className="h6">To do</H1>
+              {(!userCarriers || userCarriers.length === 0) && (
+                <>
+                  <br />
+                  <div>
+                    <span>
+                      <Icons.Edit />
+                      Add a <Link to="/internal/carriers">carrier</Link> to
+                      route calls
+                    </span>
+                  </div>
+                </>
+              )}
+              {(!userSpeechs || userSpeechs.length === 0) && (
+                <>
+                  <br />
+                  <div>
+                    <span>
+                      <Icons.Edit />
+                      Add <Link to="/internal/speech-services">
+                        speech
+                      </Link>{" "}
+                      credentials for text-to-speech and speech-to-text
+                    </span>
+                  </div>
+                </>
+              )}
+            </Section>
+          )}
+        </>
+      )}
       <Section slim>
         <form className="form form--internal" onSubmit={handleSubmit}>
           <fieldset>
@@ -499,22 +792,34 @@ export const AccountForm = ({
               onChange={(e) => setName(e.target.value)}
             />
           </fieldset>
-          <fieldset>
-            <LocalLimits
-              data={limits && limits.data}
-              limits={[localLimits, setLocalLimits]}
-            />
-          </fieldset>
+          {!ENABLE_HOSTED_SYSTEM && (
+            <fieldset>
+              <LocalLimits
+                data={limits && limits.data}
+                limits={[localLimits, setLocalLimits]}
+              />
+            </fieldset>
+          )}
           <fieldset>
             <label htmlFor="sip_realm">SIP realm</label>
-            <input
-              id="sip_realm"
-              type="text"
-              name="sip_realm"
-              placeholder="The domain name that SIP devices will register with"
-              value={realm}
-              onChange={(e) => setRealm(e.target.value)}
-            />
+            {ENABLE_HOSTED_SYSTEM ? (
+              <EditBoard
+                id="sip_realm"
+                name="sip_realm"
+                text={realm}
+                title="Change SIP Realm"
+                path={`/internal/accounts/${user?.account_sid}/sip-realm/edit`}
+              />
+            ) : (
+              <input
+                id="sip_realm"
+                type="text"
+                name="sip_realm"
+                placeholder="The domain name that SIP devices will register with"
+                value={realm}
+                onChange={(e) => setRealm(e.target.value)}
+              />
+            )}
           </fieldset>
           {account && account.data && (
             <fieldset>
@@ -909,14 +1214,17 @@ export const AccountForm = ({
           )}
           <fieldset>
             <ButtonGroup left>
-              <Button
-                small
-                subStyle="grey"
-                as={Link}
-                to={ROUTE_INTERNAL_ACCOUNTS}
-              >
-                Cancel
-              </Button>
+              {user?.scope != USER_ACCOUNT && (
+                <Button
+                  small
+                  subStyle="grey"
+                  as={Link}
+                  to={ROUTE_INTERNAL_ACCOUNTS}
+                >
+                  Cancel
+                </Button>
+              )}
+
               <Button type="submit" small>
                 Save
               </Button>
@@ -939,6 +1247,14 @@ export const AccountForm = ({
         >
           <P>Are you sure you want to clean TTS cache for this account?</P>
         </Modal>
+      )}
+      {isShowModalLoader && (
+        <ModalLoader>
+          <P>
+            Your requested changes are being processed. Please do not leave the
+            page or hit the back button until complete.
+          </P>
+        </ModalLoader>
       )}
     </>
   );

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, H1 } from "@jambonz/ui-kit";
 import { useLocation, Navigate, Link } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
-import { useAuth } from "src/router/auth";
+import { toastError, toastSuccess } from "src/store";
+import { getToken, parseJwt, useAuth } from "src/router/auth";
 import {
   SESS_FLASH_MSG,
   SESS_OLD_PASSWORD,
@@ -13,15 +13,26 @@ import { Passwd, Message } from "src/components/forms";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_CREATE_PASSWORD,
-  ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_FORGOT_PASSWORD,
+  ROUTE_REGISTER,
 } from "src/router/routes";
-import { USER_ACCOUNT, ENABLE_FORGOT_PASSWORD } from "src/api/constants";
+import {
+  USER_ACCOUNT,
+  ENABLE_FORGOT_PASSWORD,
+  ENABLE_HOSTED_SYSTEM,
+} from "src/api/constants";
+import { Icons } from "src/components";
+import { v4 as uuid } from "uuid";
+import { setLocationBeforeOauth, setOauthState } from "src/store/localStore";
+import { getGithubOauthUrl, getGoogleOauthUrl } from "./utils";
+import { UserData } from "src/store/types";
 
 export const Login = () => {
+  const state = uuid();
+  setOauthState(state);
+  setLocationBeforeOauth("/sign-in");
   const { signin, authorized } = useAuth();
   const location = useLocation();
-  const user = useSelectState("user");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -56,13 +67,13 @@ export const Login = () => {
         />
       );
     }
-
+    const userData: UserData = parseJwt(getToken());
     return (
       <Navigate
         to={
-          user?.scope !== USER_ACCOUNT
+          userData?.scope !== USER_ACCOUNT
             ? ROUTE_INTERNAL_ACCOUNTS
-            : ROUTE_INTERNAL_APPLICATIONS
+            : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
         }
         state={{ from: location }}
         replace
@@ -91,12 +102,35 @@ export const Login = () => {
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
-        {ENABLE_FORGOT_PASSWORD && (
-          <div>
-            <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
-              <p>Forgot Password</p>
-            </Link>
+        {(ENABLE_FORGOT_PASSWORD || ENABLE_HOSTED_SYSTEM) && (
+          <div className={ENABLE_HOSTED_SYSTEM ? "mast" : ""}>
+            {ENABLE_HOSTED_SYSTEM && (
+              <Link to={ROUTE_REGISTER} title="Forgot Password">
+                <p>Register</p>
+              </Link>
+            )}
+            {ENABLE_FORGOT_PASSWORD && (
+              <Link to={ROUTE_FORGOT_PASSWORD} title="Forgot Password">
+                <p>Forgot Password</p>
+              </Link>
+            )}
           </div>
+        )}
+        {ENABLE_HOSTED_SYSTEM && (
+          <>
+            <a href={getGoogleOauthUrl(state)} className="btn btn--hollow">
+              <div className="mast">
+                <Icons.Youtube />
+                <span>Sign In With Google</span>
+              </div>
+            </a>
+            <a href={getGithubOauthUrl(state)} className="btn btn--hollow">
+              <div className="mast">
+                <Icons.GitHub />
+                <span>Sign In With Github</span>
+              </div>
+            </a>
+          </>
         )}
       </form>
     </>

@@ -34,7 +34,6 @@
       padding-right: ui-vars.$px02;
     }
   }
-
   &__empty {
     display: flex;
   }
@@ -102,6 +101,20 @@
   &--col3--users {
     .grid__row {
       grid-template-columns: [col] 40% [col] 58% [col] 2%;
+      grid-template-rows: [row] auto [row] auto [row] [row] auto;
+      display: grid;
+      justify-content: space-between;
+
+      > div:last-child {
+        text-align: left;
+        padding-right: 0;
+      }
+    }
+  }
+
+  &--col4--users {
+    .grid__row {
+      grid-template-columns: [col] 30% [col] 40% [col] 25% [col] 5%;
       grid-template-rows: [row] auto [row] auto [row] [row] auto;
       display: grid;
       justify-content: space-between;

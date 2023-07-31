@@ -1,18 +1,32 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Icons } from "src/components";
-import { ROUTE_INTERNAL_USERS } from "src/router/routes";
+import {
+  ROUTE_INTERNAL_USERS,
+  ROUTE_REGISTER_SUB_DOMAIN,
+} from "src/router/routes";
 import { useApiData } from "src/api";
 import { useSelectState } from "src/store";
 
 import type { CurrentUserData } from "src/api/types";
 
 import "./styles.scss";
+import { ENABLE_HOSTED_SYSTEM } from "src/api/constants";
+import { setRootDomain } from "src/store/localStore";
 
 export const UserMe = () => {
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If hosted platform is enabled, the account should have sip realm
+    if (ENABLE_HOSTED_SYSTEM && userData && !userData.account?.sip_realm) {
+      setRootDomain(userData?.account?.root_domain || "");
+      navigate(ROUTE_REGISTER_SUB_DOMAIN);
+    }
+  }, [userData]);
 
   return (
     <div className="user">

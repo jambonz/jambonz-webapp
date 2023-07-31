@@ -1,4 +1,5 @@
 import type {
+  Currency,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -17,7 +18,13 @@ interface JambonzWindowObject {
   DISABLE_JAEGER_TRACING: string;
   DISABLE_CUSTOM_SPEECH: string;
   ENABLE_FORGOT_PASSWORD: string;
+  ENABLE_HOSTED_SYSTEM: string;
   DISABLE_CALL_RECORDING: string;
+  GITHUB_CLIENT_ID: string;
+  GOOGLE_CLIENT_ID: string;
+  BASE_URL: string;
+  DEFAULT_SERVICE_PROVIDER_SID: string;
+  STRIPE_PUBLISHABLE_KEY: string;
 }
 
 declare global {
@@ -41,7 +48,12 @@ export const DISABLE_CUSTOM_SPEECH: boolean =
 /** Enable Forgot Password */
 export const ENABLE_FORGOT_PASSWORD: boolean =
   window.JAMBONZ?.ENABLE_FORGOT_PASSWORD === "true" ||
-  JSON.parse(import.meta.env.VITE_ENABLE_FORGOT_PASSWORD || "false");
+  JSON.parse(import.meta.env.VITE_APP_ENABLE_FORGOT_PASSWORD || "false");
+
+/** Enable Cloud version */
+export const ENABLE_HOSTED_SYSTEM: boolean =
+  window.JAMBONZ?.ENABLE_HOSTED_SYSTEM === "true" ||
+  JSON.parse(import.meta.env.VITE_APP_ENABLE_HOSTED_SYSTEM || "false");
 /** Disable Lcr */
 export const DISABLE_LCR: boolean =
   window.JAMBONZ?.DISABLE_LCR === "true" ||
@@ -56,6 +68,23 @@ export const DISABLE_JAEGER_TRACING: boolean =
 export const DISABLE_CALL_RECORDING: boolean =
   window.JAMBONZ?.DISABLE_CALL_RECORDING === "true" ||
   JSON.parse(import.meta.env.VITE_APP_DISABLE_CALL_RECORDING || "false");
+
+export const DEFAULT_SERVICE_PROVIDER_SID: string =
+  window.JAMBONZ?.DEFAULT_SERVICE_PROVIDER_SID ||
+  import.meta.env.VITE_APP_DEFAULT_SERVICE_PROVIDER_SID;
+
+export const GITHUB_CLIENT_ID: string =
+  window.JAMBONZ?.GITHUB_CLIENT_ID || import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
+
+export const BASE_URL: string =
+  window.JAMBONZ?.BASE_URL || import.meta.env.VITE_APP_BASE_URL;
+
+export const GOOGLE_CLIENT_ID: string =
+  window.JAMBONZ?.GOOGLE_CLIENT_ID || import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
+
+export const STRIPE_PUBLISHABLE_KEY: string =
+  window.JAMBONZ?.STRIPE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY;
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
@@ -249,6 +278,16 @@ export const DEFAULT_PSWD_SETTINGS: PasswordSettings = {
   require_special_character: 0,
 };
 
+export const PlanType = {
+  PAID: "paid",
+  TRIAL: "trial",
+  FREE: "free",
+};
+
+export const CurrencySymbol: Currency = {
+  usd: "$",
+};
+
 /** User scope values values */
 export const USER_ADMIN = "admin";
 export const USER_SP = "service_provider";
@@ -262,6 +301,9 @@ export const CRED_NOT_TESTED = "not tested";
 /** Voip Carrier Register result status values */
 export const CARRIER_REG_OK = "ok";
 export const CARRIER_REG_FAIL = "fail";
+
+export const PRIVACY_POLICY = "https://jambonz.org/privacy";
+export const TERMS_OF_SERVICE = "https://jambonz.org/terms";
 
 /** API base paths */
 export const API_LOGIN = `${API_BASE_URL}/login`;
@@ -285,3 +327,10 @@ export const API_LCR_ROUTES = `${API_BASE_URL}/LcrRoutes`;
 export const API_LCR_CARRIER_SET_ENTRIES = `${API_BASE_URL}/LcrCarrierSetEntries`;
 export const API_TTS_CACHE = `${API_BASE_URL}/TtsCache`;
 export const API_CLIENTS = `${API_BASE_URL}/Clients`;
+export const API_REGISTER = `${API_BASE_URL}/register`;
+export const API_ACTIVATION_CODE = `${API_BASE_URL}/ActivationCode`;
+export const API_AVAILABILITY = `${API_BASE_URL}/Availability`;
+export const API_PRICE = `${API_BASE_URL}/Prices`;
+export const API_SUBSCRIPTIONS = `${API_BASE_URL}/Subscriptions`;
+export const API_CHANGE_PASSWORD = `${API_BASE_URL}/change-password`;
+export const API_SIGNIN = `${API_BASE_URL}/signin`;

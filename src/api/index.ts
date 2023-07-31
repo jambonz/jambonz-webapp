@@ -26,6 +26,13 @@ import {
   API_LCRS,
   API_TTS_CACHE,
   API_CLIENTS,
+  API_REGISTER,
+  API_ACTIVATION_CODE,
+  API_AVAILABILITY,
+  API_PRICE,
+  API_SUBSCRIPTIONS,
+  API_CHANGE_PASSWORD,
+  API_SIGNIN,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -74,8 +81,17 @@ import type {
   BucketCredential,
   BucketCredentialTestResult,
   Client,
+  RegisterRequest,
+  RegisterResponse,
+  ActivationCode,
+  CurrentUserData,
+  PriceInfo,
+  Subscription,
+  DeleteAccount,
+  ChangePassword,
+  SignIn,
 } from "./types";
-import { StatusCodes } from "./types";
+import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
 
 /** Wrap all requests to normalize response handling */
@@ -163,7 +179,7 @@ const getAuthHeaders = () => {
 
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 };
 
@@ -236,6 +252,17 @@ export const deleteFetch = <Type>(url: string) => {
   return fetchTransport<Type>(url, {
     method: "DELETE",
     headers: getAuthHeaders(),
+  });
+};
+
+export const deleteFetchWithPayload = <Type, Payload>(
+  url: string,
+  payload: Payload
+) => {
+  return fetchTransport<Type>(url, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
   });
 };
 
@@ -413,6 +440,37 @@ export const postLcrCarrierSetEntry = (
 export const postClient = (payload: Partial<Client>) => {
   return postFetch<SidResponse, Partial<Client>>(API_CLIENTS, payload);
 };
+
+export const postRegister = (payload: Partial<RegisterRequest>) => {
+  return postFetch<RegisterResponse, Partial<RegisterRequest>>(
+    API_REGISTER,
+    payload
+  );
+};
+
+export const postSipRealms = (accountSid: string, domain: string) => {
+  return postFetch<EmptyResponse>(
+    `${API_ACCOUNTS}/${accountSid}/SipRealms/${domain}`
+  );
+};
+
+export const postSubscriptions = (payload: Partial<Subscription>) => {
+  return postFetch<Subscription, Partial<Subscription>>(
+    API_SUBSCRIPTIONS,
+    payload
+  );
+};
+
+export const postChangepassword = (payload: Partial<ChangePassword>) => {
+  return postFetch<EmptyResponse, Partial<ChangePassword>>(
+    API_CHANGE_PASSWORD,
+    payload
+  );
+};
+
+export const postSignIn = (payload: Partial<SignIn>) => {
+  return postFetch<SignIn, Partial<SignIn>>(API_SIGNIN, payload);
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -532,6 +590,16 @@ export const putClient = (sid: string, payload: Partial<Client>) => {
     payload
   );
 };
+
+export const putActivationCode = (
+  code: string,
+  payload: Partial<ActivationCode>
+) => {
+  return putFetch<EmptyResponse, Partial<ActivationCode>>(
+    `${API_ACTIVATION_CODE}/${code}`,
+    payload
+  );
+};
 /** Named wrappers for `deleteFetch` */
 
 export const deleteUser = (sid: string) => {
@@ -546,8 +614,11 @@ export const deleteApiKey = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_API_KEYS}/${sid}`);
 };
 
-export const deleteAccount = (sid: string) => {
-  return deleteFetch<EmptyResponse>(`${API_ACCOUNTS}/${sid}`);
+export const deleteAccount = (sid: string, payload: Partial<DeleteAccount>) => {
+  return deleteFetchWithPayload<EmptyResponse, Partial<DeleteAccount>>(
+    `${API_ACCOUNTS}/${sid}`,
+    payload
+  );
 };
 
 export const deleteApplication = (sid: string) => {
@@ -660,7 +731,17 @@ export const getClient = (sid: string) => {
   return getFetch<Client[]>(`${API_CLIENTS}/${sid}`);
 };
 
+export const getAvailability = (domain: string) => {
+  return getFetch<Availability>(
+    `${API_AVAILABILITY}?type=subdomain&value=${domain}`
+  );
+};
+
 /** Wrappers for APIs that can have a mock dev server response */
+
+export const getMe = () => {
+  return getFetch<CurrentUserData>(`${API_USERS}/me`);
+};
 
 export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
   const qryStr = getQuery<Partial<CallQuery>>(query);
@@ -727,6 +808,10 @@ export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
       ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts?${qryStr}`
       : `${API_ACCOUNTS}/${sid}/Alerts?${qryStr}`
   );
+};
+
+export const getPrice = () => {
+  return getFetch<PriceInfo[]>(API_PRICE);
 };
 
 /** Hooks for components to fetch data with refetch method */

@@ -48,6 +48,8 @@ import {
   ChevronsRight,
   Download,
   Smartphone,
+  Youtube,
+  Mail,
 } from "react-feather";
 
 import type { Icon } from "react-feather";
@@ -106,4 +108,6 @@ export const Icons: IconMap = {
   ChevronsRight,
   Download,
   Smartphone,
+  Youtube,
+  Mail,
 };

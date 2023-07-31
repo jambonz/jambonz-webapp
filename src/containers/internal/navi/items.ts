@@ -18,7 +18,10 @@ import { Scope, UserData } from "src/store/types";
 import type { Icon } from "react-feather";
 import type { ACL } from "src/store/types";
 import { Lcr } from "src/api/types";
-import { DISABLE_LCR } from "src/api/constants";
+import {
+  DISABLE_LCR,
+  ENABLE_HOSTED_SYSTEM as ENABLE_HOSTED_SYSTEM,
+} from "src/api/constants";
 
 export interface NaviItem {
   label: string;
@@ -30,11 +33,17 @@ export interface NaviItem {
 }
 
 export const naviTop: NaviItem[] = [
-  {
-    label: "Users",
-    icon: Icons.UserCheck,
-    route: () => ROUTE_INTERNAL_USERS,
-  },
+  // User is not allowed in hosted app
+  ...(!ENABLE_HOSTED_SYSTEM
+    ? [
+        {
+          label: "Users",
+          icon: Icons.UserCheck,
+          route: () => ROUTE_INTERNAL_USERS,
+        },
+      ]
+    : []),
+
   {
     label: "Settings",
     icon: Icons.Settings,

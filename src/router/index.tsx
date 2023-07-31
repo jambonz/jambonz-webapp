@@ -6,7 +6,10 @@ import { useSelectState } from "src/store";
 import { Login, Layout as LoginLayout } from "src/containers/login";
 import { Layout as InternalLayout } from "src/containers/internal";
 import { NotFound } from "src/containers/notfound";
-import { ENABLE_FORGOT_PASSWORD } from "src/api/constants";
+import {
+  ENABLE_HOSTED_SYSTEM,
+  ENABLE_FORGOT_PASSWORD,
+} from "src/api/constants";
 
 /** Login */
 import CreatePassword from "src/containers/login/create-password";
@@ -45,6 +48,15 @@ import LcrsEdit from "src/containers/internal/views/least-cost-routing/edit";
 import Clients from "src/containers/internal/views/clients";
 import ClientsAdd from "src/containers/internal/views/clients/add";
 import ClientsEdit from "src/containers/internal/views/clients/edit";
+import OauthCallback from "src/containers/login/oauth-callback";
+import Register from "src/containers/login/register";
+import RegisterEmail from "src/containers/login/register-email";
+import EmailVerify from "src/containers/login/register-verify-email";
+import RegisterChooseSubdomain from "src/containers/login/sub-domain";
+import Subscription from "src/containers/internal/views/accounts/subscription";
+import ManagePayment from "src/containers/internal/views/accounts/manage-payment";
+import EditSipRealm from "src/containers/internal/views/accounts/edit-sip-realm";
+import ResetPassword from "src/containers/login/reset-password";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -65,9 +77,29 @@ export const Router = () => {
             }
           />
           {ENABLE_FORGOT_PASSWORD && (
-            <Route path="forgot-password" element={<ForgotPassword />} />
+            <>
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:id" element={<ResetPassword />} />
+            </>
           )}
-
+          {ENABLE_HOSTED_SYSTEM && (
+            <>
+              <Route path="register" element={<Register />} />
+              <Route path="register/email" element={<RegisterEmail />} />
+              <Route
+                path="register/email/verify-your-email"
+                element={<EmailVerify />}
+              />
+              <Route
+                path="register/choose-a-subdomain"
+                element={<RegisterChooseSubdomain />}
+              />
+              <Route
+                path="oauth-callback/:provider"
+                element={<OauthCallback />}
+              />
+            </>
+          )}
           {/* 404 page not found */}
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -90,6 +122,26 @@ export const Router = () => {
                     path="accounts/:account_sid/edit"
                     element={<AccountEdit />}
                   />
+                  {ENABLE_HOSTED_SYSTEM && (
+                    <>
+                      <Route
+                        path="accounts/:account_sid/subscription"
+                        element={<Subscription />}
+                      />
+                      <Route
+                        path="accounts/:account_sid/manage-payment"
+                        element={<ManagePayment />}
+                      />
+                      <Route
+                        path="accounts/:account_sid/modify-subscription"
+                        element={<Subscription />}
+                      />
+                      <Route
+                        path="accounts/:account_sid/sip-realm/edit"
+                        element={<EditSipRealm />}
+                      />
+                    </>
+                  )}
                   <Route path="applications" element={<Applications />} />
                   <Route path="applications/add" element={<ApplicationAdd />} />
                   <Route

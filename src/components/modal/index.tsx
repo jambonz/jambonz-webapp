@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Button, ButtonGroup } from "@jambonz/ui-kit";
 
 import "./styles.scss";
+import { Spinner } from "../spinner";
 
 type ModalProps = {
   disabled?: boolean;
@@ -69,6 +70,7 @@ export const ModalForm = ({
         }}
       >
         <div className="modal__stuff">{children}</div>
+
         <ButtonGroup right>
           <Button
             small
@@ -109,6 +111,40 @@ export const ModalClose = ({ children, handleClose }: CloseProps) => {
             Close
           </Button>
         </ButtonGroup>
+      </div>
+    </div>,
+    portal
+  );
+};
+
+type LoaderProps = {
+  children: React.ReactNode;
+};
+
+export const ModalLoader = ({ children }: LoaderProps) => {
+  return ReactDOM.createPortal(
+    <div className="modal" role="presentation">
+      <div
+        className="modal__box"
+        role="presentation"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="modal__stuff"
+          role="presentation"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Spinner />
+        </div>
       </div>
     </div>,
     portal

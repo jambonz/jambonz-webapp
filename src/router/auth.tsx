@@ -4,13 +4,13 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { postLogin, postLogout } from "src/api";
+import { getMe, postLogin, postLogout } from "src/api";
 import { StatusCodes } from "src/api/types";
 import {
   ROUTE_CREATE_PASSWORD,
   ROUTE_INTERNAL_ACCOUNTS,
-  ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_LOGIN,
+  ROUTE_REGISTER_SUB_DOMAIN,
 } from "./routes";
 import {
   SESS_OLD_PASSWORD,
@@ -23,8 +23,13 @@ import {
 } from "src/constants";
 
 import type { UserLogin } from "src/api/types";
-import { USER_ACCOUNT } from "src/api/constants";
+import { ENABLE_HOSTED_SYSTEM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
+import { toastError } from "src/store";
+import {
+  removeLocationBeforeOauth,
+  removeOauthState,
+} from "src/store/localStore";
 
 interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
@@ -103,7 +108,23 @@ export const useProvideAuth = (): AuthStateContext => {
             setToken(token);
             userData = parseJwt(token);
 
-            if (response.json.force_change) {
+            if (ENABLE_HOSTED_SYSTEM) {
+              getMe()
+                .then(({ json }) => {
+                  if (!json.account?.sip_realm) {
+                    navigate(ROUTE_REGISTER_SUB_DOMAIN);
+                  } else {
+                    navigate(
+                      userData.scope !== USER_ACCOUNT
+                        ? ROUTE_INTERNAL_ACCOUNTS
+                        : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
+                    );
+                  }
+                })
+                .catch((error) => {
+                  toastError(error.msg);
+                });
+            } else if (response.json.force_change) {
               sessionStorage.setItem(SESS_USER_SID, response.json.user_sid);
               sessionStorage.setItem(SESS_OLD_PASSWORD, password);
               navigate(ROUTE_CREATE_PASSWORD);
@@ -111,7 +132,7 @@ export const useProvideAuth = (): AuthStateContext => {
               navigate(
                 userData.scope !== USER_ACCOUNT
                   ? ROUTE_INTERNAL_ACCOUNTS
-                  : ROUTE_INTERNAL_APPLICATIONS
+                  : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
               );
             }
 
@@ -131,19 +152,23 @@ export const useProvideAuth = (): AuthStateContext => {
           }
 
           reject(MSG_SOMETHING_WRONG);
+        })
+        .finally(() => {
+          removeOauthState();
+          removeLocationBeforeOauth();
         });
     });
   };
 
   const signout = () => {
-    window.location.href = ROUTE_LOGIN;
     return new Promise((resolve, reject) => {
       postLogout()
         .then((response) => {
-          if (response.status === StatusCodes.OK) {
+          if (response.status === StatusCodes.NO_CONTENT) {
             localStorage.clear();
             sessionStorage.clear();
             sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+            window.location.href = ROUTE_LOGIN;
             resolve(response.json);
           }
         })
@@ -151,6 +176,7 @@ export const useProvideAuth = (): AuthStateContext => {
           localStorage.clear();
           sessionStorage.clear();
           sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
+          window.location.href = ROUTE_LOGIN;
           if (error) {
             reject(error);
           }
