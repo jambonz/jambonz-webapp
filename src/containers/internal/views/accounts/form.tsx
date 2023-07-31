@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { P, Button, ButtonGroup, MS, Icon, H1 } from "@jambonz/ui-kit";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
@@ -78,6 +78,7 @@ export const AccountForm = ({
   account,
   ttsCache,
 }: AccountFormProps) => {
+  const params = useParams();
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
@@ -86,7 +87,7 @@ export const AccountForm = ({
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [userCarriers] = useApiData<Carrier[]>(`VoipCarriers`);
   const [userSpeechs] = useApiData<SpeechCredential[]>(
-    `/Accounts/${user?.account_sid}/SpeechCredentials`
+    `/Accounts/${params.account_sid}/SpeechCredentials`
   );
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
