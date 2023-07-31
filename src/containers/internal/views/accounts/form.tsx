@@ -549,9 +549,9 @@ export const AccountForm = ({
                 callSessionRecord.quantity
               } simultaneous calls and ${quantity} registered devices.${
                 trial_end_date
-                  ? ` Your free trial will end on ${dayjs
-                      .unix(Number(trial_end_date))
-                      .format("MMM DD, YYYY")}.`
+                  ? ` Your free trial will end on ${dayjs(
+                      trial_end_date
+                    ).format("MMM DD, YYYY")}.`
                   : ""
               }`
             );
