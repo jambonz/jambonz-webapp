@@ -1,41 +1,59 @@
 import { Button, ButtonGroup, H1, MS } from "@jambonz/ui-kit";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAvailability, postSipRealms, useApiData } from "src/api";
 import { CurrentUserData } from "src/api/types";
 import { Section } from "src/components";
+import DomainInput from "src/components/domain-input";
 import { Message } from "src/components/forms";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { hasValue } from "src/utils";
 
 export const EditSipRealm = () => {
   const [name, setName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const [userData] = useApiData<CurrentUserData>("Users/me");
+  const typingTimeoutRef = useRef<number | null>(null);
+  const [isValidDomain, setIsValidDomain] = useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const rootDomain = userData?.account?.root_domain;
     const account_sid = userData?.account?.account_sid;
 
-    getAvailability(`${name}.${rootDomain}`)
-      .then(({ json }) => {
-        if (!json.available) {
-          setErrorMessage("That subdomain is not available.");
-          return;
-        }
-        postSipRealms(account_sid || "", `${name}.${rootDomain}`)
-          .then(() => {
-            navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${account_sid}/edit`);
-          })
-          .catch((error) => {
-            setErrorMessage(error.msg);
-          });
+    postSipRealms(account_sid || "", `${name}.${rootDomain}`)
+      .then(() => {
+        navigate(`${ROUTE_INTERNAL_ACCOUNTS}/${account_sid}/edit`);
       })
       .catch((error) => {
         setErrorMessage(error.msg);
       });
   };
+
+  useEffect(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    if (!name || name.length < 3) {
+      setIsValidDomain(false);
+      return;
+    }
+    setIsValidDomain(false);
+    typingTimeoutRef.current = setTimeout(() => {
+      getAvailability(`${name}.${userData?.account?.root_domain}`)
+        .then(({ json }) =>
+          setIsValidDomain(
+            Boolean(json.available) && hasValue(name) && name.length != 0
+          )
+        )
+        .catch((error) => {
+          setErrorMessage(error.msg);
+          setIsValidDomain(false);
+        });
+    }, 500);
+  }, [name]);
+
   return (
     <>
       <H1 className="h2">Edit Sip Realm</H1>
@@ -48,18 +66,15 @@ export const EditSipRealm = () => {
             </MS>
             {errorMessage && <Message message={errorMessage} />}
             <br />
-            <input
-              id="name"
-              required
-              type="text"
-              name="name"
-              placeholder="Name"
+            <DomainInput
+              id="sip_realm"
+              name="sip_realm"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              setValue={setName}
+              placeholder="Your name here"
+              root_domain={`.${userData?.account?.root_domain || ""}`}
+              is_valid={isValidDomain}
             />
-            <label htmlFor="fqdn">
-              FQDN: {name}.{userData?.account?.root_domain}
-            </label>
           </fieldset>
           <fieldset>
             <ButtonGroup left>
@@ -71,7 +86,7 @@ export const EditSipRealm = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit" small>
+              <Button type="submit" small disabled={!isValidDomain}>
                 Change Sip Realm
               </Button>
             </ButtonGroup>
