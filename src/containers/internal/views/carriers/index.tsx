@@ -30,16 +30,24 @@ import {
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
   CARRIER_REG_OK,
+  ENABLE_HOSTED_SYSTEM,
   USER_ACCOUNT,
 } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
-import type { Account, Carrier, SipGateway, SmppGateway } from "src/api/types";
+import type {
+  Account,
+  Carrier,
+  CurrentUserData,
+  SipGateway,
+  SmppGateway,
+} from "src/api/types";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const Carriers = () => {
   const user = useSelectState("user");
+  const [userData] = useApiData<CurrentUserData>("Users/me");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [apiUrl, setApiUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
@@ -130,7 +138,16 @@ export const Carriers = () => {
   return (
     <>
       <section className="mast">
-        <H1 className="h2">Carriers</H1>
+        <div>
+          <H1 className="h2">Carriers</H1>
+          {ENABLE_HOSTED_SYSTEM && (
+            <M>
+              Have your carrier send calls to{" "}
+              <span>{userData?.account?.sip_realm}</span>
+            </M>
+          )}
+        </div>
+
         <Link to={`${ROUTE_INTERNAL_CARRIERS}/add`} title="Add a Carrier">
           {" "}
           <Icon>
