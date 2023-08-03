@@ -21,7 +21,7 @@ export const ClientsEdit = () => {
 
   return (
     <>
-      <H1 className="h2">Edit client</H1>
+      <H1 className="h2">Edit sip client</H1>
       <ClientsForm client={{ data, refetch, error }} />
     </>
   );

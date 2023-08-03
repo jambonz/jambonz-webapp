@@ -2,7 +2,7 @@ import { Button, H1, Icon, M } from "@jambonz/ui-kit";
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteClient, useApiData, useServiceProviderData } from "src/api";
-import { Account, Client } from "src/api/types";
+import { Account, Client, CurrentUserData } from "src/api/types";
 import {
   AccountFilter,
   Icons,
@@ -20,6 +20,7 @@ import { USER_ACCOUNT } from "src/api/constants";
 
 export const Clients = () => {
   const user = useSelectState("user");
+  const [userData] = useApiData<CurrentUserData>("Users/me");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [clients, refetch] = useApiData<Client[]>("Clients");
 
@@ -52,7 +53,7 @@ export const Clients = () => {
         .then(() => {
           toastSuccess(
             <>
-              Deleted outbound call route <strong>{client.username}</strong>
+              Deleted sip client <strong>{client.username}</strong>
             </>
           );
           setClient(null);
@@ -67,8 +68,27 @@ export const Clients = () => {
   return (
     <>
       <section className="mast">
-        <H1 className="h2">Clients</H1>
-        <Link to={`${ROUTE_INTERNAL_CLIENTS}/add`} title="Add a client">
+        <div>
+          <H1 className="h2">SIP client credentials</H1>
+          {userData?.account?.sip_realm ? (
+            <>
+              <M>
+                Your sip realm is <span>{userData?.account?.sip_realm}</span>
+              </M>
+              <M>
+                You can add sip credentials below to allow sip devices to
+                register to this realm and make calls.
+              </M>
+            </>
+          ) : (
+            <M>
+              You need to associate a sip realm to this account in order to add
+              sip credentials.
+            </M>
+          )}
+        </div>
+
+        <Link to={`${ROUTE_INTERNAL_CLIENTS}/add`} title="Add sip client">
           {" "}
           <Icon>
             <Icons.Plus />
@@ -156,13 +176,13 @@ export const Clients = () => {
               </div>
             ))
           ) : (
-            <M>No Clients.</M>
+            <M>No sip clients.</M>
           )}
         </div>
       </Section>
       <Section clean>
         <Button small as={Link} to={`${ROUTE_INTERNAL_CLIENTS}/add`}>
-          Add client
+          Add sip client
         </Button>
       </Section>
       {client && (
