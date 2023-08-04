@@ -577,7 +577,11 @@ const SubscriptionForm = () => {
                 <div className="grid__row">
                   <div></div>
                   <div>
-                    <PaymentElement />
+                    <PaymentElement
+                      options={{
+                        paymentMethodOrder: ["card"],
+                      }}
+                    />
                   </div>
                 </div>
               </fieldset>

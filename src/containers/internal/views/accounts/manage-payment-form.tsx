@@ -148,7 +148,11 @@ export const ManagePaymentForm = () => {
             <div className="grid__row">
               <div></div>
               <div>
-                <PaymentElement />
+                <PaymentElement
+                  options={{
+                    paymentMethodOrder: ["card"],
+                  }}
+                />
               </div>
             </div>
           </div>
