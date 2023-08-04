@@ -1,11 +1,16 @@
 import React from "react";
-import { STRIPE_PUBLISHABLE_KEY } from "src/api/constants";
+import {
+  ENABLE_HOSTED_SYSTEM,
+  STRIPE_PUBLISHABLE_KEY,
+} from "src/api/constants";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import SubscriptionForm from "./subscription-form";
 
-export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+export const stripePromise = ENABLE_HOSTED_SYSTEM
+  ? loadStripe(STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export const Subscription = () => {
   return (

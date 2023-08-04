@@ -5,7 +5,7 @@ import ClientsForm from "./form";
 export const ClientsAdd = () => {
   return (
     <>
-      <H1 className="h2">Add client</H1>
+      <H1 className="h2">Add sip client</H1>
       <ClientsForm />
     </>
   );
