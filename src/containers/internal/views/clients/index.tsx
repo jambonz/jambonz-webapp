@@ -25,6 +25,9 @@ export const Clients = () => {
   const [clients, refetch] = useApiData<Client[]>("Clients");
 
   const [accountSid, setAccountSid] = useState("");
+  const [selectedAccount, setSelectedAccount] = useState<
+    Account | null | undefined
+  >(null);
   const [filter, setFilter] = useState("");
   const [client, setClient] = useState<Client | null>();
 
@@ -33,6 +36,12 @@ export const Clients = () => {
       setAccountSid(user?.account_sid);
       return clients;
     }
+
+    setSelectedAccount(
+      accountSid
+        ? accounts?.find((a: Account) => a.account_sid === accountSid)
+        : null
+    );
 
     return clients
       ? clients.filter((c) => {
@@ -70,21 +79,42 @@ export const Clients = () => {
       <section className="mast">
         <div>
           <H1 className="h2">SIP client credentials</H1>
-          {userData?.account?.sip_realm ? (
-            <>
+          {user?.scope === USER_ACCOUNT ? (
+            userData?.account?.sip_realm ? (
+              <>
+                <M>
+                  Your sip realm is <span>{userData?.account?.sip_realm}</span>
+                </M>
+                <M>
+                  You can add sip credentials below to allow sip devices to
+                  register to this realm and make calls.
+                </M>
+              </>
+            ) : (
               <M>
-                Your sip realm is <span>{userData?.account?.sip_realm}</span>
+                You need to associate a sip realm to this account in order to
+                add sip credentials.
               </M>
+            )
+          ) : selectedAccount ? (
+            selectedAccount?.sip_realm ? (
+              <>
+                <M>
+                  Your sip realm is <span>{selectedAccount.sip_realm}</span>
+                </M>
+                <M>
+                  You can add sip credentials below to allow sip devices to
+                  register to this realm and make calls.
+                </M>
+              </>
+            ) : (
               <M>
-                You can add sip credentials below to allow sip devices to
-                register to this realm and make calls.
+                You need to associate a sip realm to this account in order to
+                add sip credentials.
               </M>
-            </>
+            )
           ) : (
-            <M>
-              You need to associate a sip realm to this account in order to add
-              sip credentials.
-            </M>
+            <></>
           )}
         </div>
 
