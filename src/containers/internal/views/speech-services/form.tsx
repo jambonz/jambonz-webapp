@@ -873,7 +873,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 <div>Use for custom speech model</div>
               </label>
               <label htmlFor="use_custom_stt">
-                Custom speech endpoint id{useCustomStt && <span>*</span>}
+                Custom speech endpoint or endpoint id
+                {useCustomStt && <span>*</span>}
               </label>
               <input
                 id="custom_stt_endpoint"
