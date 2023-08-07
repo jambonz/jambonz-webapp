@@ -703,11 +703,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
-              API key{!useCustomTts && <span>*</span>}
+              API key{(!useCustomTts || !useCustomStt) && <span>*</span>}
             </label>
             <Passwd
               id={`${vendor}_apikey`}
-              required={!useCustomTts}
+              required={!useCustomTts || !useCustomStt}
               name={`${vendor}_apikey`}
               placeholder="API key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
@@ -721,13 +721,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor !== VENDOR_IBM && (
             <fieldset>
               <label htmlFor="region">
-                Region{!useCustomTts && <span>*</span>}
+                Region{(!useCustomTts || !useCustomStt) && <span>*</span>}
               </label>
               <Selector
                 id="region"
                 name="region"
                 value={region}
-                required={!useCustomTts}
+                required={!useCustomTts || !useCustomStt}
                 options={[
                   {
                     name: "Select a region",
