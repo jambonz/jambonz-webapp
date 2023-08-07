@@ -206,13 +206,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
           access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
           secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
-          api_key:
-            vendor === VENDOR_MICROSOFT ||
-            vendor === VENDOR_WELLSAID ||
-            vendor === VENDOR_DEEPGRAM ||
-            vendor === VENDOR_SONIOX
-              ? apiKey
-              : null,
+          ...(apiKey && {
+            api_key:
+              vendor === VENDOR_MICROSOFT ||
+              vendor === VENDOR_WELLSAID ||
+              vendor === VENDOR_DEEPGRAM ||
+              vendor === VENDOR_SONIOX
+                ? apiKey
+                : null,
+          }),
           riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
           .then(() => {
@@ -701,11 +703,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
-              API key<span>*</span>
+              API key{!useCustomTts && <span>*</span>}
             </label>
             <Passwd
               id={`${vendor}_apikey`}
-              required
+              required={!useCustomTts}
               name={`${vendor}_apikey`}
               placeholder="API key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
@@ -719,13 +721,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor !== VENDOR_IBM && (
             <fieldset>
               <label htmlFor="region">
-                Region<span>*</span>
+                Region{!useCustomTts && <span>*</span>}
               </label>
               <Selector
                 id="region"
                 name="region"
                 value={region}
-                required
+                required={!useCustomTts}
                 options={[
                   {
                     name: "Select a region",
