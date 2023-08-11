@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section } from "src/components";
+import { Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -35,6 +35,7 @@ import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
   checkSelectOptions,
   getObscuredSecret,
+  hasValue,
   isUserAccountScope,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
@@ -76,12 +77,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
   const [instanceId, setInstanceId] = useState("");
+  const [useCustomTtsId, setUseCustomTtsId] = useState(false);
   const [useCustomTts, setUseCustomTts] = useState(false);
+  const [useCustomSttId, setUseCustomSttId] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
   const [tmpCustomTtsEndpoint, setTmpCustomTtsEndpoint] = useState("");
+  const [customTtsEndpointId, setCustomTtsEndpointId] = useState("");
+  const [tmpCustomTtsEndpointId, setTmpCustomTtsEndpointId] = useState("");
   const [customSttEndpoint, setCustomSttEndpoint] = useState("");
   const [tmpCustomSttEndpoint, setTmpCustomSttEndpoint] = useState("");
+  const [customSttEndpointId, setCustomSttEndpointId] = useState("");
+  const [tmpCustomSttEndpointId, setTmpCustomSttEndpointId] = useState("");
   const [rivaServerUri, setRivaServerUri] = useState("");
   const [customVendorName, setCustomVendorName] = useState("");
   const [customVendorAuthToken, setCustomVendorAuthToken] = useState("");
@@ -148,10 +155,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
-          use_custom_tts: useCustomTts ? 1 : 0,
+          use_custom_tts: isCustomTtsUsed() ? 1 : 0,
           custom_tts_endpoint: customTtsEndpoint || null,
-          use_custom_stt: useCustomStt ? 1 : 0,
+          custom_tts_endpoint_id: customTtsEndpointId || null,
+          use_custom_stt: isCustomSttUsed() ? 1 : 0,
           custom_stt_endpoint: customSttEndpoint || null,
+          custom_stt_endpoint_id: customSttEndpointId || null,
         }),
         ...(vendor === VENDOR_IBM && {
           instance_id: instanceId,
@@ -227,6 +236,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           });
       }
     }
+  };
+
+  const isCustomTtsUsed = () => {
+    return useCustomTts || useCustomTtsId;
+  };
+
+  const isCustomSttUsed = () => {
+    return useCustomStt || useCustomSttId;
+  };
+
+  const isCustomVendorUsed = () => {
+    return isCustomTtsUsed() || isCustomSttUsed();
   };
 
   useEffect(() => {
@@ -333,12 +354,42 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setRivaServerUri(credential.data.riva_server_uri);
       }
 
-      setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
-      setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
+      setUseCustomTts(
+        credential.data.use_custom_tts > 0 &&
+          hasValue(credential.data.custom_tts_endpoint)
+          ? true
+          : false
+      );
+      setUseCustomStt(
+        credential.data.use_custom_stt > 0 &&
+          hasValue(credential.data.custom_stt_endpoint)
+          ? true
+          : false
+      );
+
+      setUseCustomTtsId(
+        credential.data.use_custom_tts > 0 &&
+          hasValue(credential.data.custom_tts_endpoint_id)
+          ? true
+          : false
+      );
+      setUseCustomSttId(
+        credential.data.use_custom_stt > 0 &&
+          hasValue(credential.data.custom_stt_endpoint_id)
+          ? true
+          : false
+      );
+
       setCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
       setTmpCustomTtsEndpoint(credential.data.custom_tts_endpoint || "");
       setTmpCustomSttEndpoint(credential.data.custom_stt_endpoint || "");
+
+      setCustomTtsEndpointId(credential.data.custom_tts_endpoint_id || "");
+      setCustomSttEndpointId(credential.data.custom_stt_endpoint_id || "");
+      setTmpCustomTtsEndpointId(credential.data.custom_tts_endpoint_id || "");
+      setTmpCustomSttEndpointId(credential.data.custom_stt_endpoint_id || "");
+
       setCustomVendorName(
         credential.data.vendor.startsWith(VENDOR_CUSTOM)
           ? credential.data.vendor.substring(VENDOR_CUSTOM.length + 1)
@@ -703,11 +754,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
-              API key{(!useCustomTts || !useCustomStt) && <span>*</span>}
+              API key{!isCustomVendorUsed() && <span>*</span>}
             </label>
             <Passwd
               id={`${vendor}_apikey`}
-              required={!useCustomTts || !useCustomStt}
+              required={!isCustomVendorUsed()}
               name={`${vendor}_apikey`}
               placeholder="API key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
@@ -721,13 +772,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor !== VENDOR_IBM && (
             <fieldset>
               <label htmlFor="region">
-                Region{(!useCustomTts || !useCustomStt) && <span>*</span>}
+                Region{!isCustomVendorUsed() && <span>*</span>}
               </label>
               <Selector
                 id="region"
                 name="region"
                 value={region}
-                required={!useCustomTts || !useCustomStt}
+                required={!isCustomVendorUsed()}
                 options={[
                   {
                     name: "Select a region",
@@ -815,77 +866,148 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor === VENDOR_MICROSOFT && (
           <React.Fragment>
             <fieldset>
-              <label htmlFor="use_custom_tts" className="chk">
+              <Checkzone
+                hidden
+                name="use_custom_tts_endpoint_id"
+                label="Use for custom voice"
+                initialCheck={hasValue(customTtsEndpointId)}
+                handleChecked={(e) => {
+                  setUseCustomTtsId(e.target.checked);
+
+                  if (e.target.checked && tmpCustomTtsEndpointId) {
+                    setCustomTtsEndpointId(tmpCustomTtsEndpointId);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomTtsEndpointId(customTtsEndpointId);
+                    setCustomTtsEndpointId("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_tts_id">
+                  Custom voice endpoint id{useCustomTtsId && <span>*</span>}
+                </label>
                 <input
-                  id="use_custom_tts"
-                  name="use_custom_tts"
-                  type="checkbox"
-                  onChange={(e) => {
-                    setUseCustomTts(e.target.checked);
-
-                    if (e.target.checked && tmpCustomTtsEndpoint) {
-                      setCustomTtsEndpoint(tmpCustomTtsEndpoint);
-                    }
-
-                    if (!e.target.checked) {
-                      setTmpCustomTtsEndpoint(customTtsEndpoint);
-                      setCustomTtsEndpoint("");
-                    }
-                  }}
-                  checked={useCustomTts}
+                  id="custom_tts_endpoint_id"
+                  required={useCustomTtsId}
+                  disabled={!useCustomTtsId}
+                  type="text"
+                  name="custom_tts_endpoint_id"
+                  placeholder="Custom voice endpoint id"
+                  value={customTtsEndpointId}
+                  onChange={(e) => setCustomTtsEndpointId(e.target.value)}
                 />
-                <div>Use for custom voice</div>
-              </label>
-              <label htmlFor="use_custom_tts">
-                Custom voice endpoint{useCustomTts && <span>*</span>}
-              </label>
-              <input
-                id="custom_tts_endpoint"
-                required={useCustomTts}
-                disabled={!useCustomTts}
-                type="text"
-                name="custom_tts_endpoint"
-                placeholder="Custom voice endpoint"
-                value={customTtsEndpoint}
-                onChange={(e) => setCustomTtsEndpoint(e.target.value)}
-              />
+              </Checkzone>
             </fieldset>
             <fieldset>
-              <label htmlFor="use_custom_stt" className="chk">
+              <Checkzone
+                hidden
+                name="use_custom_stt_endpoint_id"
+                label="Use for custom speech model"
+                initialCheck={hasValue(customSttEndpointId)}
+                handleChecked={(e) => {
+                  setUseCustomSttId(e.target.checked);
+
+                  if (e.target.checked && tmpCustomSttEndpointId) {
+                    setCustomSttEndpointId(tmpCustomSttEndpointId);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomSttEndpointId(customSttEndpointId);
+                    setCustomSttEndpointId("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_stt_id">
+                  Custom speech endpoint id
+                  {useCustomSttId && <span>*</span>}
+                </label>
                 <input
-                  id="use_custom_stt"
-                  name="use_custom_stt"
-                  type="checkbox"
-                  onChange={(e) => {
-                    setUseCustomStt(e.target.checked);
-
-                    if (e.target.checked && tmpCustomSttEndpoint) {
-                      setCustomSttEndpoint(tmpCustomSttEndpoint);
-                    }
-
-                    if (!e.target.checked) {
-                      setTmpCustomSttEndpoint(customSttEndpoint);
-                      setCustomSttEndpoint("");
-                    }
-                  }}
-                  checked={useCustomStt}
+                  id="custom_stt_endpoint_id"
+                  required={useCustomSttId}
+                  disabled={!useCustomSttId}
+                  type="text"
+                  name="custom_stt_endpoint_id"
+                  placeholder="Custom speech endpoint ID"
+                  value={customSttEndpointId}
+                  onChange={(e) => setCustomSttEndpointId(e.target.value)}
                 />
-                <div>Use for custom speech model</div>
-              </label>
-              <label htmlFor="use_custom_stt">
-                Custom speech endpoint or endpoint id
-                {useCustomStt && <span>*</span>}
-              </label>
-              <input
-                id="custom_stt_endpoint"
-                required={useCustomStt}
-                disabled={!useCustomStt}
-                type="text"
-                name="custom_stt_endpoint"
-                placeholder="Custom speech endpoint ID"
-                value={customSttEndpoint}
-                onChange={(e) => setCustomSttEndpoint(e.target.value)}
-              />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="use_custom_tts_endpoint_url"
+                label="Use for custom voice server"
+                initialCheck={hasValue(customTtsEndpoint)}
+                handleChecked={(e) => {
+                  setUseCustomTts(e.target.checked);
+
+                  if (e.target.checked && tmpCustomTtsEndpoint) {
+                    setCustomTtsEndpoint(tmpCustomTtsEndpoint);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomTtsEndpoint(customTtsEndpoint);
+                    setCustomTtsEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_tts">
+                  Custom voice endpoint url{useCustomTts && <span>*</span>}
+                  <Tooltip text="Please provide the URL of your self-hosted Microsoft text to speech server">
+                    {" "}
+                  </Tooltip>
+                </label>
+                <input
+                  id="custom_tts_endpoint"
+                  required={useCustomTts}
+                  disabled={!useCustomTts}
+                  type="text"
+                  name="custom_tts_endpoint"
+                  placeholder="Custom voice endpoint url"
+                  value={customTtsEndpoint}
+                  onChange={(e) => setCustomTtsEndpoint(e.target.value)}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="use_custom_stt_endpoint_url"
+                label="Use for custom speech server"
+                initialCheck={hasValue(customSttEndpoint)}
+                handleChecked={(e) => {
+                  setUseCustomStt(e.target.checked);
+
+                  if (e.target.checked && tmpCustomSttEndpoint) {
+                    setCustomSttEndpoint(tmpCustomSttEndpoint);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomSttEndpoint(customSttEndpoint);
+                    setCustomSttEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="use_custom_stt">
+                  Custom speech endpoint url
+                  {useCustomStt && <span>*</span>}
+                  <Tooltip text="Please provide the URL of your self-hosted Microsoft speech to text server">
+                    {" "}
+                  </Tooltip>
+                </label>
+                <input
+                  id="custom_stt_endpoint"
+                  required={useCustomStt}
+                  disabled={!useCustomStt}
+                  type="text"
+                  name="custom_stt_endpoint"
+                  placeholder="Custom speech endpoint url"
+                  value={customSttEndpoint}
+                  onChange={(e) => setCustomSttEndpoint(e.target.value)}
+                />
+              </Checkzone>
             </fieldset>
           </React.Fragment>
         )}
