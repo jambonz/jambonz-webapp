@@ -1019,8 +1019,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   onChange={(e) => setCustomTtsEndpoint(e.target.value)}
                 />
               </Checkzone>
-            </fieldset>
-            <fieldset>
               <Checkzone
                 hidden
                 name="use_custom_stt_endpoint_id"
