@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section, Tooltip } from "src/components";
+import { Section } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -80,9 +80,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
   const [initialCheckCustomStt, setInitialCheckCustomStt] = useState(false);
-  const [initialCheckCustomTtsUrl, setInitialCheckCustomTtsUrl] =
-    useState(false);
-  const [initialCheckCustomSttUrl, setInitialCheckCustomSttUrl] =
+  const [initialCheckOnpremAzureService, setInitialCheckOnpremAzureService] =
     useState(false);
   const [useCustomTts, setUseCustomTts] = useState(false);
   const [useCustomTtsUrl, setUseCustomTtsUrl] = useState(false);
@@ -399,11 +397,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       setInitialCheckCustomTts(isNotBlank(credential.data.custom_tts_endpoint));
       setInitialCheckCustomStt(isNotBlank(credential.data.custom_stt_endpoint));
-      setInitialCheckCustomTtsUrl(
-        isNotBlank(credential.data.custom_tts_endpoint_url)
-      );
-      setInitialCheckCustomSttUrl(
-        isNotBlank(credential.data.custom_stt_endpoint_url)
+      setInitialCheckOnpremAzureService(
+        isNotBlank(credential.data.custom_tts_endpoint_url) ||
+          isNotBlank(credential.data.custom_stt_endpoint_url)
       );
 
       setCustomVendorName(
@@ -764,8 +760,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {(vendor === VENDOR_MICROSOFT ||
-          vendor === VENDOR_WELLSAID ||
+        {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_DEEPGRAM ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>
@@ -785,7 +780,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {regions &&
           regions[vendor as keyof RegionVendors] &&
-          vendor !== VENDOR_IBM && (
+          vendor !== VENDOR_IBM &&
+          vendor !== VENDOR_MICROSOFT && (
             <fieldset>
               <label htmlFor="region">
                 Region{!isCustomVendorUsed() && <span>*</span>}
@@ -884,8 +880,117 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             <fieldset>
               <Checkzone
                 hidden
+                name="use_hosted_azure_service"
+                label="Use hosted Azure service"
+                initialCheck={!initialCheckOnpremAzureService}
+                handleChecked={(e) => {
+                  setInitialCheckOnpremAzureService(!e.target.checked);
+                }}
+              >
+                <label htmlFor={`${vendor}_apikey`}>
+                  API key{!isCustomVendorUsed() && <span>*</span>}
+                </label>
+                <Passwd
+                  id={`${vendor}_apikey`}
+                  required={!isCustomVendorUsed()}
+                  name={`${vendor}_apikey`}
+                  placeholder="API key"
+                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+
+                {regions && (
+                  <>
+                    <label htmlFor="region">
+                      Region{!isCustomVendorUsed() && <span>*</span>}
+                    </label>
+                    <Selector
+                      id="region"
+                      name="region"
+                      value={region}
+                      required={!isCustomVendorUsed()}
+                      options={[
+                        {
+                          name: "Select a region",
+                          value: "",
+                        },
+                      ].concat(regions[vendor as keyof RegionVendors])}
+                      onChange={(e) => setRegion(e.target.value)}
+                    />
+                  </>
+                )}
+              </Checkzone>
+
+              <Checkzone
+                hidden
+                name="use_azure_docker_container_on_prem"
+                label="Use Azure Docker container(on-prem)"
+                initialCheck={initialCheckOnpremAzureService}
+                handleChecked={(e) => {
+                  setInitialCheckOnpremAzureService(e.target.checked);
+
+                  if (e.target.checked && tmpCustomTtsEndpointUrl) {
+                    setCustomTtsEndpointUrl(tmpCustomTtsEndpointUrl);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomTtsEndpointUrl(customTtsEndpointUrl);
+                    setCustomTtsEndpointUrl("");
+                  }
+
+                  if (e.target.checked && tmpCustomSttEndpointUrl) {
+                    setCustomSttEndpointUrl(tmpCustomSttEndpointUrl);
+                  }
+
+                  if (!e.target.checked) {
+                    setTmpCustomSttEndpointUrl(customSttEndpointUrl);
+                    setCustomSttEndpointUrl("");
+                  }
+                }}
+              >
+                <label htmlFor="container_url_for_tts">
+                  Container URL for TTS<span>*</span>
+                </label>
+                <input
+                  id="container_url_for_tts"
+                  required
+                  type="text"
+                  name="container_url_for_tts"
+                  placeholder="Container URL for TTS"
+                  value={customTtsEndpointUrl}
+                  onChange={(e) => setCustomTtsEndpointUrl(e.target.value)}
+                />
+                <label htmlFor="container_url_for_stt">
+                  Container URL for STT<span>*</span>
+                </label>
+                <input
+                  id="container_url_for_stt"
+                  required
+                  type="text"
+                  name="container_url_for_stt"
+                  placeholder="Container URL for STT"
+                  value={customSttEndpointUrl}
+                  onChange={(e) => setCustomSttEndpointUrl(e.target.value)}
+                />
+                <label htmlFor={`${vendor}_apikey`}>
+                  Subscription key (if required)
+                </label>
+                <Passwd
+                  id={`${vendor}_apikey`}
+                  name={`${vendor}_apikey`}
+                  placeholder="API key"
+                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
                 name="use_custom_tts_endpoint_id"
-                label="Use for custom voice"
+                label="I want to use a custom voice for TTS"
                 initialCheck={initialCheckCustomTts}
                 handleChecked={(e) => {
                   setUseCustomTts(e.target.checked);
@@ -901,7 +1006,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 }}
               >
                 <label htmlFor="use_custom_tts_id">
-                  Custom voice endpoint id{useCustomTts && <span>*</span>}
+                  Custom voice deployment ID<span>*</span>
                 </label>
                 <input
                   id="custom_tts_endpoint_id"
@@ -919,7 +1024,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               <Checkzone
                 hidden
                 name="use_custom_stt_endpoint_id"
-                label="Use for custom speech model"
+                label="I want to use a custom speech model for STT"
                 initialCheck={initialCheckCustomStt}
                 handleChecked={(e) => {
                   setUseCustomStt(e.target.checked);
@@ -935,8 +1040,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 }}
               >
                 <label htmlFor="use_custom_stt_id">
-                  Custom speech endpoint id
-                  {useCustomStt && <span>*</span>}
+                  Custom speech endpoint id<span>*</span>
                 </label>
                 <input
                   id="custom_stt_endpoint_id"
@@ -947,81 +1051,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   placeholder="Custom speech endpoint ID"
                   value={customSttEndpoint}
                   onChange={(e) => setCustomSttEndpoint(e.target.value)}
-                />
-              </Checkzone>
-            </fieldset>
-            <fieldset>
-              <Checkzone
-                hidden
-                name="use_custom_tts_endpoint_url"
-                label="Use for custom voice server"
-                initialCheck={initialCheckCustomTtsUrl}
-                handleChecked={(e) => {
-                  setUseCustomTtsUrl(e.target.checked);
-
-                  if (e.target.checked && tmpCustomTtsEndpointUrl) {
-                    setCustomTtsEndpointUrl(tmpCustomTtsEndpointUrl);
-                  }
-
-                  if (!e.target.checked) {
-                    setTmpCustomTtsEndpointUrl(customTtsEndpointUrl);
-                    setCustomTtsEndpointUrl("");
-                  }
-                }}
-              >
-                <label htmlFor="use_custom_tts">
-                  Custom voice endpoint url{useCustomTtsUrl && <span>*</span>}
-                  <Tooltip text="Please provide the URL of your self-hosted Microsoft text to speech server">
-                    {" "}
-                  </Tooltip>
-                </label>
-                <input
-                  id="custom_tts_endpoint"
-                  required={useCustomTtsUrl}
-                  disabled={!useCustomTtsUrl}
-                  type="text"
-                  name="custom_tts_endpoint"
-                  placeholder="Custom voice endpoint url"
-                  value={customTtsEndpointUrl}
-                  onChange={(e) => setCustomTtsEndpointUrl(e.target.value)}
-                />
-              </Checkzone>
-            </fieldset>
-            <fieldset>
-              <Checkzone
-                hidden
-                name="use_custom_stt_endpoint_url"
-                label="Use for custom speech server"
-                initialCheck={initialCheckCustomSttUrl}
-                handleChecked={(e) => {
-                  setUseCustomSttUrl(e.target.checked);
-
-                  if (e.target.checked && tmpCustomSttEndpointUrl) {
-                    setCustomSttEndpointUrl(tmpCustomSttEndpointUrl);
-                  }
-
-                  if (!e.target.checked) {
-                    setTmpCustomSttEndpointUrl(customSttEndpointUrl);
-                    setCustomSttEndpointUrl("");
-                  }
-                }}
-              >
-                <label htmlFor="use_custom_stt">
-                  Custom speech endpoint url
-                  {useCustomSttUrl && <span>*</span>}
-                  <Tooltip text="Please provide the URL of your self-hosted Microsoft speech to text server">
-                    {" "}
-                  </Tooltip>
-                </label>
-                <input
-                  id="custom_stt_endpoint"
-                  required={useCustomSttUrl}
-                  disabled={!useCustomSttUrl}
-                  type="text"
-                  name="custom_stt_endpoint"
-                  placeholder="Custom speech endpoint url"
-                  value={customSttEndpointUrl}
-                  onChange={(e) => setCustomSttEndpointUrl(e.target.value)}
                 />
               </Checkzone>
             </fieldset>
