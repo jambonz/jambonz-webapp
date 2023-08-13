@@ -157,10 +157,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
-          use_custom_tts: useCustomTts ? 1 : 0,
+          use_custom_tts:
+            useCustomTts || isNotBlank(customTtsEndpointUrl) ? 1 : 0,
           custom_tts_endpoint_url: customTtsEndpointUrl || null,
           custom_tts_endpoint: customTtsEndpoint || null,
-          use_custom_stt: useCustomStt ? 1 : 0,
+          use_custom_stt:
+            useCustomStt || isNotBlank(customSttEndpointUrl) ? 1 : 0,
           custom_stt_endpoint_url: customSttEndpointUrl || null,
           custom_stt_endpoint: customSttEndpoint || null,
         }),
