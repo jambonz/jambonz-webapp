@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section } from "src/components";
+import { Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -35,7 +35,6 @@ import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
   checkSelectOptions,
   getObscuredSecret,
-  hasValue,
   isUserAccountScope,
   isNotBlank,
 } from "src/utils";
@@ -83,9 +82,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [initialCheckOnpremAzureService, setInitialCheckOnpremAzureService] =
     useState(false);
   const [useCustomTts, setUseCustomTts] = useState(false);
-  const [useCustomTtsUrl, setUseCustomTtsUrl] = useState(false);
   const [useCustomStt, setUseCustomStt] = useState(false);
-  const [useCustomSttUrl, setUseCustomSttUrl] = useState(false);
   const [customTtsEndpointUrl, setCustomTtsEndpointUrl] = useState("");
   const [tmpCustomTtsEndpointUrl, setTmpCustomTtsEndpointUrl] = useState("");
   const [customTtsEndpoint, setCustomTtsEndpoint] = useState("");
@@ -160,10 +157,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
-          use_custom_tts: isCustomTtsUsed() ? 1 : 0,
+          use_custom_tts: useCustomTts ? 1 : 0,
           custom_tts_endpoint_url: customTtsEndpointUrl || null,
           custom_tts_endpoint: customTtsEndpoint || null,
-          use_custom_stt: isCustomSttUsed() ? 1 : 0,
+          use_custom_stt: useCustomStt ? 1 : 0,
           custom_stt_endpoint_url: customSttEndpointUrl || null,
           custom_stt_endpoint: customSttEndpoint || null,
         }),
@@ -241,18 +238,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           });
       }
     }
-  };
-
-  const isCustomTtsUsed = () => {
-    return useCustomTtsUrl || useCustomTts;
-  };
-
-  const isCustomSttUsed = () => {
-    return useCustomSttUrl || useCustomStt;
-  };
-
-  const isCustomVendorUsed = () => {
-    return isCustomTtsUsed() || isCustomSttUsed();
   };
 
   useEffect(() => {
@@ -358,32 +343,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.riva_server_uri) {
         setRivaServerUri(credential.data.riva_server_uri);
       }
-
-      setUseCustomTtsUrl(
-        credential.data.use_custom_tts > 0 &&
-          hasValue(credential.data.custom_tts_endpoint_url)
-          ? true
-          : false
-      );
-      setUseCustomSttUrl(
-        credential.data.use_custom_stt > 0 &&
-          hasValue(credential.data.custom_stt_endpoint_url)
-          ? true
-          : false
-      );
-
-      setUseCustomTts(
-        credential.data.use_custom_tts > 0 &&
-          hasValue(credential.data.custom_tts_endpoint)
-          ? true
-          : false
-      );
-      setUseCustomStt(
-        credential.data.use_custom_stt > 0 &&
-          hasValue(credential.data.custom_stt_endpoint)
-          ? true
-          : false
-      );
+      setUseCustomTts(credential.data.use_custom_tts > 0 ? true : false);
+      setUseCustomStt(credential.data.use_custom_stt > 0 ? true : false);
 
       setCustomTtsEndpointUrl(credential.data.custom_tts_endpoint_url || "");
       setCustomSttEndpointUrl(credential.data.custom_stt_endpoint_url || "");
@@ -765,11 +726,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
-              API key{!isCustomVendorUsed() && <span>*</span>}
+              API key<span>*</span>
             </label>
             <Passwd
               id={`${vendor}_apikey`}
-              required={!isCustomVendorUsed()}
+              required
               name={`${vendor}_apikey`}
               placeholder="API key"
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
@@ -784,13 +745,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor !== VENDOR_MICROSOFT && (
             <fieldset>
               <label htmlFor="region">
-                Region{!isCustomVendorUsed() && <span>*</span>}
+                Region<span>*</span>
               </label>
               <Selector
                 id="region"
                 name="region"
                 value={region}
-                required={!isCustomVendorUsed()}
+                required
                 options={[
                   {
                     name: "Select a region",
@@ -887,29 +848,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   setInitialCheckOnpremAzureService(!e.target.checked);
                 }}
               >
-                <label htmlFor={`${vendor}_apikey`}>
-                  API key{!isCustomVendorUsed() && <span>*</span>}
-                </label>
-                <Passwd
-                  id={`${vendor}_apikey`}
-                  required={!isCustomVendorUsed()}
-                  name={`${vendor}_apikey`}
-                  placeholder="API key"
-                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  disabled={credential ? true : false}
-                />
-
                 {regions && (
                   <>
                     <label htmlFor="region">
-                      Region{!isCustomVendorUsed() && <span>*</span>}
+                      Region<span>*</span>
                     </label>
                     <Selector
                       id="region"
                       name="region"
                       value={region}
-                      required={!isCustomVendorUsed()}
+                      required
                       options={[
                         {
                           name: "Select a region",
@@ -920,12 +868,24 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     />
                   </>
                 )}
+                <label htmlFor={`${vendor}_apikey`}>
+                  API key<span>*</span>
+                </label>
+                <Passwd
+                  id={`${vendor}_apikey`}
+                  required
+                  name={`${vendor}_apikey`}
+                  placeholder="API key"
+                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
               </Checkzone>
 
               <Checkzone
                 hidden
                 name="use_azure_docker_container_on_prem"
-                label="Use Azure Docker container(on-prem)"
+                label="Use Azure Docker container (on-prem)"
                 initialCheck={initialCheckOnpremAzureService}
                 handleChecked={(e) => {
                   setInitialCheckOnpremAzureService(e.target.checked);
@@ -1007,11 +967,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               >
                 <label htmlFor="use_custom_tts_id">
                   Custom voice deployment ID<span>*</span>
+                  <Tooltip text="This is the value shown as the deploymentId parameter in the custom URL generated when you deploy a custom voice">
+                    {" "}
+                  </Tooltip>
                 </label>
                 <input
                   id="custom_tts_endpoint_id"
-                  required={useCustomTts}
-                  disabled={!useCustomTts}
+                  required
+                  disabled={initialCheckOnpremAzureService}
                   type="text"
                   name="custom_tts_endpoint_id"
                   placeholder="Custom voice endpoint id"
@@ -1038,12 +1001,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 }}
               >
                 <label htmlFor="use_custom_stt_id">
-                  Custom speech endpoint id<span>*</span>
+                  Custom speech endpoint ID<span>*</span>
+                  <Tooltip text="This is the value shown as the Endpoint ID when you deploy a custom speech model">
+                    {" "}
+                  </Tooltip>
                 </label>
                 <input
                   id="custom_stt_endpoint_id"
                   required={useCustomStt}
-                  disabled={!useCustomStt}
+                  disabled={initialCheckOnpremAzureService}
                   type="text"
                   name="custom_stt_endpoint_id"
                   placeholder="Custom speech endpoint ID"
