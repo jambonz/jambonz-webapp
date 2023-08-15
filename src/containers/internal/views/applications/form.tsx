@@ -46,6 +46,7 @@ import type {
   VoiceLanguage,
   Language,
   VendorOptions,
+  LabelOptions,
 } from "src/vendor/types";
 
 import type {
@@ -100,6 +101,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
   const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
   const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
+  const [ttsLabelOptions, setTtsLabelOptions] = useState<LabelOptions[]>([]);
+  const [synthLabel, setSynthLabel] = useState("");
   const [recordAllCalls, setRecordAllCalls] = useState(false);
 
   /** This lets us map and render the same UI for each... */
@@ -238,6 +241,24 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       setSoftSttVendor(vendors.concat(v2));
     }
   }, [credentials]);
+
+  useEffect(() => {
+    if (credentials) {
+      const labels = credentials
+        .filter(
+          (c) =>
+            c.label && c.vendor === synthVendor && c.account_sid === accountSid
+        )
+        .map((c) =>
+          Object.assign({
+            name: c.label,
+            value: c.label,
+          })
+        );
+
+      setTtsLabelOptions(labels);
+    }
+  }, [synthVendor]);
 
   useEffect(() => {
     if (accountSid) {
@@ -501,6 +522,20 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 setSynthVoice(newLang!.voices[0].value);
               }}
             />
+            {hasLength(ttsLabelOptions) && (
+              <>
+                <label htmlFor="synthesis_lang">Label</label>
+                <Selector
+                  id="systhesis_label"
+                  name="systhesis_label"
+                  value={synthLabel}
+                  options={ttsLabelOptions}
+                  onChange={(e) => {
+                    setSynthLabel(e.target.value);
+                  }}
+                ></Selector>
+              </>
+            )}
             {synthVendor &&
               !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
               synthLang && (

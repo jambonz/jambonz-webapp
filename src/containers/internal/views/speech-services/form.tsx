@@ -99,6 +99,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [onPremNuanceSttCheck, setOnPremNuanceSttCheck] = useState(false);
   const [tmpOnPremNuanceSttUrl, setTmpOnPremNuanceSttUrl] = useState("");
   const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
+  const [label, setLabel] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -143,6 +144,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         service_provider_sid: currentServiceProvider.service_provider_sid,
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
+        label: label || null,
         ...(vendor === VENDOR_AWS && {
           aws_region: region || null,
         }),
@@ -347,6 +349,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTmpCustomVendorSttUrl(credential.data.custom_stt_url || "");
       setCustomVendorTtsUrl(credential.data.custom_tts_url || "");
       setTmpCustomVendorTtsUrl(credential.data.custom_tts_url || "");
+      if (credential.data.label) {
+        setLabel(credential.data.label);
+      }
     }
   }, [credential]);
 
@@ -414,6 +419,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             required={false}
             defaultOption={checkSelectOptions(user, credential?.data)}
             disabled={credential ? true : false}
+          />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="speech_label">Label</label>
+          <input
+            id="speech_label"
+            type="text"
+            name="speech_label"
+            placeholder="Label"
+            value={label}
+            disabled={credential ? true : false}
+            onChange={(e) => setLabel(e.target.value)}
           />
         </fieldset>
         {vendor && (

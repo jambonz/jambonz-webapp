@@ -391,6 +391,7 @@ export interface SpeechCredential {
   auth_token: null | string;
   custom_stt_url: null | string;
   custom_tts_url: null | string;
+  label: null | string;
 }
 
 export interface Alert {

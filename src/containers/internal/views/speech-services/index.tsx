@@ -195,6 +195,14 @@ export const SpeechServices = () => {
                       <div>
                         <CredentialStatus cred={credential} />
                       </div>
+                      {credential.label && (
+                        <div>
+                          <div className="i txt--teal">
+                            <Icons.Tag />
+                            <span>{credential.label}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <ScopedAccess
