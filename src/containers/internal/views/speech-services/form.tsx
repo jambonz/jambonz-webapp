@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section } from "src/components";
+import { Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -422,12 +422,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           />
         </fieldset>
         <fieldset>
-          <label htmlFor="speech_label">Label</label>
+          <label htmlFor="speech_label">
+            Label
+            <Tooltip text="Assign a label if you need to create multiple speech services from the same vendor. Then use the label in your application to specify which service to use.">
+              {" "}
+            </Tooltip>
+          </label>
           <input
             id="speech_label"
             type="text"
             name="speech_label"
-            placeholder="Use labels to distinguish credentials from same vendor"
             value={label}
             disabled={credential ? true : false}
             onChange={(e) => setLabel(e.target.value)}
