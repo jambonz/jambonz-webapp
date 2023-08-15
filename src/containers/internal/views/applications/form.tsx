@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -46,6 +46,7 @@ import type {
   VoiceLanguage,
   Language,
   VendorOptions,
+  LabelOptions,
 } from "src/vendor/types";
 
 import type {
@@ -100,6 +101,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
   const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
   const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
+  const [recogLabel, setRecogLabel] = useState("");
+  const [ttsLabelOptions, setTtsLabelOptions] = useState<LabelOptions[]>([]);
+  const [sttLabelOptions, setSttLabelOptions] = useState<LabelOptions[]>([]);
+  const [synthLabel, setSynthLabel] = useState("");
   const [recordAllCalls, setRecordAllCalls] = useState(false);
 
   /** This lets us map and render the same UI for each... */
@@ -180,9 +185,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       call_status_hook: statusWebhook || null,
       speech_synthesis_vendor: synthVendor || null,
       speech_synthesis_language: synthLang || null,
+      speech_synthesis_label: synthLabel || null,
       speech_synthesis_voice: synthVoice || null,
       speech_recognizer_vendor: recogVendor || null,
       speech_recognizer_language: recogLang || null,
+      speech_recognizer_label: recogLabel || null,
       record_all_calls: recordAllCalls ? 1 : 0,
     };
 
@@ -211,7 +218,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     }
   };
 
-  useEffect(() => {
+  useMemo(() => {
     if (credentials && hasLength(credentials)) {
       const v = credentials
         .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_tts)
@@ -236,8 +243,47 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           })
         );
       setSoftSttVendor(vendors.concat(v2));
+
+      const noneLabelObject = {
+        name: "None",
+        value: null,
+      };
+
+      let labels = credentials
+        .filter(
+          (c) =>
+            c.label &&
+            c.vendor === synthVendor &&
+            c.account_sid === accountSid &&
+            c.use_for_tts
+        )
+        .map((c) =>
+          Object.assign({
+            name: c.label,
+            value: c.label,
+          })
+        );
+
+      setTtsLabelOptions([noneLabelObject, ...labels]);
+
+      labels = credentials
+        .filter(
+          (c) =>
+            c.label &&
+            c.vendor === recogVendor &&
+            c.account_sid === accountSid &&
+            c.use_for_stt
+        )
+        .map((c) =>
+          Object.assign({
+            name: c.label,
+            value: c.label,
+          })
+        );
+
+      setSttLabelOptions([noneLabelObject, ...labels]);
     }
-  }, [credentials]);
+  }, [credentials, synthVendor, recogVendor]);
 
   useEffect(() => {
     if (accountSid) {
@@ -321,6 +367,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.speech_recognizer_language)
         setRecogLang(application.data.speech_recognizer_language);
+      if (application.data.speech_synthesis_label) {
+        setSynthLabel(application.data.speech_synthesis_label);
+      }
+      if (application.data.speech_recognizer_label) {
+        setRecogLabel(application.data.speech_recognizer_label);
+      }
     }
   }, [application]);
 
@@ -501,6 +553,20 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 setSynthVoice(newLang!.voices[0].value);
               }}
             />
+            {hasLength(ttsLabelOptions) && ttsLabelOptions.length > 1 && (
+              <>
+                <label htmlFor="synthesis_label">Label</label>
+                <Selector
+                  id="systhesis_label"
+                  name="systhesis_label"
+                  value={synthLabel}
+                  options={ttsLabelOptions}
+                  onChange={(e) => {
+                    setSynthLabel(e.target.value);
+                  }}
+                />
+              </>
+            )}
             {synthVendor &&
               !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
               synthLang && (
@@ -621,6 +687,20 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 }
               }}
             />
+            {hasLength(sttLabelOptions) && sttLabelOptions.length > 1 && (
+              <>
+                <label htmlFor="recog_label">Label</label>
+                <Selector
+                  id="recog_label"
+                  name="recog_label"
+                  value={recogLabel}
+                  options={sttLabelOptions}
+                  onChange={(e) => {
+                    setRecogLabel(e.target.value);
+                  }}
+                />
+              </>
+            )}
             {recogVendor &&
               !recogVendor.toString().startsWith(VENDOR_CUSTOM) &&
               recogLang && (

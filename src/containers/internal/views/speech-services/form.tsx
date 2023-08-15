@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section } from "src/components";
+import { Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -99,6 +99,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [onPremNuanceSttCheck, setOnPremNuanceSttCheck] = useState(false);
   const [tmpOnPremNuanceSttUrl, setTmpOnPremNuanceSttUrl] = useState("");
   const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
+  const [label, setLabel] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -143,6 +144,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         service_provider_sid: currentServiceProvider.service_provider_sid,
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
+        label: label || null,
         ...(vendor === VENDOR_AWS && {
           aws_region: region || null,
         }),
@@ -347,6 +349,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTmpCustomVendorSttUrl(credential.data.custom_stt_url || "");
       setCustomVendorTtsUrl(credential.data.custom_tts_url || "");
       setTmpCustomVendorTtsUrl(credential.data.custom_tts_url || "");
+      if (credential.data.label) {
+        setLabel(credential.data.label);
+      }
     }
   }, [credential]);
 
@@ -414,6 +419,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             required={false}
             defaultOption={checkSelectOptions(user, credential?.data)}
             disabled={credential ? true : false}
+          />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="speech_label">
+            Label
+            <Tooltip text="Assign a label only if you need to create multiple speech services from the same vendor. Then use the label in your application to specify which service to use.">
+              {" "}
+            </Tooltip>
+          </label>
+          <input
+            id="speech_label"
+            type="text"
+            name="speech_label"
+            value={label}
+            disabled={credential ? true : false}
+            onChange={(e) => setLabel(e.target.value)}
           />
         </fieldset>
         {vendor && (

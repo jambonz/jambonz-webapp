@@ -318,8 +318,10 @@ export interface Application {
   speech_synthesis_voice: null | string;
   speech_synthesis_vendor: null | Lowercase<Vendor>;
   speech_synthesis_language: null | string;
+  speech_synthesis_label: null | string;
   speech_recognizer_vendor: null | Lowercase<Vendor>;
   speech_recognizer_language: null | string;
+  speech_recognizer_label: null | string;
   record_all_calls: number;
 }
 
@@ -391,6 +393,7 @@ export interface SpeechCredential {
   auth_token: null | string;
   custom_stt_url: null | string;
   custom_tts_url: null | string;
+  label: null | string;
 }
 
 export interface Alert {
