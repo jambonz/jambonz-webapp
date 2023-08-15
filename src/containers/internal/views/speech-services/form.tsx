@@ -424,7 +424,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         <fieldset>
           <label htmlFor="speech_label">
             Label
-            <Tooltip text="Assign a label if you need to create multiple speech services from the same vendor. Then use the label in your application to specify which service to use.">
+            <Tooltip text="Assign a label only if you need to create multiple speech services from the same vendor. Then use the label in your application to specify which service to use.">
               {" "}
             </Tooltip>
           </label>
