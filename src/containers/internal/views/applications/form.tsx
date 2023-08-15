@@ -283,7 +283,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       setSttLabelOptions([noneLabelObject, ...labels]);
     }
-  }, [credentials]);
+  }, [credentials, synthVendor, recogVendor]);
 
   useEffect(() => {
     if (accountSid) {
@@ -553,7 +553,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 setSynthVoice(newLang!.voices[0].value);
               }}
             />
-            {hasLength(ttsLabelOptions) && (
+            {hasLength(ttsLabelOptions) && ttsLabelOptions.length > 1 && (
               <>
                 <label htmlFor="synthesis_label">Label</label>
                 <Selector
@@ -687,7 +687,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 }
               }}
             />
-            {hasLength(sttLabelOptions) && (
+            {hasLength(sttLabelOptions) && sttLabelOptions.length > 1 && (
               <>
                 <label htmlFor="recog_label">Label</label>
                 <Selector

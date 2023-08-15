@@ -76,7 +76,11 @@ export const SpeechServices = () => {
           refetch();
           toastSuccess(
             <>
-              Deleted speech service <strong>{credential.vendor}</strong>
+              Deleted speech service{" "}
+              <strong>
+                {credential.vendor}
+                {credential.label ? ` (${credential.label})` : ""}
+              </strong>{" "}
             </>
           );
         })
