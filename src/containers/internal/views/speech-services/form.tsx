@@ -427,7 +427,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             id="speech_label"
             type="text"
             name="speech_label"
-            placeholder="Label"
+            placeholder="Use labels to distinguish credentials from same vendor"
             value={label}
             disabled={credential ? true : false}
             onChange={(e) => setLabel(e.target.value)}
