@@ -679,13 +679,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             initialCheck={initalCheckFallbackSpeech}
             handleChecked={(e) => {
               setUseForFallbackSpeech(e.target.checked);
-              if (e.target.checked && tmpApplicationJson) {
-                setApplicationJson(tmpApplicationJson);
-              }
-              if (!e.target.checked) {
-                setTmpApplicationJson(applicationJson);
-                setApplicationJson("");
-              }
             }}
           >
             <SpeechProviderSelection
