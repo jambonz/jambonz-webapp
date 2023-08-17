@@ -315,7 +315,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             )
         : [];
 
-      setFallbackTtsLabelOptions(labels);
+      console.log(labels);
+
+      setFallbackTtsLabelOptions([noneLabelObject, ...labels]);
 
       labels = credentials
         .filter(
@@ -351,7 +353,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             )
         : [];
 
-      setFallbackSttLabelOptions(labels);
+      setFallbackSttLabelOptions([noneLabelObject, ...labels]);
     }
   }, [
     credentials,
