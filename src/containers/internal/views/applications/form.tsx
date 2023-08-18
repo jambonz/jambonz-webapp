@@ -214,15 +214,27 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       speech_recognizer_label: recogLabel || null,
       record_all_calls: recordAllCalls ? 1 : 0,
       use_for_fallback_speech: useForFallbackSpeech ? 1 : 0,
-      fallback_speech_synthesis_vendor: fallbackSpeechSynthsisVendor || null,
-      fallback_speech_synthesis_language:
-        fallbackSpeechSynthsisLanguage || null,
-      fallback_speech_synthesis_voice: fallbackSpeechSynthsisVoice || null,
-      fallback_speech_synthesis_label: fallbackSpeechSynthsisLabel || null,
-      fallback_speech_recognizer_vendor: fallbackSpeechRecognizerVendor || null,
-      fallback_speech_recognizer_language:
-        fallbackSpeechRecognizerLanguage || null,
-      fallback_speech_recognizer_label: fallbackSpeechRecognizerLabel || null,
+      fallback_speech_synthesis_vendor: useForFallbackSpeech
+        ? fallbackSpeechSynthsisVendor || null
+        : null,
+      fallback_speech_synthesis_language: useForFallbackSpeech
+        ? fallbackSpeechSynthsisLanguage || null
+        : null,
+      fallback_speech_synthesis_voice: useForFallbackSpeech
+        ? fallbackSpeechSynthsisVoice || null
+        : null,
+      fallback_speech_synthesis_label: useForFallbackSpeech
+        ? fallbackSpeechSynthsisLabel || null
+        : null,
+      fallback_speech_recognizer_vendor: useForFallbackSpeech
+        ? fallbackSpeechRecognizerVendor || null
+        : null,
+      fallback_speech_recognizer_language: useForFallbackSpeech
+        ? fallbackSpeechRecognizerLanguage || null
+        : null,
+      fallback_speech_recognizer_label: useForFallbackSpeech
+        ? fallbackSpeechRecognizerLabel || null
+        : null,
     };
 
     if (application && application.data) {
