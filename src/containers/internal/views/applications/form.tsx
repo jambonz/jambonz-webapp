@@ -353,7 +353,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             .filter(
               (c) =>
                 c.label &&
-                c.vendor === recogVendor &&
+                c.vendor === fallbackSpeechRecognizerVendor &&
                 c.account_sid === accountSid &&
                 c.use_for_stt
             )
