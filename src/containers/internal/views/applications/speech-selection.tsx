@@ -75,6 +75,7 @@ export const SpeechProviderSelection = ({
             onChange={(e) => {
               const vendor = e.target.value as keyof SynthesisVendors;
               setSynthVendor(vendor);
+              setSynthLabel("");
 
               /** When Custom Vendor is used, user you have to input the lange and voice. */
               if (vendor.toString().startsWith(VENDOR_CUSTOM)) {
@@ -224,6 +225,7 @@ export const SpeechProviderSelection = ({
             onChange={(e) => {
               const vendor = e.target.value as keyof RecognizerVendors;
               setRecogVendor(vendor);
+              setRecogLabel("");
 
               /**When vendor is custom, Language is input by user */
               if (vendor.toString() === VENDOR_CUSTOM) return;
