@@ -28,6 +28,7 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
   AUDIO_FORMAT_OPTIONS,
   BUCKET_VENDOR_AWS,
+  BUCKET_VENDOR_AZURE,
   BUCKET_VENDOR_GOOGLE,
   BUCKET_VENDOR_OPTIONS,
   CRED_OK,
@@ -129,6 +130,7 @@ export const AccountForm = ({
     useState(false);
   const deleteMessageRef = useRef<HTMLInputElement | null>(null);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
+  const [azureConnectionString, setAzureConnectionString] = useState("");
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -259,6 +261,9 @@ export const AccountForm = ({
       }),
       ...(bucketVendor === BUCKET_VENDOR_GOOGLE && {
         service_key: JSON.stringify(bucketGoogleServiceKey),
+      }),
+      ...(bucketVendor === BUCKET_VENDOR_AZURE && {
+        connection_string: azureConnectionString,
       }),
     };
 
@@ -391,6 +396,13 @@ export const AccountForm = ({
             ...(hasLength(bucketTags) && { tags: bucketTags }),
           },
         }),
+        ...(bucketVendor === BUCKET_VENDOR_AZURE && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            name: bucketName || null,
+            connection_string: azureConnectionString || null,
+          },
+        }),
         ...(!bucketCredentialChecked && {
           record_all_calls: 0,
           bucket_credential: {
@@ -494,6 +506,11 @@ export const AccountForm = ({
       }
       if (account.data.bucket_credential?.region) {
         setBucketRegion(account.data.bucket_credential?.region);
+      }
+      if (account.data.bucket_credential?.connection_string) {
+        setAzureConnectionString(
+          account.data.bucket_credential.connection_string
+        );
       }
       if (account.data.record_all_calls) {
         setRecordAllCalls(account.data.record_all_calls ? true : false);
@@ -1013,14 +1030,21 @@ export const AccountForm = ({
                     />
                   </div>
                   <label htmlFor="bucket_name">
-                    Bucket Name<span>*</span>
+                    {bucketVendor === BUCKET_VENDOR_AZURE
+                      ? "Container"
+                      : "Bucket"}{" "}
+                    Name<span>*</span>
                   </label>
                   <input
                     id="bucket_name"
                     required
                     type="text"
                     name="bucket_name"
-                    placeholder="Bucket"
+                    placeholder={
+                      bucketVendor === BUCKET_VENDOR_AZURE
+                        ? "Container"
+                        : "Bucket"
+                    }
                     value={bucketName}
                     onChange={(e) => {
                       setBucketName(e.target.value);
@@ -1108,11 +1132,31 @@ export const AccountForm = ({
                       )}
                     </>
                   )}
+                  {bucketVendor === BUCKET_VENDOR_AZURE && (
+                    <>
+                      <label htmlFor="bucket_azure_connection_string">
+                        Connection String<span>*</span>
+                      </label>
+                      <input
+                        id="bucket_azure_connection_string"
+                        required
+                        type="text"
+                        name="bucket_azure_connection_string"
+                        placeholder="Connection string"
+                        value={azureConnectionString}
+                        onChange={(e) => {
+                          setAzureConnectionString(e.target.value);
+                        }}
+                      />
+                    </>
+                  )}
                   <label htmlFor="aws_s3_tags">
                     {bucketVendor === BUCKET_VENDOR_AWS
                       ? "S3"
                       : bucketVendor === BUCKET_VENDOR_GOOGLE
                       ? "Google Cloud Storage"
+                      : bucketVendor === BUCKET_VENDOR_AZURE
+                      ? "Azure Cloud Storage"
                       : ""}{" "}
                     Tags
                   </label>
@@ -1184,7 +1228,9 @@ export const AccountForm = ({
                         (bucketVendor === BUCKET_VENDOR_AWS &&
                           (!bucketAccessKeyId || !bucketSecretAccessKey)) ||
                         (bucketVendor === BUCKET_VENDOR_GOOGLE &&
-                          !bucketGoogleServiceKey)
+                          !bucketGoogleServiceKey) ||
+                        (bucketVendor === BUCKET_VENDOR_AZURE &&
+                          !azureConnectionString)
                       }
                     >
                       Test
