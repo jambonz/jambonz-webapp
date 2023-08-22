@@ -16,11 +16,7 @@ import {
   LANG_EN_US,
   VENDOR_GOOGLE,
   LANG_EN_US_STANDARD_C,
-  VENDOR_AWS,
-  VENDOR_WELLSAID,
   useSpeechVendors,
-  VENDOR_DEEPGRAM,
-  VENDOR_SONIOX,
   VENDOR_CUSTOM,
 } from "src/vendor";
 import {
@@ -42,9 +38,6 @@ import {
 import type {
   RecognizerVendors,
   SynthesisVendors,
-  Voice,
-  VoiceLanguage,
-  Language,
   VendorOptions,
   LabelOptions,
 } from "src/vendor/types";
@@ -60,6 +53,7 @@ import type {
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import SpeechProviderSelection from "./speech-selection";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -99,13 +93,41 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [message, setMessage] = useState("");
   const [apiUrl, setApiUrl] = useState("");
   const [credentials] = useApiData<SpeechCredential[]>(apiUrl);
-  const [softTtsVendor, setSoftTtsVendor] = useState<VendorOptions[]>(vendors);
-  const [softSttVendor, setSoftSttVendor] = useState<VendorOptions[]>(vendors);
+  const [ttsVendorOptions, setttsVendorOptions] =
+    useState<VendorOptions[]>(vendors);
+  const [sttVendorOptions, setSttVendorOptions] =
+    useState<VendorOptions[]>(vendors);
   const [recogLabel, setRecogLabel] = useState("");
   const [ttsLabelOptions, setTtsLabelOptions] = useState<LabelOptions[]>([]);
   const [sttLabelOptions, setSttLabelOptions] = useState<LabelOptions[]>([]);
+  const [fallbackTtsLabelOptions, setFallbackTtsLabelOptions] = useState<
+    LabelOptions[]
+  >([]);
+  const [fallbackSttLabelOptions, setFallbackSttLabelOptions] = useState<
+    LabelOptions[]
+  >([]);
   const [synthLabel, setSynthLabel] = useState("");
   const [recordAllCalls, setRecordAllCalls] = useState(false);
+
+  const [useForFallbackSpeech, setUseForFallbackSpeech] = useState(false);
+  const [fallbackSpeechSynthsisVendor, setFallbackSpeechSynthsisVendor] =
+    useState<keyof SynthesisVendors>(VENDOR_GOOGLE);
+  const [fallbackSpeechSynthsisLanguage, setFallbackSpeechSynthsisLanguage] =
+    useState(LANG_EN_US);
+  const [fallbackSpeechSynthsisVoice, setFallbackSpeechSynthsisVoice] =
+    useState(LANG_EN_US_STANDARD_C);
+  const [fallbackSpeechSynthsisLabel, setFallbackSpeechSynthsisLabel] =
+    useState("");
+  const [fallbackSpeechRecognizerVendor, setFallbackSpeechRecognizerVendor] =
+    useState<keyof RecognizerVendors>(VENDOR_GOOGLE);
+  const [
+    fallbackSpeechRecognizerLanguage,
+    setFallbackSpeechRecognizerLanguage,
+  ] = useState(LANG_EN_US);
+  const [fallbackSpeechRecognizerLabel, setFallbackSpeechRecognizerLabel] =
+    useState("");
+  const [initalCheckFallbackSpeech, setInitalCheckFallbackSpeech] =
+    useState(false);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -176,7 +198,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       }
     }
 
-    const payload = {
+    const payload: Partial<Application> = {
       name: applicationName,
       app_json: applicationJson || null,
       call_hook: callWebhook || null,
@@ -191,6 +213,28 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       speech_recognizer_language: recogLang || null,
       speech_recognizer_label: recogLabel || null,
       record_all_calls: recordAllCalls ? 1 : 0,
+      use_for_fallback_speech: useForFallbackSpeech ? 1 : 0,
+      fallback_speech_synthesis_vendor: useForFallbackSpeech
+        ? fallbackSpeechSynthsisVendor || null
+        : null,
+      fallback_speech_synthesis_language: useForFallbackSpeech
+        ? fallbackSpeechSynthsisLanguage || null
+        : null,
+      fallback_speech_synthesis_voice: useForFallbackSpeech
+        ? fallbackSpeechSynthsisVoice || null
+        : null,
+      fallback_speech_synthesis_label: useForFallbackSpeech
+        ? fallbackSpeechSynthsisLabel || null
+        : null,
+      fallback_speech_recognizer_vendor: useForFallbackSpeech
+        ? fallbackSpeechRecognizerVendor || null
+        : null,
+      fallback_speech_recognizer_language: useForFallbackSpeech
+        ? fallbackSpeechRecognizerLanguage || null
+        : null,
+      fallback_speech_recognizer_label: useForFallbackSpeech
+        ? fallbackSpeechRecognizerLabel || null
+        : null,
     };
 
     if (application && application.data) {
@@ -230,7 +274,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             value: tv.vendor,
           })
         );
-      setSoftTtsVendor(vendors.concat(v));
+      setttsVendorOptions(vendors.concat(v));
 
       const v2 = credentials
         .filter((tv) => tv.vendor.startsWith(VENDOR_CUSTOM) && tv.use_for_stt)
@@ -242,7 +286,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             value: tv.vendor,
           })
         );
-      setSoftSttVendor(vendors.concat(v2));
+      setSttVendorOptions(vendors.concat(v2));
 
       const noneLabelObject = {
         name: "None",
@@ -266,6 +310,27 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       setTtsLabelOptions([noneLabelObject, ...labels]);
 
+      labels = fallbackSpeechSynthsisVendor
+        ? credentials
+            .filter(
+              (c) =>
+                c.label &&
+                c.vendor === fallbackSpeechSynthsisVendor &&
+                c.account_sid === accountSid &&
+                c.use_for_tts
+            )
+            .map((c) =>
+              Object.assign({
+                name: c.label,
+                value: c.label,
+              })
+            )
+        : [];
+
+      console.log(labels);
+
+      setFallbackTtsLabelOptions([noneLabelObject, ...labels]);
+
       labels = credentials
         .filter(
           (c) =>
@@ -282,8 +347,33 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         );
 
       setSttLabelOptions([noneLabelObject, ...labels]);
+
+      labels = fallbackSpeechRecognizerVendor
+        ? credentials
+            .filter(
+              (c) =>
+                c.label &&
+                c.vendor === fallbackSpeechRecognizerVendor &&
+                c.account_sid === accountSid &&
+                c.use_for_stt
+            )
+            .map((c) =>
+              Object.assign({
+                name: c.label,
+                value: c.label,
+              })
+            )
+        : [];
+
+      setFallbackSttLabelOptions([noneLabelObject, ...labels]);
     }
-  }, [credentials, synthVendor, recogVendor]);
+  }, [
+    credentials,
+    synthVendor,
+    recogVendor,
+    fallbackSpeechRecognizerVendor,
+    fallbackSpeechSynthsisVendor,
+  ]);
 
   useEffect(() => {
     if (accountSid) {
@@ -373,8 +463,83 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       if (application.data.speech_recognizer_label) {
         setRecogLabel(application.data.speech_recognizer_label);
       }
+      if (application.data.use_for_fallback_speech) {
+        setUseForFallbackSpeech(application.data.use_for_fallback_speech > 0);
+        setInitalCheckFallbackSpeech(
+          application.data.use_for_fallback_speech > 0
+        );
+      }
+      if (application.data.fallback_speech_recognizer_vendor) {
+        setFallbackSpeechRecognizerVendor(
+          application.data
+            .fallback_speech_recognizer_vendor as keyof RecognizerVendors
+        );
+      }
+      if (application.data.fallback_speech_recognizer_language) {
+        setFallbackSpeechRecognizerLanguage(
+          application.data.fallback_speech_recognizer_language
+        );
+      }
+      if (application.data.fallback_speech_recognizer_label) {
+        setFallbackSpeechRecognizerLabel(
+          application.data.fallback_speech_recognizer_label
+        );
+      }
+      if (application.data.fallback_speech_synthesis_vendor) {
+        setFallbackSpeechSynthsisVendor(
+          application.data
+            .fallback_speech_synthesis_vendor as keyof SynthesisVendors
+        );
+      }
+      if (application.data.fallback_speech_synthesis_language) {
+        setFallbackSpeechSynthsisLanguage(
+          application.data.fallback_speech_synthesis_language
+        );
+      }
+      if (application.data.fallback_speech_synthesis_voice) {
+        setFallbackSpeechSynthsisVoice(
+          application.data.fallback_speech_synthesis_voice
+        );
+      }
+      if (application.data.fallback_speech_synthesis_label) {
+        setFallbackSpeechSynthsisLabel(
+          application.data.fallback_speech_synthesis_label
+        );
+      }
     }
   }, [application]);
+
+  const swapPrimaryAndfalloverSpeech = () => {
+    let tmp;
+
+    tmp = synthVendor;
+    setSynthVendor(fallbackSpeechSynthsisVendor);
+    setFallbackSpeechSynthsisVendor(tmp);
+
+    tmp = synthLang;
+    setSynthLang(fallbackSpeechSynthsisLanguage);
+    setFallbackSpeechSynthsisLanguage(synthLang);
+
+    tmp = synthVoice;
+    setSynthVoice(fallbackSpeechSynthsisVoice);
+    setFallbackSpeechSynthsisVoice(tmp);
+
+    tmp = synthLabel;
+    setSynthLabel(fallbackSpeechSynthsisLabel);
+    setFallbackSpeechSynthsisLabel(tmp);
+
+    tmp = recogVendor;
+    setRecogVendor(fallbackSpeechRecognizerVendor);
+    setFallbackSpeechRecognizerVendor(tmp);
+
+    tmp = recogLang;
+    setRecogLang(fallbackSpeechRecognizerLanguage);
+    setFallbackSpeechRecognizerLanguage(tmp);
+
+    tmp = recogLabel;
+    setRecogLabel(fallbackSpeechRecognizerLabel);
+    setFallbackSpeechRecognizerLabel(tmp);
+  };
 
   return (
     <Section slim>
@@ -502,244 +667,79 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             </fieldset>
           );
         })}
-        {synthesis && (
-          <fieldset>
-            <label htmlFor="synthesis_vendor">Speech synthesis vendor</label>
-            <Selector
-              id="synthesis_vendor"
-              name="synthesis_vendor"
-              value={synthVendor}
-              options={softTtsVendor.filter(
-                (vendor) =>
-                  vendor.value != VENDOR_DEEPGRAM &&
-                  vendor.value != VENDOR_SONIOX &&
-                  vendor.value !== VENDOR_CUSTOM
-              )}
-              onChange={(e) => {
-                const vendor = e.target.value as keyof SynthesisVendors;
-                setSynthVendor(vendor);
+        <SpeechProviderSelection
+          synthesis={synthesis}
+          ttsVendor={[synthVendor, setSynthVendor]}
+          ttsVendorOptions={ttsVendorOptions}
+          ttsVoice={[synthVoice, setSynthVoice]}
+          ttsLang={[synthLang, setSynthLang]}
+          ttsLabelOptions={ttsLabelOptions}
+          ttsLabel={[synthLabel, setSynthLabel]}
+          recognizers={recognizers}
+          sttVendor={[recogVendor, setRecogVendor]}
+          sttVendorOptions={sttVendorOptions}
+          sttLang={[recogLang, setRecogLang]}
+          sttLabelOptions={sttLabelOptions}
+          sttLabel={[recogLabel, setRecogLabel]}
+        />
 
-                /** When Custom Vendor is used, user you have to input the lange and voice. */
-                if (vendor.toString().startsWith(VENDOR_CUSTOM)) {
-                  setSynthVoice("");
-                  return;
-                }
-
-                /** When using Google and en-US, ensure "Standard-C" is used as default */
-                if (
-                  e.target.value === VENDOR_GOOGLE &&
-                  synthLang === LANG_EN_US
-                ) {
-                  setSynthVoice(LANG_EN_US_STANDARD_C);
-                  return;
-                }
-
-                /** Google and AWS have different language lists */
-                /** If the new language doesn't map then default to "en-US" */
-                let newLang = synthesis[vendor].find(
-                  (lang) => lang.code === synthLang
-                );
-
-                if (newLang) {
-                  setSynthVoice(newLang.voices[0].value);
-                  return;
-                }
-
-                newLang = synthesis[vendor].find(
-                  (lang) => lang.code === LANG_EN_US
-                );
-
-                setSynthLang(LANG_EN_US);
-                setSynthVoice(newLang!.voices[0].value);
-              }}
+        <fieldset>
+          <Checkzone
+            hidden
+            name="cz_fallback_speech"
+            label="Use a fallback speech vendor if primary fails"
+            initialCheck={initalCheckFallbackSpeech}
+            handleChecked={(e) => {
+              setUseForFallbackSpeech(e.target.checked);
+            }}
+          >
+            <SpeechProviderSelection
+              synthesis={synthesis}
+              ttsVendor={[
+                fallbackSpeechSynthsisVendor,
+                setFallbackSpeechSynthsisVendor,
+              ]}
+              ttsVendorOptions={ttsVendorOptions}
+              ttsVoice={[
+                fallbackSpeechSynthsisVoice,
+                setFallbackSpeechSynthsisVoice,
+              ]}
+              ttsLang={[
+                fallbackSpeechSynthsisLanguage,
+                setFallbackSpeechSynthsisLanguage,
+              ]}
+              ttsLabelOptions={fallbackTtsLabelOptions}
+              ttsLabel={[
+                fallbackSpeechSynthsisLabel,
+                setFallbackSpeechSynthsisLabel,
+              ]}
+              recognizers={recognizers}
+              sttVendor={[
+                fallbackSpeechRecognizerVendor,
+                setFallbackSpeechRecognizerVendor,
+              ]}
+              sttVendorOptions={sttVendorOptions}
+              sttLang={[
+                fallbackSpeechRecognizerLanguage,
+                setFallbackSpeechRecognizerLanguage,
+              ]}
+              sttLabelOptions={fallbackSttLabelOptions}
+              sttLabel={[
+                fallbackSpeechRecognizerLabel,
+                setFallbackSpeechRecognizerLabel,
+              ]}
             />
-            {hasLength(ttsLabelOptions) && ttsLabelOptions.length > 1 && (
-              <>
-                <label htmlFor="synthesis_label">Label</label>
-                <Selector
-                  id="systhesis_label"
-                  name="systhesis_label"
-                  value={synthLabel}
-                  options={ttsLabelOptions}
-                  onChange={(e) => {
-                    setSynthLabel(e.target.value);
-                  }}
-                />
-              </>
-            )}
-            {synthVendor &&
-              !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
-              synthLang && (
-                <>
-                  <label htmlFor="synthesis_lang">Language</label>
-                  <Selector
-                    id="synthesis_lang"
-                    name="synthesis_lang"
-                    value={synthLang}
-                    options={synthesis[
-                      synthVendor as keyof SynthesisVendors
-                    ].map((lang: VoiceLanguage) => ({
-                      name: lang.name,
-                      value: lang.code,
-                    }))}
-                    onChange={(e) => {
-                      const language = e.target.value;
-                      setSynthLang(language);
-
-                      /** When using Google and en-US, ensure "Standard-C" is used as default */
-                      if (
-                        synthVendor === VENDOR_GOOGLE &&
-                        language === LANG_EN_US
-                      ) {
-                        setSynthVoice(LANG_EN_US_STANDARD_C);
-                        return;
-                      }
-
-                      const newLang = synthesis[
-                        synthVendor as keyof SynthesisVendors
-                      ].find((lang) => lang.code === language);
-
-                      setSynthVoice(newLang!.voices[0].value);
-                    }}
-                  />
-                  <label htmlFor="synthesis_voice">Voice</label>
-                  <Selector
-                    id="synthesis_voice"
-                    name="synthesis_voice"
-                    value={synthVoice}
-                    options={
-                      synthesis[synthVendor as keyof SynthesisVendors]
-                        .filter(
-                          (lang: VoiceLanguage) => lang.code === synthLang
-                        )
-                        .flatMap((lang: VoiceLanguage) =>
-                          lang.voices.map((voice: Voice) => ({
-                            name: voice.name,
-                            value: voice.value,
-                          }))
-                        ) as Voice[]
-                    }
-                    onChange={(e) => setSynthVoice(e.target.value)}
-                  />
-                </>
-              )}
-            {synthVendor.toString().startsWith(VENDOR_CUSTOM) && (
-              <>
-                <label htmlFor="custom_vendor_synthesis_lang">Language</label>
-                <input
-                  id="custom_vendor_synthesis_lang"
-                  type="text"
-                  name="custom_vendor_synthesis_lang"
-                  placeholder="Required"
-                  required
-                  value={synthLang}
-                  onChange={(e) => {
-                    setSynthLang(e.target.value);
-                  }}
-                />
-
-                <label htmlFor="custom_vendor_synthesis_voice">Voice</label>
-                <input
-                  id="custom_vendor_synthesis_voice"
-                  type="text"
-                  name="custom_vendor_synthesis_voice"
-                  placeholder="Required"
-                  required
-                  value={synthVoice}
-                  onChange={(e) => {
-                    setSynthVoice(e.target.value);
-                  }}
-                />
-              </>
-            )}
-          </fieldset>
-        )}
-        {recognizers && (
-          <fieldset>
-            <label htmlFor="recognizer_vendor">Speech recognizer vendor</label>
-            <Selector
-              id="recognizer_vendor"
-              name="recognizer_vendor"
-              value={recogVendor}
-              options={softSttVendor.filter(
-                (vendor) =>
-                  vendor.value != VENDOR_WELLSAID &&
-                  vendor.value !== VENDOR_CUSTOM
-              )}
-              onChange={(e) => {
-                const vendor = e.target.value as keyof RecognizerVendors;
-                setRecogVendor(vendor);
-
-                /**When vendor is custom, Language is input by user */
-                if (vendor.toString() === VENDOR_CUSTOM) return;
-
-                /** Google and AWS have different language lists */
-                /** If the new language doesn't map then default to "en-US" */
-                const newLang = recognizers[vendor].find(
-                  (lang: Language) => lang.code === recogLang
-                );
-
-                if (
-                  (vendor === VENDOR_GOOGLE || vendor === VENDOR_AWS) &&
-                  !newLang
-                ) {
-                  setRecogLang(LANG_EN_US);
-                }
-              }}
-            />
-            {hasLength(sttLabelOptions) && sttLabelOptions.length > 1 && (
-              <>
-                <label htmlFor="recog_label">Label</label>
-                <Selector
-                  id="recog_label"
-                  name="recog_label"
-                  value={recogLabel}
-                  options={sttLabelOptions}
-                  onChange={(e) => {
-                    setRecogLabel(e.target.value);
-                  }}
-                />
-              </>
-            )}
-            {recogVendor &&
-              !recogVendor.toString().startsWith(VENDOR_CUSTOM) &&
-              recogLang && (
-                <>
-                  <label htmlFor="recognizer_lang">Language</label>
-                  <Selector
-                    id="recognizer_lang"
-                    name="recognizer_lang"
-                    value={recogLang}
-                    options={recognizers[
-                      recogVendor as keyof RecognizerVendors
-                    ].map((lang: Language) => ({
-                      name: lang.name,
-                      value: lang.code,
-                    }))}
-                    onChange={(e) => {
-                      setRecogLang(e.target.value);
-                    }}
-                  />
-                </>
-              )}
-            {recogVendor.toString().startsWith(VENDOR_CUSTOM) && (
-              <>
-                <label htmlFor="custom_vendor_recognizer_voice">Language</label>
-                <input
-                  id="custom_vendor_recognizer_voice"
-                  type="text"
-                  name="custom_vendor_recognizer_voice"
-                  placeholder="Required"
-                  required
-                  value={recogLang}
-                  onChange={(e) => {
-                    setRecogLang(e.target.value);
-                  }}
-                />
-              </>
-            )}
-          </fieldset>
-        )}
+            <fieldset>
+              <Button
+                type="button"
+                small
+                onClick={swapPrimaryAndfalloverSpeech}
+              >
+                Swap primary and fallback
+              </Button>
+            </fieldset>
+          </Checkzone>
+        </fieldset>
         {(import.meta.env.INITIAL_APP_JSON_ENABLED === undefined ||
           import.meta.env.INITIAL_APP_JSON_ENABLED) && (
           <fieldset>

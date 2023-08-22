@@ -324,6 +324,14 @@ export interface Application {
   speech_recognizer_language: null | string;
   speech_recognizer_label: null | string;
   record_all_calls: number;
+  use_for_fallback_speech: number;
+  fallback_speech_synthesis_vendor: null | string;
+  fallback_speech_synthesis_language: null | string;
+  fallback_speech_synthesis_voice: null | string;
+  fallback_speech_synthesis_label: null | string;
+  fallback_speech_recognizer_vendor: null | string;
+  fallback_speech_recognizer_language: null | string;
+  fallback_speech_recognizer_label: null | string;
 }
 
 export interface PhoneNumber {
