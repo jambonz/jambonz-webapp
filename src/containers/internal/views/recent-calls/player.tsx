@@ -386,7 +386,7 @@ export const Player = ({ call }: PlayerProps) => {
             <button
               type="button"
               onClick={() => {
-                setDeleteRecordUrl(recording_url || "");
+                setDeleteRecordUrl(url || "");
               }}
               title="Delete record file"
             >
