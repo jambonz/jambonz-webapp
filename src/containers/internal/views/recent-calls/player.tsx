@@ -3,8 +3,8 @@ import React from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useEffect, useRef, useState } from "react";
 import { Icon, P } from "@jambonz/ui-kit";
-import { Icons, ModalClose } from "src/components";
-import { getBlob, getJaegerTrace } from "src/api";
+import { Icons, Modal, ModalClose } from "src/components";
+import { deleteRecord, getBlob, getJaegerTrace } from "src/api";
 import { DownloadedBlob, RecentCall } from "src/api/types";
 import RegionsPlugin, { Region } from "wavesurfer.js/src/plugin/regions";
 import TimelinePlugin from "wavesurfer.js/src/plugin/timeline";
@@ -21,6 +21,7 @@ import {
   getSpansByNameRegex,
   getSpansFromJaegerRoot,
 } from "./utils";
+import { toastError, toastSuccess } from "src/store";
 
 type PlayerProps = {
   call: RecentCall;
@@ -48,6 +49,8 @@ export const Player = ({ call }: PlayerProps) => {
   const waveSufferRef = useRef<WaveSurfer | null>(null);
 
   const [record, setRecord] = useState<DownloadedBlob | null>(null);
+
+  const [deleteRecordUrl, setDeleteRecordUrl] = useState("");
 
   const drawDtmfRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
     if (waveSufferRef.current) {
@@ -201,6 +204,19 @@ export const Player = ({ call }: PlayerProps) => {
     }
   };
 
+  const handleDeleteRecordSubmit = () => {
+    if (deleteRecordUrl) {
+      deleteRecord(deleteRecordUrl)
+        .then(() => {
+          setDeleteRecordUrl("");
+          toastSuccess("Successfully deleted record");
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    }
+  };
+
   useEffect(() => {
     buildWavesufferRegion();
   }, [jaegerRoot, isReady]);
@@ -314,53 +330,71 @@ export const Player = ({ call }: PlayerProps) => {
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>
-        <div className="media-container__center">
-          <button
-            className="btnty"
-            type="button"
-            onClick={() => {
-              setPlaybackJump(-JUMP_DURATION);
-            }}
-            title="Jump left"
-            disabled={!isReady}
-          >
-            <Icon>
-              <Icons.ChevronsLeft />
-            </Icon>
-          </button>
-          <button
-            className="btnty"
-            type="button"
-            onClick={togglePlayback}
-            title="play/pause"
-            disabled={!isReady}
-          >
-            <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
-          </button>
+        <div className="controll-btn-container">
+          <div className="controll-btn-container__placeholder"></div>
+          <div className="controll-btn-container__center">
+            <button
+              className="btnty"
+              type="button"
+              onClick={() => {
+                setPlaybackJump(-JUMP_DURATION);
+              }}
+              title="Jump left"
+              disabled={!isReady}
+            >
+              <Icon>
+                <Icons.ChevronsLeft />
+              </Icon>
+            </button>
+            <button
+              className="btnty"
+              type="button"
+              onClick={togglePlayback}
+              title="play/pause"
+              disabled={!isReady}
+            >
+              <Icon>{isPlaying ? <Icons.Pause /> : <Icons.Play />}</Icon>
+            </button>
 
-          <button
-            className="btnty"
-            type="button"
-            onClick={() => {
-              setPlaybackJump(JUMP_DURATION);
-            }}
-            title="Jump right"
-            disabled={!isReady}
-          >
-            <Icon>
-              <Icons.ChevronsRight />
-            </Icon>
-          </button>
-          <a
-            href={record.data_url}
-            download={record.file_name}
-            className="btnty"
-            title="Download record file"
-          >
-            <Icon>
-              <Icons.Download />
-            </Icon>
-          </a>
+            <button
+              className="btnty"
+              type="button"
+              onClick={() => {
+                setPlaybackJump(JUMP_DURATION);
+              }}
+              title="Jump right"
+              disabled={!isReady}
+            >
+              <Icon>
+                <Icons.ChevronsRight />
+              </Icon>
+            </button>
+          </div>
+
+          <div className="controll-btn-container__right">
+            <a
+              href={record.data_url}
+              download={record.file_name}
+              className="btnty"
+              title="Download record file"
+            >
+              <Icon>
+                <Icons.Download />
+              </Icon>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteRecordUrl(recording_url || "");
+              }}
+              title="Delete record file"
+            >
+              <Icon>
+                <Icons.Trash2 />
+              </Icon>
+            </button>
+          </div>
         </div>
         <label htmlFor="is_active" className="chk">
           <input
@@ -463,6 +497,17 @@ export const Player = ({ call }: PlayerProps) => {
             </div>
           </div>
         </ModalClose>
+      )}
+      {deleteRecordUrl && (
+        <Modal
+          handleCancel={() => setDeleteRecordUrl("")}
+          handleSubmit={handleDeleteRecordSubmit}
+        >
+          <P>
+            Are you sure you want to delete the record for call{" "}
+            <strong>{call_sid}</strong>?
+          </P>
+        </Modal>
       )}
     </>
   );
