@@ -305,6 +305,7 @@ export interface BucketCredential {
   secret_access_key?: null | string;
   tags?: null | AwsTag[];
   service_key?: null | string;
+  connection_string?: null | string;
 }
 
 export interface Application {
@@ -318,9 +319,19 @@ export interface Application {
   speech_synthesis_voice: null | string;
   speech_synthesis_vendor: null | Lowercase<Vendor>;
   speech_synthesis_language: null | string;
+  speech_synthesis_label: null | string;
   speech_recognizer_vendor: null | Lowercase<Vendor>;
   speech_recognizer_language: null | string;
+  speech_recognizer_label: null | string;
   record_all_calls: number;
+  use_for_fallback_speech: number;
+  fallback_speech_synthesis_vendor: null | string;
+  fallback_speech_synthesis_language: null | string;
+  fallback_speech_synthesis_voice: null | string;
+  fallback_speech_synthesis_label: null | string;
+  fallback_speech_recognizer_vendor: null | string;
+  fallback_speech_recognizer_language: null | string;
+  fallback_speech_recognizer_label: null | string;
 }
 
 export interface PhoneNumber {
@@ -393,6 +404,7 @@ export interface SpeechCredential {
   auth_token: null | string;
   custom_stt_url: null | string;
   custom_tts_url: null | string;
+  label: null | string;
 }
 
 export interface Alert {

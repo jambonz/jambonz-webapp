@@ -15,6 +15,11 @@ export interface VendorOptions {
   value: Lowercase<Vendor>;
 }
 
+export interface LabelOptions {
+  name: string;
+  value: string;
+}
+
 export interface Region {
   name: string;
   value: string;

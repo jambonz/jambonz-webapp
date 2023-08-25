@@ -76,7 +76,11 @@ export const SpeechServices = () => {
           refetch();
           toastSuccess(
             <>
-              Deleted speech service <strong>{credential.vendor}</strong>
+              Deleted speech service{" "}
+              <strong>
+                {credential.vendor}
+                {credential.label ? ` (${credential.label})` : ""}
+              </strong>{" "}
             </>
           );
         })
@@ -195,6 +199,14 @@ export const SpeechServices = () => {
                       <div>
                         <CredentialStatus cred={credential} />
                       </div>
+                      {credential.label && (
+                        <div>
+                          <div className="i txt--teal">
+                            <Icons.Tag />
+                            <span>{credential.label}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <ScopedAccess
