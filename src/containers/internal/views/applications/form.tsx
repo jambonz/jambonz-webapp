@@ -290,17 +290,17 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       const noneLabelObject = {
         name: "None",
-        value: null,
+        value: "",
       };
 
-      let labels = credentials
-        .filter(
-          (c) =>
-            c.label &&
-            c.vendor === synthVendor &&
-            c.account_sid === accountSid &&
-            c.use_for_tts
-        )
+      let c1 = credentials.filter(
+        (c) =>
+          c.vendor === synthVendor &&
+          (!c.account_sid || c.account_sid === accountSid) &&
+          c.use_for_tts
+      );
+      let c2 = c1
+        .filter((c) => c.label)
         .map((c) =>
           Object.assign({
             name: c.label,
@@ -308,37 +308,39 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           })
         );
 
-      setTtsLabelOptions([noneLabelObject, ...labels]);
+      setTtsLabelOptions(
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+      );
 
-      labels = fallbackSpeechSynthsisVendor
-        ? credentials
-            .filter(
-              (c) =>
-                c.label &&
-                c.vendor === fallbackSpeechSynthsisVendor &&
-                c.account_sid === accountSid &&
-                c.use_for_tts
-            )
-            .map((c) =>
-              Object.assign({
-                name: c.label,
-                value: c.label,
-              })
-            )
+      c1 = fallbackSpeechSynthsisVendor
+        ? credentials.filter(
+            (c) =>
+              c.vendor === fallbackSpeechSynthsisVendor &&
+              (!c.account_sid || c.account_sid === accountSid) &&
+              c.use_for_tts
+          )
         : [];
 
-      console.log(labels);
+      c2 = c1
+        .filter((c) => c.label)
+        .map((c) =>
+          Object.assign({
+            name: c.label,
+            value: c.label,
+          })
+        );
+      setFallbackTtsLabelOptions(
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+      );
 
-      setFallbackTtsLabelOptions([noneLabelObject, ...labels]);
-
-      labels = credentials
-        .filter(
-          (c) =>
-            c.label &&
-            c.vendor === recogVendor &&
-            c.account_sid === accountSid &&
-            c.use_for_stt
-        )
+      c1 = credentials.filter(
+        (c) =>
+          c.vendor === recogVendor &&
+          (!c.account_sid || c.account_sid === accountSid) &&
+          c.use_for_stt
+      );
+      c2 = c1
+        .filter((c) => c.label)
         .map((c) =>
           Object.assign({
             name: c.label,
@@ -346,26 +348,30 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           })
         );
 
-      setSttLabelOptions([noneLabelObject, ...labels]);
+      setSttLabelOptions(
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+      );
 
-      labels = fallbackSpeechRecognizerVendor
-        ? credentials
-            .filter(
-              (c) =>
-                c.label &&
-                c.vendor === fallbackSpeechRecognizerVendor &&
-                c.account_sid === accountSid &&
-                c.use_for_stt
-            )
-            .map((c) =>
-              Object.assign({
-                name: c.label,
-                value: c.label,
-              })
-            )
+      c1 = fallbackSpeechRecognizerVendor
+        ? credentials.filter(
+            (c) =>
+              c.vendor === fallbackSpeechRecognizerVendor &&
+              (!c.account_sid || c.account_sid === accountSid) &&
+              c.use_for_stt
+          )
         : [];
+      c2 = c1
+        .filter((c) => c.label)
+        .map((c) =>
+          Object.assign({
+            name: c.label,
+            value: c.label,
+          })
+        );
 
-      setFallbackSttLabelOptions([noneLabelObject, ...labels]);
+      setFallbackSttLabelOptions(
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+      );
     }
   }, [
     credentials,
