@@ -42,7 +42,7 @@ export const Selector = forwardRef<SelectorRef, SelectorProps>(
           {...restProps}
         >
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={`${id}_${option.value}`} value={option.value}>
               {option.name}
             </option>
           ))}
