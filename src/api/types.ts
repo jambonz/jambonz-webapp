@@ -386,8 +386,10 @@ export interface SpeechCredential {
   secret_access_key: null | string;
   service_key: null | string;
   use_custom_tts: number;
+  custom_tts_endpoint_url: null | string;
   custom_tts_endpoint: null | string;
   use_custom_stt: number;
+  custom_stt_endpoint_url: null | string;
   custom_stt_endpoint: null | string;
   client_id: null | string;
   secret: null | string;

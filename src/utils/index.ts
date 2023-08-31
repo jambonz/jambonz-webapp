@@ -41,6 +41,10 @@ export const hasLength = <Type>(
   return hasValue(variable) && variable.length > minlength;
 };
 
+export const isNotBlank = (variable: string | null | undefined) => {
+  return hasValue(variable) && variable.length > 0;
+};
+
 export const isObject = (obj: unknown) => {
   /** null | undefined | Array will be "object" so exclude them */
   return typeof obj === "object" && hasValue(obj) && !Array.isArray(obj);
