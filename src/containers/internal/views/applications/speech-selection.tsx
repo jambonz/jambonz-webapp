@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { SpeechCredential } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { hasLength } from "src/utils";
 import {
@@ -8,6 +9,7 @@ import {
   VENDOR_CUSTOM,
   VENDOR_DEEPGRAM,
   VENDOR_GOOGLE,
+  VENDOR_MICROSOFT,
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
 } from "src/vendor";
@@ -21,6 +23,7 @@ import {
   VoiceLanguage,
 } from "src/vendor/types";
 type SpeechProviderSelectionProbs = {
+  credentials: SpeechCredential[] | undefined;
   synthesis: SynthesisVendors | undefined;
   ttsVendor: [
     keyof SynthesisVendors,
@@ -43,6 +46,7 @@ type SpeechProviderSelectionProbs = {
 };
 
 export const SpeechProviderSelection = ({
+  credentials,
   synthesis,
   ttsVendor: [synthVendor, setSynthVendor],
   ttsVendorOptions,
@@ -57,6 +61,19 @@ export const SpeechProviderSelection = ({
   sttLabelOptions,
   sttLabel: [recogLabel, setRecogLabel],
 }: SpeechProviderSelectionProbs) => {
+  const [selectedCredential, setSelectedCredential] = useState<
+    SpeechCredential | undefined
+  >();
+
+  useEffect(() => {
+    if (credentials) {
+      setSelectedCredential(
+        credentials.find(
+          (c) => c.vendor === synthVendor && c.label === synthLabel
+        )
+      );
+    }
+  }, [synthVendor, synthLabel]);
   return (
     <>
       {synthesis && (
@@ -161,22 +178,40 @@ export const SpeechProviderSelection = ({
                   }}
                 />
                 <label htmlFor="synthesis_voice">Voice</label>
-                <Selector
-                  id="synthesis_voice"
-                  name="synthesis_voice"
-                  value={synthVoice}
-                  options={
-                    synthesis[synthVendor as keyof SynthesisVendors]
-                      .filter((lang: VoiceLanguage) => lang.code === synthLang)
-                      .flatMap((lang: VoiceLanguage) =>
-                        lang.voices.map((voice: Voice) => ({
-                          name: voice.name,
-                          value: voice.value,
-                        }))
-                      ) as Voice[]
-                  }
-                  onChange={(e) => setSynthVoice(e.target.value)}
-                />
+                {synthVendor === VENDOR_MICROSOFT &&
+                selectedCredential &&
+                selectedCredential.use_custom_tts ? (
+                  <input
+                    id="custom_microsoft_synthesis_voice"
+                    type="text"
+                    name="custom_microsoft_synthesis_voice"
+                    placeholder="Required"
+                    required
+                    value={synthVoice}
+                    onChange={(e) => {
+                      setSynthVoice(e.target.value);
+                    }}
+                  />
+                ) : (
+                  <Selector
+                    id="synthesis_voice"
+                    name="synthesis_voice"
+                    value={synthVoice}
+                    options={
+                      synthesis[synthVendor as keyof SynthesisVendors]
+                        .filter(
+                          (lang: VoiceLanguage) => lang.code === synthLang
+                        )
+                        .flatMap((lang: VoiceLanguage) =>
+                          lang.voices.map((voice: Voice) => ({
+                            name: voice.name,
+                            value: voice.value,
+                          }))
+                        ) as Voice[]
+                    }
+                    onChange={(e) => setSynthVoice(e.target.value)}
+                  />
+                )}
               </>
             )}
           {synthVendor.toString().startsWith(VENDOR_CUSTOM) && (
