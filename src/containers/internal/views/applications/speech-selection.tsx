@@ -73,7 +73,7 @@ export const SpeechProviderSelection = ({
         )
       );
     }
-  }, [synthVendor, synthLabel]);
+  }, [synthVendor, synthLabel, credentials]);
   return (
     <>
       {synthesis && (
