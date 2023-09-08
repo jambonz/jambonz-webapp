@@ -674,6 +674,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           );
         })}
         <SpeechProviderSelection
+          credentials={credentials}
           synthesis={synthesis}
           ttsVendor={[synthVendor, setSynthVendor]}
           ttsVendorOptions={ttsVendorOptions}
@@ -700,6 +701,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             }}
           >
             <SpeechProviderSelection
+              credentials={credentials}
               synthesis={synthesis}
               ttsVendor={[
                 fallbackSpeechSynthsisVendor,
