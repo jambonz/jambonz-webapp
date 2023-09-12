@@ -28,6 +28,7 @@ import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import {
   AUDIO_FORMAT_OPTIONS,
   BUCKET_VENDOR_AWS,
+  BUCKET_VENDOR_S3_COMPATIBLE,
   BUCKET_VENDOR_AZURE,
   BUCKET_VENDOR_GOOGLE,
   BUCKET_VENDOR_OPTIONS,
@@ -131,6 +132,7 @@ export const AccountForm = ({
   const deleteMessageRef = useRef<HTMLInputElement | null>(null);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
   const [azureConnectionString, setAzureConnectionString] = useState("");
+  const [endpoint, setEndpoint] = useState("");
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -264,6 +266,11 @@ export const AccountForm = ({
       }),
       ...(bucketVendor === BUCKET_VENDOR_AZURE && {
         connection_string: azureConnectionString,
+      }),
+      ...(bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE && {
+        endpoint: endpoint,
+        access_key_id: bucketAccessKeyId,
+        secret_access_key: bucketSecretAccessKey,
       }),
     };
 
@@ -403,6 +410,16 @@ export const AccountForm = ({
             connection_string: azureConnectionString || null,
           },
         }),
+        ...(bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE && {
+          bucket_credential: {
+            vendor: bucketVendor || null,
+            endpoint: endpoint || null,
+            name: bucketName || null,
+            access_key_id: bucketAccessKeyId || null,
+            secret_access_key: bucketSecretAccessKey || null,
+            ...(hasLength(bucketTags) && { tags: bucketTags }),
+          },
+        }),
         ...(!bucketCredentialChecked && {
           record_all_calls: 0,
           bucket_credential: {
@@ -511,6 +528,9 @@ export const AccountForm = ({
         setAzureConnectionString(
           account.data.bucket_credential.connection_string
         );
+      }
+      if (account.data.bucket_credential?.endpoint) {
+        setEndpoint(account.data.bucket_credential.endpoint);
       }
       if (account.data.record_all_calls) {
         setRecordAllCalls(account.data.record_all_calls ? true : false);
@@ -1029,6 +1049,24 @@ export const AccountForm = ({
                       }}
                     />
                   </div>
+                  {bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE && (
+                    <>
+                      <label htmlFor="endpoint">
+                        Endpoint URI<span>*</span>
+                      </label>
+                      <input
+                        id="endpoint"
+                        required
+                        type="text"
+                        name="endpoint"
+                        placeholder="https://domain.com"
+                        value={endpoint}
+                        onChange={(e) => {
+                          setEndpoint(e.target.value);
+                        }}
+                      />
+                    </>
+                  )}
                   <label htmlFor="bucket_name">
                     {bucketVendor === BUCKET_VENDOR_AZURE
                       ? "Container"
@@ -1051,28 +1089,31 @@ export const AccountForm = ({
                       setTmpBucketName(e.target.value);
                     }}
                   />
-                  {bucketVendor === BUCKET_VENDOR_AWS && (
+                  {(bucketVendor === BUCKET_VENDOR_AWS ||
+                    bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE) && (
                     <>
-                      {regions && regions["aws"] && (
-                        <>
-                          <label htmlFor="bucket_aws_region">
-                            Region<span>*</span>
-                          </label>
-                          <Selector
-                            id="region"
-                            name="region"
-                            value={bucketRegion}
-                            required
-                            options={[
-                              {
-                                name: "Select a region",
-                                value: "",
-                              },
-                            ].concat(regions["aws"])}
-                            onChange={(e) => setBucketRegion(e.target.value)}
-                          />
-                        </>
-                      )}
+                      {bucketVendor === BUCKET_VENDOR_AWS &&
+                        regions &&
+                        regions["aws"] && (
+                          <>
+                            <label htmlFor="bucket_aws_region">
+                              Region<span>*</span>
+                            </label>
+                            <Selector
+                              id="region"
+                              name="region"
+                              value={bucketRegion}
+                              required
+                              options={[
+                                {
+                                  name: "Select a region",
+                                  value: "",
+                                },
+                              ].concat(regions["aws"])}
+                              onChange={(e) => setBucketRegion(e.target.value)}
+                            />
+                          </>
+                        )}
                       <label htmlFor="bucket_aws_access_key">
                         Access key ID<span>*</span>
                       </label>
@@ -1151,7 +1192,8 @@ export const AccountForm = ({
                     </>
                   )}
                   <label htmlFor="aws_s3_tags">
-                    {bucketVendor === BUCKET_VENDOR_AWS
+                    {bucketVendor === BUCKET_VENDOR_AWS ||
+                    bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE
                       ? "S3"
                       : bucketVendor === BUCKET_VENDOR_GOOGLE
                       ? "Google Cloud Storage"
@@ -1230,7 +1272,11 @@ export const AccountForm = ({
                         (bucketVendor === BUCKET_VENDOR_GOOGLE &&
                           !bucketGoogleServiceKey) ||
                         (bucketVendor === BUCKET_VENDOR_AZURE &&
-                          !azureConnectionString)
+                          !azureConnectionString) ||
+                        (bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE &&
+                          (!endpoint ||
+                            !bucketAccessKeyId ||
+                            !bucketSecretAccessKey))
                       }
                     >
                       Test

@@ -161,6 +161,7 @@ export const SIP_GATEWAY_PROTOCOL_OPTIONS = [
  * Record bucket type
  */
 export const BUCKET_VENDOR_AWS = "aws_s3";
+export const BUCKET_VENDOR_S3_COMPATIBLE = "s3_compatible";
 export const BUCKET_VENDOR_GOOGLE = "google";
 export const BUCKET_VENDOR_AZURE = "azure";
 export const BUCKET_VENDOR_OPTIONS = [
@@ -173,12 +174,16 @@ export const BUCKET_VENDOR_OPTIONS = [
     value: BUCKET_VENDOR_AWS,
   },
   {
-    name: "Google Cloud Storage",
-    value: BUCKET_VENDOR_GOOGLE,
+    name: "AWS S3 Compatible",
+    value: BUCKET_VENDOR_S3_COMPATIBLE,
   },
   {
     name: "Azure Cloud Storage",
     value: BUCKET_VENDOR_AZURE,
+  },
+  {
+    name: "Google Cloud Storage",
+    value: BUCKET_VENDOR_GOOGLE,
   },
 ];
 
