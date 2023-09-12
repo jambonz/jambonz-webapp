@@ -306,6 +306,7 @@ export interface BucketCredential {
   tags?: null | AwsTag[];
   service_key?: null | string;
   connection_string?: null | string;
+  endpoint?: null | string;
 }
 
 export interface Application {
