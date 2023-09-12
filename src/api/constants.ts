@@ -174,16 +174,16 @@ export const BUCKET_VENDOR_OPTIONS = [
     value: BUCKET_VENDOR_AWS,
   },
   {
-    name: "S3-Compatible",
+    name: "AWS S3 Compatible",
     value: BUCKET_VENDOR_S3_COMPATIBLE,
-  },
-  {
-    name: "Google Cloud Storage",
-    value: BUCKET_VENDOR_GOOGLE,
   },
   {
     name: "Azure Cloud Storage",
     value: BUCKET_VENDOR_AZURE,
+  },
+  {
+    name: "Google Cloud Storage",
+    value: BUCKET_VENDOR_GOOGLE,
   },
 ];
 
