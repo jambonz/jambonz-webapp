@@ -244,7 +244,7 @@ export const CarrierForm = ({
           ? {
               ...g,
               [key]: value,
-              // If Change to ipv4 and port is null, change port to 0
+              // If Change to ipv4 and port is null, change port to 5060
               ...(key === "ipv4" &&
                 value &&
                 typeof value === "string" &&
@@ -981,14 +981,12 @@ export const CarrierForm = ({
                           min="0"
                           max={TCP_MAX_PORT}
                           placeholder={
-                            DEFAULT_SIP_GATEWAY.port
-                              ? DEFAULT_SIP_GATEWAY.port.toString()
-                              : ""
+                            g.protocol === "tls" || g.protocol === "tls/srtp"
+                              ? ""
+                              : DEFAULT_SIP_GATEWAY.port?.toString()
                           }
                           value={g.port === null ? "" : g.port}
                           onChange={(e) => {
-                            console.log(Number(e.target.value));
-                            console.log(e.target.value);
                             updateSipGateways(
                               i,
                               "port",
