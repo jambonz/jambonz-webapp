@@ -22,6 +22,7 @@ import {
   FQDN,
   FQDN_TOP_LEVEL,
   INVALID,
+  IP,
   NETMASK_OPTIONS,
   SIP_GATEWAY_PROTOCOL_OPTIONS,
   TCP_MAX_PORT,
@@ -47,6 +48,8 @@ import {
   hasLength,
   isValidPort,
   disableDefaultTrunkRouting,
+  hasValue,
+  isNotBlank,
 } from "src/utils";
 
 import type {
@@ -236,7 +239,20 @@ export const CarrierForm = ({
     value: typeof sipGateways[number][keyof SipGateway]
   ) => {
     setSipGateways(
-      sipGateways.map((g, i) => (i === index ? { ...g, [key]: value } : g))
+      sipGateways.map((g, i) =>
+        i === index
+          ? {
+              ...g,
+              [key]: value,
+              // If Change to ipv4 and port is null, change port to 0
+              ...(key === "ipv4" &&
+                value &&
+                typeof value === "string" &&
+                getIpValidationType(value) === IP &&
+                g.port === null && { port: 5060 }),
+            }
+          : g
+      )
     );
   };
 
@@ -409,7 +425,9 @@ export const CarrierForm = ({
     /** When to switch to `sip` tab */
 
     const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
-    const invalidSipPort = sipGateways.find((g) => !isValidPort(g.port));
+    const invalidSipPort = sipGateways.find(
+      (g) => hasValue(g.port) && !isValidPort(g.port)
+    );
     const sipGatewayValidation = getSipValidation();
 
     /** Empty SIP gateway */
@@ -962,13 +980,23 @@ export const CarrierForm = ({
                           type="number"
                           min="0"
                           max={TCP_MAX_PORT}
-                          placeholder={DEFAULT_SIP_GATEWAY.port.toString()}
-                          value={g.port}
+                          placeholder={
+                            DEFAULT_SIP_GATEWAY.port
+                              ? DEFAULT_SIP_GATEWAY.port.toString()
+                              : ""
+                          }
+                          value={g.port === null ? "" : g.port}
                           onChange={(e) => {
+                            console.log(Number(e.target.value));
+                            console.log(e.target.value);
                             updateSipGateways(
                               i,
                               "port",
-                              Number(e.target.value)
+                              g.outbound > 0 &&
+                                !isNotBlank(e.target.value) &&
+                                getIpValidationType(g.ipv4) !== IP
+                                ? null
+                                : Number(e.target.value)
                             );
                           }}
                           ref={(ref: HTMLInputElement) =>
