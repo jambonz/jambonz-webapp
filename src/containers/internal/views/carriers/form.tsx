@@ -1092,6 +1092,29 @@ export const CarrierForm = ({
                           <div>Outbound</div>
                         </label>
                       </div>
+                      {g.outbound > 0 && g.protocol === "tls/srtp" && (
+                        <div>
+                          <label
+                            htmlFor={`sip_pad_crypto_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`sip_pad_crypto_${i}`}
+                              name={`sip_pad_crypto_${i}`}
+                              type="checkbox"
+                              checked={g.pad_crypto ? true : false}
+                              onChange={(e) => {
+                                updateSipGateways(
+                                  i,
+                                  "pad_crypto",
+                                  e.target.checked
+                                );
+                              }}
+                            />
+                            <div>Pad crypto</div>
+                          </label>
+                        </div>
+                      )}
                     </div>
 
                     <button

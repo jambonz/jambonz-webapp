@@ -227,7 +227,7 @@ fieldset {
     }
 
     &:nth-child(2) {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       margin-top: ui-vars.$px02;
 
       > div:last-child {

@@ -469,6 +469,7 @@ export interface SipGateway extends Gateway {
   is_active: boolean;
   protocol?: string;
   port: number | null;
+  pad_crypto?: boolean;
 }
 
 export interface SmppGateway extends Gateway {
