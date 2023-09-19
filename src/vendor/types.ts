@@ -71,6 +71,7 @@ export interface RecognizerVendors {
   ibm: Language[];
   nvidia: Language[];
   soniox: Language[];
+  cobalt: Language[];
 }
 
 export interface SynthesisVendors {
