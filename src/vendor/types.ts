@@ -8,6 +8,7 @@ export type Vendor =
   | "IBM"
   | "Nvidia"
   | "Soniox"
+  | "Cobalt"
   | "Custom";
 
 export interface VendorOptions {

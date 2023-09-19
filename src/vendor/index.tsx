@@ -19,6 +19,7 @@ export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
 export const VENDOR_CUSTOM = "custom";
+export const VENDOR_COBALT = "cobalt";
 
 export const vendors: VendorOptions[] = [
   {
@@ -61,7 +62,11 @@ export const vendors: VendorOptions[] = [
     name: "Custom",
     value: VENDOR_CUSTOM,
   },
-];
+  {
+    name: "Cobalt",
+    value: VENDOR_COBALT,
+  },
+].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
 export const useRegionVendors = () => {
   const [regions, setRegions] = useState<RegionVendors>();

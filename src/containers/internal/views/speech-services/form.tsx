@@ -30,6 +30,7 @@ import {
   VENDOR_NVIDIA,
   VENDOR_SONIOX,
   VENDOR_CUSTOM,
+  VENDOR_COBALT,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -108,6 +109,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [onPremNuanceSttCheck, setOnPremNuanceSttCheck] = useState(false);
   const [tmpOnPremNuanceSttUrl, setTmpOnPremNuanceSttUrl] = useState("");
   const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
+  const [cobaltServerUri, setCobaltServerUri] = useState("");
   const [label, setLabel] = useState("");
 
   const handleFile = (file: File) => {
@@ -191,6 +193,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           secret: secretKey || null,
           nuance_tts_uri: onPremNuanceTtsUrl || null,
           nuance_stt_uri: onPremNuanceSttUrl || null,
+        }),
+        ...(vendor === VENDOR_COBALT && {
+          cobalt_server_uri: cobaltServerUri || null,
         }),
       };
 
@@ -380,6 +385,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.label) {
         setLabel(credential.data.label);
       }
+      if (credential.data.cobalt_server_uri) {
+        setCobaltServerUri(credential.data.cobalt_server_uri);
+      }
     }
   }, [credential]);
 
@@ -468,6 +476,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor && (
           <fieldset>
             {vendor !== VENDOR_DEEPGRAM &&
+              vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
@@ -558,6 +567,24 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 </Checkzone>
               </Fragment>
             )}
+          </fieldset>
+        )}
+        {vendor === VENDOR_COBALT && (
+          <fieldset>
+            <label htmlFor="cobalt_server_url">
+              Server URI<span>*</span>
+            </label>
+            <input
+              id="cobalt_server_url"
+              type="text"
+              name="cobalt_server_url"
+              placeholder="Required"
+              required
+              value={cobaltServerUri}
+              onChange={(e) => {
+                setCobaltServerUri(e.target.value);
+              }}
+            />
           </fieldset>
         )}
         {vendor === VENDOR_CUSTOM && (
