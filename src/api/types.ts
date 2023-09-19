@@ -459,7 +459,6 @@ export interface PredefinedCarrier extends Carrier {
 export interface Gateway {
   voip_carrier_sid: string;
   ipv4: string;
-  port: number;
   netmask: number;
   inbound: number;
   outbound: number;
@@ -469,6 +468,7 @@ export interface SipGateway extends Gateway {
   sip_gateway_sid?: null | string;
   is_active: boolean;
   protocol?: string;
+  port: number | null;
   pad_crypto?: boolean;
 }
 
@@ -476,6 +476,7 @@ export interface SmppGateway extends Gateway {
   smpp_gateway_sid?: null | string;
   is_primary: boolean;
   use_tls: boolean;
+  port: number;
 }
 
 export interface Lcr {
