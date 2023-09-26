@@ -6,6 +6,7 @@ import {
   LANG_EN_US,
   LANG_EN_US_STANDARD_C,
   VENDOR_AWS,
+  VENDOR_COBALT,
   VENDOR_CUSTOM,
   VENDOR_DEEPGRAM,
   VENDOR_GOOGLE,
@@ -87,7 +88,8 @@ export const SpeechProviderSelection = ({
               (vendor) =>
                 vendor.value != VENDOR_DEEPGRAM &&
                 vendor.value != VENDOR_SONIOX &&
-                vendor.value !== VENDOR_CUSTOM
+                vendor.value !== VENDOR_CUSTOM &&
+                vendor.value !== VENDOR_COBALT
             )}
             onChange={(e) => {
               const vendor = e.target.value as keyof SynthesisVendors;
