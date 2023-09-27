@@ -3,6 +3,7 @@ import { SpeechCredential } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { hasLength } from "src/utils";
 import {
+  LANG_COBALT_EN_US,
   LANG_EN_US,
   LANG_EN_US_STANDARD_C,
   VENDOR_AWS,
@@ -278,6 +279,10 @@ export const SpeechProviderSelection = ({
                 !newLang
               ) {
                 setRecogLang(LANG_EN_US);
+              }
+              // Default colbalt language
+              if (vendor === VENDOR_COBALT) {
+                setRecogLang(LANG_COBALT_EN_US);
               }
             }}
           />
