@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 export const LANG_EN_US = "en-US";
-export const ELEVENLABS_LANG_EN = "en-US";
+export const ELEVENLABS_LANG_EN = "en";
 export const LANG_COBALT_EN_US = "en_US-8khz";
 export const LANG_EN_US_STANDARD_C = "en-US-Standard-C";
 export const VENDOR_GOOGLE = "google";
