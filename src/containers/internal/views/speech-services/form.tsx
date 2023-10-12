@@ -204,7 +204,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           cobalt_server_uri: cobaltServerUri || null,
         }),
         ...(vendor === VENDOR_ELEVENLABS && {
-          api_key: ttsApiKey || null,
           model_id: ttsModelId || null,
         }),
       };
@@ -241,7 +240,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_MICROSOFT ||
               vendor === VENDOR_WELLSAID ||
               vendor === VENDOR_DEEPGRAM ||
-              vendor === VENDOR_SONIOX
+              vendor === VENDOR_SONIOX ||
+              vendor === VENDOR_ELEVENLABS
                 ? apiKey
                 : null,
           }),
