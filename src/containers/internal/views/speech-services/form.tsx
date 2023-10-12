@@ -807,7 +807,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {vendor == VENDOR_ELEVENLABS && (
           <fieldset>
-            <label htmlFor={`${vendor}_apikey`}>Model Id</label>
+            <label htmlFor={`${vendor}_apikey`}>Model</label>
             <Selector
               id={"audio_format"}
               name={"audio_format"}
