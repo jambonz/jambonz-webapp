@@ -9,7 +9,8 @@ export type Vendor =
   | "Nvidia"
   | "Soniox"
   | "Cobalt"
-  | "Custom";
+  | "Custom"
+  | "ElevenLabs";
 
 export interface VendorOptions {
   name: Vendor;
@@ -82,6 +83,7 @@ export interface SynthesisVendors {
   nuance: VoiceLanguage[];
   ibm: VoiceLanguage[];
   nvidia: VoiceLanguage[];
+  elevenlabs: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

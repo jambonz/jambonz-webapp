@@ -3,6 +3,7 @@ import { SpeechCredential } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { hasLength } from "src/utils";
 import {
+  ELEVENLABS_LANG_EN,
   LANG_COBALT_EN_US,
   LANG_EN_US,
   LANG_EN_US_STANDARD_C,
@@ -10,6 +11,7 @@ import {
   VENDOR_COBALT,
   VENDOR_CUSTOM,
   VENDOR_DEEPGRAM,
+  VENDOR_ELEVENLABS,
   VENDOR_GOOGLE,
   VENDOR_MICROSOFT,
   VENDOR_SONIOX,
@@ -112,6 +114,15 @@ export const SpeechProviderSelection = ({
                 return;
               }
 
+              if (vendor === VENDOR_ELEVENLABS) {
+                const newLang = synthesis[vendor].find(
+                  (lang) => lang.code === ELEVENLABS_LANG_EN
+                );
+                setSynthLang(ELEVENLABS_LANG_EN);
+                setSynthVoice(newLang!.voices[0].value);
+                return;
+              }
+
               /** Google and AWS have different language lists */
               /** If the new language doesn't map then default to "en-US" */
               let newLang = synthesis[vendor].find(
@@ -202,9 +213,13 @@ export const SpeechProviderSelection = ({
                     value={synthVoice}
                     options={
                       synthesis[synthVendor as keyof SynthesisVendors]
-                        .filter(
-                          (lang: VoiceLanguage) => lang.code === synthLang
-                        )
+                        .filter((lang: VoiceLanguage) => {
+                          // ELEVENLABS has same voice for all lange, take voices from the 1st language
+                          if (synthVendor === VENDOR_ELEVENLABS) {
+                            return true;
+                          }
+                          return lang.code === synthLang;
+                        })
                         .flatMap((lang: VoiceLanguage) =>
                           lang.voices.map((voice: Voice) => ({
                             name: voice.name,

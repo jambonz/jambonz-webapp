@@ -197,6 +197,12 @@ export const AUDIO_FORMAT_OPTIONS = [
     value: "wav",
   },
 ];
+
+export const DEFAULT_ELEVENLABS_MODEL = "eleven_multilingual_v2";
+
+export const ELEVENLABS_MODEL_OPTIONS = [
+  { name: "Eleven Multilingual v2", value: "eleven_multilingual_v2" },
+];
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;

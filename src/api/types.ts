@@ -407,6 +407,7 @@ export interface SpeechCredential {
   custom_tts_url: null | string;
   label: null | string;
   cobalt_server_uri: null | string;
+  model_id: null | string;
 }
 
 export interface Alert {
