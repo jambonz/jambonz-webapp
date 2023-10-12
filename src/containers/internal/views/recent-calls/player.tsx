@@ -6,8 +6,8 @@ import { Icon, P } from "@jambonz/ui-kit";
 import { Icons, Modal, ModalClose } from "src/components";
 import { deleteRecord, getBlob, getJaegerTrace } from "src/api";
 import { DownloadedBlob, RecentCall } from "src/api/types";
-import RegionsPlugin, { Region } from "wavesurfer.js/src/plugin/regions";
-import TimelinePlugin from "wavesurfer.js/src/plugin/timeline";
+import RegionsPlugin, { Region } from "wavesurfer.js/dist/plugins/regions";
+import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline";
 import { API_BASE_URL } from "src/api/constants";
 import {
   JaegerRoot,
@@ -46,15 +46,19 @@ export const Player = ({ call }: PlayerProps) => {
 
   const wavesurferId = `wavesurfer--${call_sid}`;
   const wavesurferTimelineId = `timeline-${wavesurferId}`;
-  const waveSufferRef = useRef<WaveSurfer | null>(null);
+  const waveSuferRef = useRef<WaveSurfer | null>(null);
+  const waveSuferRegionsPluginRef = useRef<RegionsPlugin | null>();
 
   const [record, setRecord] = useState<DownloadedBlob | null>(null);
 
   const [deleteRecordUrl, setDeleteRecordUrl] = useState("");
 
   const drawDtmfRegionForSpan = (s: JaegerSpan, startPoint: JaegerSpan) => {
-    if (waveSufferRef.current) {
-      const r = waveSufferRef.current.regions.list[s.spanId];
+    if (waveSuferRegionsPluginRef.current) {
+      waveSuferRef.current;
+      const r = waveSuferRegionsPluginRef.current
+        .getRegions()
+        .find((r) => r.id === s.spanId);
       if (!r) {
         const [dtmfValue] = getSpanAttributeByName(s.attributes, "dtmf");
         const [durationValue] = getSpanAttributeByName(
@@ -72,13 +76,12 @@ export const Player = ({ call }: PlayerProps) => {
           const delta = duration <= 0.1 ? 0.1 : duration;
           const end = start + delta;
 
-          const region = waveSufferRef.current.addRegion({
+          const region = waveSuferRegionsPluginRef.current.addRegion({
             id: s.spanId,
             start,
             end,
             color: "rgba(138, 43, 226, 0.15)",
             drag: false,
-            loop: false,
             resize: false,
           });
           changeRegionMouseStyle(region);
@@ -115,8 +118,10 @@ export const Player = ({ call }: PlayerProps) => {
     startPoint: JaegerSpan,
     channel = 0
   ) => {
-    if (waveSufferRef.current) {
-      const r = waveSufferRef.current.regions.list[s.spanId];
+    if (waveSuferRegionsPluginRef.current) {
+      const r = waveSuferRegionsPluginRef.current
+        .getRegions()
+        .find((r) => r.id === s.spanId);
       if (!r) {
         const start =
           (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000 +
@@ -124,15 +129,15 @@ export const Player = ({ call }: PlayerProps) => {
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
-        const region = waveSufferRef.current.addRegion({
+        const region = waveSuferRegionsPluginRef.current.addRegion({
           id: s.spanId,
           start,
           end,
           color: "rgba(255, 0, 0, 0.15)",
           drag: false,
-          loop: false,
           resize: false,
         });
+
         changeRegionMouseStyle(region, channel);
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSufferSttResult;
@@ -251,8 +256,9 @@ export const Player = ({ call }: PlayerProps) => {
   }
 
   useEffect(() => {
-    if (waveSufferRef.current !== null || !record) return;
-    waveSufferRef.current = WaveSurfer.create({
+    if (waveSuferRef.current !== null || !record) return;
+    waveSuferRegionsPluginRef.current = RegionsPlugin.create();
+    waveSuferRef.current = WaveSurfer.create({
       container: `#${wavesurferId}`,
       waveColor: "#da1c5c",
       progressColor: "grey",
@@ -260,62 +266,63 @@ export const Player = ({ call }: PlayerProps) => {
       cursorWidth: 1,
       cursorColor: "lightgray",
       normalize: true,
-      responsive: true,
       fillParent: true,
-      splitChannels: true,
-      scrollParent: true,
+      splitChannels: [],
       plugins: [
-        RegionsPlugin.create({}),
+        waveSuferRegionsPluginRef.current,
         TimelinePlugin.create({
           container: `#${wavesurferTimelineId}`,
+          timeInterval: 0.2,
+          primaryLabelInterval: 5,
+          secondaryLabelInterval: 1,
         }),
       ],
     });
 
-    waveSufferRef.current.load(record?.data_url);
+    waveSuferRef.current.load(record?.data_url);
     // All event should be after load
-    waveSufferRef.current.on("finish", () => {
+    waveSuferRef.current.on("finish", () => {
       setIsPlaying(false);
     });
 
-    waveSufferRef.current.on("play", () => {
+    waveSuferRef.current.on("play", () => {
       setIsPlaying(true);
     });
 
-    waveSufferRef.current.on("pause", () => {
+    waveSuferRef.current.on("pause", () => {
       setIsPlaying(false);
     });
 
-    waveSufferRef.current.on("ready", () => {
+    waveSuferRef.current.on("ready", () => {
       setIsReady(true);
-      setPlayBackTime(formatTime(waveSufferRef.current?.getDuration() || 0));
+      setPlayBackTime(formatTime(waveSuferRef.current?.getDuration() || 0));
     });
 
-    waveSufferRef.current.on("audioprocess", () => {
-      setPlayBackTime(formatTime(waveSufferRef.current?.getCurrentTime() || 0));
+    waveSuferRef.current.on("audioprocess", () => {
+      setPlayBackTime(formatTime(waveSuferRef.current?.getCurrentTime() || 0));
     });
   }, [record]);
 
   const togglePlayback = () => {
-    if (waveSufferRef.current) {
+    if (waveSuferRef.current) {
       if (!isPlaying) {
-        waveSufferRef.current.play();
+        waveSuferRef.current.play();
       } else {
-        waveSufferRef.current.pause();
+        waveSuferRef.current.pause();
       }
     }
   };
 
   const setPlaybackJump = (delta: number) => {
-    if (waveSufferRef.current) {
-      const idx = waveSufferRef.current.getCurrentTime() + delta;
+    if (waveSuferRef.current) {
+      const idx = waveSuferRef.current.getCurrentTime() + delta;
       const value =
         idx <= 0
           ? 0
-          : idx >= waveSufferRef.current.getDuration()
-          ? waveSufferRef.current.getDuration() - 1
+          : idx >= waveSuferRef.current.getDuration()
+          ? waveSuferRef.current.getDuration() - 1
           : idx;
-      waveSufferRef.current.setCurrentTime(value);
+      waveSuferRef.current.setTime(value);
       setPlayBackTime(formatTime(value));
     }
   };
@@ -404,8 +411,9 @@ export const Player = ({ call }: PlayerProps) => {
             checked={regionChecked}
             onChange={(e) => {
               setRegionChecked(e.target.checked);
-              if (waveSufferRef.current) {
-                const regionsList = waveSufferRef.current.regions.list;
+              if (waveSuferRegionsPluginRef.current) {
+                const regionsList =
+                  waveSuferRegionsPluginRef.current.getRegions();
                 for (const [, region] of Object.entries(regionsList)) {
                   region.element.style.display = e.target.checked ? "" : "none";
                 }
