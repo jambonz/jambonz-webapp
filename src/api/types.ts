@@ -676,3 +676,20 @@ export interface SignIn {
   jwt?: null | string;
   account_sid?: null | string;
 }
+
+export interface GetVoices {
+  vendor: string;
+  label: string;
+}
+
+export interface VoiceOption extends SelectorOptions {
+  [key: string]: unknown;
+}
+
+export interface GetLanguages extends GetVoices {
+  [key: string]: unknown;
+}
+
+export interface LanguageOption extends SelectorOptions {
+  [key: string]: unknown;
+}
