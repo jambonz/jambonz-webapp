@@ -134,7 +134,7 @@ export const SpeechProviderSelection = ({
         }
       ).then(({ json }) => {
         if (json.length > 0) {
-          setSynthLang(json[0].value);
+          setSynthLang(ELEVENLABS_LANG_EN);
           setSynthesisLanguageOptions(json);
         }
       });
