@@ -139,7 +139,7 @@ export const SpeechProviderSelection = ({
         }
       });
     }
-  }, [synthVendor, synthesis]);
+  }, [synthVendor, synthesis, synthLabel]);
 
   useEffect(() => {
     if (credentials) {
