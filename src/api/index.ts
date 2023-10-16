@@ -90,6 +90,10 @@ import type {
   DeleteAccount,
   ChangePassword,
   SignIn,
+  GetVoices,
+  LanguageOption,
+  VoiceOption,
+  GetLanguages,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -327,6 +331,32 @@ export const postSpeechService = (
       : `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials`;
 
   return postFetch<SidResponse, Partial<SpeechCredential>>(apiUrl, payload);
+};
+
+export const postSpeechServiceVoices = (
+  sid: string,
+  payload: Partial<GetVoices>
+) => {
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials/voices`
+      : `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials/voices`;
+
+  return postFetch<VoiceOption[], Partial<GetVoices>>(apiUrl, payload);
+};
+
+export const postSpeechServiceLanguages = (
+  sid: string,
+  payload: Partial<GetLanguages>
+) => {
+  const userData = parseJwt(getToken());
+  const apiUrl =
+    userData.scope === USER_ACCOUNT
+      ? `${API_ACCOUNTS}/${userData.account_sid}/SpeechCredentials/languages`
+      : `${API_SERVICE_PROVIDERS}/${sid}/SpeechCredentials/languages`;
+
+  return postFetch<LanguageOption[], Partial<GetLanguages>>(apiUrl, payload);
 };
 
 export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {

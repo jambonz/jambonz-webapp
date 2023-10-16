@@ -8,6 +8,7 @@ import type {
 } from "./types";
 
 export const LANG_EN_US = "en-US";
+export const ELEVENLABS_LANG_EN = "en";
 export const LANG_COBALT_EN_US = "en_US-8khz";
 export const LANG_EN_US_STANDARD_C = "en-US-Standard-C";
 export const VENDOR_GOOGLE = "google";
@@ -21,6 +22,7 @@ export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
 export const VENDOR_CUSTOM = "custom";
 export const VENDOR_COBALT = "cobalt";
+export const VENDOR_ELEVENLABS = "elevenlabs";
 
 export const vendors: VendorOptions[] = [
   {
@@ -66,6 +68,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Cobalt",
     value: VENDOR_COBALT,
+  },
+  {
+    name: "ElevenLabs",
+    value: VENDOR_ELEVENLABS,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
@@ -129,6 +135,7 @@ export const useSpeechVendors = () => {
       import("./speech-synthesis/nuance-speech-synthesis-lang"),
       import("./speech-synthesis/ibm-speech-synthesis-lang"),
       import("./speech-synthesis/nvidia-speech-synthesis-lang"),
+      import("./speech-synthesis/elevellabs-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -147,6 +154,7 @@ export const useSpeechVendors = () => {
         { default: nuanceSynthesis },
         { default: ibmSynthesis },
         { default: nvidiaynthesis },
+        { default: elevenLabsSynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -158,6 +166,7 @@ export const useSpeechVendors = () => {
               nuance: nuanceSynthesis,
               ibm: ibmSynthesis,
               nvidia: nvidiaynthesis,
+              elevenlabs: elevenLabsSynthesis,
             },
             recognizers: {
               aws: awsRecognizer,
