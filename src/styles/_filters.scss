@@ -19,14 +19,45 @@
       grid-gap: ui-vars.$px02;
     }
   }
-
+  > :first-child {
+    margin-left: auto;
+  }
   &--multi {
     overflow-x: auto;
     white-space: nowrap;
     grid-gap: ui-vars.$px02;
 
-    > :first-child {
-      margin-left: auto;
+    @media (max-width: 1400px) {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+
+      > * {
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      > * {
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      > * {
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 500px) {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      > * {
+        justify-self: end;
+      }
     }
   }
 
