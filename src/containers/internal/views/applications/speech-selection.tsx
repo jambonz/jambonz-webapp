@@ -119,7 +119,6 @@ export const SpeechProviderSelection = ({
         }
       ).then(({ json }) => {
         if (json.length > 0) {
-          setSynthVoice(json[0].value);
           setSynthesisVoiceOptions(json);
         }
       });
@@ -134,7 +133,6 @@ export const SpeechProviderSelection = ({
         }
       ).then(({ json }) => {
         if (json.length > 0) {
-          setSynthLang(ELEVENLABS_LANG_EN);
           setSynthesisLanguageOptions(json);
         }
       });
