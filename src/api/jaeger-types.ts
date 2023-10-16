@@ -37,14 +37,14 @@ export interface JaegerAttribute {
   value: JaegerValue;
 }
 
-export interface WaveSufferSttResult {
+export interface WaveSurferSttResult {
   vendor: string;
   transcript: string;
   confidence: number;
   language_code: string;
 }
 
-export interface WaveSufferDtmfResult {
+export interface WaveSurferDtmfResult {
   dtmf: string;
   duration: string;
 }
