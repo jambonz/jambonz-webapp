@@ -31,6 +31,7 @@ import {
   VENDOR_SONIOX,
   VENDOR_CUSTOM,
   VENDOR_COBALT,
+  VENDOR_ELEVENLABS,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -45,7 +46,11 @@ import { CredentialStatus } from "./status";
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
 import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
-import { DISABLE_CUSTOM_SPEECH } from "src/api/constants";
+import {
+  DEFAULT_ELEVENLABS_MODEL,
+  DISABLE_CUSTOM_SPEECH,
+  ELEVENLABS_MODEL_OPTIONS,
+} from "src/api/constants";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
@@ -77,6 +82,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [sttApiKey, setSttApiKey] = useState("");
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
+  const [ttsModelId, setTtsModelId] = useState(DEFAULT_ELEVENLABS_MODEL);
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
   const [initialCheckCustomStt, setInitialCheckCustomStt] = useState(false);
@@ -197,6 +203,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
         }),
+        ...(vendor === VENDOR_ELEVENLABS && {
+          model_id: ttsModelId || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -231,7 +240,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_MICROSOFT ||
               vendor === VENDOR_WELLSAID ||
               vendor === VENDOR_DEEPGRAM ||
-              vendor === VENDOR_SONIOX
+              vendor === VENDOR_SONIOX ||
+              vendor === VENDOR_ELEVENLABS
                 ? apiKey
                 : null,
           }),
@@ -388,6 +398,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.cobalt_server_uri) {
         setCobaltServerUri(credential.data.cobalt_server_uri);
       }
+      if (credential.data.model_id) {
+        setTtsModelId(credential.data.model_id);
+      }
     }
   }, [credential]);
 
@@ -490,18 +503,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   <div>Use for text-to-speech</div>
                 </label>
               )}
-            {vendor !== VENDOR_WELLSAID && vendor !== VENDOR_CUSTOM && (
-              <label htmlFor="use_for_stt" className="chk">
-                <input
-                  id="use_for_stt"
-                  name="use_for_stt"
-                  type="checkbox"
-                  onChange={(e) => setSttCheck(e.target.checked)}
-                  defaultChecked={sttCheck}
-                />
-                <div>Use for speech-to-text</div>
-              </label>
-            )}
+            {vendor !== VENDOR_WELLSAID &&
+              vendor !== VENDOR_CUSTOM &&
+              vendor !== VENDOR_ELEVENLABS && (
+                <label htmlFor="use_for_stt" className="chk">
+                  <input
+                    id="use_for_stt"
+                    name="use_for_stt"
+                    type="checkbox"
+                    onChange={(e) => setSttCheck(e.target.checked)}
+                    defaultChecked={sttCheck}
+                  />
+                  <div>Use for speech-to-text</div>
+                </label>
+              )}
             {vendor === VENDOR_CUSTOM && (
               <Fragment>
                 <Checkzone
@@ -773,6 +788,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_DEEPGRAM ||
+          vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
@@ -786,6 +802,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
+        {vendor == VENDOR_ELEVENLABS && (
+          <fieldset>
+            <label htmlFor={`${vendor}_apikey`}>Model</label>
+            <Selector
+              id={"audio_format"}
+              name={"audio_format"}
+              value={ttsModelId}
+              options={ELEVENLABS_MODEL_OPTIONS}
+              onChange={(e) => {
+                setTtsModelId(e.target.value);
+              }}
             />
           </fieldset>
         )}

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { postSpeechServiceLanguages, postSpeechServiceVoices } from "src/api";
 import { SpeechCredential } from "src/api/types";
 import { Selector } from "src/components/forms";
+import { SelectorOption } from "src/components/forms/selector";
+import { useSelectState } from "src/store";
 import { hasLength } from "src/utils";
 import {
+  ELEVENLABS_LANG_EN,
   LANG_COBALT_EN_US,
   LANG_EN_US,
   LANG_EN_US_STANDARD_C,
@@ -10,6 +14,7 @@ import {
   VENDOR_COBALT,
   VENDOR_CUSTOM,
   VENDOR_DEEPGRAM,
+  VENDOR_ELEVENLABS,
   VENDOR_GOOGLE,
   VENDOR_MICROSOFT,
   VENDOR_SONIOX,
@@ -66,6 +71,73 @@ export const SpeechProviderSelection = ({
   const [selectedCredential, setSelectedCredential] = useState<
     SpeechCredential | undefined
   >();
+  const [synthesisVoiceOptions, setSynthesisVoiceOptions] = useState<
+    SelectorOption[]
+  >([]);
+  const [synthesisLanguageOptions, setSynthesisLanguageOptions] = useState<
+    SelectorOption[]
+  >([]);
+
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+
+  useEffect(() => {
+    if (!synthesis) {
+      return;
+    }
+    let options = synthesis[synthVendor as keyof SynthesisVendors]
+      .filter((lang: VoiceLanguage) => {
+        // ELEVENLABS has same voice for all lange, take voices from the 1st language
+        if (synthVendor === VENDOR_ELEVENLABS) {
+          return true;
+        }
+        return lang.code === synthLang;
+      })
+      .flatMap((lang: VoiceLanguage) =>
+        lang.voices.map((voice: Voice) => ({
+          name: voice.name,
+          value: voice.value,
+        }))
+      ) as Voice[];
+    setSynthesisVoiceOptions(options);
+
+    options = synthesis[synthVendor as keyof SynthesisVendors].map(
+      (lang: VoiceLanguage) => ({
+        name: lang.name,
+        value: lang.code,
+      })
+    );
+    setSynthesisLanguageOptions(options);
+
+    if (synthVendor === VENDOR_ELEVENLABS) {
+      postSpeechServiceVoices(
+        currentServiceProvider
+          ? currentServiceProvider.service_provider_sid
+          : "",
+        {
+          vendor: synthVendor,
+          label: synthLabel,
+        }
+      ).then(({ json }) => {
+        if (json.length > 0) {
+          setSynthesisVoiceOptions(json);
+        }
+      });
+
+      postSpeechServiceLanguages(
+        currentServiceProvider
+          ? currentServiceProvider.service_provider_sid
+          : "",
+        {
+          vendor: synthVendor,
+          label: synthLabel,
+        }
+      ).then(({ json }) => {
+        if (json.length > 0) {
+          setSynthesisLanguageOptions(json);
+        }
+      });
+    }
+  }, [synthVendor, synthesis, synthLabel]);
 
   useEffect(() => {
     if (credentials) {
@@ -112,6 +184,15 @@ export const SpeechProviderSelection = ({
                 return;
               }
 
+              if (vendor === VENDOR_ELEVENLABS) {
+                const newLang = synthesis[vendor].find(
+                  (lang) => lang.code === ELEVENLABS_LANG_EN
+                );
+                setSynthLang(ELEVENLABS_LANG_EN);
+                setSynthVoice(newLang!.voices[0].value);
+                return;
+              }
+
               /** Google and AWS have different language lists */
               /** If the new language doesn't map then default to "en-US" */
               let newLang = synthesis[vendor].find(
@@ -154,12 +235,7 @@ export const SpeechProviderSelection = ({
                   id="synthesis_lang"
                   name="synthesis_lang"
                   value={synthLang}
-                  options={synthesis[synthVendor as keyof SynthesisVendors].map(
-                    (lang: VoiceLanguage) => ({
-                      name: lang.name,
-                      value: lang.code,
-                    })
-                  )}
+                  options={synthesisLanguageOptions}
                   onChange={(e) => {
                     const language = e.target.value;
                     setSynthLang(language);
@@ -200,18 +276,7 @@ export const SpeechProviderSelection = ({
                     id="synthesis_voice"
                     name="synthesis_voice"
                     value={synthVoice}
-                    options={
-                      synthesis[synthVendor as keyof SynthesisVendors]
-                        .filter(
-                          (lang: VoiceLanguage) => lang.code === synthLang
-                        )
-                        .flatMap((lang: VoiceLanguage) =>
-                          lang.voices.map((voice: Voice) => ({
-                            name: voice.name,
-                            value: voice.value,
-                          }))
-                        ) as Voice[]
-                    }
+                    options={synthesisVoiceOptions}
                     onChange={(e) => setSynthVoice(e.target.value)}
                   />
                 )}
