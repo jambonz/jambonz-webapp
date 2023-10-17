@@ -71,6 +71,7 @@
 }
 
 .media-container {
+  overflow-x: auto;
   border: 1px solid black;
   border-radius: ui-vars.$px01;
   padding: 13px;

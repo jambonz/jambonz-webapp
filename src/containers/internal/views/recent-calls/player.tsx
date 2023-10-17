@@ -45,7 +45,6 @@ export const Player = ({ call }: PlayerProps) => {
   const [regionChecked, setRegionChecked] = useState(false);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
-  const wavesurferTimelineId = `timeline-${wavesurferId}`;
   const waveSurferRef = useRef<WaveSurfer | null>(null);
   const waveSurferRegionsPluginRef = useRef<RegionsPlugin | null>();
 
@@ -266,12 +265,12 @@ export const Player = ({ call }: PlayerProps) => {
       cursorWidth: 1,
       cursorColor: "lightgray",
       normalize: true,
-      fillParent: true,
+      autoScroll: true,
       splitChannels: [],
+      minPxPerSec: 100,
       plugins: [
         waveSurferRegionsPluginRef.current,
         TimelinePlugin.create({
-          container: `#${wavesurferTimelineId}`,
           timeInterval: 0.2,
           primaryLabelInterval: 5,
           secondaryLabelInterval: 1,
@@ -333,7 +332,6 @@ export const Player = ({ call }: PlayerProps) => {
     <>
       <div className="media-container">
         <div id={wavesurferId} />
-        <div id={wavesurferTimelineId} />
         <div className="media-container__center">
           <strong>{playBackTime}</strong>
         </div>
