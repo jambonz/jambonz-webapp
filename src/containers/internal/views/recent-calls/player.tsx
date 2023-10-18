@@ -274,6 +274,11 @@ export const Player = ({ call }: PlayerProps) => {
           timeInterval: 0.2,
           primaryLabelInterval: 5,
           secondaryLabelInterval: 1,
+          style: {
+            fontSize: "15px",
+            color: "#000000",
+            fontWeight: "bold",
+          },
         }),
       ],
     });
