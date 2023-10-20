@@ -112,7 +112,7 @@ export const SpeechServices = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters filters--ender">
+      <section className="filters filters--multi">
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
             account={[accountSid, setAccountSid]}

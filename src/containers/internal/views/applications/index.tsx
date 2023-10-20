@@ -96,7 +96,7 @@ export const Applications = () => {
           </Link>
         )}
       </section>
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter
           placeholder="Filter applications"
           filter={[filter, setFilter]}

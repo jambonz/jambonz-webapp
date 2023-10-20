@@ -99,7 +99,7 @@ export const Lcrs = () => {
           multiple carriers available.
         </M>
       </section>
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter placeholder="Filter lcrs" filter={[filter, setFilter]} />
         <ScopedAccess user={user} scope={Scope.admin}>
           <AccountFilter
