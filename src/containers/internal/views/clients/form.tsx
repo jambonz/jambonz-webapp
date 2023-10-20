@@ -107,8 +107,6 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
     if (!accountSid || !accounts || !acc) return;
     if (!acc?.sip_realm) {
       setErrorMessage(`Sip realm is not set for the account.`);
-    } else if (!acc?.device_calling_application_sid) {
-      setErrorMessage(`Device calling application is not set for the account.`);
     } else {
       setErrorMessage("");
     }
