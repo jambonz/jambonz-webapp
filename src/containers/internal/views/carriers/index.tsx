@@ -155,7 +155,7 @@ export const Carriers = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter
           placeholder="Filter carriers"
           filter={[filter, setFilter]}

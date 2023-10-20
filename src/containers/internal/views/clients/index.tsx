@@ -126,7 +126,7 @@ export const Clients = () => {
         </Link>
       </section>
 
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter
           placeholder="Filter clients"
           filter={[filter, setFilter]}

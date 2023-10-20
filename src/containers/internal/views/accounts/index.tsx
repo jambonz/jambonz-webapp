@@ -71,7 +71,7 @@ export const Accounts = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter
           placeholder="Filter accounts"
           filter={[filter, setFilter]}

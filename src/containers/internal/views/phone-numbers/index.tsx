@@ -129,7 +129,7 @@ export const PhoneNumbers = () => {
           </Link>
         )}
       </section>
-      <section className="filters filters--spaced">
+      <section className="filters filters--multi">
         <SearchFilter
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}

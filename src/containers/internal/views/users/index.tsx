@@ -88,7 +88,7 @@ export const Users = () => {
           </Icon>
         </Link>
       </section>
-      <section className="filters filters--mix">
+      <section className="filters filters--multi">
         <section>
           <SearchFilter
             placeholder="Filter users"
