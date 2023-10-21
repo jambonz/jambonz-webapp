@@ -336,10 +336,13 @@ export const CarrierForm = ({
       const gateway = sipGateways[i];
       const type = getIpValidationType(gateway.ipv4);
 
+      /** DH: unclear why we had this restriction, removing for now
       if (type === FQDN_TOP_LEVEL) {
         refSipIp.current[i].focus();
         return "When using an FQDN, you must use a subdomain (e.g. sip.example.com).";
       } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
+      */
+      if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
         refSipIp.current[i].focus();
         return "A fully qualified domain name may only be used for outbound calls.";
       } else if (type === INVALID) {
