@@ -372,6 +372,11 @@ export interface RecentCall {
   recording_url?: string;
 }
 
+export interface CustomVoice {
+  name: string;
+  model: string;
+}
+
 export interface SpeechCredential {
   speech_credential_sid: string;
   service_provider_sid: null | string;
@@ -386,6 +391,7 @@ export interface SpeechCredential {
   access_key_id: null | string;
   secret_access_key: null | string;
   service_key: null | string;
+  custom_voices: null | CustomVoice[];
   use_custom_tts: number;
   custom_tts_endpoint_url: null | string;
   custom_tts_endpoint: null | string;

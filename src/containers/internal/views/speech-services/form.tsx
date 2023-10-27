@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, Icon, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section, Tooltip } from "src/components";
+import { Icons, Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
@@ -39,12 +39,19 @@ import {
   getObscuredSecret,
   isUserAccountScope,
   isNotBlank,
+  hasValue,
+  hasLength,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
-import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
+import type {
+  Account,
+  CustomVoice,
+  SpeechCredential,
+  UseApiDataMap,
+} from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   DEFAULT_ELEVENLABS_MODEL,
@@ -117,6 +124,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
   const [cobaltServerUri, setCobaltServerUri] = useState("");
   const [label, setLabel] = useState("");
+  const [initialUseCustomVoicesCheck, setInitialUseCustomVoicesCheck] =
+    useState(false);
+  const [customVoices, setCustomVoices] = useState<CustomVoice[]>([]);
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -162,6 +172,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
         label: label || null,
+        custom_voices: vendor === VENDOR_GOOGLE ? customVoices : null,
         ...(vendor === VENDOR_AWS && {
           aws_region: region || null,
         }),
@@ -401,8 +412,29 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
       }
+      setInitialUseCustomVoicesCheck(hasValue(credential.data.custom_voices));
+      if (credential.data.custom_voices) {
+        setCustomVoices(credential.data.custom_voices);
+      }
     }
   }, [credential]);
+
+  const updateCustomVoices = (
+    index: number,
+    key: string,
+    value: typeof customVoices[number][keyof CustomVoice]
+  ) => {
+    setCustomVoices((prev) =>
+      prev.map((g, i) =>
+        i === index
+          ? {
+              ...g,
+              [key]: value,
+            }
+          : g
+      )
+    );
+  };
 
   return (
     <Section slim>
@@ -645,6 +677,93 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     )}
                   </code>
                 </pre>
+              </fieldset>
+            )}
+            {ttsCheck && (
+              <fieldset>
+                <Checkzone
+                  hidden
+                  name="custom_voices_google"
+                  label="Use custom voices"
+                  initialCheck={initialUseCustomVoicesCheck}
+                  handleChecked={(e) => {
+                    console.log(e);
+                  }}
+                >
+                  {hasLength(customVoices) &&
+                    customVoices.map((v, i) => (
+                      <div key={`custom_voice_${i}`} className="customVoice">
+                        <div>
+                          <div>
+                            <label htmlFor="custom_voice_name">Name</label>
+                            <input
+                              id={`sip_ip_${i}`}
+                              name={`sip_ip_${i}`}
+                              type="text"
+                              placeholder="Name"
+                              required
+                              value={v.name}
+                              onChange={(e) => {
+                                updateCustomVoices(i, "name", e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div>
+                            <label htmlFor="custom_voice_model">Model</label>
+                            <input
+                              id={`sip_ip_${i}`}
+                              name={`sip_ip_${i}`}
+                              type="text"
+                              placeholder="Model"
+                              required
+                              value={v.model}
+                              onChange={(e) => {
+                                updateCustomVoices(i, "model", e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          className="btnty"
+                          title="Delete"
+                          type="button"
+                          onClick={() => {
+                            setCustomVoices((prev) =>
+                              prev.filter((_, idx) => idx !== i)
+                            );
+                          }}
+                        >
+                          <Icon>
+                            <Icons.Trash2 />
+                          </Icon>
+                        </button>
+                      </div>
+                    ))}
+                  <ButtonGroup left>
+                    <button
+                      className="btnty"
+                      type="button"
+                      title="Add Voice"
+                      onClick={() => {
+                        setCustomVoices((prev) => [
+                          ...prev,
+                          {
+                            name: "",
+                            model: "",
+                          },
+                        ]);
+                      }}
+                    >
+                      <Icon subStyle="teal">
+                        <Icons.Plus />
+                      </Icon>
+                    </button>
+                  </ButtonGroup>
+                </Checkzone>
               </fieldset>
             )}
           </>
