@@ -811,7 +811,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                 id={`sip_ip_${i}`}
                                 name={`sip_ip_${i}`}
                                 type="text"
-                                placeholder="Name"
+                                placeholder="Assigned Name"
                                 required
                                 value={v.name}
                                 onChange={(e) => {

@@ -152,7 +152,7 @@ export const SpeechProviderSelection = ({
       }).then(({ json }) => {
         const customVOices = json.map((v) => ({
           name: `${v.name} (Custom)`,
-          value: `custom${v.google_custom_voice_sid}`,
+          value: `custom_${v.google_custom_voice_sid}`,
         }));
         options = synthesis[synthVendor as keyof SynthesisVendors]
           .filter((lang: VoiceLanguage) => {
