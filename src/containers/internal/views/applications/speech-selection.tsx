@@ -165,6 +165,9 @@ export const SpeechProviderSelection = ({
             }))
           ) as Voice[];
         setSynthesisVoiceOptions([...customVOices, ...options]);
+        if (customVOices.length > 0) {
+          setSynthVoice(customVOices[0].value);
+        }
       });
     }
   }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
