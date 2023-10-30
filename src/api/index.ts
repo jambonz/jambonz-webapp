@@ -96,6 +96,7 @@ import type {
   VoiceOption,
   GetLanguages,
   GoogleCustomVoice,
+  GoogleCustomVoicesQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -795,10 +796,11 @@ export const getAvailability = (domain: string) => {
   );
 };
 
-export const getGoogleCustomVoices = (speech_credential_sid: string) => {
-  return getFetch<GoogleCustomVoice[]>(
-    `${API_GOOGLE_CUSTOM_VOICES}?speech_credential_sid=${speech_credential_sid}`
-  );
+export const getGoogleCustomVoices = (
+  query: Partial<GoogleCustomVoicesQuery>
+) => {
+  const qryStr = getQuery<Partial<GoogleCustomVoicesQuery>>(query);
+  return getFetch<GoogleCustomVoice[]>(`${API_GOOGLE_CUSTOM_VOICES}?${qryStr}`);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */

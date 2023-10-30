@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { postSpeechServiceLanguages, postSpeechServiceVoices } from "src/api";
+import {
+  getGoogleCustomVoices,
+  postSpeechServiceLanguages,
+  postSpeechServiceVoices,
+} from "src/api";
 import { SpeechCredential } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { SelectorOption } from "src/components/forms/selector";
@@ -30,6 +34,8 @@ import {
   VoiceLanguage,
 } from "src/vendor/types";
 type SpeechProviderSelectionProbs = {
+  accountSid: string;
+  serviceProviderSid: string;
   credentials: SpeechCredential[] | undefined;
   synthesis: SynthesisVendors | undefined;
   ttsVendor: [
@@ -53,6 +59,8 @@ type SpeechProviderSelectionProbs = {
 };
 
 export const SpeechProviderSelection = ({
+  accountSid,
+  serviceProviderSid,
   credentials,
   synthesis,
   ttsVendor: [synthVendor, setSynthVendor],
@@ -136,8 +144,30 @@ export const SpeechProviderSelection = ({
           setSynthesisLanguageOptions(json);
         }
       });
+    } else if (synthVendor === VENDOR_GOOGLE) {
+      getGoogleCustomVoices({
+        ...(synthLabel && { label: synthLabel }),
+        account_sid: accountSid,
+        service_provider_sid: serviceProviderSid,
+      }).then(({ json }) => {
+        const customVOices = json.map((v) => ({
+          name: `${v.name} (Custom)`,
+          value: `custom${v.google_custom_voice_sid}`,
+        }));
+        options = synthesis[synthVendor as keyof SynthesisVendors]
+          .filter((lang: VoiceLanguage) => {
+            return lang.code === synthLang;
+          })
+          .flatMap((lang: VoiceLanguage) =>
+            lang.voices.map((voice: Voice) => ({
+              name: voice.name,
+              value: voice.value,
+            }))
+          ) as Voice[];
+        setSynthesisVoiceOptions([...customVOices, ...options]);
+      });
     }
-  }, [synthVendor, synthesis, synthLabel]);
+  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
 
   useEffect(() => {
     if (credentials) {

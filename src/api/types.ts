@@ -375,9 +375,8 @@ export interface RecentCall {
 export interface GoogleCustomVoice {
   google_custom_voice_sid?: string;
   speech_credential_sid?: string;
-  voice: string;
-  language: string;
-  reported_usage: number;
+  name: string;
+  reported_usage: string;
   model: string;
 }
 
@@ -535,6 +534,13 @@ export interface PageQuery {
 export interface CallQuery extends PageQuery {
   direction?: string;
   answered?: string;
+}
+
+export interface GoogleCustomVoicesQuery {
+  speech_credential_sid?: string;
+  label?: string;
+  account_sid?: string;
+  service_provider_sid: string;
 }
 
 export interface PagedResponse<Type> {

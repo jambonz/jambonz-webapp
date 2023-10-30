@@ -207,10 +207,12 @@ export const ELEVENLABS_MODEL_OPTIONS = [
 ];
 
 // Google Custom Voice reported usage options
+
+export const DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = "REALTIME";
 export const GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = [
-  { name: "REPORTED_USAGE_UNSPECIFIED", value: "0" },
-  { name: "REALTIME", value: "1" },
-  { name: "OFFLINE", value: "2" },
+  { name: "REPORTED_USAGE_UNSPECIFIED", value: "REPORTED_USAGE_UNSPECIFIED" },
+  { name: "REALTIME", value: "REALTIME" },
+  { name: "OFFLINE", value: "OFFLINE" },
 ];
 /** Password Length options */
 

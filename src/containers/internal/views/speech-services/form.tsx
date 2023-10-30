@@ -59,6 +59,7 @@ import type {
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   DEFAULT_ELEVENLABS_MODEL,
+  DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DISABLE_CUSTOM_SPEECH,
   ELEVENLABS_MODEL_OPTIONS,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
@@ -491,12 +492,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     if (credential?.data?.vendor === VENDOR_GOOGLE) {
       // let try to check if there is custom voices
-      getGoogleCustomVoices(credential.data.speech_credential_sid).then(
-        ({ json }) => {
-          setCustomVoices(json);
-          setUseCustomVoicesCheck(json.length > 0);
-        }
-      );
+      getGoogleCustomVoices({
+        speech_credential_sid: credential.data.speech_credential_sid,
+      }).then(({ json }) => {
+        setCustomVoices(json);
+        setUseCustomVoicesCheck(json.length > 0);
+      });
     }
   }, [credential]);
 
@@ -771,9 +772,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                       if (customVoices.length === 0) {
                         setCustomVoices([
                           {
-                            voice: "",
-                            language: "",
-                            reported_usage: 0,
+                            name: "",
+                            reported_usage:
+                              DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
                             model: "",
                           },
                         ]);
@@ -799,7 +800,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                           <div>
                             <div>
                               <label htmlFor="custom_voice_name">
-                                Voice / Language / Reported Usage
+                                Name / Reported Usage
                               </label>
                             </div>
                           </div>
@@ -810,35 +811,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                 id={`sip_ip_${i}`}
                                 name={`sip_ip_${i}`}
                                 type="text"
-                                placeholder="Voice"
+                                placeholder="Name"
                                 required
-                                value={v.voice}
+                                value={v.name}
                                 onChange={(e) => {
-                                  updateCustomVoices(
-                                    i,
-                                    "voice",
-                                    e.target.value
-                                  );
+                                  updateCustomVoices(i, "name", e.target.value);
                                 }}
                               />
                             </div>
-                            <div>
-                              <input
-                                id={`sip_ip_${i}`}
-                                name={`sip_ip_${i}`}
-                                type="text"
-                                placeholder="Language"
-                                required
-                                value={v.language}
-                                onChange={(e) => {
-                                  updateCustomVoices(
-                                    i,
-                                    "language",
-                                    e.target.value
-                                  );
-                                }}
-                              />
-                            </div>
+
                             <div>
                               <Selector
                                 id={"google_custom_voices_reported_usage"}
@@ -849,7 +830,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                   updateCustomVoices(
                                     i,
                                     "reported_usage",
-                                    Number(e.target.value)
+                                    e.target.value
                                   );
                                 }}
                               />
@@ -923,9 +904,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                           setCustomVoices((prev) => [
                             ...prev,
                             {
-                              voice: "",
-                              language: "",
-                              reported_usage: 0,
+                              name: "",
+                              reported_usage:
+                                DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
                               model: "",
                             },
                           ]);
