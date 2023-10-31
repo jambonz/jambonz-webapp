@@ -205,6 +205,15 @@ export const ELEVENLABS_MODEL_OPTIONS = [
   { name: "Multilingual v1", value: "eleven_multilingual_v1" },
   { name: "English v1", value: "eleven_monolingual_v1" },
 ];
+
+// Google Custom Voice reported usage options
+
+export const DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = "REALTIME";
+export const GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = [
+  { name: "REPORTED_USAGE_UNSPECIFIED", value: "REPORTED_USAGE_UNSPECIFIED" },
+  { name: "REALTIME", value: "REALTIME" },
+  { name: "OFFLINE", value: "OFFLINE" },
+];
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;
@@ -352,3 +361,4 @@ export const API_PRICE = `${API_BASE_URL}/Prices`;
 export const API_SUBSCRIPTIONS = `${API_BASE_URL}/Subscriptions`;
 export const API_CHANGE_PASSWORD = `${API_BASE_URL}/change-password`;
 export const API_SIGNIN = `${API_BASE_URL}/signin`;
+export const API_GOOGLE_CUSTOM_VOICES = `${API_BASE_URL}/GoogleCustomVoices`;

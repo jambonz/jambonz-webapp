@@ -294,3 +294,53 @@ fieldset {
 .bucket_tag {
   @extend .lcr;
 }
+
+.customVoice {
+  padding: ui-vars.$px02;
+  border-radius: ui-vars.$px01;
+  border: 2px solid ui-vars.$grey;
+  max-width: ui-vars.$width-mobile;
+  position: relative;
+
+  > div {
+    display: grid;
+    grid-gap: ui-vars.$px02;
+    align-items: center;
+
+    &:nth-child(1) {
+      grid-template-columns: [col] 100%;
+    }
+
+    &:nth-child(2) {
+      grid-template-columns: [col] calc(40% - #{ui-vars.$px02 * 2}) [col] 60%;
+      margin-top: ui-vars.$px02;
+    }
+
+    &:nth-child(3) {
+      grid-template-columns: [col] 100%;
+      margin-top: ui-vars.$px02;
+    }
+
+    &:nth-child(4) {
+      grid-template-columns: [col] 100%;
+      margin-top: ui-vars.$px02;
+    }
+  }
+
+  > button {
+    position: absolute;
+    right: 0;
+    bottom: 50%;
+    transform: translate3d(50%, 50%, 0);
+
+    @include mixins.small() {
+      top: auto;
+      bottom: auto;
+      transform: none;
+      position: relative;
+      margin-top: ui-vars.$px02;
+      display: flex;
+      margin-left: auto;
+    }
+  }
+}

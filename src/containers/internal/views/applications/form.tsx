@@ -63,6 +63,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
   const { synthesis, recognizers } = useSpeechVendors();
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
   const [applicationName, setApplicationName] = useState("");
@@ -674,6 +675,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           );
         })}
         <SpeechProviderSelection
+          serviceProviderSid={
+            currentServiceProvider?.service_provider_sid || ""
+          }
+          accountSid={accountSid}
           credentials={credentials}
           synthesis={synthesis}
           ttsVendor={[synthVendor, setSynthVendor]}
@@ -701,6 +706,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             }}
           >
             <SpeechProviderSelection
+              serviceProviderSid={
+                currentServiceProvider?.service_provider_sid || ""
+              }
+              accountSid={accountSid}
               credentials={credentials}
               synthesis={synthesis}
               ttsVendor={[

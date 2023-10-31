@@ -1,19 +1,24 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, Icon, MS, MXS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
-import { Section, Tooltip } from "src/components";
+import { Icons, Section, Tooltip } from "src/components";
 import {
   FileUpload,
   Selector,
   Passwd,
   AccountSelect,
   Checkzone,
+  Message,
 } from "src/components/forms";
 import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
+  deleteGoogleCustomVoice,
+  getGoogleCustomVoices,
+  postGoogleCustomVoice,
   postSpeechService,
+  putGoogleCustomVoice,
   putSpeechService,
   useServiceProviderData,
 } from "src/api";
@@ -39,17 +44,25 @@ import {
   getObscuredSecret,
   isUserAccountScope,
   isNotBlank,
+  hasLength,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
 
 import type { RegionVendors, GoogleServiceKey, Vendor } from "src/vendor/types";
-import type { Account, SpeechCredential, UseApiDataMap } from "src/api/types";
+import type {
+  Account,
+  GoogleCustomVoice,
+  SpeechCredential,
+  UseApiDataMap,
+} from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   DEFAULT_ELEVENLABS_MODEL,
+  DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DISABLE_CUSTOM_SPEECH,
   ELEVENLABS_MODEL_OPTIONS,
+  GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
 } from "src/api/constants";
 
 type SpeechServiceFormProps = {
@@ -117,6 +130,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [onPremNuanceSttUrl, setOnPremNuanceSttUrl] = useState("");
   const [cobaltServerUri, setCobaltServerUri] = useState("");
   const [label, setLabel] = useState("");
+  const [useCustomVoicesCheck, setUseCustomVoicesCheck] = useState(false);
+  const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
+  const [customVoicesMessage, setCustomVoicesMessage] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -144,6 +160,62 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       });
   };
 
+  const handlePutGoogleCustomVoices = () => {
+    if (!credential || !credential.data) {
+      return;
+    }
+    if (useCustomVoicesCheck) {
+      Promise.all(
+        customVoices.map((v) => {
+          if (v.google_custom_voice_sid) {
+            const sid = v.google_custom_voice_sid;
+            delete v.google_custom_voice_sid;
+            return putGoogleCustomVoice(sid, v);
+          } else {
+            return postGoogleCustomVoice({
+              ...v,
+              speech_credential_sid: credential.data?.speech_credential_sid,
+            });
+          }
+        })
+      )
+        .then(() => {
+          toastSuccess("Speech credential updated successfully");
+          credential.refetch();
+          navigate(
+            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`
+          );
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    } else if (useCustomVoicesCheck && customVoices.length > 0) {
+      Promise.all(
+        customVoices.map((v) => {
+          if (v.google_custom_voice_sid) {
+            return deleteGoogleCustomVoice(v.google_custom_voice_sid);
+          }
+        })
+      )
+        .then(() => {
+          toastSuccess("Speech credential updated successfully");
+          credential.refetch();
+          navigate(
+            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`
+          );
+        })
+        .catch((error) => {
+          toastError(error.msg);
+        });
+    } else {
+      toastSuccess("Speech credential updated successfully");
+      credential.refetch();
+      navigate(
+        `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+      );
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -162,9 +234,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
         label: label || null,
-        ...(vendor === VENDOR_AWS && {
-          aws_region: region || null,
-        }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
           use_custom_tts:
@@ -218,11 +287,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )
           .then(() => {
             if (credential && credential.data) {
-              toastSuccess("Speech credential updated successfully");
-              credential.refetch();
-              navigate(
-                `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
-              );
+              if (credential.data.vendor === VENDOR_GOOGLE) {
+                handlePutGoogleCustomVoices();
+              } else {
+                toastSuccess("Speech credential updated successfully");
+                credential.refetch();
+                navigate(
+                  `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+                );
+              }
             }
           })
           .catch((error) => {
@@ -247,10 +320,25 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           }),
           riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
-          .then(() => {
-            toastSuccess("Speech credential created successfully");
-            navigate(ROUTE_INTERNAL_SPEECH);
-            setAccountFilter(accountSid);
+          .then(({ json }) => {
+            if (vendor === VENDOR_GOOGLE && useCustomVoicesCheck) {
+              Promise.all(
+                customVoices.map((v) =>
+                  postGoogleCustomVoice({
+                    ...v,
+                    speech_credential_sid: json.sid,
+                  })
+                )
+              ).then(() => {
+                toastSuccess("Speech credential created successfully");
+                navigate(ROUTE_INTERNAL_SPEECH);
+                setAccountFilter(accountSid);
+              });
+            } else {
+              toastSuccess("Speech credential created successfully");
+              navigate(ROUTE_INTERNAL_SPEECH);
+              setAccountFilter(accountSid);
+            }
           })
           .catch((error) => {
             toastError(error.msg);
@@ -402,7 +490,33 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setTtsModelId(credential.data.model_id);
       }
     }
+    if (credential?.data?.vendor === VENDOR_GOOGLE) {
+      // let try to check if there is custom voices
+      getGoogleCustomVoices({
+        speech_credential_sid: credential.data.speech_credential_sid,
+      }).then(({ json }) => {
+        setCustomVoices(json);
+        setUseCustomVoicesCheck(json.length > 0);
+      });
+    }
   }, [credential]);
+
+  const updateCustomVoices = (
+    index: number,
+    key: string,
+    value: typeof customVoices[number][keyof GoogleCustomVoice]
+  ) => {
+    setCustomVoices((prev) =>
+      prev.map((g, i) =>
+        i === index
+          ? {
+              ...g,
+              [key]: value,
+            }
+          : g
+      )
+    );
+  };
 
   return (
     <Section slim>
@@ -645,6 +759,166 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     )}
                   </code>
                 </pre>
+              </fieldset>
+            )}
+            {ttsCheck && vendor === VENDOR_GOOGLE && (
+              <fieldset>
+                <label htmlFor="use_custom_voice" className="chk">
+                  <input
+                    id="use_custom_voice"
+                    name="use_custom_voice"
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (customVoices.length === 0) {
+                        setCustomVoices([
+                          {
+                            name: "",
+                            reported_usage:
+                              DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+                            model: "",
+                          },
+                        ]);
+                      }
+                      setUseCustomVoicesCheck(e.target.checked);
+                    }}
+                    checked={useCustomVoicesCheck}
+                  />
+                  <div>Use custom voices</div>
+                </label>
+                {useCustomVoicesCheck && (
+                  <fieldset>
+                    <label htmlFor="sip_gateways">Custom Voices</label>
+                    <MXS>
+                      <em>At least one Custom voice is required.</em>
+                    </MXS>
+                    {customVoicesMessage && (
+                      <Message message={customVoicesMessage} />
+                    )}
+                    {hasLength(customVoices) &&
+                      customVoices.map((v, i) => (
+                        <div key={`custom_voice_${i}`} className="customVoice">
+                          <div>
+                            <div>
+                              <label htmlFor="custom_voice_name">
+                                Name / Reported Usage
+                              </label>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div>
+                              <input
+                                id={`sip_ip_${i}`}
+                                name={`sip_ip_${i}`}
+                                type="text"
+                                placeholder="Assigned Name"
+                                required
+                                value={v.name}
+                                onChange={(e) => {
+                                  updateCustomVoices(i, "name", e.target.value);
+                                }}
+                              />
+                            </div>
+
+                            <div>
+                              <Selector
+                                id={"google_custom_voices_reported_usage"}
+                                name={"google_custom_voices_reported_usage"}
+                                value={v.reported_usage}
+                                options={GOOGLE_CUSTOM_VOICES_REPORTED_USAGE}
+                                onChange={(e) => {
+                                  updateCustomVoices(
+                                    i,
+                                    "reported_usage",
+                                    e.target.value
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <div>
+                              <label htmlFor="custom_voice_name">Model</label>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div>
+                              <input
+                                id={`sip_ip_${i}`}
+                                name={`sip_ip_${i}`}
+                                type="text"
+                                placeholder="Model"
+                                required
+                                value={v.model}
+                                style={{ maxWidth: "100%" }}
+                                onChange={(e) => {
+                                  updateCustomVoices(
+                                    i,
+                                    "model",
+                                    e.target.value
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          <button
+                            className="btnty"
+                            title="Delete custom voice"
+                            type="button"
+                            onClick={() => {
+                              setCustomVoicesMessage("");
+                              if (customVoices.length === 1) {
+                                setCustomVoicesMessage(
+                                  "You must provide at least one custom voice."
+                                );
+                                return;
+                              }
+                              if (v.google_custom_voice_sid) {
+                                deleteGoogleCustomVoice(
+                                  v.google_custom_voice_sid
+                                ).finally(() => {
+                                  credential?.refetch();
+                                });
+                              }
+                              setCustomVoices((prev) =>
+                                prev.filter((_, idx) => idx !== i)
+                              );
+                            }}
+                          >
+                            <Icon>
+                              <Icons.Trash2 />
+                            </Icon>
+                          </button>
+                        </div>
+                      ))}
+                    <ButtonGroup left>
+                      <button
+                        className="btnty"
+                        type="button"
+                        title="Add Voice"
+                        onClick={() => {
+                          setCustomVoicesMessage("");
+                          setCustomVoices((prev) => [
+                            ...prev,
+                            {
+                              name: "",
+                              reported_usage:
+                                DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+                              model: "",
+                            },
+                          ]);
+                        }}
+                      >
+                        <Icon subStyle="teal">
+                          <Icons.Plus />
+                        </Icon>
+                      </button>
+                    </ButtonGroup>
+                  </fieldset>
+                )}
               </fieldset>
             )}
           </>

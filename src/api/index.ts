@@ -33,6 +33,7 @@ import {
   API_SUBSCRIPTIONS,
   API_CHANGE_PASSWORD,
   API_SIGNIN,
+  API_GOOGLE_CUSTOM_VOICES,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -94,6 +95,8 @@ import type {
   LanguageOption,
   VoiceOption,
   GetLanguages,
+  GoogleCustomVoice,
+  GoogleCustomVoicesQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -501,6 +504,13 @@ export const postChangepassword = (payload: Partial<ChangePassword>) => {
 export const postSignIn = (payload: Partial<SignIn>) => {
   return postFetch<SignIn, Partial<SignIn>>(API_SIGNIN, payload);
 };
+
+export const postGoogleCustomVoice = (payload: Partial<GoogleCustomVoice>) => {
+  return postFetch<SidResponse, Partial<GoogleCustomVoice>>(
+    API_GOOGLE_CUSTOM_VOICES,
+    payload
+  );
+};
 /** Named wrappers for `putFetch` */
 
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
@@ -630,6 +640,17 @@ export const putActivationCode = (
     payload
   );
 };
+
+export const putGoogleCustomVoice = (
+  sid: string,
+  payload: Partial<GoogleCustomVoice>
+) => {
+  return putFetch<EmptyResponse, Partial<GoogleCustomVoice>>(
+    `${API_GOOGLE_CUSTOM_VOICES}/${sid}`,
+    payload
+  );
+};
+
 /** Named wrappers for `deleteFetch` */
 
 export const deleteUser = (sid: string) => {
@@ -719,6 +740,10 @@ export const deleteClient = (sid: string) => {
 export const deleteRecord = (url: string) => {
   return deleteFetch<EmptyResponse>(url);
 };
+
+export const deleteGoogleCustomVoice = (sid: string) => {
+  return deleteFetch<EmptyResponse>(`${API_GOOGLE_CUSTOM_VOICES}/${sid}`);
+};
 /** Named wrappers for `getFetch` */
 
 export const getUser = (sid: string) => {
@@ -769,6 +794,13 @@ export const getAvailability = (domain: string) => {
   return getFetch<Availability>(
     `${API_AVAILABILITY}?type=subdomain&value=${domain}`
   );
+};
+
+export const getGoogleCustomVoices = (
+  query: Partial<GoogleCustomVoicesQuery>
+) => {
+  const qryStr = getQuery<Partial<GoogleCustomVoicesQuery>>(query);
+  return getFetch<GoogleCustomVoice[]>(`${API_GOOGLE_CUSTOM_VOICES}?${qryStr}`);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */
