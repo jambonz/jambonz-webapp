@@ -37,6 +37,7 @@ import {
   VENDOR_CUSTOM,
   VENDOR_COBALT,
   VENDOR_ELEVENLABS,
+  VENDOR_ASSEMBLYAI,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -313,6 +314,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_MICROSOFT ||
               vendor === VENDOR_WELLSAID ||
               vendor === VENDOR_DEEPGRAM ||
+              vendor === VENDOR_ASSEMBLYAI ||
               vendor === VENDOR_SONIOX ||
               vendor === VENDOR_ELEVENLABS
                 ? apiKey
@@ -603,6 +605,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor && (
           <fieldset>
             {vendor !== VENDOR_DEEPGRAM &&
+              vendor !== VENDOR_ASSEMBLYAI &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor != VENDOR_CUSTOM && (
@@ -1062,6 +1065,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_ASSEMBLYAI ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>

@@ -10,7 +10,8 @@ export type Vendor =
   | "Soniox"
   | "Cobalt"
   | "Custom"
-  | "ElevenLabs";
+  | "ElevenLabs"
+  | "assemblyai";
 
 export interface VendorOptions {
   name: Vendor;
@@ -73,6 +74,7 @@ export interface RecognizerVendors {
   nvidia: Language[];
   soniox: Language[];
   cobalt: Language[];
+  assemblyai: Language[];
 }
 
 export interface SynthesisVendors {

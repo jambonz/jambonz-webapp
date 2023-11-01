@@ -23,6 +23,7 @@ export const VENDOR_SONIOX = "soniox";
 export const VENDOR_CUSTOM = "custom";
 export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
+export const VENDOR_ASSEMBLYAI = "assemblyai";
 
 export const vendors: VendorOptions[] = [
   {
@@ -72,6 +73,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "ElevenLabs",
     value: VENDOR_ELEVENLABS,
+  },
+  {
+    name: "AssemblyAI",
+    value: VENDOR_ASSEMBLYAI,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
@@ -128,6 +133,7 @@ export const useSpeechVendors = () => {
       import("./speech-recognizer/nvidia-speech-recognizer-lang"),
       import("./speech-recognizer/soniox-speech-recognizer-lang"),
       import("./speech-recognizer/cobalt-speech-recognizer-lang"),
+      import("./speech-recognizer/assemblyai-speech-recognizer-lang"),
       import("./speech-synthesis/aws-speech-synthesis-lang"),
       import("./speech-synthesis/google-speech-synthesis-lang"),
       import("./speech-synthesis/ms-speech-synthesis-lang"),
@@ -147,6 +153,7 @@ export const useSpeechVendors = () => {
         { default: nvidiaRecognizer },
         { default: sonioxRecognizer },
         { default: cobaltRecognizer },
+        { default: assemblyaiRecognizer },
         { default: awsSynthesis },
         { default: googleSynthesis },
         { default: msSynthesis },
@@ -178,6 +185,7 @@ export const useSpeechVendors = () => {
               nvidia: nvidiaRecognizer,
               soniox: sonioxRecognizer,
               cobalt: cobaltRecognizer,
+              assemblyai: assemblyaiRecognizer,
             },
           });
         }
