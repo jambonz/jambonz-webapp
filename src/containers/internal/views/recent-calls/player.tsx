@@ -112,6 +112,41 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
+  const PEAKS_WINDOW = 8;
+  const PEAK_THRESHOLD = 0.01;
+
+  const getSilenceStartTime = (
+    start: number,
+    end: number,
+    channel: number
+  ): number => {
+    if (waveSurferRef.current) {
+      const peaks = waveSurferRef.current.exportPeaks();
+      console.log(peaks);
+
+      if (peaks && peaks.length > channel) {
+        const duration = waveSurferRef.current.getDecodedData()?.duration;
+        if (duration && duration > 0) {
+          const data = peaks[channel];
+          const startPeak = Math.ceil((start * data.length) / duration);
+          const endPeak = Math.ceil((end * data.length) / duration);
+          let count = 0;
+          for (let i = endPeak; i > startPeak; i--)
+            if (Math.abs(data[i]) > PEAK_THRESHOLD) {
+              count++;
+              if (count === PEAKS_WINDOW) {
+                return (i * duration) / data.length;
+              }
+            } else {
+              count = 0;
+            }
+        }
+      }
+    }
+
+    return -1;
+  };
+
   const drawSttRegionForSpan = (
     s: JaegerSpan,
     startPoint: JaegerSpan,
@@ -128,6 +163,20 @@ export const Player = ({ call }: PlayerProps) => {
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
+        const endSpeechTime = getSilenceStartTime(start, end, channel);
+
+        const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
+          id: s.spanId + "latency",
+          start: endSpeechTime,
+          end,
+          color: "rgba(255, 255, 0, 0.55)",
+          drag: false,
+          resize: false,
+          content: `${(end - endSpeechTime).toFixed(2)} sec`,
+        });
+
+        changeRegionMouseStyle(latencyRegion, channel);
+
         const region = waveSurferRegionsPluginRef.current.addRegion({
           id: s.spanId,
           start,
@@ -142,11 +191,13 @@ export const Player = ({ call }: PlayerProps) => {
         let att: WaveSurferSttResult;
         if (sttResult) {
           const data = JSON.parse(sttResult.value.stringValue);
+
           att = {
             vendor: data.vendor.name,
             transcript: data.alternatives[0].transcript,
             confidence: data.alternatives[0].confidence,
             language_code: data.language_code,
+            latency: end - endSpeechTime,
           };
         } else {
           const [sttResolve] = getSpanAttributeByName(
@@ -472,6 +523,16 @@ export const Player = ({ call }: PlayerProps) => {
                   </div>
                   <div className="spanDetailsWrapper__details_body">
                     {waveSurferRegionData.transcript}
+                  </div>
+                </div>
+              )}
+              {waveSurferRegionData.latency && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Latency:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSurferRegionData.latency.toFixed(2)} seconds
                   </div>
                 </div>
               )}
