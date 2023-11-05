@@ -522,6 +522,9 @@ export interface Client {
   username: null | string;
   password?: null | string;
   is_active: boolean;
+  allow_direct_app_calling: boolean;
+  allow_direct_queue_calling: boolean;
+  allow_direct_user_calling: boolean;
 }
 
 export interface PageQuery {
