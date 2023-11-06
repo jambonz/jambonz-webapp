@@ -18,6 +18,7 @@ import {
   VENDOR_COBALT,
   VENDOR_CUSTOM,
   VENDOR_DEEPGRAM,
+  VENDOR_ASSEMBLYAI,
   VENDOR_ELEVENLABS,
   VENDOR_GOOGLE,
   VENDOR_MICROSOFT,
@@ -193,6 +194,7 @@ export const SpeechProviderSelection = ({
             options={ttsVendorOptions.filter(
               (vendor) =>
                 vendor.value != VENDOR_DEEPGRAM &&
+                vendor.value != VENDOR_ASSEMBLYAI &&
                 vendor.value != VENDOR_SONIOX &&
                 vendor.value !== VENDOR_CUSTOM &&
                 vendor.value !== VENDOR_COBALT
