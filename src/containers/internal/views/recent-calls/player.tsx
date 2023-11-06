@@ -135,7 +135,7 @@ export const Player = ({ call }: PlayerProps) => {
               count++;
               if (count === PEAKS_WINDOW) {
                 return (
-                  ((i + PEAKS_WINDOW) * duration) / data.length + 20 / 1000 // this is 20 ms adjustment
+                  ((i + PEAKS_WINDOW) * duration) / data.length + 40 / 1000 // this is 20 ms adjustment
                 );
               }
             } else {
