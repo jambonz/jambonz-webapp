@@ -141,7 +141,12 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   return (
     <>
       <Section slim>
-        <form className="form form--internal" onSubmit={handleSubmit}>
+        <form
+          className={`form form--internal ${
+            !phoneNumber?.data && phoneNumber?.refetch ? "form--blur" : ""
+          }`}
+          onSubmit={handleSubmit}
+        >
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>

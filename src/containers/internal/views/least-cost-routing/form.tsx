@@ -449,7 +449,12 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   return (
     <>
       <Section slim>
-        <form className="form form--internal" onSubmit={handleSubmit}>
+        <form
+          className={`form form--internal ${
+            !lcrDataMap?.data && lcrDataMap?.refetch ? "form--blur" : ""
+          }`}
+          onSubmit={handleSubmit}
+        >
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
             {errorMessage && <Message message={errorMessage} />}

@@ -9,7 +9,7 @@ import {
 } from "src/api";
 import { USER_ACCOUNT } from "src/api/constants";
 import { Account, Client, UseApiDataMap } from "src/api/types";
-import { Section } from "src/components";
+import { Section, Tooltip } from "src/components";
 import { AccountSelect, Message, Passwd } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
@@ -30,7 +30,12 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   const [accountSid, setAccountSid] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(
+    client ? client.data?.is_active : true
+  );
+  const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(true);
+  const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(true);
+  const [allowDirectUserCalling, setAllowDirectUserCalling] = useState(true);
   const [modal, setModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,6 +47,9 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
         username: username,
         password: password,
         is_active: isActive,
+        allow_direct_app_calling: allowDirectAppCalling,
+        allow_direct_queue_calling: allowDirectQueueCalling,
+        allow_direct_user_calling: allowDirectUserCalling,
       })
         .then(() => {
           toastSuccess("Client created successfully");
@@ -56,6 +64,9 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
         username: username,
         ...(password && { password: password }),
         is_active: isActive,
+        allow_direct_app_calling: allowDirectAppCalling,
+        allow_direct_queue_calling: allowDirectQueueCalling,
+        allow_direct_user_calling: allowDirectUserCalling,
       })
         .then(() => {
           toastSuccess("Client updated successfully");
@@ -99,6 +110,9 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
       }
 
       setIsActive(client.data.is_active);
+      setAllowDirectAppCalling(client.data.allow_direct_app_calling);
+      setAllowDirectQueueCalling(client.data.allow_direct_queue_calling);
+      setAllowDirectUserCalling(client.data.allow_direct_user_calling);
     }
   }, [client]);
 
@@ -114,7 +128,12 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   return (
     <>
       <Section slim>
-        <form className="form form--internal" onSubmit={handleSubmit}>
+        <form
+          className={`form form--internal ${
+            !client?.data && client?.refetch ? "form--blur" : ""
+          }`}
+          onSubmit={handleSubmit}
+        >
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
             {errorMessage && <Message message={errorMessage} />}
@@ -136,18 +155,6 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
                 />
               </div>
             </div>
-            <label htmlFor="is_active" className="chk">
-              <input
-                id="is_active"
-                name="is_active"
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-              />
-              <div>Active</div>
-            </label>
-          </fieldset>
-          <fieldset>
             <label htmlFor="password">
               Password{!hasValue(client) && <span>*</span>}
             </label>
@@ -160,12 +167,63 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
               setValue={setPassword}
             />
           </fieldset>
+          <fieldset>
+            <label htmlFor="is_active" className="chk">
+              <input
+                id="is_active"
+                name="is_active"
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
+              <div>Active</div>
+            </label>
+            <label htmlFor="allow_direct_app_calling" className="chk">
+              <input
+                id="allow_direct_app_calling"
+                name="allow_direct_app_calling"
+                type="checkbox"
+                checked={allowDirectAppCalling}
+                onChange={(e) => setAllowDirectAppCalling(e.target.checked)}
+              />
+              <div>Allow direct calling to applications</div>
+              <Tooltip text="Allow user to call applications without configuring an application for sip device calls.">
+                {" "}
+              </Tooltip>
+            </label>
+            <label htmlFor="allow_direct_queue_calling" className="chk">
+              <input
+                id="allow_direct_queue_calling"
+                name="allow_direct_queue_calling"
+                type="checkbox"
+                checked={allowDirectQueueCalling}
+                onChange={(e) => setAllowDirectQueueCalling(e.target.checked)}
+              />
+              <div>Allow direct calling to queues</div>
+              <Tooltip text="Allow user to take calls from queues without configuring an application for sip device calls.">
+                {" "}
+              </Tooltip>
+            </label>
+            <label htmlFor="allow_direct_user_calling" className="chk">
+              <input
+                id="allow_direct_user_calling"
+                name="allow_direct_user_calling"
+                type="checkbox"
+                checked={allowDirectUserCalling}
+                onChange={(e) => setAllowDirectUserCalling(e.target.checked)}
+              />
+              <div>Allow direct calling to other users</div>
+              <Tooltip text="Allow user to call other users without configuring an application for sip device calls.">
+                {" "}
+              </Tooltip>
+            </label>
+          </fieldset>
           {user?.scope !== USER_ACCOUNT && (
             <fieldset>
               <AccountSelect
                 accounts={accounts}
                 account={[accountSid, setAccountSid]}
-                label="Used by"
+                label="Belongs to"
                 required={true}
                 defaultOption={false}
                 disabled={hasValue(client)}
