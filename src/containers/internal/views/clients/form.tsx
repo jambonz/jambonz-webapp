@@ -30,10 +30,18 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   const [accountSid, setAccountSid] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(true);
-  const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(true);
-  const [allowDirectUserCalling, setAllowDirectUserCalling] = useState(true);
+  const [isActive, setIsActive] = useState(
+    client ? client.data?.is_active : true
+  );
+  const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(
+    client ? client.data?.allow_direct_app_calling : true
+  );
+  const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(
+    client ? client.data?.allow_direct_queue_calling : true
+  );
+  const [allowDirectUserCalling, setAllowDirectUserCalling] = useState(
+    client ? client.data?.allow_direct_user_calling : true
+  );
   const [modal, setModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
