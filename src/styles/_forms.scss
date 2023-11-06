@@ -105,6 +105,10 @@ fieldset {
     }
   }
 
+  &--blur {
+    pointer-events: none;
+  }
+
   label {
     @include ui-mixins.m();
     @include ui-mixins.font-medium();

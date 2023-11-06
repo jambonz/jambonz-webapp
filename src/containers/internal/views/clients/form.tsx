@@ -33,15 +33,9 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   const [isActive, setIsActive] = useState(
     client ? client.data?.is_active : true
   );
-  const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(
-    client ? client.data?.allow_direct_app_calling : true
-  );
-  const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(
-    client ? client.data?.allow_direct_queue_calling : true
-  );
-  const [allowDirectUserCalling, setAllowDirectUserCalling] = useState(
-    client ? client.data?.allow_direct_user_calling : true
-  );
+  const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(true);
+  const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(true);
+  const [allowDirectUserCalling, setAllowDirectUserCalling] = useState(true);
   const [modal, setModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
@@ -134,7 +128,12 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   return (
     <>
       <Section slim>
-        <form className="form form--internal" onSubmit={handleSubmit}>
+        <form
+          className={`form form--internal ${
+            !client?.data && client?.refetch ? "form--blur" : ""
+          }`}
+          onSubmit={handleSubmit}
+        >
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
             {errorMessage && <Message message={errorMessage} />}
