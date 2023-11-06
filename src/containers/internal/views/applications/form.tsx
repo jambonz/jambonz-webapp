@@ -550,7 +550,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
   return (
     <Section slim>
-      <form className="form form--internal" onSubmit={handleSubmit}>
+      <form
+        className={`form form--internal ${
+          !application?.data && application?.refetch ? "form--blur" : ""
+        }`}
+        onSubmit={handleSubmit}
+      >
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>

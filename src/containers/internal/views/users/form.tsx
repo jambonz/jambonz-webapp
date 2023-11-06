@@ -183,7 +183,12 @@ export const UserForm = ({ user }: UserFormProps) => {
   return (
     <>
       <Section slim>
-        <form className="form form--internal" onSubmit={handleSubmit}>
+        <form
+          className={`form form--internal ${
+            !user?.data && user?.refetch ? "form--blur" : ""
+          }`}
+          onSubmit={handleSubmit}
+        >
           <fieldset>
             <MS>{MSG_REQUIRED_FIELDS}</MS>
           </fieldset>

@@ -639,7 +639,12 @@ export const CarrierForm = ({
 
   return (
     <Section slim>
-      <form className="form form--internal" onSubmit={handleSubmit}>
+      <form
+        className={`form form--internal ${
+          !carrier?.data && carrier?.refetch ? "form--blur" : ""
+        }`}
+        onSubmit={handleSubmit}
+      >
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
         </fieldset>

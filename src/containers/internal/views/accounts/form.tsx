@@ -693,7 +693,9 @@ export const AccountForm = ({
           {isDeleteAccount && (
             <Section slim>
               <form
-                className="form form--internal"
+                className={`form form--internal ${
+                  !account?.data && account?.refetch ? "form--blur" : ""
+                }`}
                 onSubmit={handleDeleteAccount}
               >
                 <fieldset>
