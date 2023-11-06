@@ -134,7 +134,9 @@ export const Player = ({ call }: PlayerProps) => {
             if (Math.abs(data[i]) > PEAK_THRESHOLD) {
               count++;
               if (count === PEAKS_WINDOW) {
-                return (i * duration) / data.length;
+                return (
+                  ((i + PEAKS_WINDOW) * duration) / data.length + 20 / 1000 // this is 20 ms adjustment
+                );
               }
             } else {
               count = 0;
