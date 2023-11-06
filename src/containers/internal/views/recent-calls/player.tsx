@@ -113,7 +113,7 @@ export const Player = ({ call }: PlayerProps) => {
   };
 
   const PEAKS_WINDOW = 10;
-  const PEAK_THRESHOLD = 0.05;
+  const PEAK_THRESHOLD = 0.02;
 
   const getSilenceStartTime = (
     start: number,
@@ -122,6 +122,7 @@ export const Player = ({ call }: PlayerProps) => {
   ): number => {
     if (waveSurferRef.current) {
       const peaks = waveSurferRef.current.exportPeaks();
+      console.log(peaks);
 
       if (peaks && peaks.length > channel) {
         const duration = waveSurferRef.current.getDecodedData()?.duration;
@@ -134,6 +135,7 @@ export const Player = ({ call }: PlayerProps) => {
             if (Math.abs(data[i]) > PEAK_THRESHOLD) {
               count++;
               if (count === PEAKS_WINDOW) {
+                console.log(i);
                 return (
                   ((i + PEAKS_WINDOW) * duration) / data.length + 50 / 1000 // this is 20 ms adjustment
                 );
