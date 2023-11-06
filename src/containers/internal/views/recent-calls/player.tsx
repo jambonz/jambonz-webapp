@@ -112,8 +112,8 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
-  const PEAKS_WINDOW = 8;
-  const PEAK_THRESHOLD = 0.01;
+  const PEAKS_WINDOW = 10;
+  const PEAK_THRESHOLD = 0.05;
 
   const getSilenceStartTime = (
     start: number,
@@ -122,7 +122,6 @@ export const Player = ({ call }: PlayerProps) => {
   ): number => {
     if (waveSurferRef.current) {
       const peaks = waveSurferRef.current.exportPeaks();
-      console.log(peaks);
 
       if (peaks && peaks.length > channel) {
         const duration = waveSurferRef.current.getDecodedData()?.duration;
@@ -165,28 +164,6 @@ export const Player = ({ call }: PlayerProps) => {
 
         const endSpeechTime = getSilenceStartTime(start, end, channel);
 
-        const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
-          id: s.spanId + "latency",
-          start: endSpeechTime,
-          end,
-          color: "rgba(255, 255, 0, 0.55)",
-          drag: false,
-          resize: false,
-          content: `${(end - endSpeechTime).toFixed(2)} sec`,
-        });
-
-        changeRegionMouseStyle(latencyRegion, channel);
-
-        const region = waveSurferRegionsPluginRef.current.addRegion({
-          id: s.spanId,
-          start,
-          end,
-          color: "rgba(255, 0, 0, 0.15)",
-          drag: false,
-          resize: false,
-        });
-
-        changeRegionMouseStyle(region, channel);
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSurferSttResult;
         if (sttResult) {
@@ -197,8 +174,30 @@ export const Player = ({ call }: PlayerProps) => {
             transcript: data.alternatives[0].transcript,
             confidence: data.alternatives[0].confidence,
             language_code: data.language_code,
-            latency: end - endSpeechTime,
+            ...(endSpeechTime > 0 && { latency: end - endSpeechTime }),
           };
+
+          const [sttResolve] = getSpanAttributeByName(
+            s.attributes,
+            "stt.resolve"
+          );
+          if (
+            endSpeechTime > 0 &&
+            sttResolve &&
+            sttResolve.value.stringValue === "speech"
+          ) {
+            const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
+              id: s.spanId + "latency",
+              start: endSpeechTime,
+              end,
+              color: "rgba(255, 255, 0, 0.55)",
+              drag: false,
+              resize: false,
+              content: `${(end - endSpeechTime).toFixed(2)} sec`,
+            });
+
+            changeRegionMouseStyle(latencyRegion, channel);
+          }
         } else {
           const [sttResolve] = getSpanAttributeByName(
             s.attributes,
@@ -221,6 +220,17 @@ export const Player = ({ call }: PlayerProps) => {
             };
           }
         }
+
+        const region = waveSurferRegionsPluginRef.current.addRegion({
+          id: s.spanId,
+          start,
+          end,
+          color: "rgba(255, 0, 0, 0.15)",
+          drag: false,
+          resize: false,
+        });
+
+        changeRegionMouseStyle(region, channel);
 
         region.on("click", () => {
           setWaveSurferRegionData(att);
