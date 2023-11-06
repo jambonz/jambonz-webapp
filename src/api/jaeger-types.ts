@@ -42,6 +42,7 @@ export interface WaveSurferSttResult {
   transcript: string;
   confidence: number;
   language_code: string;
+  latency?: number;
 }
 
 export interface WaveSurferDtmfResult {

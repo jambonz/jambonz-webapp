@@ -112,6 +112,42 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
+  const PEAKS_WINDOW = 10;
+  const PEAK_THRESHOLD = 0.03;
+
+  const getSilenceStartTime = (
+    start: number,
+    end: number,
+    channel: number
+  ): number => {
+    if (waveSurferRef.current) {
+      const peaks = waveSurferRef.current.exportPeaks();
+
+      if (peaks && peaks.length > channel) {
+        const duration = waveSurferRef.current.getDecodedData()?.duration;
+        if (duration && duration > 0) {
+          const data = peaks[channel];
+          const startPeak = Math.ceil((start * data.length) / duration);
+          const endPeak = Math.ceil((end * data.length) / duration);
+          let count = 0;
+          for (let i = endPeak; i > startPeak; i--)
+            if (Math.abs(data[i]) > PEAK_THRESHOLD) {
+              count++;
+              if (count === PEAKS_WINDOW) {
+                return (
+                  ((i + PEAKS_WINDOW) * duration) / data.length + 50 / 1000 // this is 20 ms adjustment
+                );
+              }
+            } else {
+              count = 0;
+            }
+        }
+      }
+    }
+
+    return -1;
+  };
+
   const drawSttRegionForSpan = (
     s: JaegerSpan,
     startPoint: JaegerSpan,
@@ -128,26 +164,42 @@ export const Player = ({ call }: PlayerProps) => {
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
-        const region = waveSurferRegionsPluginRef.current.addRegion({
-          id: s.spanId,
-          start,
-          end,
-          color: "rgba(255, 0, 0, 0.15)",
-          drag: false,
-          resize: false,
-        });
+        const endSpeechTime = getSilenceStartTime(start, end, channel);
 
-        changeRegionMouseStyle(region, channel);
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSurferSttResult;
         if (sttResult) {
           const data = JSON.parse(sttResult.value.stringValue);
+
           att = {
             vendor: data.vendor.name,
             transcript: data.alternatives[0].transcript,
             confidence: data.alternatives[0].confidence,
             language_code: data.language_code,
+            ...(endSpeechTime > 0 && { latency: end - endSpeechTime }),
           };
+
+          const [sttResolve] = getSpanAttributeByName(
+            s.attributes,
+            "stt.resolve"
+          );
+          if (
+            endSpeechTime > 0 &&
+            sttResolve &&
+            sttResolve.value.stringValue === "speech"
+          ) {
+            const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
+              id: s.spanId + "latency",
+              start: endSpeechTime,
+              end,
+              color: "rgba(255, 255, 0, 0.55)",
+              drag: false,
+              resize: false,
+              content: `${(end - endSpeechTime).toFixed(2)} sec`,
+            });
+
+            changeRegionMouseStyle(latencyRegion, channel);
+          }
         } else {
           const [sttResolve] = getSpanAttributeByName(
             s.attributes,
@@ -170,6 +222,17 @@ export const Player = ({ call }: PlayerProps) => {
             };
           }
         }
+
+        const region = waveSurferRegionsPluginRef.current.addRegion({
+          id: s.spanId,
+          start,
+          end,
+          color: "rgba(255, 0, 0, 0.15)",
+          drag: false,
+          resize: false,
+        });
+
+        changeRegionMouseStyle(region, channel);
 
         region.on("click", () => {
           setWaveSurferRegionData(att);
@@ -472,6 +535,16 @@ export const Player = ({ call }: PlayerProps) => {
                   </div>
                   <div className="spanDetailsWrapper__details_body">
                     {waveSurferRegionData.transcript}
+                  </div>
+                </div>
+              )}
+              {waveSurferRegionData.latency && (
+                <div className="spanDetailsWrapper__details">
+                  <div className="spanDetailsWrapper__details_header">
+                    <strong>Latency:</strong>
+                  </div>
+                  <div className="spanDetailsWrapper__details_body">
+                    {waveSurferRegionData.latency.toFixed(2)} seconds
                   </div>
                 </div>
               )}
