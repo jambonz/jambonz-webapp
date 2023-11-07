@@ -112,7 +112,7 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
-  const PEAKS_WINDOW = 10;
+  const PEAKS_WINDOW = 5; // require 30 ms of speech energy over threshold to trigger
   const PEAK_THRESHOLD = 0.03;
 
   const getSilenceStartTime = (
@@ -121,30 +121,31 @@ export const Player = ({ call }: PlayerProps) => {
     channel: number
   ): number => {
     if (waveSurferRef.current) {
-      const peaks = waveSurferRef.current.exportPeaks();
-
-      if (peaks && peaks.length > channel) {
-        const duration = waveSurferRef.current.getDecodedData()?.duration;
-        if (duration && duration > 0) {
-          const data = peaks[channel];
-          const startPeak = Math.ceil((start * data.length) / duration);
-          const endPeak = Math.ceil((end * data.length) / duration);
-          let count = 0;
-          for (let i = endPeak; i > startPeak; i--)
-            if (Math.abs(data[i]) > PEAK_THRESHOLD) {
-              count++;
-              if (count === PEAKS_WINDOW) {
-                return (
-                  ((i + PEAKS_WINDOW) * duration) / data.length + 50 / 1000 // this is 20 ms adjustment
-                );
+      const duration = waveSurferRef.current.getDecodedData()?.duration;
+      if (duration && duration > 0) {
+        const maxLength = Math.round(duration * 8000) / 10; // evaluate speech energy every 10 ms
+        const peaks = waveSurferRef.current.exportPeaks({ maxLength });
+        if (peaks && peaks.length > channel) {
+          if (duration && duration > 0) {
+            const data = peaks[channel];
+            const startPeak = Math.ceil((start * data.length) / duration);
+            const endPeak = Math.ceil((end * data.length) / duration);
+            let count = 0;
+            for (let i = endPeak; i > startPeak; i--)
+              if (Math.abs(data[i]) > PEAK_THRESHOLD) {
+                count++;
+                if (count === PEAKS_WINDOW) {
+                  return (
+                    ((i + PEAKS_WINDOW) * duration) / data.length + 0.02 // add 20 ms adjustment
+                  );
+                }
+              } else {
+                count = 0;
               }
-            } else {
-              count = 0;
-            }
+          }
         }
       }
     }
-
     return -1;
   };
 
