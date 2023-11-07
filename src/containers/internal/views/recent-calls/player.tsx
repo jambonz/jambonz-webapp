@@ -112,7 +112,7 @@ export const Player = ({ call }: PlayerProps) => {
     });
   };
 
-  const PEAKS_WINDOW = 5; // 30 ms of speech energy over threshold
+  const PEAKS_WINDOW = 5; // require 30 ms of speech energy over threshold to trigger
   const PEAK_THRESHOLD = 0.03;
 
   const getSilenceStartTime = (
