@@ -60,9 +60,6 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
         });
     } else {
       putClient(client.data?.client_sid || "", {
-        account_sid: accountSid,
-        username: username,
-        ...(password && { password: password }),
         is_active: isActive,
         allow_direct_app_calling: allowDirectAppCalling,
         allow_direct_queue_calling: allowDirectQueueCalling,
@@ -151,6 +148,8 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
                   placeholder="user name"
                   value={username}
                   required={true}
+                  disabled={hasValue(client)}
+                  autoComplete="off"
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
@@ -165,6 +164,8 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
               value={password}
               placeholder="Password"
               setValue={setPassword}
+              disabled={hasValue(client)}
+              autoComplete="off"
             />
           </fieldset>
           <fieldset>
