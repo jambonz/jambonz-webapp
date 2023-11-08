@@ -358,6 +358,7 @@ export const SpeechProviderSelection = ({
             options={sttVendorOptions.filter(
               (vendor) =>
                 vendor.value != VENDOR_WELLSAID &&
+                vendor.value != VENDOR_ELEVENLABS &&
                 vendor.value !== VENDOR_CUSTOM
             )}
             onChange={(e) => {
