@@ -87,29 +87,21 @@ export const SpeechProviderSelection = ({
   const [synthesisLanguageOptions, setSynthesisLanguageOptions] = useState<
     SelectorOption[]
   >([]);
-  const [delayLoadOptions, setDelayLoadOptions] = useState(false);
-  const timerRef = useRef(0);
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
-  useEffect(() => {
-    setDelayLoadOptions(true);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      setDelayLoadOptions(false);
-    }, 100);
-  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
+  const currentVendor = useRef(synthVendor);
 
   useEffect(() => {
-    if (!synthesis || delayLoadOptions) {
+    currentVendor.current = synthVendor;
+    if (!synthesis) {
       return;
     }
     const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
       .filter((lang: VoiceLanguage) => {
         // ELEVENLABS has same voice for all lange, take voices from the 1st language
-        if (synthVendor === VENDOR_ELEVENLABS) {
+        // Only first language has voices, the rest has empty voices
+        if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
           return true;
         }
         return lang.code === synthLang;
@@ -140,6 +132,10 @@ export const SpeechProviderSelection = ({
           label: synthLabel,
         }
       ).then(({ json }) => {
+        // If after successfully fetching data, vendor is still good, then apply value
+        if (currentVendor.current !== VENDOR_ELEVENLABS) {
+          return;
+        }
         if (json.length > 0) {
           setSynthesisVoiceOptions(json);
         }
@@ -164,6 +160,10 @@ export const SpeechProviderSelection = ({
         account_sid: accountSid,
         service_provider_sid: serviceProviderSid,
       }).then(({ json }) => {
+        // If after successfully fetching data, vendor is still good, then apply value
+        if (currentVendor.current !== VENDOR_GOOGLE) {
+          return;
+        }
         const customVOices = json.map((v) => ({
           name: `${v.name} (Custom)`,
           value: `custom_${v.google_custom_voice_sid}`,
@@ -184,7 +184,7 @@ export const SpeechProviderSelection = ({
         }
       });
     }
-  }, [delayLoadOptions]);
+  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
 
   useEffect(() => {
     if (credentials) {
