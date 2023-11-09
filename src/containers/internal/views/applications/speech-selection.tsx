@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getGoogleCustomVoices,
   postSpeechServiceLanguages,
@@ -87,11 +87,23 @@ export const SpeechProviderSelection = ({
   const [synthesisLanguageOptions, setSynthesisLanguageOptions] = useState<
     SelectorOption[]
   >([]);
+  const [delayLoadOptions, setDelayLoadOptions] = useState(false);
+  const timerRef = useRef(0);
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
   useEffect(() => {
-    if (!synthesis) {
+    setDelayLoadOptions(true);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      setDelayLoadOptions(false);
+    }, 100);
+  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
+
+  useEffect(() => {
+    if (!synthesis || delayLoadOptions) {
       return;
     }
     const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
@@ -108,9 +120,7 @@ export const SpeechProviderSelection = ({
           value: voice.value,
         }))
       ) as Voice[];
-    setTimeout(() => {
-      setSynthesisVoiceOptions(voiceOpts);
-    }, 100);
+    setSynthesisVoiceOptions(voiceOpts);
 
     const langOpts = synthesis[synthVendor as keyof SynthesisVendors].map(
       (lang: VoiceLanguage) => ({
@@ -118,9 +128,7 @@ export const SpeechProviderSelection = ({
         value: lang.code,
       })
     );
-    setTimeout(() => {
-      setSynthesisLanguageOptions(langOpts);
-    }, 100);
+    setSynthesisLanguageOptions(langOpts);
 
     if (synthVendor === VENDOR_ELEVENLABS) {
       postSpeechServiceVoices(
@@ -176,7 +184,7 @@ export const SpeechProviderSelection = ({
         }
       });
     }
-  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
+  }, [delayLoadOptions]);
 
   useEffect(() => {
     if (credentials) {
