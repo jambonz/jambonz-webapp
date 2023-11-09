@@ -241,6 +241,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         use_for_tts: ttsCheck ? 1 : 0,
         use_for_stt: sttCheck ? 1 : 0,
         label: label || null,
+        ...(vendor === VENDOR_AWS && {
+          aws_region: region || null,
+        }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
           use_custom_tts:
