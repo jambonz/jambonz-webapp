@@ -94,7 +94,7 @@ export const SpeechProviderSelection = ({
     if (!synthesis) {
       return;
     }
-    let options = synthesis[synthVendor as keyof SynthesisVendors]
+    const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
       .filter((lang: VoiceLanguage) => {
         // ELEVENLABS has same voice for all lange, take voices from the 1st language
         if (synthVendor === VENDOR_ELEVENLABS) {
@@ -108,15 +108,19 @@ export const SpeechProviderSelection = ({
           value: voice.value,
         }))
       ) as Voice[];
-    setSynthesisVoiceOptions(options);
+    setTimeout(() => {
+      setSynthesisVoiceOptions(voiceOpts);
+    }, 100);
 
-    options = synthesis[synthVendor as keyof SynthesisVendors].map(
+    const langOpts = synthesis[synthVendor as keyof SynthesisVendors].map(
       (lang: VoiceLanguage) => ({
         name: lang.name,
         value: lang.code,
       })
     );
-    setSynthesisLanguageOptions(options);
+    setTimeout(() => {
+      setSynthesisLanguageOptions(langOpts);
+    }, 100);
 
     if (synthVendor === VENDOR_ELEVENLABS) {
       postSpeechServiceVoices(
@@ -156,7 +160,7 @@ export const SpeechProviderSelection = ({
           name: `${v.name} (Custom)`,
           value: `custom_${v.google_custom_voice_sid}`,
         }));
-        options = synthesis[synthVendor as keyof SynthesisVendors]
+        const options = synthesis[synthVendor as keyof SynthesisVendors]
           .filter((lang: VoiceLanguage) => {
             return lang.code === synthLang;
           })
