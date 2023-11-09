@@ -5,6 +5,7 @@ import type {
   SynthesisVendors,
   RecognizerVendors,
   RegionVendors,
+  TtsModels,
 } from "./types";
 
 export const LANG_EN_US = "en-US";
@@ -24,6 +25,7 @@ export const VENDOR_CUSTOM = "custom";
 export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
 export const VENDOR_ASSEMBLYAI = "assemblyai";
+export const VENDOR_WHISPER = "whisper";
 
 export const vendors: VendorOptions[] = [
   {
@@ -78,7 +80,35 @@ export const vendors: VendorOptions[] = [
     name: "AssemblyAI",
     value: VENDOR_ASSEMBLYAI,
   },
+  {
+    name: "Whisper",
+    value: VENDOR_WHISPER,
+  },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
+
+export const useTtsModels = () => {
+  const [models, setModels] = useState<TtsModels>();
+
+  useEffect(() => {
+    let ignore = false;
+    Promise.all([
+      import("./speech-synthsis-models/elevenlabs-models"),
+      import("./speech-synthsis-models/whisper-models"),
+    ]).then(([{ default: elevenlabs }, { default: whisper }]) => {
+      if (!ignore) {
+        setModels({
+          elevenlabs,
+          whisper,
+        });
+      }
+    });
+    return function cleanup() {
+      ignore = true;
+    };
+  }, []);
+
+  return models;
+};
 
 export const useRegionVendors = () => {
   const [regions, setRegions] = useState<RegionVendors>();
@@ -142,6 +172,7 @@ export const useSpeechVendors = () => {
       import("./speech-synthesis/ibm-speech-synthesis-lang"),
       import("./speech-synthesis/nvidia-speech-synthesis-lang"),
       import("./speech-synthesis/elevellabs-speech-synthesis-lang"),
+      import("./speech-synthesis/whisper-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -162,6 +193,7 @@ export const useSpeechVendors = () => {
         { default: ibmSynthesis },
         { default: nvidiaynthesis },
         { default: elevenLabsSynthesis },
+        { default: whisperSynthesis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -174,6 +206,7 @@ export const useSpeechVendors = () => {
               ibm: ibmSynthesis,
               nvidia: nvidiaynthesis,
               elevenlabs: elevenLabsSynthesis,
+              whisper: whisperSynthesis,
             },
             recognizers: {
               aws: awsRecognizer,

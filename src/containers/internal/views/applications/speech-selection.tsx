@@ -24,6 +24,7 @@ import {
   VENDOR_MICROSOFT,
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
+  VENDOR_WHISPER,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -228,6 +229,15 @@ export const SpeechProviderSelection = ({
                 return;
               }
 
+              if (vendor === VENDOR_WHISPER) {
+                const newLang = synthesis[vendor].find(
+                  (lang) => lang.code === LANG_EN_US
+                );
+                setSynthLang(LANG_EN_US);
+                setSynthVoice(newLang!.voices[0].value);
+                return;
+              }
+
               /** Google and AWS have different language lists */
               /** If the new language doesn't map then default to "en-US" */
               let newLang = synthesis[vendor].find(
@@ -359,6 +369,7 @@ export const SpeechProviderSelection = ({
               (vendor) =>
                 vendor.value != VENDOR_WELLSAID &&
                 vendor.value != VENDOR_ELEVENLABS &&
+                vendor.value != VENDOR_WHISPER &&
                 vendor.value !== VENDOR_CUSTOM
             )}
             onChange={(e) => {
