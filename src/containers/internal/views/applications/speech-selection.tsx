@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getGoogleCustomVoices,
   postSpeechServiceLanguages,
@@ -24,6 +24,7 @@ import {
   VENDOR_MICROSOFT,
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
+  VENDOR_WHISPER,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -89,14 +90,18 @@ export const SpeechProviderSelection = ({
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
+  const currentVendor = useRef(synthVendor);
+
   useEffect(() => {
+    currentVendor.current = synthVendor;
     if (!synthesis) {
       return;
     }
-    let options = synthesis[synthVendor as keyof SynthesisVendors]
+    const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
       .filter((lang: VoiceLanguage) => {
         // ELEVENLABS has same voice for all lange, take voices from the 1st language
-        if (synthVendor === VENDOR_ELEVENLABS) {
+        // Only first language has voices, the rest has empty voices
+        if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
           return true;
         }
         return lang.code === synthLang;
@@ -107,15 +112,15 @@ export const SpeechProviderSelection = ({
           value: voice.value,
         }))
       ) as Voice[];
-    setSynthesisVoiceOptions(options);
+    setSynthesisVoiceOptions(voiceOpts);
 
-    options = synthesis[synthVendor as keyof SynthesisVendors].map(
+    const langOpts = synthesis[synthVendor as keyof SynthesisVendors].map(
       (lang: VoiceLanguage) => ({
         name: lang.name,
         value: lang.code,
       })
     );
-    setSynthesisLanguageOptions(options);
+    setSynthesisLanguageOptions(langOpts);
 
     if (synthVendor === VENDOR_ELEVENLABS) {
       postSpeechServiceVoices(
@@ -127,6 +132,10 @@ export const SpeechProviderSelection = ({
           label: synthLabel,
         }
       ).then(({ json }) => {
+        // If after successfully fetching data, vendor is still good, then apply value
+        if (currentVendor.current !== VENDOR_ELEVENLABS) {
+          return;
+        }
         if (json.length > 0) {
           setSynthesisVoiceOptions(json);
         }
@@ -151,11 +160,15 @@ export const SpeechProviderSelection = ({
         account_sid: accountSid,
         service_provider_sid: serviceProviderSid,
       }).then(({ json }) => {
+        // If after successfully fetching data, vendor is still good, then apply value
+        if (currentVendor.current !== VENDOR_GOOGLE) {
+          return;
+        }
         const customVOices = json.map((v) => ({
           name: `${v.name} (Custom)`,
           value: `custom_${v.google_custom_voice_sid}`,
         }));
-        options = synthesis[synthVendor as keyof SynthesisVendors]
+        const options = synthesis[synthVendor as keyof SynthesisVendors]
           .filter((lang: VoiceLanguage) => {
             return lang.code === synthLang;
           })
@@ -224,6 +237,15 @@ export const SpeechProviderSelection = ({
                   (lang) => lang.code === ELEVENLABS_LANG_EN
                 );
                 setSynthLang(ELEVENLABS_LANG_EN);
+                setSynthVoice(newLang!.voices[0].value);
+                return;
+              }
+
+              if (vendor === VENDOR_WHISPER) {
+                const newLang = synthesis[vendor].find(
+                  (lang) => lang.code === LANG_EN_US
+                );
+                setSynthLang(LANG_EN_US);
                 setSynthVoice(newLang!.voices[0].value);
                 return;
               }
@@ -359,6 +381,7 @@ export const SpeechProviderSelection = ({
               (vendor) =>
                 vendor.value != VENDOR_WELLSAID &&
                 vendor.value != VENDOR_ELEVENLABS &&
+                vendor.value != VENDOR_WHISPER &&
                 vendor.value !== VENDOR_CUSTOM
             )}
             onChange={(e) => {

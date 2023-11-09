@@ -416,6 +416,7 @@ export interface SpeechCredential {
   label: null | string;
   cobalt_server_uri: null | string;
   model_id: null | string;
+  model: null | string;
 }
 
 export interface Alert {

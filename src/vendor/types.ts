@@ -11,7 +11,8 @@ export type Vendor =
   | "Cobalt"
   | "Custom"
   | "ElevenLabs"
-  | "assemblyai";
+  | "assemblyai"
+  | "whisper";
 
 export interface VendorOptions {
   name: Vendor;
@@ -24,6 +25,11 @@ export interface LabelOptions {
 }
 
 export interface Region {
+  name: string;
+  value: string;
+}
+
+export interface Model {
   name: string;
   value: string;
 }
@@ -64,6 +70,11 @@ export interface RegionVendors {
   ibm: Region[];
 }
 
+export interface TtsModels {
+  elevenlabs: Model[];
+  whisper: Model[];
+}
+
 export interface RecognizerVendors {
   aws: Language[];
   google: Language[];
@@ -86,6 +97,7 @@ export interface SynthesisVendors {
   ibm: VoiceLanguage[];
   nvidia: VoiceLanguage[];
   elevenlabs: VoiceLanguage[];
+  whisper: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {
