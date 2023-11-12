@@ -12,7 +12,8 @@ export type Vendor =
   | "Custom"
   | "ElevenLabs"
   | "assemblyai"
-  | "whisper";
+  | "whisper"
+  | "playht";
 
 export interface VendorOptions {
   name: Vendor;
@@ -98,6 +99,7 @@ export interface SynthesisVendors {
   nvidia: VoiceLanguage[];
   elevenlabs: VoiceLanguage[];
   whisper: VoiceLanguage[];
+  playht: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {
