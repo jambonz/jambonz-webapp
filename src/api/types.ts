@@ -504,7 +504,7 @@ export interface LcrRoute {
   lcr_route_sid?: null | string;
   lcr_sid: null | string;
   regex: null | string;
-  desciption?: null | string;
+  description?: null | string;
   priority: number;
   lcr_carrier_set_entries?: LcrCarrierSetEntry[];
 }

@@ -607,6 +607,26 @@ export const putLcr = (sid: string, payload: Partial<Lcr>) => {
   return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
 };
 
+export const putLcrCreateRoutes = (
+  sid: string,
+  payload: Partial<LcrRoute[]>
+) => {
+  return putFetch<EmptyResponse, Partial<LcrRoute[]>>(
+    `${API_LCRS}/${sid}/createRoutes`,
+    payload
+  );
+};
+
+export const putLcrUpdateRoutes = (
+  sid: string,
+  payload: Partial<LcrRoute[]>
+) => {
+  return putFetch<EmptyResponse, Partial<LcrRoute[]>>(
+    `${API_LCRS}/${sid}/updateRoutes`,
+    payload
+  );
+};
+
 export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
   return putFetch<EmptyResponse, Partial<LcrRoute>>(
     `${API_LCR_ROUTES}/${sid}`,

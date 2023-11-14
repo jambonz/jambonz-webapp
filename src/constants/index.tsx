@@ -24,4 +24,3 @@ export const MSG_WEBHOOK_FIELDS = (
     <span>password</span> fields are required.
   </>
 );
-export const NOT_AVAILABLE_PREFIX = "NotAvalable";

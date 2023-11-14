@@ -6,7 +6,6 @@ import update from "immutability-helper";
 import { deleteLcrRoute } from "src/api";
 import { toastError, toastSuccess } from "src/store";
 import { SelectorOption } from "src/components/forms/selector";
-import { NOT_AVAILABLE_PREFIX } from "src/constants";
 
 type ContainerProps = {
   lcrRoute: [LcrRoute[], React.Dispatch<React.SetStateAction<LcrRoute[]>>];
@@ -61,11 +60,7 @@ export const Container = ({
   };
 
   const handleRouteDelete = (r: LcrRoute | undefined, index: number) => {
-    if (
-      r &&
-      r.lcr_route_sid &&
-      !r.lcr_route_sid.startsWith(NOT_AVAILABLE_PREFIX)
-    ) {
+    if (r && r.lcr_route_sid) {
       deleteLcrRoute(r.lcr_route_sid)
         .then(() => {
           toastSuccess("Least cost routing rule successfully deleted");
@@ -82,7 +77,7 @@ export const Container = ({
       {hasLength(lcrRoutes) &&
         lcrRoutes.map((lr, i) => (
           <Card
-            key={lr.lcr_route_sid}
+            key={lr.lcr_route_sid || i}
             lr={lr}
             index={i}
             moveCard={moveCard}
