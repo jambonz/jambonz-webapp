@@ -457,6 +457,16 @@ export const postLcr = (payload: Partial<Lcr>) => {
   return postFetch<SidResponse, Partial<Lcr>>(API_LCRS, payload);
 };
 
+export const postLcrCreateRoutes = (
+  sid: string,
+  payload: Partial<LcrRoute[]>
+) => {
+  return postFetch<EmptyResponse, Partial<LcrRoute[]>>(
+    `${API_LCRS}/${sid}/Routes`,
+    payload
+  );
+};
+
 export const postLcrRoute = (payload: Partial<LcrRoute>) => {
   return postFetch<SidResponse, Partial<LcrRoute>>(API_LCR_ROUTES, payload);
 };
@@ -605,6 +615,16 @@ export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
 
 export const putLcr = (sid: string, payload: Partial<Lcr>) => {
   return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
+};
+
+export const putLcrUpdateRoutes = (
+  sid: string,
+  payload: Partial<LcrRoute[]>
+) => {
+  return putFetch<EmptyResponse, Partial<LcrRoute[]>>(
+    `${API_LCRS}/${sid}/Routes`,
+    payload
+  );
 };
 
 export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
