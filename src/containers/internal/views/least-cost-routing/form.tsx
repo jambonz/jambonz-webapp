@@ -22,7 +22,7 @@ import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
 import {
   deleteLcr,
   putLcr,
-  putLcrCreateRoutes,
+  postLcrCreateRoutes,
   putLcrUpdateRoutes,
   useApiData,
   useServiceProviderData,
@@ -225,7 +225,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
             },
           ],
         });
-        putLcrCreateRoutes(json.sid, lcrsPayload)
+        postLcrCreateRoutes(json.sid, lcrsPayload)
           .then(() => {
             if (lcrDataMap) {
               toastSuccess("Least cost routing successfully updated");
