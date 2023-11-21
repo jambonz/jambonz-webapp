@@ -233,11 +233,10 @@ export const SpeechProviderSelection = ({
               }
 
               if (vendor === VENDOR_ELEVENLABS) {
-                const newLang = synthesis[vendor].find(
-                  (lang) => lang.code === ELEVENLABS_LANG_EN
-                );
+                // Samve Voices applied to all languages
+                // Voices are only available for the 1st language.
                 setSynthLang(ELEVENLABS_LANG_EN);
-                setSynthVoice(newLang!.voices[0].value);
+                setSynthVoice(synthesis[vendor][0].voices[0].value);
                 return;
               }
 
