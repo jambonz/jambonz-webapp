@@ -40,6 +40,7 @@ import {
   VENDOR_ASSEMBLYAI,
   VENDOR_WHISPER,
   useTtsModels,
+  VENDOR_PLAYHT,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -101,6 +102,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [sttApiKey, setSttApiKey] = useState("");
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
+  const [ttsUserId, setTtsUserId] = useState("");
   const [ttsModelId, setTtsModelId] = useState("");
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
@@ -318,6 +320,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
           access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
           secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+          user_id: vendor === VENDOR_PLAYHT ? ttsUserId : null,
           ...(apiKey && {
             api_key:
               vendor === VENDOR_MICROSOFT ||
@@ -326,7 +329,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_ASSEMBLYAI ||
               vendor === VENDOR_SONIOX ||
               vendor === VENDOR_ELEVENLABS ||
-              vendor === VENDOR_WHISPER
+              vendor === VENDOR_WHISPER ||
+              vendor === VENDOR_PLAYHT
                 ? apiKey
                 : null,
           }),
@@ -501,6 +505,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
       }
+      if (credential.data.user_id) {
+        setTtsUserId(credential.data.user_id);
+      }
     }
     if (credential?.data?.vendor === VENDOR_GOOGLE) {
       // let try to check if there is custom voices
@@ -647,6 +654,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {vendor !== VENDOR_WELLSAID &&
               vendor !== VENDOR_CUSTOM &&
               vendor !== VENDOR_WHISPER &&
+              vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1088,11 +1096,29 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
+        {vendor === VENDOR_PLAYHT && (
+          <fieldset>
+            <label htmlFor="playht_user_id">
+              User id<span>*</span>
+            </label>
+            <input
+              id="playht_user_id"
+              required
+              type="text"
+              name="playht_user_id"
+              placeholder="User id"
+              value={ttsUserId}
+              onChange={(e) => setTtsUserId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_DEEPGRAM ||
           vendor === VENDOR_ASSEMBLYAI ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
+          vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>

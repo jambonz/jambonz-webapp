@@ -25,6 +25,7 @@ import {
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
   VENDOR_WHISPER,
+  VENDOR_PLAYHT,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -381,6 +382,7 @@ export const SpeechProviderSelection = ({
                 vendor.value != VENDOR_WELLSAID &&
                 vendor.value != VENDOR_ELEVENLABS &&
                 vendor.value != VENDOR_WHISPER &&
+                vendor.value != VENDOR_PLAYHT &&
                 vendor.value !== VENDOR_CUSTOM
             )}
             onChange={(e) => {

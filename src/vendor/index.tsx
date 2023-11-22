@@ -26,6 +26,7 @@ export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
 export const VENDOR_ASSEMBLYAI = "assemblyai";
 export const VENDOR_WHISPER = "whisper";
+export const VENDOR_PLAYHT = "playht";
 
 export const vendors: VendorOptions[] = [
   {
@@ -83,6 +84,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Whisper",
     value: VENDOR_WHISPER,
+  },
+  {
+    name: "PlayHT",
+    value: VENDOR_PLAYHT,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
@@ -173,6 +178,7 @@ export const useSpeechVendors = () => {
       import("./speech-synthesis/nvidia-speech-synthesis-lang"),
       import("./speech-synthesis/elevellabs-speech-synthesis-lang"),
       import("./speech-synthesis/whisper-speech-synthesis-lang"),
+      import("./speech-synthesis/playht-speech-synthesis-lang"),
     ]).then(
       ([
         { default: awsRecognizer },
@@ -194,6 +200,7 @@ export const useSpeechVendors = () => {
         { default: nvidiaynthesis },
         { default: elevenLabsSynthesis },
         { default: whisperSynthesis },
+        { default: playhtSynthsis },
       ]) => {
         if (!ignore) {
           setSpeech({
@@ -207,6 +214,7 @@ export const useSpeechVendors = () => {
               nvidia: nvidiaynthesis,
               elevenlabs: elevenLabsSynthesis,
               whisper: whisperSynthesis,
+              playht: playhtSynthsis,
             },
             recognizers: {
               aws: awsRecognizer,
