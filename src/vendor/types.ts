@@ -114,5 +114,6 @@ export interface MSRawSpeech {
   StyleList?: string[];
   RolePlayList?: string[];
   WordPerMinute?: Record<string, unknown>;
+  WordsPerMinute?: string;
   SecondaryLocaleList?: string[];
 }
