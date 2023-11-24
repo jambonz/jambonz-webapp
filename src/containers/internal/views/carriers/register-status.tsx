@@ -10,6 +10,13 @@ type CarrierProps = {
 };
 
 export const RegisterStatus = ({ carrier }: CarrierProps) => {
+  const getReason = () => {
+    return carrier.register_status.reason
+      ? typeof carrier.register_status.reason === "string"
+        ? carrier.register_status.reason
+        : "Not Started"
+      : "Not Started";
+  };
   const renderStatus = () => {
     return (
       <div
@@ -20,7 +27,7 @@ export const RegisterStatus = ({ carrier }: CarrierProps) => {
               : "jam"
             : "jean"
         }`}
-        title={carrier.register_status.reason || "Not Started"}
+        title={getReason()}
       >
         {carrier.register_status.status === CARRIER_REG_OK ? (
           <Icons.CheckCircle />
@@ -40,8 +47,7 @@ export const RegisterStatus = ({ carrier }: CarrierProps) => {
     <details className={carrier.register_status.status || "not-tested"}>
       <summary>{renderStatus()}</summary>
       <MS>
-        <strong>Reason:</strong>{" "}
-        {carrier.register_status.reason || "Not Started"}
+        <strong>Reason:</strong> {getReason()}
       </MS>
       <PcapButton
         accountSid={carrier.account_sid || ""}
