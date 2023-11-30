@@ -1,5 +1,6 @@
 import type {
   Currency,
+  ElevenLabsOptions,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -210,6 +211,15 @@ export const GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = [
   { name: "REALTIME", value: "REALTIME" },
   { name: "OFFLINE", value: "OFFLINE" },
 ];
+// Eleven Labs options
+export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
+  optimize_streaming_latency: 100,
+  voice_settings: {
+    stability: 0.5,
+    similarity_boost: 0.5,
+    use_speaker_boost: true,
+  },
+};
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;

@@ -417,6 +417,7 @@ export interface SpeechCredential {
   cobalt_server_uri: null | string;
   model_id: null | string;
   model: null | string;
+  options: null | string;
 }
 
 export interface Alert {
@@ -711,4 +712,14 @@ export interface GetLanguages extends GetVoices {
 
 export interface LanguageOption extends SelectorOptions {
   [key: string]: unknown;
+}
+
+export interface ElevenLabsOptions {
+  optimize_streaming_latency: number;
+  voice_settings: Partial<{
+    similarity_boost: number;
+    stability: number;
+    style: number;
+    use_speaker_boost: boolean;
+  }>;
 }
