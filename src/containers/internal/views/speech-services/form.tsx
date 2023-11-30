@@ -66,6 +66,7 @@ import type {
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
+  DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DISABLE_CUSTOM_SPEECH,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
@@ -140,6 +141,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
   const ttsModels = useTtsModels();
+  const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
+  const [options, setOptions] = useState("");
+  const [tmpOptions, setTmpOptions] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -284,6 +288,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && {
           model_id: ttsModelId || null,
+        }),
+        ...(vendor === VENDOR_ELEVENLABS && {
+          options: options || null,
         }),
       };
 
@@ -501,6 +508,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
       }
+    }
+    if (credential?.data?.options) {
+      setOptions(credential.data.options);
+      setOptionsInitialChecked(true);
     }
     if (credential?.data?.vendor === VENDOR_GOOGLE) {
       // let try to check if there is custom voices
@@ -1124,6 +1135,86 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
+        {vendor === VENDOR_ELEVENLABS && (
+          <fieldset>
+            <Checkzone
+              hidden
+              name="cz_speech_credential_options"
+              label="Extra Options"
+              initialCheck={optionsInitialChecked}
+              handleChecked={(e) => {
+                if (e.target.checked) {
+                  setOptions(
+                    tmpOptions
+                      ? tmpOptions
+                      : JSON.stringify(DEFAULT_ELEVENLABS_OPTIONS, null, 2)
+                  );
+                }
+                if (!e.target.checked) {
+                  setTmpOptions(options);
+                  setOptions("");
+                }
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center", // Align items vertically in the center
+                  }}
+                >
+                  <a
+                    href="https://elevenlabs.io/docs/api-reference/streaming"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ marginRight: "10px", fontSize: "16px" }}
+                  >
+                    Docs
+                  </a>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (options) {
+                        setOptions((prev) => {
+                          try {
+                            return JSON.stringify(JSON.parse(options), null, 2);
+                          } catch (err) {
+                            return prev;
+                          }
+                        });
+                      }
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "green",
+                      fontSize: "16px",
+                    }}
+                  >
+                    Beautify
+                  </button>
+                </div>
+
+                <textarea
+                  id="input_speech_credential_options"
+                  name="speech_credential_options"
+                  rows={6}
+                  cols={55}
+                  placeholder="extra options in Json"
+                  value={options}
+                  onChange={(e) => setOptions(e.target.value)}
+                />
+              </div>
+            </Checkzone>
+          </fieldset>
+        )}
         {regions &&
           regions[vendor as keyof RegionVendors] &&
           vendor !== VENDOR_IBM &&
