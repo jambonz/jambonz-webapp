@@ -1183,7 +1183,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     color: "green",
                   }}
                 >
-                  Beauty
+                  Beautify
                 </button>
                 <textarea
                   id="input_speech_credential_options"
