@@ -1163,28 +1163,45 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   alignItems: "flex-end",
                 }}
               >
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (options) {
-                      setOptions((prev) => {
-                        try {
-                          return JSON.stringify(JSON.parse(options), null, 2);
-                        } catch (err) {
-                          return prev;
-                        }
-                      });
-                    }
-                  }}
+                <div
                   style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "green",
+                    display: "flex",
+                    alignItems: "center", // Align items vertically in the center
                   }}
                 >
-                  Beautify
-                </button>
+                  <a
+                    href="https://elevenlabs.io/docs/api-reference/streaming"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ marginRight: "10px", fontSize: "16px" }}
+                  >
+                    Docs
+                  </a>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (options) {
+                        setOptions((prev) => {
+                          try {
+                            return JSON.stringify(JSON.parse(options), null, 2);
+                          } catch (err) {
+                            return prev;
+                          }
+                        });
+                      }
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "green",
+                      fontSize: "16px",
+                    }}
+                  >
+                    Beautify
+                  </button>
+                </div>
+
                 <textarea
                   id="input_speech_credential_options"
                   name="speech_credential_options"
