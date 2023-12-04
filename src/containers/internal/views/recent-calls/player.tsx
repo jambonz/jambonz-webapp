@@ -14,10 +14,10 @@ import {
   JaegerSpan,
   WaveSurferDtmfResult,
   WaveSurferSttResult,
+  WaveSurferTtsLatencyResult,
 } from "src/api/jaeger-types";
 import {
   getSpanAttributeByName,
-  getSpansByName,
   getSpansByNameRegex,
   getSpansFromJaegerRoot,
 } from "./utils";
@@ -42,6 +42,9 @@ export const Player = ({ call }: PlayerProps) => {
     useState<WaveSurferSttResult | null>();
   const [waveSurferDtmfData, setWaveSurferDtmfData] =
     useState<WaveSurferDtmfResult | null>();
+
+  const [waveSurferTtsLatencyData, setWaveSurferTtsLatencyData] =
+    useState<WaveSurferTtsLatencyResult | null>();
   const [regionChecked, setRegionChecked] = useState(false);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
@@ -242,10 +245,50 @@ export const Player = ({ call }: PlayerProps) => {
     }
   };
 
+  const drawTtsLatencyRegion = (s: JaegerSpan, startPoint: JaegerSpan) => {
+    if (waveSurferRegionsPluginRef.current) {
+      const r = waveSurferRegionsPluginRef.current
+        .getRegions()
+        .find((r) => r.id === s.spanId);
+      if (!r) {
+        const start =
+          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000 +
+          0.05; // add magic 0.01 second in each region start time to isolate 2 near regions
+        const end =
+          (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
+
+        const [ttsVendor] = getSpanAttributeByName(s.attributes, "tts.vendor");
+        const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
+        if (ttsVendor && ttsCache) {
+          const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
+            id: s.spanId,
+            start: start,
+            end,
+            color: "rgba(255, 155, 0, 0.55)",
+            drag: false,
+            resize: false,
+            content: `${(end - start).toFixed(2)} sec`,
+          });
+
+          changeRegionMouseStyle(latencyRegion, 2);
+          console.log(ttsCache.value.boolValue);
+
+          latencyRegion.on("click", () => {
+            setWaveSurferTtsLatencyData({
+              vendor: ttsVendor.value.stringValue,
+              latency: `${(end - start).toFixed(2)} sec`,
+              isCached: String(ttsCache.value.boolValue),
+            });
+          });
+        }
+      }
+    }
+  };
+
   const buildWavesurferRegion = () => {
     if (jaegerRoot) {
       const spans = getSpansFromJaegerRoot(jaegerRoot);
-      const [startPoint] = getSpansByName(spans, "background-listen:listen");
+      const startPoint = spans[0];
       // there should be only one startPoint for background listen
       if (startPoint) {
         const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
@@ -267,6 +310,11 @@ export const Player = ({ call }: PlayerProps) => {
         const dtmfSpans = getSpansByNameRegex(spans, /dtmf:/);
         dtmfSpans.forEach((ds) => {
           drawDtmfRegionForSpan(ds, startPoint);
+        });
+
+        const ttsSpans = getSpansByNameRegex(spans, /tts-generation/);
+        ttsSpans.forEach((tts) => {
+          drawTtsLatencyRegion(tts, startPoint);
         });
       }
     }
@@ -487,7 +535,7 @@ export const Player = ({ call }: PlayerProps) => {
               }
             }}
           />
-          <div>Overlay STT and DTMF events</div>
+          <div>Overlay STT, TTS latency and DTMF events</div>
         </label>
       </div>
       {waveSurferRegionData && (
@@ -577,6 +625,45 @@ export const Player = ({ call }: PlayerProps) => {
                 </div>
                 <div className="spanDetailsWrapper__details_body">
                   {waveSurferDtmfData.duration}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ModalClose>
+      )}
+      {waveSurferTtsLatencyData && (
+        <ModalClose handleClose={() => setWaveSurferTtsLatencyData(null)}>
+          <div className="spanDetailsWrapper__header">
+            <P>
+              <strong>Tts Latency</strong>
+            </P>
+          </div>
+          <div className="spanDetailsWrapper">
+            <div className="spanDetailsWrapper__detailsWrapper">
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Vendor:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSurferTtsLatencyData.vendor}
+                </div>
+              </div>
+
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Latency:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSurferTtsLatencyData.latency}
+                </div>
+              </div>
+
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>From Cache:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSurferTtsLatencyData.isCached}
                 </div>
               </div>
             </div>
