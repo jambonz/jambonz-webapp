@@ -252,14 +252,13 @@ export const Player = ({ call }: PlayerProps) => {
         .find((r) => r.id === s.spanId);
       if (!r) {
         const start =
-          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000 +
-          0.05; // add magic 0.01 second in each region start time to isolate 2 near regions
+          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
         const [ttsVendor] = getSpanAttributeByName(s.attributes, "tts.vendor");
         const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
-        if (ttsVendor && ttsCache) {
+        if (ttsVendor && ttsCache && !Boolean(ttsCache.value.boolValue)) {
           const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
             id: s.spanId,
             start: start,
