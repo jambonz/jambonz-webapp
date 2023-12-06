@@ -45,6 +45,12 @@ export interface WaveSurferSttResult {
   latency?: number;
 }
 
+export interface WaveSurferTtsLatencyResult {
+  vendor: string;
+  latency: string;
+  isCached: string;
+}
+
 export interface WaveSurferDtmfResult {
   dtmf: string;
   duration: string;
