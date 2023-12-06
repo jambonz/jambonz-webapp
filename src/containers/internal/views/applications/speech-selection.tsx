@@ -94,7 +94,7 @@ export const SpeechProviderSelection = ({
 
   useEffect(() => {
     currentVendor.current = synthVendor;
-    if (!synthesis) {
+    if (!synthesis || synthVendor.startsWith("custom:")) {
       return;
     }
     const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
