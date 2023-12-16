@@ -1121,27 +1121,29 @@ export const CarrierForm = ({
                           </label>
                         </div>
                       )}
-                      <div>
-                        <label
-                          htmlFor={`send_options_ping_${i}`}
-                          className="chk"
-                        >
-                          <input
-                            id={`send_options_ping_${i}`}
-                            name={`send_options_ping_${i}`}
-                            type="checkbox"
-                            checked={g.send_options_ping ? true : false}
-                            onChange={(e) => {
-                              updateSipGateways(
-                                i,
-                                "send_options_ping",
-                                e.target.checked
-                              );
-                            }}
-                          />
-                          <div>Send Opts</div>
-                        </label>
-                      </div>
+                      {Boolean(g.outbound) && (
+                        <div>
+                          <label
+                            htmlFor={`send_options_ping_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`send_options_ping_${i}`}
+                              name={`send_options_ping_${i}`}
+                              type="checkbox"
+                              checked={g.send_options_ping ? true : false}
+                              onChange={(e) => {
+                                updateSipGateways(
+                                  i,
+                                  "send_options_ping",
+                                  e.target.checked
+                                );
+                              }}
+                            />
+                            <div>Options ping</div>
+                          </label>
+                        </div>
+                      )}
                     </div>
 
                     <button
