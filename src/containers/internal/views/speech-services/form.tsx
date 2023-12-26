@@ -639,8 +639,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            {vendor !== VENDOR_DEEPGRAM &&
-              vendor !== VENDOR_ASSEMBLYAI &&
+            {vendor !== VENDOR_ASSEMBLYAI &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor != VENDOR_CUSTOM && (
