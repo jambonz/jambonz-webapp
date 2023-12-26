@@ -25,6 +25,7 @@ import {
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
   VENDOR_WHISPER,
+  useTtsModels,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -92,9 +93,14 @@ export const SpeechProviderSelection = ({
 
   const currentVendor = useRef(synthVendor);
 
+  const ttsModels = useTtsModels();
+
   useEffect(() => {
     currentVendor.current = synthVendor;
     if (!synthesis || synthVendor.startsWith("custom:")) {
+      return;
+    }
+    if (synthVendor === VENDOR_DEEPGRAM) {
       return;
     }
     const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
@@ -206,7 +212,6 @@ export const SpeechProviderSelection = ({
             value={synthVendor}
             options={ttsVendorOptions.filter(
               (vendor) =>
-                vendor.value != VENDOR_DEEPGRAM &&
                 vendor.value != VENDOR_ASSEMBLYAI &&
                 vendor.value != VENDOR_SONIOX &&
                 vendor.value !== VENDOR_CUSTOM &&
@@ -219,6 +224,12 @@ export const SpeechProviderSelection = ({
 
               /** When Custom Vendor is used, user you have to input the lange and voice. */
               if (vendor.toString().startsWith(VENDOR_CUSTOM)) {
+                setSynthVoice("");
+                return;
+              }
+
+              /** DEEPGRAM only support voice */
+              if (vendor.toString().startsWith(VENDOR_DEEPGRAM)) {
                 setSynthVoice("");
                 return;
               }
@@ -282,8 +293,21 @@ export const SpeechProviderSelection = ({
               />
             </>
           )}
+          {ttsModels && synthVendor === VENDOR_DEEPGRAM && (
+            <>
+              <label htmlFor="synthesis_lang">Model</label>
+              <Selector
+                id="synthesis_voice"
+                name="synthesis_voice"
+                value={synthVoice}
+                options={ttsModels[synthVendor]}
+                onChange={(e) => setSynthVoice(e.target.value)}
+              />
+            </>
+          )}
           {synthVendor &&
             !synthVendor.toString().startsWith(VENDOR_CUSTOM) &&
+            synthVendor !== VENDOR_DEEPGRAM &&
             synthLang && (
               <>
                 <label htmlFor="synthesis_lang">Language</label>

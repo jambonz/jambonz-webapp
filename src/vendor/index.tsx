@@ -94,14 +94,22 @@ export const useTtsModels = () => {
     Promise.all([
       import("./speech-synthsis-models/elevenlabs-models"),
       import("./speech-synthsis-models/whisper-models"),
-    ]).then(([{ default: elevenlabs }, { default: whisper }]) => {
-      if (!ignore) {
-        setModels({
-          elevenlabs,
-          whisper,
-        });
+      import("./speech-synthsis-models/deepgram-models"),
+    ]).then(
+      ([
+        { default: elevenlabs },
+        { default: whisper },
+        { default: deepgram },
+      ]) => {
+        if (!ignore) {
+          setModels({
+            elevenlabs,
+            whisper,
+            deepgram,
+          });
+        }
       }
-    });
+    );
     return function cleanup() {
       ignore = true;
     };
@@ -207,6 +215,8 @@ export const useSpeechVendors = () => {
               nvidia: nvidiaynthesis,
               elevenlabs: elevenLabsSynthesis,
               whisper: whisperSynthesis,
+              // Deepgram just have model which includes language, voice
+              deepgram: [],
             },
             recognizers: {
               aws: awsRecognizer,
