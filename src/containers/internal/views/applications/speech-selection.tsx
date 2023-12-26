@@ -97,10 +97,11 @@ export const SpeechProviderSelection = ({
 
   useEffect(() => {
     currentVendor.current = synthVendor;
-    if (!synthesis || synthVendor.startsWith("custom:")) {
-      return;
-    }
-    if (synthVendor === VENDOR_DEEPGRAM) {
+    if (
+      !synthesis ||
+      synthVendor.startsWith("custom:") ||
+      synthVendor === VENDOR_DEEPGRAM
+    ) {
       return;
     }
     const voiceOpts = synthesis[synthVendor as keyof SynthesisVendors]
@@ -230,7 +231,10 @@ export const SpeechProviderSelection = ({
 
               /** DEEPGRAM only support voice */
               if (vendor.toString().startsWith(VENDOR_DEEPGRAM)) {
-                setSynthVoice("");
+                if (ttsModels) {
+                  setSynthVoice(ttsModels[VENDOR_DEEPGRAM][0].value);
+                }
+
                 return;
               }
 

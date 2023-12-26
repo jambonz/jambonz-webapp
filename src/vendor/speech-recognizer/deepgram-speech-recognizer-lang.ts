@@ -121,6 +121,22 @@ export const languages: Language[] = [
     name: "Ukrainian - general",
     code: "uk",
   },
+  {
+    name: "Flemish - general",
+    code: "nl-BE",
+  },
+  {
+    name: "Danish - general",
+    code: "da",
+  },
+  {
+    name: "Tamil - general",
+    code: "ta",
+  },
+  {
+    name: "Tamasheq - general",
+    code: "taq",
+  },
 ];
 
 export default languages;
