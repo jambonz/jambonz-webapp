@@ -191,7 +191,14 @@ export const SpeechProviderSelection = ({
         }
       });
     }
-  }, [synthVendor, synthesis, synthLabel, accountSid, serviceProviderSid]);
+  }, [
+    synthVendor,
+    synthesis,
+    synthLabel,
+    accountSid,
+    serviceProviderSid,
+    synthLang,
+  ]);
 
   useEffect(() => {
     if (credentials) {
