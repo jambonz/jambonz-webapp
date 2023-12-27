@@ -202,6 +202,15 @@ export const SpeechProviderSelection = ({
       );
     }
   }, [synthVendor, synthLabel, credentials]);
+
+  useEffect(() => {
+    if (!synthLabel && ttsLabelOptions?.length > 0) {
+      setSynthLabel(ttsLabelOptions[0].value);
+    }
+    if (!recogLabel && sttLabelOptions?.length > 0) {
+      setRecogLabel(sttLabelOptions[0].value);
+    }
+  }, [ttsLabelOptions, sttLabelOptions]);
   return (
     <>
       {synthesis && (
@@ -283,7 +292,7 @@ export const SpeechProviderSelection = ({
               setSynthVoice(newLang!.voices[0].value);
             }}
           />
-          {hasLength(ttsLabelOptions) && ttsLabelOptions.length > 1 && (
+          {hasLength(ttsLabelOptions) && (
             <>
               <label htmlFor="synthesis_label">Label</label>
               <Selector
@@ -437,7 +446,7 @@ export const SpeechProviderSelection = ({
               }
             }}
           />
-          {hasLength(sttLabelOptions) && sttLabelOptions.length > 1 && (
+          {hasLength(sttLabelOptions) && (
             <>
               <label htmlFor="recog_label">Label</label>
               <Selector
