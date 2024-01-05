@@ -12,7 +12,33 @@ export const languages: VoiceLanguage[] = [
       { value: "ar-XA-Wavenet-A", name: "Wavenet-A (Female)" },
       { value: "ar-XA-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "ar-XA-Wavenet-C", name: "Wavenet-C (Male)" },
+      { value: "ar-XA-Wavenet-D", name: "Wavenet-D (Female)" },
     ],
+  },
+  {
+    code: "af-ZA",
+    name: "Afrikaans (South Africa)",
+    voices: [{ value: "af-ZA-Standard-A", name: "Standard-A (Female)" }],
+  },
+  {
+    code: "bn-IN",
+    name: "Bengali (India)",
+    voices: [
+      { value: "bn-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "bn-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "bn-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "bn-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+    ],
+  },
+  {
+    code: "bg-BG",
+    name: "Bulgarian (Bulgaria)",
+    voices: [{ value: "bg-BG-Standard-A", name: "Standard-A (Female)" }],
+  },
+  {
+    code: "ca-ES",
+    name: "Catalan (Spain)",
+    voices: [{ value: "ca-ES-Standard-A", name: "Standard-A (Female)" }],
   },
   {
     code: "cs-CZ",
@@ -30,7 +56,19 @@ export const languages: VoiceLanguage[] = [
       { value: "da-DK-Wavenet-A", name: "Wavenet-A (Female)" },
       { value: "da-DK-Neural2-D", name: "Neural2-D (Female)" },
       { value: "da-DK-Neural2-F", name: "Neural2-F (Male)" },
+
+      { value: "da-DK-Standard-C", name: "Standard-C (Male)" },
+      { value: "da-DK-Standard-D", name: "Standard-D (Female)" },
+      { value: "da-DK-Standard-E", name: "Standard-E (Female)" },
+      { value: "da-DK-Wavenet-C", name: "Wavenet-C (Male)" },
+      { value: "da-DK-Wavenet-D", name: "Wavenet-D (Female)" },
+      { value: "da-DK-Wavenet-E", name: "Wavenet-E (Female)" },
     ],
+  },
+  {
+    code: "eu-ES",
+    name: "Basque (Spain)",
+    voices: [{ value: "eu-ES-Standard-A", name: "Standard-A (Female)" }],
   },
   {
     code: "nl-NL",
@@ -82,6 +120,11 @@ export const languages: VoiceLanguage[] = [
       { value: "en-IN-Wavenet-B", name: "Wavenet-B (Male)" },
       { value: "en-IN-Wavenet-C", name: "Wavenet-C (Male)" },
       { value: "en-IN-Wavenet-D", name: "Wavenet-D (Female)" },
+
+      { value: "en-IN-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "en-IN-Neural2-B", name: "Neural2-B (Male)" },
+      { value: "en-IN-Neural2-C", name: "Neural2-C (Male)" },
+      { value: "en-IN-Neural2-D", name: "Neural2-D (Female)" },
     ],
   },
   {
@@ -108,6 +151,11 @@ export const languages: VoiceLanguage[] = [
       { value: "en-GB-News-K", name: "News-K (Male)" },
       { value: "en-GB-News-L", name: "News-L (Male)" },
       { value: "en-GB-News-M", name: "News-M (Male)" },
+
+      { value: "en-GB-Studio-B", name: "Studio-B (Male)" },
+      { value: "en-GB-Studio-C", name: "Studio-C (Female)" },
+      { value: "en-GB-Wavenet-F", name: "Wavenet-F (Female)" },
+      { value: "en-GB-Standard-F", name: "Standard-F (Female)" },
     ],
   },
   {
@@ -140,6 +188,17 @@ export const languages: VoiceLanguage[] = [
       { value: "en-US-News-L", name: "News-L (Female)" },
       { value: "en-US-News-M", name: "News-M (Male)" },
       { value: "en-US-News-N", name: "News-N (Male)" },
+
+      { value: "en-US-Standard-A", name: "Standard-A (Male)" },
+      { value: "en-US-Standard-F", name: "Standard-F (Female)" },
+      { value: "en-US-Standard-G", name: "Standard-G (Female)" },
+      { value: "en-US-Standard-H", name: "Standard-H (Female)" },
+      { value: "en-US-Standard-I", name: "Standard-I (Male)" },
+      { value: "en-US-Standard-J", name: "Standard-J (Male)" },
+      { value: "en-US-Wavenet-G", name: "Wavenet-G (Female)" },
+      { value: "en-US-Wavenet-H", name: "Wavenet-H (Female)" },
+      { value: "en-US-Wavenet-I", name: "Wavenet-I (Male)" },
+      { value: "en-US-Wavenet-J", name: "Wavenet-J (Male)" },
     ],
   },
   {
@@ -150,6 +209,13 @@ export const languages: VoiceLanguage[] = [
       { value: "fil-PH-Wavenet-A", name: "Wavenet-A (Female)" },
       { value: "fil-ph-Neural2-A", name: "Neural2-A (Female)" },
       { value: "fil-ph-Neural2-D", name: "Neural2-A (Male)" },
+
+      { value: "fil-PH-Standard-B", name: "Standard-B (Female)" },
+      { value: "fil-PH-Standard-C", name: "Standard-C (Male)" },
+      { value: "fil-PH-Standard-D", name: "Standard-D (Male)" },
+      { value: "fil-PH-Wavenet-B", name: "Wavenet-B (Female)" },
+      { value: "fil-PH-Wavenet-C", name: "Wavenet-C (Male)" },
+      { value: "fil-PH-Wavenet-D", name: "Wavenet-D (Male)" },
     ],
   },
   {
@@ -198,6 +264,9 @@ export const languages: VoiceLanguage[] = [
       { value: "fr-FR-Neural2-D", name: "Neural2-D (Male)" },
       { value: "fr-FR-Neural2-E", name: "Neural2-E (Female)" },
       { value: "fr-FR-Polyglot-1", name: "Polyglot-1 (Male)" },
+
+      { value: "fr-FR-Studio-A", name: "Studio-A (Female)" },
+      { value: "fr-FR-Studio-D", name: "Studio-D (Male)" },
     ],
   },
   {
@@ -219,6 +288,12 @@ export const languages: VoiceLanguage[] = [
       { value: "de-DE-Neural2-D", name: "Neural2-D (Male)" },
       { value: "de-DE-Neural2-F", name: "Neural2-F (Female)" },
       { value: "de-DE-Polyglot-1", name: "Polyglot-1 (Male)" },
+
+      { value: "de-DE-Neural2-A", name: "Neural2-A (Female)" },
+      { value: "de-DE-Standard-C", name: "Standard-C (Female)" },
+      { value: "de-DE-Standard-D", name: "Standard-D (Male)" },
+      { value: "de-DE-Studio-B", name: "Studio-B (Male)" },
+      { value: "de-DE-Studio-C", name: "Studio-C (Female)" },
     ],
   },
   {
@@ -229,6 +304,37 @@ export const languages: VoiceLanguage[] = [
       { value: "el-GR-Wavenet-A", name: "Wavenet-A (Female)" },
     ],
   },
+
+  {
+    code: "gl-ES",
+    name: "Galician (Spain)",
+    voices: [{ value: "gl-ES-Standard-A", name: "Standard-A (Female)" }],
+  },
+  {
+    code: "gu-IN",
+    name: "Gujarati (India)",
+    voices: [
+      { value: "gu-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "gu-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "gu-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "gu-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+    ],
+  },
+  {
+    code: "he-IL",
+    name: "Hebrew (Israel)",
+    voices: [
+      { value: "he-IL-Standard-A", name: "Standard-A (Female)" },
+      { value: "he-IL-Standard-B", name: "Standard-B (Male)" },
+      { value: "he-IL-Standard-C", name: "Standard-C (Female)" },
+      { value: "he-IL-Standard-D", name: "Standard-D (Male)" },
+      { value: "he-IL-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "he-IL-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "he-IL-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "he-IL-Wavenet-D", name: "Wavenet-D (Male)" },
+    ],
+  },
+
   {
     code: "hi-IN",
     name: "Hindi (India)",
@@ -254,6 +360,11 @@ export const languages: VoiceLanguage[] = [
       { value: "hu-HU-Standard-A", name: "Standard-A (Female)" },
       { value: "hu-HU-Wavenet-A", name: "Wavenet-A (Female)" },
     ],
+  },
+  {
+    code: "is-IS",
+    name: "Icelandic (Iceland)",
+    voices: [{ value: "is-IS-Standard-A", name: "Standard-A (Female)" }],
   },
   {
     code: "id-ID",
@@ -303,6 +414,16 @@ export const languages: VoiceLanguage[] = [
     ],
   },
   {
+    code: "kn-IN",
+    name: "Kannada (India)",
+    voices: [
+      { value: "kn-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "kn-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "kn-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "kn-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+    ],
+  },
+  {
     code: "ko-KR",
     name: "Korean (South Korea)",
     voices: [
@@ -318,6 +439,16 @@ export const languages: VoiceLanguage[] = [
       { value: "ko-KR-Neural2-B", name: "Neural2-B (Female)" },
       { value: "ko-KR-Neural2-C", name: "Neural2-C (Male)" },
     ],
+  },
+  {
+    code: "lv-LV",
+    name: "Latvian (Latvia)",
+    voices: [{ value: "lv-LV-Standard-A", name: "Standard-A (Male)" }],
+  },
+  {
+    code: "lt-LT",
+    name: "Lithuanian (Lithuania)",
+    voices: [{ value: "lt-LT-Standard-A", name: "Standard-A (Male)" }],
   },
   {
     code: "cmn-CN",
@@ -346,6 +477,47 @@ export const languages: VoiceLanguage[] = [
     ],
   },
   {
+    code: "ms-MY",
+    name: "Malay (Malaysia)",
+    voices: [
+      { value: "ms-MY-Standard-A", name: "Standard-A (Female)" },
+      { value: "ms-MY-Standard-B", name: "Standard-B (Male)" },
+      { value: "ms-MY-Standard-C", name: "Standard-C (Female)" },
+      { value: "ms-MY-Standard-D", name: "Standard-D (Male)" },
+      { value: "ms-MY-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "ms-MY-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "ms-MY-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "ms-MY-Wavenet-D", name: "Wavenet-D (Male)" },
+    ],
+  },
+
+  {
+    code: "ml-IN",
+    name: "Malayalam (India)",
+    voices: [
+      { value: "ml-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "ml-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "ml-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "ml-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "ml-IN-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "ml-IN-Wavenet-D", name: "Wavenet-D (Male)" },
+    ],
+  },
+
+  {
+    code: "mr-IN",
+    name: "Marathi (India)",
+    voices: [
+      { value: "mr-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "mr-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "mr-IN-Standard-C", name: "Standard-C (Female)" },
+      { value: "mr-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "mr-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "mr-IN-Wavenet-C", name: "Wavenet-C (Female)" },
+    ],
+  },
+
+  {
     code: "nb-NO",
     name: "Norwegian (Norway)",
     voices: [
@@ -361,6 +533,18 @@ export const languages: VoiceLanguage[] = [
       { value: "nb-no-Wavenet-E", name: "Wavenet-E (Female)" },
     ],
   },
+
+  {
+    code: "nl-BE",
+    name: "Dutch (Belgium)",
+    voices: [
+      { value: "nl-BE-Standard-A", name: "Standard-A (Female)" },
+      { value: "nl-BE-Standard-B", name: "Standard-B (Male)" },
+      { value: "nl-BE-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "nl-BE-Wavenet-B", name: "Wavenet-B (Male)" },
+    ],
+  },
+
   {
     code: "pl-PL",
     name: "Polish (Poland)",
@@ -377,6 +561,22 @@ export const languages: VoiceLanguage[] = [
       { value: "pl-PL-Wavenet-E", name: "Wavenet-E (Female)" },
     ],
   },
+
+  {
+    code: "pa-IN",
+    name: "Punjabi (India)",
+    voices: [
+      { value: "pa-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "pa-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "pa-IN-Standard-C", name: "Standard-C (Female)" },
+      { value: "pa-IN-Standard-D", name: "Standard-D (Male)" },
+      { value: "pa-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "pa-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "pa-IN-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "pa-IN-Wavenet-D", name: "Wavenet-D (Male)" },
+    ],
+  },
+
   {
     code: "pt-BR",
     name: "Portuguese (Brazil)",
@@ -386,8 +586,14 @@ export const languages: VoiceLanguage[] = [
       { value: "pt-BR-Neural2-A", name: "Neural2-A (Female)" },
       { value: "pt-BR-Neural2-B", name: "Neural2-B (Male)" },
       { value: "pt-BR-Neural2-C", name: "Neural2-C (Female)" },
+
+      { value: "pt-BR-Standard-B", name: "Standard-B (Male)" },
+      { value: "pt-BR-Standard-C", name: "Standard-C (Female)" },
+      { value: "pt-BR-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "pt-BR-Wavenet-C", name: "Wavenet-C (Female)" },
     ],
   },
+
   {
     code: "pt-PT",
     name: "Portuguese (Portugal)",
@@ -402,6 +608,16 @@ export const languages: VoiceLanguage[] = [
       { value: "pt-PT-Wavenet-D", name: "Wavenet-D (Female)" },
     ],
   },
+
+  {
+    code: "ro-RO",
+    name: "Romanian (Romania)",
+    voices: [
+      { value: "ro-RO-Standard-A", name: "Standard-A (Female)" },
+      { value: "ro-RO-Wavenet-A", name: "Wavenet-A (Female)" },
+    ],
+  },
+
   {
     code: "ru-RU",
     name: "Russian (Russia)",
@@ -418,6 +634,7 @@ export const languages: VoiceLanguage[] = [
       { value: "ru-RU-Wavenet-E", name: "Wavenet-E (Female)" },
     ],
   },
+
   {
     code: "sk-SK",
     name: "Slovak (Slovakia)",
@@ -426,6 +643,13 @@ export const languages: VoiceLanguage[] = [
       { value: "sk-SK-Wavenet-A", name: "Wavenet-A (Female)" },
     ],
   },
+
+  {
+    code: "sr-RS",
+    name: "Serbian (Cyrillic)",
+    voices: [{ value: "sr-RS-Standard-A", name: "Standard-A (Female)" }],
+  },
+
   {
     code: "es-ES",
     name: "Spanish (Spain)",
@@ -438,6 +662,13 @@ export const languages: VoiceLanguage[] = [
       { value: "es-ES-Neural2-E", name: "Neural2-E (Female)" },
       { value: "es-ES-Neural2-F", name: "Neural2-F (Male)" },
       { value: "es-ES-Polyglot-1", name: "Polyglot-1 (Male)" },
+
+      { value: "es-ES-Standard-B", name: "Standard-B (Male)" },
+      { value: "es-ES-Standard-C", name: "Standard-C (Female)" },
+      { value: "es-ES-Standard-D", name: "Standard-D (Female)" },
+      { value: "es-ES-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "es-ES-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "es-ES-Wavenet-D", name: "Wavenet-D (Female)" },
     ],
   },
   {
@@ -453,6 +684,14 @@ export const languages: VoiceLanguage[] = [
       { value: "es-US-News-E", name: "News-E (Male)" },
       { value: "es-US-News-F", name: "News-F (Female)" },
       { value: "es-US-News-G", name: "News-G (Female)" },
+
+      { value: "es-US-Standard-A", name: "Standard-A (Female)" },
+      { value: "es-US-Standard-B", name: "Standard-B (Male)" },
+      { value: "es-US-Standard-C", name: "Standard-C (Male)" },
+      { value: "es-US-Studio-B", name: "Studio-B (Male)" },
+      { value: "es-US-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "es-US-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "es-US-Wavenet-C", name: "Wavenet-C (Male)" },
     ],
   },
   {
@@ -461,8 +700,42 @@ export const languages: VoiceLanguage[] = [
     voices: [
       { value: "sv-SE-Standard-A", name: "Standard-A (Female)" },
       { value: "sv-SE-Wavenet-A", name: "Wavenet-A (Female)" },
+
+      { value: "sv-SE-Standard-B", name: "Standard-B (Female)" },
+      { value: "sv-SE-Standard-C", name: "Standard-C (Female)" },
+      { value: "sv-SE-Standard-D", name: "Standard-D (Male)" },
+      { value: "sv-SE-Standard-E", name: "Standard-E (Male)" },
+      { value: "sv-SE-Wavenet-B", name: "Wavenet-B (Female)" },
+      { value: "sv-SE-Wavenet-C", name: "Wavenet-C (Male)" },
+      { value: "sv-SE-Wavenet-D", name: "Wavenet-D (Female)" },
+      { value: "sv-SE-Wavenet-E", name: "Wavenet-E (Male)" },
     ],
   },
+
+  {
+    code: "ta-IN",
+    name: "Tamil (India)",
+    voices: [
+      { value: "ta-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "ta-IN-Standard-B", name: "Standard-B (Male)" },
+      { value: "ta-IN-Standard-C", name: "Standard-C (Female)" },
+      { value: "ta-IN-Standard-D", name: "Standard-D (Male)" },
+      { value: "ta-IN-Wavenet-A", name: "Wavenet-A (Female)" },
+      { value: "ta-IN-Wavenet-B", name: "Wavenet-B (Male)" },
+      { value: "ta-IN-Wavenet-C", name: "Wavenet-C (Female)" },
+      { value: "ta-IN-Wavenet-D", name: "Wavenet-D (Male)" },
+    ],
+  },
+
+  {
+    code: "te-IN",
+    name: "Telugu (India)",
+    voices: [
+      { value: "te-IN-Standard-A", name: "Standard-A (Female)" },
+      { value: "te-IN-Standard-B", name: "Standard-B (Male)" },
+    ],
+  },
+
   {
     code: "tr-TR",
     name: "Turkish (Turkey)",
@@ -490,7 +763,11 @@ export const languages: VoiceLanguage[] = [
   {
     code: "th-TH",
     name: "Thai (Thailand)",
-    voices: [{ value: "th-TH-Neural2-C", name: "Neural2-C (Female)" }],
+    voices: [
+      { value: "th-TH-Neural2-C", name: "Neural2-C (Female)" },
+
+      { value: "th-TH-Standard-A", name: "Standard-A (Female)" },
+    ],
   },
   {
     code: "vi-VN",
@@ -506,6 +783,16 @@ export const languages: VoiceLanguage[] = [
       { value: "vi-VN-Wavenet-D", name: "Wavenet-D (Male)" },
       { value: "vi-VN-Neural2-A", name: "Neural2-A (Female)" },
       { value: "vi-VN-Neural2-D", name: "Neural2-D (Male)" },
+    ],
+  },
+  {
+    code: "yue-HK",
+    name: "Chinese (Hong Kong)",
+    voices: [
+      { value: "yue-HK-Standard-A", name: "Standard-A (Female)" },
+      { value: "yue-HK-Standard-B", name: "Standard-B (Male)" },
+      { value: "yue-HK-Standard-C", name: "Standard-C (Female)" },
+      { value: "yue-HK-Standard-D", name: "Standard-D (Male)" },
     ],
   },
 ];
