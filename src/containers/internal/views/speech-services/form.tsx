@@ -16,6 +16,7 @@ import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   deleteGoogleCustomVoice,
   getGoogleCustomVoices,
+  getSpeechSupportedLanguagesAndVoices,
   postGoogleCustomVoice,
   postSpeechService,
   putGoogleCustomVoice,
@@ -39,7 +40,6 @@ import {
   VENDOR_ELEVENLABS,
   VENDOR_ASSEMBLYAI,
   VENDOR_WHISPER,
-  useTtsModels,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -56,7 +56,7 @@ import type {
   RegionVendors,
   GoogleServiceKey,
   Vendor,
-  TtsModels,
+  Model,
 } from "src/vendor/types";
 import type {
   Account,
@@ -140,7 +140,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [useCustomVoicesCheck, setUseCustomVoicesCheck] = useState(false);
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
-  const ttsModels = useTtsModels();
+  const [ttsModels, setTtsModels] = useState<Model[]>([]);
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
@@ -367,6 +367,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   };
 
   useEffect(() => {
+    if (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) {
+      getSpeechSupportedLanguagesAndVoices(
+        currentServiceProvider?.service_provider_sid,
+        vendor,
+        ""
+      ).then(({ json }) => {
+        if (json.ttsModel) {
+          setTtsModels(json.ttsModel);
+        }
+      });
+    } else {
+      setTtsModels([]);
+    }
+  }, [vendor]);
+
+  useEffect(() => {
     setLocation();
     if (credential && credential.data) {
       if (credential.data.vendor) {
@@ -582,13 +598,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setApiKey("");
               setGoogleServiceKey(null);
               if (
-                ttsModels &&
+                ttsModels.length &&
                 (e.target.value === VENDOR_ELEVENLABS ||
                   e.target.value === VENDOR_WHISPER)
               ) {
-                setTtsModelId(
-                  ttsModels[e.target.value as keyof TtsModels][0].value
-                );
+                setTtsModelId(ttsModels[0].value);
               }
             }}
             disabled={credential ? true : false}
@@ -1120,14 +1134,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
         {(vendor == VENDOR_ELEVENLABS || vendor == VENDOR_WHISPER) &&
-          ttsModels && (
+          ttsModels.length && (
             <fieldset>
               <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
               <Selector
                 id={"tts_model_id"}
                 name={"tts_model_id"}
                 value={ttsModelId}
-                options={ttsModels[vendor as keyof TtsModels]}
+                options={ttsModels}
                 onChange={(e) => {
                   setTtsModelId(e.target.value);
                 }}
