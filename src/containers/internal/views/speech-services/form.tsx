@@ -598,7 +598,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setApiKey("");
               setGoogleServiceKey(null);
               if (
-                ttsModels.length &&
+                ttsModels.length > 0 &&
                 (e.target.value === VENDOR_ELEVENLABS ||
                   e.target.value === VENDOR_WHISPER)
               ) {
@@ -1134,7 +1134,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
         {(vendor == VENDOR_ELEVENLABS || vendor == VENDOR_WHISPER) &&
-          ttsModels.length && (
+          ttsModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
               <Selector
