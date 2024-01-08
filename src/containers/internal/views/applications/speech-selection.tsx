@@ -115,7 +115,7 @@ export const SpeechProviderSelection = ({
   // Get Recognizer languages and voices
   useEffect(() => {
     /** When Custom Vendor is used, user you have to input the lange and voice. */
-    if (synthVendor.toString().startsWith(VENDOR_CUSTOM)) {
+    if (recogVendor.toString().startsWith(VENDOR_CUSTOM)) {
       setRecogLang(LANG_EN_US);
       return;
     }
