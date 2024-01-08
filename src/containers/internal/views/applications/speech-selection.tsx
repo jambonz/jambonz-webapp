@@ -112,8 +112,9 @@ export const SpeechProviderSelection = ({
     }
     currentVendor.current = synthVendor;
     if (
-      user?.scope === USER_ADMIN &&
-      !currentServiceProvider?.service_provider_sid
+      !user ||
+      (user?.scope === USER_ADMIN &&
+        !currentServiceProvider?.service_provider_sid)
     ) {
       return;
     }
@@ -128,8 +129,9 @@ export const SpeechProviderSelection = ({
       return;
     }
     if (
-      user?.scope === USER_ADMIN &&
-      !currentServiceProvider?.service_provider_sid
+      !user ||
+      (user?.scope === USER_ADMIN &&
+        !currentServiceProvider?.service_provider_sid)
     ) {
       return;
     }
