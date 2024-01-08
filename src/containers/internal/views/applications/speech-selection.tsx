@@ -3,6 +3,7 @@ import {
   getGoogleCustomVoices,
   getSpeechSupportedLanguagesAndVoices,
 } from "src/api";
+import { USER_ADMIN } from "src/api/constants";
 import {
   SpeechCredential,
   SpeechSupportedLanguagesAndVoices,
@@ -73,6 +74,7 @@ export const SpeechProviderSelection = ({
   sttLabelOptions,
   sttLabel: [recogLabel, setRecogLabel],
 }: SpeechProviderSelectionProbs) => {
+  const user = useSelectState("user");
   const [
     synthesisSupportedLanguagesAndVoices,
     setSynthesisSupportedLanguagesAndVoices,
@@ -109,8 +111,11 @@ export const SpeechProviderSelection = ({
       return;
     }
     currentVendor.current = synthVendor;
+    if (user?.scope === USER_ADMIN && !currentServiceProvider) {
+      return;
+    }
     configSynthesis();
-  }, [synthVendor, synthLabel]);
+  }, [synthVendor, synthLabel, currentServiceProvider]);
 
   // Get Recognizer languages and voices
   useEffect(() => {
@@ -119,8 +124,11 @@ export const SpeechProviderSelection = ({
       setRecogLang(LANG_EN_US);
       return;
     }
+    if (user?.scope === USER_ADMIN && !currentServiceProvider) {
+      return;
+    }
     configRecognizer();
-  }, [recogVendor, recogLabel]);
+  }, [recogVendor, recogLabel, currentServiceProvider]);
 
   useEffect(() => {
     if (credentials) {
