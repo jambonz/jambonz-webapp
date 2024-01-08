@@ -373,8 +373,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         vendor,
         ""
       ).then(({ json }) => {
-        if (json.ttsModel) {
-          setTtsModels(json.ttsModel);
+        if (json.models) {
+          setTtsModels(json.models);
         }
       });
     } else {

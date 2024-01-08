@@ -705,7 +705,7 @@ export interface GetLanguagesAndVoices {
 export interface SpeechSupportedLanguagesAndVoices {
   tts: VoiceLanguage[];
   stt: Language[];
-  ttsModel: Model[];
+  models: Model[];
 }
 
 export interface ElevenLabsOptions {

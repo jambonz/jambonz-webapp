@@ -166,10 +166,10 @@ export const SpeechProviderSelection = ({
       .then(({ json }) => {
         setSynthesisSupportedLanguagesAndVoices(json);
         // Extract model
-        if (json.ttsModel && json.ttsModel.length) {
-          setSynthesisModelOptions(json.ttsModel);
+        if (json.models && json.models.length) {
+          setSynthesisModelOptions(json.models);
           if (synthVendor === VENDOR_DEEPGRAM) {
-            setSynthVoice(json.ttsModel[0].value);
+            setSynthVoice(json.models[0].value);
             return;
           }
         }
