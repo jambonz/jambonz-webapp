@@ -249,6 +249,24 @@ export const SpeechProviderSelection = ({
           value: lang.code,
         }));
         setRecogLanguageOptions(langOpts);
+
+        /**When vendor is custom, Language is input by user */
+        if (recogVendor.toString() === VENDOR_CUSTOM) return;
+
+        /** Google and AWS have different language lists */
+        /** If the new language doesn't map then default to "en-US" */
+        const newLang = json.stt.find((lang) => lang.code === recogLang);
+
+        if (
+          (recogVendor === VENDOR_GOOGLE || recogVendor === VENDOR_AWS) &&
+          !newLang
+        ) {
+          setRecogLang(LANG_EN_US);
+        }
+        // Default colbalt language
+        if (recogVendor === VENDOR_COBALT) {
+          setRecogLang(LANG_COBALT_EN_US);
+        }
       })
       .catch((error) => {
         toastError(error.msg);
@@ -421,25 +439,7 @@ export const SpeechProviderSelection = ({
             setRecogVendor(vendor);
             setRecogLabel("");
 
-            /**When vendor is custom, Language is input by user */
-            if (vendor.toString() === VENDOR_CUSTOM) return;
-
-            /** Google and AWS have different language lists */
-            /** If the new language doesn't map then default to "en-US" */
-            const newLang = recogLanguageOptions.find(
-              (lang) => lang.value === recogLang
-            );
-
-            if (
-              (vendor === VENDOR_GOOGLE || vendor === VENDOR_AWS) &&
-              !newLang
-            ) {
-              setRecogLang(LANG_EN_US);
-            }
-            // Default colbalt language
-            if (vendor === VENDOR_COBALT) {
-              setRecogLang(LANG_COBALT_EN_US);
-            }
+            setRecogLanguageOptions([]);
           }}
         />
         {hasLength(sttLabelOptions) && (
