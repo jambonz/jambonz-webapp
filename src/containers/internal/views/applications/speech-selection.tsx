@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { getSpeechSupportedLanguagesAndVoices } from "src/api";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  getGoogleCustomVoices,
+  getSpeechSupportedLanguagesAndVoices,
+} from "src/api";
 import {
   SpeechCredential,
   SpeechSupportedLanguagesAndVoices,
@@ -55,8 +58,8 @@ type SpeechProviderSelectionProbs = {
 };
 
 export const SpeechProviderSelection = ({
-  // accountSid,
-  // serviceProviderSid,
+  accountSid,
+  serviceProviderSid,
   credentials,
   ttsVendor: [synthVendor, setSynthVendor],
   ttsVendorOptions,
@@ -86,9 +89,15 @@ export const SpeechProviderSelection = ({
   const [synthesisModelOptions, setSynthesisModelOptions] = useState<
     SelectorOption[]
   >([]);
+  const [
+    synthesisGoogleCustomVoiceOptions,
+    setSynthesisGoogleCustomVoiceOptions,
+  ] = useState<SelectorOption[]>([]);
   const [recogLanguageOptions, setRecogLanguageOptions] = useState<
     SelectorOption[]
   >([]);
+
+  const currentVendor = useRef("");
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
@@ -99,6 +108,7 @@ export const SpeechProviderSelection = ({
       setSynthVoice("");
       return;
     }
+    currentVendor.current = synthVendor;
     configSynthesis();
   }, [synthVendor, synthLabel]);
 
@@ -160,6 +170,28 @@ export const SpeechProviderSelection = ({
               return lang.code === nLang;
             })?.voices || [];
           setSynthesisVoiceOptions(voicesOpts);
+
+          if (synthVendor === VENDOR_GOOGLE) {
+            getGoogleCustomVoices({
+              ...(synthLabel && { label: synthLabel }),
+              account_sid: accountSid,
+              service_provider_sid: serviceProviderSid,
+            }).then(({ json }) => {
+              // If after successfully fetching data, vendor is still good, then apply value
+              if (currentVendor.current !== VENDOR_GOOGLE) {
+                return;
+              }
+              const customVOices = json.map((v) => ({
+                name: `${v.name} (Custom)`,
+                value: `custom_${v.google_custom_voice_sid}`,
+              }));
+              setSynthesisGoogleCustomVoiceOptions(customVOices);
+              setSynthesisVoiceOptions([...customVOices, ...voicesOpts]);
+              if (customVOices.length > 0) {
+                setSynthVoice(customVOices[0].value);
+              }
+            });
+          }
 
           // Default setting
           if (synthVendor === VENDOR_GOOGLE && synthLang === LANG_EN_US) {
@@ -294,7 +326,18 @@ export const SpeechProviderSelection = ({
                     synthesisSupportedLanguagesAndVoices?.tts.find(
                       (lang) => lang.code === language
                     )?.voices || [];
-                  setSynthesisVoiceOptions(voices);
+                  if (
+                    synthVendor === VENDOR_GOOGLE &&
+                    synthesisGoogleCustomVoiceOptions &&
+                    synthesisGoogleCustomVoiceOptions.length
+                  ) {
+                    setSynthesisVoiceOptions([
+                      ...synthesisGoogleCustomVoiceOptions,
+                      ...voices,
+                    ]);
+                  } else {
+                    setSynthesisVoiceOptions(voices);
+                  }
 
                   setSynthVoice(voices[0].value);
                 }}
