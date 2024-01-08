@@ -36,7 +36,7 @@ export interface Model {
 
 export interface Voice {
   name: string;
-  value: string;
+  code: string;
   model?: "standard" | "enhanced";
 }
 

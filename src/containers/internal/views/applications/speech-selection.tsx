@@ -184,12 +184,20 @@ export const SpeechProviderSelection = ({
           setSynthesisLanguageOptions(langOpts);
           // Extract Voice
           const voicesOpts =
-            json.tts.find((lang) => {
-              if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
-                return true;
-              }
-              return lang.code === nLang;
-            })?.voices || [];
+            json.tts
+              .find((lang) => {
+                if (
+                  synthVendor === VENDOR_ELEVENLABS &&
+                  lang.voices.length > 0
+                ) {
+                  return true;
+                }
+                return lang.code === nLang;
+              })
+              ?.voices.map((voice) => ({
+                name: voice.name,
+                value: voice.code,
+              })) || [];
           setSynthesisVoiceOptions(voicesOpts);
 
           if (synthVendor === VENDOR_GOOGLE) {
@@ -229,7 +237,7 @@ export const SpeechProviderSelection = ({
           if (synthVendor === VENDOR_WHISPER) {
             const newLang = json.tts.find((lang) => lang.code === LANG_EN_US);
             setSynthLang(LANG_EN_US);
-            setSynthVoice(newLang!.voices[0].value);
+            setSynthVoice(newLang!.voices[0].code);
             return;
           }
           /** Google and AWS have different language lists */
@@ -237,14 +245,14 @@ export const SpeechProviderSelection = ({
           let newLang = json.tts.find((lang) => lang.code === synthLang);
 
           if (newLang) {
-            setSynthVoice(newLang.voices[0].value);
+            setSynthVoice(newLang.voices[0].code);
             return;
           }
 
           newLang = json.tts.find((lang) => lang.code === LANG_EN_US);
 
           setSynthLang(LANG_EN_US);
-          setSynthVoice(newLang!.voices[0].value);
+          setSynthVoice(newLang!.voices[0].code);
         }
       })
       .catch((error) => {
@@ -362,9 +370,12 @@ export const SpeechProviderSelection = ({
                   }
 
                   const voices =
-                    synthesisSupportedLanguagesAndVoices?.tts.find(
-                      (lang) => lang.code === language
-                    )?.voices || [];
+                    synthesisSupportedLanguagesAndVoices?.tts
+                      .find((lang) => lang.code === language)
+                      ?.voices.map((voice) => ({
+                        name: voice.name,
+                        value: voice.code,
+                      })) || [];
                   if (
                     synthVendor === VENDOR_GOOGLE &&
                     synthesisGoogleCustomVoiceOptions &&
