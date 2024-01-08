@@ -111,7 +111,10 @@ export const SpeechProviderSelection = ({
       return;
     }
     currentVendor.current = synthVendor;
-    if (user?.scope === USER_ADMIN && !currentServiceProvider) {
+    if (
+      user?.scope === USER_ADMIN &&
+      !currentServiceProvider?.service_provider_sid
+    ) {
       return;
     }
     configSynthesis();
@@ -124,7 +127,10 @@ export const SpeechProviderSelection = ({
       setRecogLang(LANG_EN_US);
       return;
     }
-    if (user?.scope === USER_ADMIN && !currentServiceProvider) {
+    if (
+      user?.scope === USER_ADMIN &&
+      !currentServiceProvider?.service_provider_sid
+    ) {
       return;
     }
     configRecognizer();
