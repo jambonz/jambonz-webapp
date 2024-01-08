@@ -1,4 +1,4 @@
-import type { Vendor } from "src/vendor/types";
+import type { Language, Model, Vendor, VoiceLanguage } from "src/vendor/types";
 
 /** Simple types */
 
@@ -697,21 +697,15 @@ export interface SignIn {
   account_sid?: null | string;
 }
 
-export interface GetVoices {
+export interface GetLanguagesAndVoices {
   vendor: string;
   label: string;
 }
 
-export interface VoiceOption extends SelectorOptions {
-  [key: string]: unknown;
-}
-
-export interface GetLanguages extends GetVoices {
-  [key: string]: unknown;
-}
-
-export interface LanguageOption extends SelectorOptions {
-  [key: string]: unknown;
+export interface SpeechSupportedLanguagesAndVoices {
+  tts: VoiceLanguage[];
+  stt: Language[];
+  ttsModel: Model[];
 }
 
 export interface ElevenLabsOptions {

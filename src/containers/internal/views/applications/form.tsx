@@ -16,7 +16,6 @@ import {
   LANG_EN_US,
   VENDOR_GOOGLE,
   LANG_EN_US_STANDARD_C,
-  useSpeechVendors,
   VENDOR_CUSTOM,
 } from "src/vendor";
 import {
@@ -61,7 +60,6 @@ type ApplicationFormProps = {
 
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
-  const { synthesis, recognizers } = useSpeechVendors();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -685,14 +683,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           }
           accountSid={accountSid}
           credentials={credentials}
-          synthesis={synthesis}
           ttsVendor={[synthVendor, setSynthVendor]}
           ttsVendorOptions={ttsVendorOptions}
           ttsVoice={[synthVoice, setSynthVoice]}
           ttsLang={[synthLang, setSynthLang]}
           ttsLabelOptions={ttsLabelOptions}
           ttsLabel={[synthLabel, setSynthLabel]}
-          recognizers={recognizers}
           sttVendor={[recogVendor, setRecogVendor]}
           sttVendorOptions={sttVendorOptions}
           sttLang={[recogLang, setRecogLang]}
@@ -716,7 +712,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               }
               accountSid={accountSid}
               credentials={credentials}
-              synthesis={synthesis}
               ttsVendor={[
                 fallbackSpeechSynthsisVendor,
                 setFallbackSpeechSynthsisVendor,
@@ -735,7 +730,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 fallbackSpeechSynthsisLabel,
                 setFallbackSpeechSynthsisLabel,
               ]}
-              recognizers={recognizers}
               sttVendor={[
                 fallbackSpeechRecognizerVendor,
                 setFallbackSpeechRecognizerVendor,
