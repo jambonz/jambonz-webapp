@@ -178,26 +178,18 @@ export const SpeechProviderSelection = ({
           // Extract Language
           const langOpts = json.tts.map((lang) => ({
             name: lang.name,
-            value: lang.code,
+            value: lang.value,
           }));
           const nLang = langOpts.length ? langOpts[0].value : "";
           setSynthesisLanguageOptions(langOpts);
           // Extract Voice
           const voicesOpts =
-            json.tts
-              .find((lang) => {
-                if (
-                  synthVendor === VENDOR_ELEVENLABS &&
-                  lang.voices.length > 0
-                ) {
-                  return true;
-                }
-                return lang.code === nLang;
-              })
-              ?.voices.map((voice) => ({
-                name: voice.name,
-                value: voice.code,
-              })) || [];
+            json.tts.find((lang) => {
+              if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
+                return true;
+              }
+              return lang.value === nLang;
+            })?.voices || [];
           setSynthesisVoiceOptions(voicesOpts);
 
           if (synthVendor === VENDOR_GOOGLE) {
@@ -235,24 +227,24 @@ export const SpeechProviderSelection = ({
             return;
           }
           if (synthVendor === VENDOR_WHISPER) {
-            const newLang = json.tts.find((lang) => lang.code === LANG_EN_US);
+            const newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
             setSynthLang(LANG_EN_US);
-            setSynthVoice(newLang!.voices[0].code);
+            setSynthVoice(newLang!.voices[0].value);
             return;
           }
           /** Google and AWS have different language lists */
           /** If the new language doesn't map then default to "en-US" */
-          let newLang = json.tts.find((lang) => lang.code === synthLang);
+          let newLang = json.tts.find((lang) => lang.value === synthLang);
 
           if (newLang) {
-            setSynthVoice(newLang.voices[0].code);
+            setSynthVoice(newLang.voices[0].value);
             return;
           }
 
-          newLang = json.tts.find((lang) => lang.code === LANG_EN_US);
+          newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
 
           setSynthLang(LANG_EN_US);
-          setSynthVoice(newLang!.voices[0].code);
+          setSynthVoice(newLang!.voices[0].value);
         }
       })
       .catch((error) => {
@@ -270,7 +262,7 @@ export const SpeechProviderSelection = ({
         // Extract Language
         const langOpts = json.stt.map((lang) => ({
           name: lang.name,
-          value: lang.code,
+          value: lang.value,
         }));
         setRecogLanguageOptions(langOpts);
 
@@ -279,7 +271,7 @@ export const SpeechProviderSelection = ({
 
         /** Google and AWS have different language lists */
         /** If the new language doesn't map then default to "en-US" */
-        const newLang = json.stt.find((lang) => lang.code === recogLang);
+        const newLang = json.stt.find((lang) => lang.value === recogLang);
 
         if (
           (recogVendor === VENDOR_GOOGLE || recogVendor === VENDOR_AWS) &&
@@ -370,12 +362,9 @@ export const SpeechProviderSelection = ({
                   }
 
                   const voices =
-                    synthesisSupportedLanguagesAndVoices?.tts
-                      .find((lang) => lang.code === language)
-                      ?.voices.map((voice) => ({
-                        name: voice.name,
-                        value: voice.code,
-                      })) || [];
+                    synthesisSupportedLanguagesAndVoices?.tts.find(
+                      (lang) => lang.value === language
+                    )?.voices || [];
                   if (
                     synthVendor === VENDOR_GOOGLE &&
                     synthesisGoogleCustomVoiceOptions &&

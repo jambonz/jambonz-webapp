@@ -36,13 +36,13 @@ export interface Model {
 
 export interface Voice {
   name: string;
-  code: string;
+  value: string;
   model?: "standard" | "enhanced";
 }
 
 export interface Language {
   name: string;
-  code: string;
+  value: string;
   codeMix?: string;
 }
 
