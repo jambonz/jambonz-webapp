@@ -579,7 +579,7 @@ export const AccountForm = ({
           (userData.account.device_to_call_ratio || 0) *
             (callSessionRecord.quantity || 0) +
           (registeredDeviceRecord.quantity || 0);
-        const { trial_end_date } = userData.account || {};
+        const { trial_end_date, is_active } = userData.account || {};
         switch (pType) {
           case PlanType.TRIAL:
             setSubscriptionDescription(
@@ -609,9 +609,15 @@ export const AccountForm = ({
 
             break;
           case PlanType.FREE:
-            setSubscriptionDescription(
-              `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`
-            );
+            if (is_active) {
+              setSubscriptionDescription(
+                `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`
+              );
+            } else {
+              setSubscriptionDescription(
+                "Your free trial has expired.  Please upgrade your subscription to a paid plan to continue service"
+              );
+            }
             break;
         }
         // Make sure Account page is alway scroll to top to see subscription

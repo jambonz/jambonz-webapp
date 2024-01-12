@@ -262,6 +262,7 @@ export interface Account {
   plan_type?: string;
   device_to_call_ratio?: number;
   trial_end_date?: null | string;
+  is_active: boolean;
 }
 
 export interface Product {
