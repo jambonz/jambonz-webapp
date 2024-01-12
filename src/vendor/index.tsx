@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type {
-  VendorOptions,
-  SynthesisVendors,
-  RecognizerVendors,
-  RegionVendors,
-  TtsModels,
-} from "./types";
+import type { VendorOptions, RegionVendors } from "./types";
 
 export const LANG_EN_US = "en-US";
 export const ELEVENLABS_LANG_EN = "en";
@@ -86,38 +80,6 @@ export const vendors: VendorOptions[] = [
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
-export const useTtsModels = () => {
-  const [models, setModels] = useState<TtsModels>();
-
-  useEffect(() => {
-    let ignore = false;
-    Promise.all([
-      import("./speech-synthsis-models/elevenlabs-models"),
-      import("./speech-synthsis-models/whisper-models"),
-      import("./speech-synthsis-models/deepgram-models"),
-    ]).then(
-      ([
-        { default: elevenlabs },
-        { default: whisper },
-        { default: deepgram },
-      ]) => {
-        if (!ignore) {
-          setModels({
-            elevenlabs,
-            whisper,
-            deepgram,
-          });
-        }
-      }
-    );
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
-
-  return models;
-};
-
 export const useRegionVendors = () => {
   const [regions, setRegions] = useState<RegionVendors>();
 
@@ -150,95 +112,4 @@ export const useRegionVendors = () => {
   }, []);
 
   return regions;
-};
-
-export const useSpeechVendors = () => {
-  const [speech, setSpeech] = useState<{
-    synthesis?: SynthesisVendors;
-    recognizers?: RecognizerVendors;
-  }>({});
-
-  useEffect(() => {
-    let ignore = false;
-
-    Promise.all([
-      import("./speech-recognizer/aws-speech-recognizer-lang"),
-      import("./speech-recognizer/google-speech-recognizer-lang"),
-      import("./speech-recognizer/ms-speech-recognizer-lang"),
-      import("./speech-recognizer/nuance-speech-recognizer-lang"),
-      import("./speech-recognizer/deepgram-speech-recognizer-lang"),
-      import("./speech-recognizer/ibm-speech-recognizer-lang"),
-      import("./speech-recognizer/nvidia-speech-recognizer-lang"),
-      import("./speech-recognizer/soniox-speech-recognizer-lang"),
-      import("./speech-recognizer/cobalt-speech-recognizer-lang"),
-      import("./speech-recognizer/assemblyai-speech-recognizer-lang"),
-      import("./speech-synthesis/aws-speech-synthesis-lang"),
-      import("./speech-synthesis/google-speech-synthesis-lang"),
-      import("./speech-synthesis/ms-speech-synthesis-lang"),
-      import("./speech-synthesis/wellsaid-speech-synthesis-lang"),
-      import("./speech-synthesis/nuance-speech-synthesis-lang"),
-      import("./speech-synthesis/ibm-speech-synthesis-lang"),
-      import("./speech-synthesis/nvidia-speech-synthesis-lang"),
-      import("./speech-synthesis/elevellabs-speech-synthesis-lang"),
-      import("./speech-synthesis/whisper-speech-synthesis-lang"),
-    ]).then(
-      ([
-        { default: awsRecognizer },
-        { default: googleRecognizer },
-        { default: msRecognizer },
-        { default: nuanceRecognizer },
-        { default: deepgramRecognizer },
-        { default: ibmRecognizer },
-        { default: nvidiaRecognizer },
-        { default: sonioxRecognizer },
-        { default: cobaltRecognizer },
-        { default: assemblyaiRecognizer },
-        { default: awsSynthesis },
-        { default: googleSynthesis },
-        { default: msSynthesis },
-        { default: wellsaidSynthesis },
-        { default: nuanceSynthesis },
-        { default: ibmSynthesis },
-        { default: nvidiaynthesis },
-        { default: elevenLabsSynthesis },
-        { default: whisperSynthesis },
-      ]) => {
-        if (!ignore) {
-          setSpeech({
-            synthesis: {
-              aws: awsSynthesis,
-              google: googleSynthesis,
-              microsoft: msSynthesis,
-              wellsaid: wellsaidSynthesis,
-              nuance: nuanceSynthesis,
-              ibm: ibmSynthesis,
-              nvidia: nvidiaynthesis,
-              elevenlabs: elevenLabsSynthesis,
-              whisper: whisperSynthesis,
-              // Deepgram just have model which includes language, voice
-              deepgram: [],
-            },
-            recognizers: {
-              aws: awsRecognizer,
-              google: googleRecognizer,
-              microsoft: msRecognizer,
-              nuance: nuanceRecognizer,
-              deepgram: deepgramRecognizer,
-              ibm: ibmRecognizer,
-              nvidia: nvidiaRecognizer,
-              soniox: sonioxRecognizer,
-              cobalt: cobaltRecognizer,
-              assemblyai: assemblyaiRecognizer,
-            },
-          });
-        }
-      }
-    );
-
-    return function cleanup() {
-      ignore = true;
-    };
-  }, []);
-
-  return speech;
 };

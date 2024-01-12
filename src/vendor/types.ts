@@ -42,7 +42,7 @@ export interface Voice {
 
 export interface Language {
   name: string;
-  code: string;
+  value: string;
   codeMix?: string;
 }
 
