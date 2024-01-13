@@ -376,10 +376,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         if (json.models) {
           setTtsModels(json.models);
           if (
-            ttsModels.length > 0 &&
+            json.models.length > 0 &&
             (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER)
           ) {
-            setTtsModelId(ttsModels[0].value);
+            setTtsModelId(json.models[0].value);
           }
         }
       });
