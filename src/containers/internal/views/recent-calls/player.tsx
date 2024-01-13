@@ -287,7 +287,8 @@ export const Player = ({ call }: PlayerProps) => {
   const buildWavesurferRegion = () => {
     if (jaegerRoot) {
       const spans = getSpansFromJaegerRoot(jaegerRoot);
-      const startPoint = spans[0];
+      const start = getSpansByNameRegex(spans, /background-record:listen/);
+      const startPoint = start ? start[0] : null;
       // there should be only one startPoint for background listen
       if (startPoint) {
         const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
