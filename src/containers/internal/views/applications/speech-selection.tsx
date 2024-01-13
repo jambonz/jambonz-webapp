@@ -168,10 +168,7 @@ export const SpeechProviderSelection = ({
         // Extract model
         if (json.models && json.models.length) {
           setSynthesisModelOptions(json.models);
-          if (
-            synthVendor === VENDOR_DEEPGRAM ||
-            synthVendor === VENDOR_ELEVENLABS
-          ) {
+          if (synthVendor === VENDOR_DEEPGRAM) {
             setSynthVoice(json.models[0].value);
             return;
           }

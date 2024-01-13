@@ -375,6 +375,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       ).then(({ json }) => {
         if (json.models) {
           setTtsModels(json.models);
+          if (
+            ttsModels.length > 0 &&
+            (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER)
+          ) {
+            setTtsModelId(ttsModels[0].value);
+          }
         }
       });
     } else {
@@ -597,13 +603,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setRegion("");
               setApiKey("");
               setGoogleServiceKey(null);
-              if (
-                ttsModels.length > 0 &&
-                (e.target.value === VENDOR_ELEVENLABS ||
-                  e.target.value === VENDOR_WHISPER)
-              ) {
-                setTtsModelId(ttsModels[0].value);
-              }
             }}
             disabled={credential ? true : false}
             required
