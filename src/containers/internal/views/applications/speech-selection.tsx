@@ -157,6 +157,42 @@ export const SpeechProviderSelection = ({
     }
   }, [ttsLabelOptions, sttLabelOptions]);
 
+  useEffect(() => {
+    if (synthesisSupportedLanguagesAndVoices) {
+      // Extract Voice
+      const voicesOpts =
+        synthesisSupportedLanguagesAndVoices.tts.find((lang) => {
+          if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
+            return true;
+          }
+          return lang.value === synthLang;
+        })?.voices || [];
+      setSynthesisVoiceOptions(voicesOpts);
+
+      if (synthVendor === VENDOR_GOOGLE) {
+        getGoogleCustomVoices({
+          ...(synthLabel && { label: synthLabel }),
+          account_sid: accountSid,
+          service_provider_sid: serviceProviderSid,
+        }).then(({ json }) => {
+          // If after successfully fetching data, vendor is still good, then apply value
+          if (currentVendor.current !== VENDOR_GOOGLE) {
+            return;
+          }
+          const customVOices = json.map((v) => ({
+            name: `${v.name} (Custom)`,
+            value: `custom_${v.google_custom_voice_sid}`,
+          }));
+          setSynthesisGoogleCustomVoiceOptions(customVOices);
+          setSynthesisVoiceOptions([...customVOices, ...voicesOpts]);
+          if (customVOices.length > 0) {
+            setSynthVoice(customVOices[0].value);
+          }
+        });
+      }
+    }
+  }, [synthLang, synthesisSupportedLanguagesAndVoices]);
+
   const configSynthesis = () => {
     getSpeechSupportedLanguagesAndVoices(
       currentServiceProvider?.service_provider_sid,
@@ -180,39 +216,7 @@ export const SpeechProviderSelection = ({
             name: lang.name,
             value: lang.value,
           }));
-          const nLang = langOpts.length ? langOpts[0].value : "";
           setSynthesisLanguageOptions(langOpts);
-          // Extract Voice
-          const voicesOpts =
-            json.tts.find((lang) => {
-              if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
-                return true;
-              }
-              return lang.value === nLang;
-            })?.voices || [];
-          setSynthesisVoiceOptions(voicesOpts);
-
-          if (synthVendor === VENDOR_GOOGLE) {
-            getGoogleCustomVoices({
-              ...(synthLabel && { label: synthLabel }),
-              account_sid: accountSid,
-              service_provider_sid: serviceProviderSid,
-            }).then(({ json }) => {
-              // If after successfully fetching data, vendor is still good, then apply value
-              if (currentVendor.current !== VENDOR_GOOGLE) {
-                return;
-              }
-              const customVOices = json.map((v) => ({
-                name: `${v.name} (Custom)`,
-                value: `custom_${v.google_custom_voice_sid}`,
-              }));
-              setSynthesisGoogleCustomVoiceOptions(customVOices);
-              setSynthesisVoiceOptions([...customVOices, ...voicesOpts]);
-              if (customVOices.length > 0) {
-                setSynthVoice(customVOices[0].value);
-              }
-            });
-          }
 
           // Default setting
           if (synthVendor === VENDOR_GOOGLE && synthLang === LANG_EN_US) {
@@ -223,7 +227,12 @@ export const SpeechProviderSelection = ({
             // Samve Voices applied to all languages
             // Voices are only available for the 1st language.
             setSynthLang(ELEVENLABS_LANG_EN);
-            setSynthVoice(voicesOpts[0].value);
+            const newLang = json.tts.find(
+              (lang) => lang.value === ELEVENLABS_LANG_EN
+            );
+            if (newLang) {
+              setSynthVoice(newLang.voices[0].value);
+            }
             return;
           }
           if (synthVendor === VENDOR_WHISPER) {
