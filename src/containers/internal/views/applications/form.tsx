@@ -67,9 +67,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [applications] = useApiData<Application[]>("Applications");
 
   if (PAGINATION) {
-    /** ATM we retrieve all accounts to check if the name is available */
+    /** ATM we retrieve all application to check if the name is available */
     // we should use the new endpoint "availabilty" to check if the name in that collection
-    // is available  since we don't want to retrieve and check all accounts
+    // is available  since we don't want to retrieve and check all application
     //
     // let [accounts] = useApiDataPaginated<Applications[]>("Applications", {});
   }
