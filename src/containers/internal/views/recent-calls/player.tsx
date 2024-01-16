@@ -289,10 +289,7 @@ export const Player = ({ call }: PlayerProps) => {
     }
   };
 
-  const drawGatherSpeechVerbHookDelayRegion = (
-    s: JaegerSpan,
-    startPoint: JaegerSpan
-  ) => {
+  const drawVerbHookDelayRegion = (s: JaegerSpan, startPoint: JaegerSpan) => {
     if (waveSurferRegionsPluginRef.current) {
       const r = waveSurferRegionsPluginRef.current
         .getRegions()
@@ -303,7 +300,7 @@ export const Player = ({ call }: PlayerProps) => {
           (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
-        const tmpEnd = end - start < 0.05 ? start + 0.05 : end - start;
+        const tmpEnd = end - start < 0.05 ? start + 0.05 : end;
 
         const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
           id: s.spanId,
@@ -370,12 +367,15 @@ export const Player = ({ call }: PlayerProps) => {
               s.attributes,
               "http.body"
             );
-            return httpBody.value.stringValue.includes(
-              '"reason":"speechDetected"'
+            return (
+              httpBody.value.stringValue.includes(
+                '"reason":"speechDetected"'
+              ) ||
+              httpBody.value.stringValue.includes('"reason":"dtmfDetected"')
             );
           })
           .forEach((s) => {
-            drawGatherSpeechVerbHookDelayRegion(s, startPoint);
+            drawVerbHookDelayRegion(s, startPoint);
           });
       }
     }
@@ -596,7 +596,7 @@ export const Player = ({ call }: PlayerProps) => {
               }
             }}
           />
-          <div>Overlay STT, TTS latency and DTMF events</div>
+          <div>Show latencies</div>
         </label>
       </div>
       {waveSurferRegionData && (
@@ -737,7 +737,7 @@ export const Player = ({ call }: PlayerProps) => {
         >
           <div className="spanDetailsWrapper__header">
             <P>
-              <strong>Gather Speech Verb Hook Latency</strong>
+              <strong>Application Response Latency</strong>
             </P>
           </div>
           <div className="spanDetailsWrapper">
