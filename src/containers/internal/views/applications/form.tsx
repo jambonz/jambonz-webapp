@@ -32,6 +32,7 @@ import {
   DEFAULT_WEBHOOK,
   DISABLE_CALL_RECORDING,
   WEBHOOK_METHODS,
+  PAGINATION,
 } from "src/api/constants";
 
 import type {
@@ -64,6 +65,15 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useApiData<Application[]>("Applications");
+
+  if (PAGINATION) {
+    /** ATM we retrieve all accounts to check if the name is available */
+    // we should use the new endpoint "availabilty" to check if the name in that collection
+    // is available  since we don't want to retrieve and check all accounts
+    //
+    // let [accounts] = useApiDataPaginated<Applications[]>("Applications", {});
+  }
+
   const [applicationName, setApplicationName] = useState("");
   const [applicationJson, setApplicationJson] = useState("");
   const [tmpApplicationJson, setTmpApplicationJson] = useState("");

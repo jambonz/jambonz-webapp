@@ -26,6 +26,7 @@ interface JambonzWindowObject {
   BASE_URL: string;
   DEFAULT_SERVICE_PROVIDER_SID: string;
   STRIPE_PUBLISHABLE_KEY: string;
+  PAGINATION: string;
 }
 
 declare global {
@@ -86,6 +87,10 @@ export const GOOGLE_CLIENT_ID: string =
 export const STRIPE_PUBLISHABLE_KEY: string =
   window.JAMBONZ?.STRIPE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY;
+
+export const PAGINATION: boolean =
+  window.JAMBONZ?.PAGINATION === "true" ||
+  JSON.parse(import.meta.env.VITE_PAGINATION || "false");
 
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;

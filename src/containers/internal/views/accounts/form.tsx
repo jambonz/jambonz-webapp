@@ -40,6 +40,7 @@ import {
   PlanType,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
+  PAGINATION,
 } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
@@ -84,6 +85,15 @@ export const AccountForm = ({
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
+
+  if (PAGINATION) {
+    /** ATM we retrieve all accounts to check if the name is available */
+    // we should use the new endpoint "availabilty" to check if the name in that collection
+    // is available  since we don't want to retrieve and check all accounts
+    //
+    // let [accounts] = useApiDataPaginated<Account[]>("Accounts", {});
+  }
+
   const [accounts] = useApiData<Account[]>("Accounts");
   const [invoice] = useApiData<Invoice>("Invoices");
   const [userData] = useApiData<CurrentUserData>("Users/me");

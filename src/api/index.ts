@@ -94,6 +94,7 @@ import type {
   GoogleCustomVoice,
   GoogleCustomVoicesQuery,
   SpeechSupportedLanguagesAndVoices,
+  UseApiDataPaginated,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -887,6 +888,56 @@ export const getSpeechSupportedLanguagesAndVoices = (
   return getFetch<SpeechSupportedLanguagesAndVoices>(apiUrl);
 };
 
+export const isNameAvailable = (name: string) => {
+  // with this new API we can check for availability of name:
+  // - service_provider_sid
+  // - sip_realm
+  // - name
+  return getFetch<Availability>(`${API_AVAILABILITY}?type=name&value=${name}`);
+};
+
+/** Pagination */
+
+export const listUsersPaginated = (sid: string, query: Partial<CallQuery>) => {
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+  return getFetch<PagedResponse<User>>(`${API_USERS}/${sid}?${qryStr}`);
+};
+
+export const listApiKeysPaginated = (
+  apiPath: string,
+  query: Partial<CallQuery>
+) => {
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+  return getFetch<PagedResponse<ApiKey>>(
+    `${API_BASE_URL}/${apiPath}?${qryStr}`
+  );
+};
+
+export const listAccountsPaginated = (
+  service_provider_sid: string,
+  query: Partial<CallQuery>
+) => {
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+  const url = `${API_SERVICE_PROVIDERS}/${service_provider_sid}/Accounts?${qryStr}`;
+  return getFetch<PagedResponse<Account>>(url);
+};
+
+export const listApplicationsPaginated = (
+  accountSid: string,
+  query: Partial<CallQuery>
+) => {
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+  const url = `${API_BASE_URL}/Accounts/${accountSid}/Applications?${qryStr}`;
+  return getFetch<PagedResponse<Application>>(url);
+};
+
+export const listServiceProvidersPaginated = (query: Partial<CallQuery>) => {
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+  return getFetch<PagedResponse<ServiceProvider>>(
+    `${API_SERVICE_PROVIDERS}?${qryStr}`
+  );
+};
+
 /** Hooks for components to fetch data with refetch method */
 
 /** :GET /{apiPath} -- this is generic for any fetch of data collections */
@@ -905,6 +956,47 @@ export const useApiData: UseApiData = <Type>(apiPath: string) => {
     // Don't fetch if api url is empty string ""
     if (apiPath) {
       getFetch<Type>(`${API_BASE_URL}/${apiPath}`)
+        .then(({ json }) => {
+          if (!ignore) {
+            setResult(json!);
+          }
+        })
+        .catch((error) => {
+          if (!ignore) {
+            setError(error);
+          }
+        });
+    }
+
+    return function cleanup() {
+      ignore = true;
+    };
+
+    // Refetch data if refetcher() is called OR api url changes
+  }, [refetch, apiPath]);
+
+  return [result, refetcher, error];
+};
+
+export const useApiDataPaginated: UseApiDataPaginated = <Type>(
+  apiPath: string,
+  query: Partial<CallQuery>
+) => {
+  const [result, setResult] = useState<Type>();
+  const [error, setError] = useState<FetchError>();
+  const [refetch, setRefetch] = useState(0);
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+
+  const refetcher = () => {
+    setRefetch(refetch + 1);
+  };
+
+  useEffect(() => {
+    let ignore = false;
+
+    // Don't fetch if api url is empty string ""
+    if (apiPath && qryStr) {
+      getFetch<Type>(`${API_BASE_URL}/${apiPath}?${qryStr}`)
         .then(({ json }) => {
           if (!ignore) {
             setResult(json!);
@@ -951,6 +1043,47 @@ export const useServiceProviderData: UseApiData = <Type>(apiPath: string) => {
         .then(({ json }) => {
           if (!ignore) {
             setResult(json!);
+          }
+        })
+        .catch((error) => {
+          if (!ignore) {
+            setError(error);
+          }
+        });
+    }
+
+    return function cleanup() {
+      ignore = true;
+    };
+  }, [currentServiceProvider, refetch]);
+
+  return [result, refetcher, error];
+};
+
+export const useServiceProviderDataPaginated: UseApiDataPaginated = <Type>(
+  apiPath: string,
+  query: Partial<CallQuery>
+) => {
+  const currentServiceProvider = useSelectState("currentServiceProvider");
+  const [result, setResult] = useState<Type>();
+  const [error, setError] = useState<FetchError>();
+  const [refetch, setRefetch] = useState(0);
+  const qryStr = getQuery<Partial<CallQuery>>(query);
+
+  const refetcher = () => {
+    setRefetch(refetch + 1);
+  };
+
+  useEffect(() => {
+    let ignore = false;
+
+    if (currentServiceProvider) {
+      getFetch<PagedResponse<Type>>(
+        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/${apiPath}?${qryStr}`
+      )
+        .then(({ json }) => {
+          if (!ignore) {
+            setResult(json.data as unknown as Type);
           }
         })
         .catch((error) => {

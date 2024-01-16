@@ -44,7 +44,7 @@ export const Alerts = () => {
   const handleFilterChange = () => {
     const payload: Partial<PageQuery> = {
       page: pageNumber,
-      count: Number(perPageFilter),
+      limit: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
         : { days: Number(dateFilter) }),
@@ -53,8 +53,8 @@ export const Alerts = () => {
     getAlerts(accountSid, payload)
       .then(({ json }) => {
         setAlerts(json.data);
-        setAlertsTotal(json.total);
-        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+        setAlertsTotal(json.total_items);
+        setMaxPageNumber(Math.ceil(json.total_items / Number(perPageFilter)));
       })
       .catch((error) => {
         toastError(error.msg);

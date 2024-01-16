@@ -17,6 +17,7 @@ import ForgotPassword from "src/containers/login/forgot-password";
 
 /** Top navi */
 import Users from "src/containers/internal/views/users";
+import UsersPaginated from "src/containers/internal/views/users/paginated";
 import UserAdd from "src/containers/internal/views/users/add";
 import UserEdit from "src/containers/internal/views/users/edit";
 import Settings from "src/containers/internal/views/settings";
@@ -57,6 +58,9 @@ import Subscription from "src/containers/internal/views/accounts/subscription";
 import ManagePayment from "src/containers/internal/views/accounts/manage-payment";
 import EditSipRealm from "src/containers/internal/views/accounts/edit-sip-realm";
 import ResetPassword from "src/containers/login/reset-password";
+import { PAGINATION } from "src/api/constants";
+import AccountsPaginated from "src/containers/internal/views/accounts/paginated";
+import ApplicationsPaginated from "src/containers/internal/views/applications/paginated";
 
 export const Router = () => {
   const toast = useSelectState("toast");
@@ -112,11 +116,17 @@ export const Router = () => {
               <Routes>
                 <Route path="*" element={<InternalLayout />}>
                   {/* Top navi */}
-                  <Route path="users" element={<Users />} />
+                  <Route
+                    path="users"
+                    element={PAGINATION ? <UsersPaginated /> : <Users />}
+                  />
                   <Route path="users/add" element={<UserAdd />} />
                   <Route path="users/:user_sid/edit" element={<UserEdit />} />
                   <Route path="settings" element={<Settings />} />
-                  <Route path="accounts" element={<Accounts />} />
+                  <Route
+                    path="accounts"
+                    element={PAGINATION ? <AccountsPaginated /> : <Accounts />}
+                  />
                   <Route path="accounts/add" element={<AccountAdd />} />
                   <Route
                     path="accounts/:account_sid/edit"
@@ -142,7 +152,12 @@ export const Router = () => {
                       />
                     </>
                   )}
-                  <Route path="applications" element={<Applications />} />
+                  <Route
+                    path="applications"
+                    element={
+                      PAGINATION ? <ApplicationsPaginated /> : <Applications />
+                    }
+                  />
                   <Route path="applications/add" element={<ApplicationAdd />} />
                   <Route
                     path="applications/:application_sid/edit"
