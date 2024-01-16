@@ -51,6 +51,11 @@ export interface WaveSurferTtsLatencyResult {
   isCached: string;
 }
 
+export interface WaveSurferGatherSpeechVerbHookLatencyResult {
+  statusCode: number;
+  latency: string;
+}
+
 export interface WaveSurferDtmfResult {
   dtmf: string;
   duration: string;
