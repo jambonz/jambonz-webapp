@@ -888,12 +888,26 @@ export const getSpeechSupportedLanguagesAndVoices = (
   return getFetch<SpeechSupportedLanguagesAndVoices>(apiUrl);
 };
 
-export const isNameAvailable = (name: string) => {
-  // with this new API we can check for availability of name:
+/**
+ * On API server currently implemented is /:sid/Accounts/Availability
+ * scope needs to be implemented, that also e.g service_providers can be checked
+ * @param name
+ * @returns
+ */
+export const isNameAvailable = (value: string, scope = "account") => {
+  // with this new API we can check for availability of property 'name':
   // - service_provider_sid
   // - sip_realm
   // - name
-  return getFetch<Availability>(`${API_AVAILABILITY}?type=name&value=${name}`);
+  let path;
+  if (scope === "account") {
+    path = `/:sid/Accounts/Availability`;
+  } else if (scope === "service_provider") {
+    path = `/:sid/ServiceProviders/Availability`;
+  }
+  return getFetch<Availability>(
+    `${API_AVAILABILITY}${path}?property=name&value=${value}`
+  );
 };
 
 /** Pagination */
