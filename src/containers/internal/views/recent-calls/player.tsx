@@ -13,6 +13,7 @@ import {
   JaegerRoot,
   JaegerSpan,
   WaveSurferDtmfResult,
+  WaveSurferGatherSpeechVerbHookLatencyResult,
   WaveSurferSttResult,
   WaveSurferTtsLatencyResult,
 } from "src/api/jaeger-types";
@@ -45,6 +46,11 @@ export const Player = ({ call }: PlayerProps) => {
 
   const [waveSurferTtsLatencyData, setWaveSurferTtsLatencyData] =
     useState<WaveSurferTtsLatencyResult | null>();
+
+  const [
+    waveSurferGatherSpeechVerbHookLatencyData,
+    setWaveSurferGatherSpeechVerbHookLatencyData,
+  ] = useState<WaveSurferGatherSpeechVerbHookLatencyResult | null>();
   const [regionChecked, setRegionChecked] = useState(false);
 
   const wavesurferId = `wavesurfer--${call_sid}`;
@@ -269,8 +275,7 @@ export const Player = ({ call }: PlayerProps) => {
             content: `${(end - start).toFixed(2)} sec`,
           });
 
-          changeRegionMouseStyle(latencyRegion, 2);
-          console.log(ttsCache.value.boolValue);
+          changeRegionMouseStyle(latencyRegion, 1);
 
           latencyRegion.on("click", () => {
             setWaveSurferTtsLatencyData({
@@ -280,6 +285,43 @@ export const Player = ({ call }: PlayerProps) => {
             });
           });
         }
+      }
+    }
+  };
+
+  const drawVerbHookDelayRegion = (s: JaegerSpan, startPoint: JaegerSpan) => {
+    if (waveSurferRegionsPluginRef.current) {
+      const r = waveSurferRegionsPluginRef.current
+        .getRegions()
+        .find((r) => r.id === s.spanId);
+
+      if (!r) {
+        const start =
+          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
+        const end =
+          (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
+        const tmpEnd = end - start < 0.05 ? start + 0.05 : end;
+
+        const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
+          id: s.spanId,
+          start: start,
+          end: tmpEnd,
+          color: "rgba(255, 3, 180, 0.55)",
+          drag: false,
+          resize: false,
+          content: `${(end - start).toFixed(2)} sec`,
+        });
+        const [statusCode] = getSpanAttributeByName(
+          s.attributes,
+          "http.statusCode"
+        );
+        changeRegionMouseStyle(latencyRegion, 0);
+        latencyRegion.on("click", () => {
+          setWaveSurferGatherSpeechVerbHookLatencyData({
+            statusCode: statusCode ? Number(statusCode.value.doubleValue) : 404,
+            latency: `${(end - start).toFixed(2)} sec`,
+          });
+        });
       }
     }
   };
@@ -296,6 +338,7 @@ export const Player = ({ call }: PlayerProps) => {
           drawSttRegionForSpan(s, startPoint);
         });
 
+        // Trasscription
         const transcribeSpans = getSpansByNameRegex(spans, /stt-listen:/);
         transcribeSpans.forEach((cs) => {
           // Channel start from 0
@@ -306,16 +349,34 @@ export const Player = ({ call }: PlayerProps) => {
             channel > 0 ? channel - 1 : channel
           );
         });
-
+        // DTMF
         const dtmfSpans = getSpansByNameRegex(spans, /dtmf:/);
         dtmfSpans.forEach((ds) => {
           drawDtmfRegionForSpan(ds, startPoint);
         });
-
+        // TTS delay
         const ttsSpans = getSpansByNameRegex(spans, /tts-generation/);
         ttsSpans.forEach((tts) => {
           drawTtsLatencyRegion(tts, startPoint);
         });
+        // Gather verb hook delay
+        const verbHookSpans = getSpansByNameRegex(spans, /verb:hook/);
+        verbHookSpans
+          .filter((s) => {
+            const [httpBody] = getSpanAttributeByName(
+              s.attributes,
+              "http.body"
+            );
+            return (
+              httpBody.value.stringValue.includes(
+                '"reason":"speechDetected"'
+              ) ||
+              httpBody.value.stringValue.includes('"reason":"dtmfDetected"')
+            );
+          })
+          .forEach((s) => {
+            drawVerbHookDelayRegion(s, startPoint);
+          });
       }
     }
   };
@@ -535,7 +596,7 @@ export const Player = ({ call }: PlayerProps) => {
               }
             }}
           />
-          <div>Overlay STT, TTS latency and DTMF events</div>
+          <div>Show latencies</div>
         </label>
       </div>
       {waveSurferRegionData && (
@@ -664,6 +725,38 @@ export const Player = ({ call }: PlayerProps) => {
                 </div>
                 <div className="spanDetailsWrapper__details_body">
                   {waveSurferTtsLatencyData.isCached}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ModalClose>
+      )}
+      {waveSurferGatherSpeechVerbHookLatencyData && (
+        <ModalClose
+          handleClose={() => setWaveSurferGatherSpeechVerbHookLatencyData(null)}
+        >
+          <div className="spanDetailsWrapper__header">
+            <P>
+              <strong>Application Response Latency</strong>
+            </P>
+          </div>
+          <div className="spanDetailsWrapper">
+            <div className="spanDetailsWrapper__detailsWrapper">
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Status Code:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSurferGatherSpeechVerbHookLatencyData.statusCode}
+                </div>
+              </div>
+
+              <div className="spanDetailsWrapper__details">
+                <div className="spanDetailsWrapper__details_header">
+                  <strong>Latency:</strong>
+                </div>
+                <div className="spanDetailsWrapper__details_body">
+                  {waveSurferGatherSpeechVerbHookLatencyData.latency}
                 </div>
               </div>
             </div>
