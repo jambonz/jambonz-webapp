@@ -161,7 +161,7 @@ export const SpeechProviderSelection = ({
     if (synthesisSupportedLanguagesAndVoices) {
       // Extract Voice
       const voicesOpts =
-        synthesisSupportedLanguagesAndVoices.tts.find((lang) => {
+        synthesisSupportedLanguagesAndVoices.tts?.find((lang) => {
           if (synthVendor === VENDOR_ELEVENLABS && lang.voices.length > 0) {
             return true;
           }
@@ -227,12 +227,7 @@ export const SpeechProviderSelection = ({
             // Samve Voices applied to all languages
             // Voices are only available for the 1st language.
             setSynthLang(ELEVENLABS_LANG_EN);
-            const newLang = json.tts.find(
-              (lang) => lang.value === ELEVENLABS_LANG_EN
-            );
-            if (newLang) {
-              setSynthVoice(newLang.voices[0].value);
-            }
+            setSynthVoice(json.tts[0].voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_WHISPER) {
