@@ -142,7 +142,7 @@ export const SpeechProviderSelection = ({
     if (credentials) {
       setSelectedCredential(
         credentials.find(
-          (c) => c.vendor === synthVendor && c.label === synthLabel
+          (c) => c.vendor === synthVendor && (c.label || "") === synthLabel
         )
       );
     }
