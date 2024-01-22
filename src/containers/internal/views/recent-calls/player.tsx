@@ -14,7 +14,6 @@ import {
   JaegerSpan,
   WaveSurferDtmfResult,
   WaveSurferGatherSpeechVerbHookLatencyResult,
-  WaveSurferPlaybackLatencyResult,
   WaveSurferSttResult,
   WaveSurferTtsLatencyResult,
 } from "src/api/jaeger-types";
@@ -47,8 +46,6 @@ export const Player = ({ call }: PlayerProps) => {
 
   const [waveSurferTtsLatencyData, setWaveSurferTtsLatencyData] =
     useState<WaveSurferTtsLatencyResult | null>();
-  const [waveSurferPlaybackLatencyData, setWaveSurferPlaybackLatencyData] =
-    useState<WaveSurferPlaybackLatencyResult | null>();
 
   const [
     waveSurferGatherSpeechVerbHookLatencyData,
@@ -292,42 +289,6 @@ export const Player = ({ call }: PlayerProps) => {
     }
   };
 
-  const drawPlaybackLatencyRegion = (s: JaegerSpan, startPoint: JaegerSpan) => {
-    if (waveSurferRegionsPluginRef.current) {
-      const r = waveSurferRegionsPluginRef.current
-        .getRegions()
-        .find((r) => r.id === s.spanId);
-      if (!r) {
-        const start =
-          (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
-        const end =
-          (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
-
-        const tmpEnd = end - start < 0.05 ? start + 0.05 : end;
-
-        const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
-          id: s.spanId,
-          start: start,
-          end: tmpEnd,
-          color: "rgba(189, 69, 9, 0.55)",
-          drag: false,
-          resize: false,
-          content: createMultiLineTextElement(
-            `${(end - start).toFixed(2)} sec`
-          ),
-        });
-
-        changeRegionMouseStyle(latencyRegion, 1);
-
-        latencyRegion.on("click", () => {
-          setWaveSurferPlaybackLatencyData({
-            latency: `${(end - start).toFixed(2)} sec`,
-          });
-        });
-      }
-    }
-  };
-
   const drawVerbHookDelayRegion = (s: JaegerSpan, startPoint: JaegerSpan) => {
     if (waveSurferRegionsPluginRef.current) {
       const r = waveSurferRegionsPluginRef.current
@@ -410,11 +371,7 @@ export const Player = ({ call }: PlayerProps) => {
         ttsSpans.forEach((tts) => {
           drawTtsLatencyRegion(tts, startPoint);
         });
-        // TTS playback delay
-        const playbackSpans = getSpansByNameRegex(spans, /start-audio/);
-        playbackSpans.forEach((playback) => {
-          drawPlaybackLatencyRegion(playback, startPoint);
-        });
+
         // Gather verb hook delay
         const verbHookSpans = getSpansByNameRegex(spans, /verb:hook/);
         verbHookSpans
@@ -781,27 +738,6 @@ export const Player = ({ call }: PlayerProps) => {
                 </div>
                 <div className="spanDetailsWrapper__details_body">
                   {waveSurferTtsLatencyData.isCached}
-                </div>
-              </div>
-            </div>
-          </div>
-        </ModalClose>
-      )}
-      {waveSurferPlaybackLatencyData && (
-        <ModalClose handleClose={() => setWaveSurferPlaybackLatencyData(null)}>
-          <div className="spanDetailsWrapper__header">
-            <P>
-              <strong>Playback Latency</strong>
-            </P>
-          </div>
-          <div className="spanDetailsWrapper">
-            <div className="spanDetailsWrapper__detailsWrapper">
-              <div className="spanDetailsWrapper__details">
-                <div className="spanDetailsWrapper__details_header">
-                  <strong>Latency:</strong>
-                </div>
-                <div className="spanDetailsWrapper__details_body">
-                  {waveSurferPlaybackLatencyData.latency}
                 </div>
               </div>
             </div>
