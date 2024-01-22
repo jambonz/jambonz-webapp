@@ -264,7 +264,10 @@ export const Player = ({ call }: PlayerProps) => {
 
         const [ttsVendor] = getSpanAttributeByName(s.attributes, "tts.vendor");
         const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
-        if (ttsVendor && ttsCache && !Boolean(ttsCache.value.boolValue)) {
+        if (
+          ttsVendor &&
+          (!ttsCache || (ttsCache && !Boolean(ttsCache.value.boolValue)))
+        ) {
           const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
             id: s.spanId,
             start: start,
