@@ -309,7 +309,9 @@ export const Player = ({ call }: PlayerProps) => {
           color: "rgba(255, 3, 180, 0.55)",
           drag: false,
           resize: false,
-          content: `${(end - start).toFixed(2)} sec`,
+          content: createMultiLineTextElement(
+            `${(end - start).toFixed(2)} sec`
+          ),
         });
         const [statusCode] = getSpanAttributeByName(
           s.attributes,
@@ -325,6 +327,16 @@ export const Player = ({ call }: PlayerProps) => {
       }
     }
   };
+
+  function createMultiLineTextElement(text: string) {
+    const div = document.createElement("div");
+    div.style.paddingLeft = "10px";
+    div.style.paddingTop = "10px";
+    div.appendChild(document.createElement("br"));
+    div.appendChild(document.createTextNode(text));
+
+    return div;
+  }
 
   const buildWavesurferRegion = () => {
     if (jaegerRoot) {
@@ -359,6 +371,7 @@ export const Player = ({ call }: PlayerProps) => {
         ttsSpans.forEach((tts) => {
           drawTtsLatencyRegion(tts, startPoint);
         });
+
         // Gather verb hook delay
         const verbHookSpans = getSpansByNameRegex(spans, /verb:hook/);
         verbHookSpans
