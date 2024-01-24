@@ -279,7 +279,7 @@ export const Player = ({ call }: PlayerProps) => {
             color: "rgba(255, 155, 0, 0.55)",
             drag: false,
             resize: false,
-            content: `${(end - start).toFixed(2)}s`,
+            content: createMultiLineTextElement(`${(end - start).toFixed(2)}s`),
           });
 
           changeRegionMouseStyle(latencyRegion, 1);
@@ -336,7 +336,7 @@ export const Player = ({ call }: PlayerProps) => {
   function createMultiLineTextElement(text: string) {
     const div = document.createElement("div");
     div.style.paddingLeft = "10px";
-    div.style.paddingTop = "10px";
+    div.style.paddingTop = "15px";
     div.appendChild(document.createElement("br"));
     div.appendChild(document.createTextNode(text));
 
