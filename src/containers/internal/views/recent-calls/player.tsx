@@ -259,11 +259,18 @@ export const Player = ({ call }: PlayerProps) => {
       if (!r) {
         const start =
           (s.startTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
-        const end =
+        let end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
         const [ttsVendor] = getSpanAttributeByName(s.attributes, "tts.vendor");
         const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
+        const [streamLatency] = getSpanAttributeByName(
+          s.attributes,
+          "tts_time_to_first_byte_ms"
+        );
+        if (streamLatency && streamLatency.value.doubleValue) {
+          end = start + Number(streamLatency.value.doubleValue);
+        }
         if (ttsVendor && ttsCache && !Boolean(ttsCache.value.boolValue)) {
           const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
             id: s.spanId,
