@@ -268,8 +268,8 @@ export const Player = ({ call }: PlayerProps) => {
           s.attributes,
           "tts_time_to_first_byte_ms"
         );
-        if (streamLatency && streamLatency.value.doubleValue) {
-          end = start + Number(streamLatency.value.doubleValue);
+        if (streamLatency && streamLatency.value.stringValue) {
+          end = start + Number(streamLatency.value.stringValue) / 1_000;
         }
         if (ttsVendor && ttsCache && !Boolean(ttsCache.value.boolValue)) {
           const latencyRegion = waveSurferRegionsPluginRef.current.addRegion({
