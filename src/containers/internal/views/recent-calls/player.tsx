@@ -205,7 +205,7 @@ export const Player = ({ call }: PlayerProps) => {
               color: "rgba(255, 255, 0, 0.55)",
               drag: false,
               resize: false,
-              content: `${(end - endSpeechTime).toFixed(2)} sec`,
+              content: `${(end - endSpeechTime).toFixed(2)}s`,
             });
 
             changeRegionMouseStyle(latencyRegion, channel);
@@ -272,7 +272,7 @@ export const Player = ({ call }: PlayerProps) => {
             color: "rgba(255, 155, 0, 0.55)",
             drag: false,
             resize: false,
-            content: `${(end - start).toFixed(2)} sec`,
+            content: `${(end - start).toFixed(2)}s`,
           });
 
           changeRegionMouseStyle(latencyRegion, 1);
@@ -280,7 +280,7 @@ export const Player = ({ call }: PlayerProps) => {
           latencyRegion.on("click", () => {
             setWaveSurferTtsLatencyData({
               vendor: ttsVendor.value.stringValue,
-              latency: `${(end - start).toFixed(2)} sec`,
+              latency: `${(end - start).toFixed(2)}s`,
               isCached: String(ttsCache.value.boolValue),
             });
           });
@@ -309,9 +309,7 @@ export const Player = ({ call }: PlayerProps) => {
           color: "rgba(255, 3, 180, 0.55)",
           drag: false,
           resize: false,
-          content: createMultiLineTextElement(
-            `${(end - start).toFixed(2)} sec`
-          ),
+          content: createMultiLineTextElement(`${(end - start).toFixed(2)}s`),
         });
         const [statusCode] = getSpanAttributeByName(
           s.attributes,
@@ -321,7 +319,7 @@ export const Player = ({ call }: PlayerProps) => {
         latencyRegion.on("click", () => {
           setWaveSurferGatherSpeechVerbHookLatencyData({
             statusCode: statusCode ? Number(statusCode.value.doubleValue) : 404,
-            latency: `${(end - start).toFixed(2)} sec`,
+            latency: `${(end - start).toFixed(2)}s`,
           });
         });
       }
