@@ -266,7 +266,7 @@ export const Player = ({ call }: PlayerProps) => {
         const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
         const [streamLatency] = getSpanAttributeByName(
           s.attributes,
-          "tts_time_to_first_byte_ms"
+          "time_to_first_byte_ms"
         );
         if (streamLatency && streamLatency.value.stringValue) {
           end = start + Number(streamLatency.value.stringValue) / 1_000;
