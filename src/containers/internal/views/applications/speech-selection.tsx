@@ -196,7 +196,7 @@ export const SpeechProviderSelection = ({
           setSynthesisVoiceOptions(voicesOpts);
         }
         if (synthesisGoogleCustomVoiceOptions.length > 0) {
-          setSynthVoice(synthesisGoogleCustomVoiceOptions[0].value);
+          updateTtsVoice(synthesisGoogleCustomVoiceOptions[0].value);
         }
       } else {
         setSynthesisVoiceOptions(voicesOpts);
