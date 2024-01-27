@@ -297,9 +297,9 @@ export const SpeechProviderSelection = ({
           !newLang
         ) {
           setRecogLang(LANG_EN_US);
-        } else if (recogVendor === VENDOR_COBALT) {
+        } else if (recogVendor === VENDOR_COBALT && !newLang) {
           setRecogLang(LANG_COBALT_EN_US);
-        } else if (langOpts.length) {
+        } else if (langOpts.length && !newLang) {
           setRecogLang(langOpts[0].value);
         }
       })
