@@ -99,23 +99,26 @@ export const SpeechProviderSelection = ({
     SelectorOption[]
   >([]);
 
-  const currentVendor = useRef("");
+  const currentVendor = useRef(synthVendor);
+  const shouldUpdateTtsVoice = useRef(false);
+  const shouldUpdateSttLanguage = useRef(false);
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
   // Get Synthesis languages and voices
   useEffect(() => {
-    /** When Custom Vendor is used, user you have to input the lange and voice. */
-    if (synthVendor.toString().startsWith(VENDOR_CUSTOM)) {
-      setSynthVoice("");
-      return;
-    }
-    currentVendor.current = synthVendor;
     if (
       !user ||
+      !synthVendor ||
       (user?.scope === USER_ADMIN &&
         !currentServiceProvider?.service_provider_sid)
     ) {
+      return;
+    }
+    currentVendor.current = synthVendor;
+    /** When Custom Vendor is used, user you have to input the lange and voice. */
+    if (synthVendor.toString().startsWith(VENDOR_CUSTOM)) {
+      setSynthVoice("");
       return;
     }
     configSynthesis();
@@ -130,6 +133,7 @@ export const SpeechProviderSelection = ({
     }
     if (
       !user ||
+      !recogVendor ||
       (user?.scope === USER_ADMIN &&
         !currentServiceProvider?.service_provider_sid)
     ) {
@@ -220,20 +224,20 @@ export const SpeechProviderSelection = ({
 
           // Default setting
           if (synthVendor === VENDOR_GOOGLE && synthLang === LANG_EN_US) {
-            setSynthVoice(LANG_EN_US_STANDARD_C);
+            updateTtsVoice(LANG_EN_US_STANDARD_C);
             return;
           }
           if (synthVendor === VENDOR_ELEVENLABS) {
             // Samve Voices applied to all languages
             // Voices are only available for the 1st language.
             setSynthLang(ELEVENLABS_LANG_EN);
-            setSynthVoice(json.tts[0].voices[0].value);
+            updateTtsVoice(json.tts[0].voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_WHISPER) {
             const newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
             setSynthLang(LANG_EN_US);
-            setSynthVoice(newLang!.voices[0].value);
+            updateTtsVoice(newLang!.voices[0].value);
             return;
           }
           /** Google and AWS have different language lists */
@@ -241,19 +245,26 @@ export const SpeechProviderSelection = ({
           let newLang = json.tts.find((lang) => lang.value === synthLang);
 
           if (newLang) {
-            setSynthVoice(newLang.voices[0].value);
+            updateTtsVoice(newLang.voices[0].value);
             return;
           }
 
           newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
 
           setSynthLang(LANG_EN_US);
-          setSynthVoice(newLang!.voices[0].value);
+          updateTtsVoice(newLang!.voices[0].value);
         }
       })
       .catch((error) => {
         toastError(error.msg);
       });
+  };
+
+  const updateTtsVoice = (value: string) => {
+    if (shouldUpdateTtsVoice.current) {
+      setSynthVoice(value);
+      shouldUpdateTtsVoice.current = false;
+    }
   };
 
   const configRecognizer = () => {
@@ -271,8 +282,12 @@ export const SpeechProviderSelection = ({
         setRecogLanguageOptions(langOpts);
 
         /**When vendor is custom, Language is input by user */
-        if (recogVendor.toString() === VENDOR_CUSTOM) return;
-
+        if (
+          recogVendor.toString() === VENDOR_CUSTOM ||
+          !shouldUpdateSttLanguage.current
+        )
+          return;
+        shouldUpdateSttLanguage.current = false;
         /** Google and AWS have different language lists */
         /** If the new language doesn't map then default to "en-US" */
         const newLang = json.stt.find((lang) => lang.value === recogLang);
@@ -282,10 +297,10 @@ export const SpeechProviderSelection = ({
           !newLang
         ) {
           setRecogLang(LANG_EN_US);
-        }
-        // Default colbalt language
-        if (recogVendor === VENDOR_COBALT) {
+        } else if (recogVendor === VENDOR_COBALT) {
           setRecogLang(LANG_COBALT_EN_US);
+        } else if (langOpts.length) {
+          setRecogLang(langOpts[0].value);
         }
       })
       .catch((error) => {
@@ -309,6 +324,7 @@ export const SpeechProviderSelection = ({
           )}
           onChange={(e) => {
             const vendor = e.target.value as keyof SynthesisVendors;
+            shouldUpdateTtsVoice.current = true;
             setSynthVendor(vendor);
             setSynthLabel("");
             setSynthesisLanguageOptions([]);
@@ -353,6 +369,7 @@ export const SpeechProviderSelection = ({
                 value={synthLang}
                 options={synthesisLanguageOptions}
                 onChange={(e) => {
+                  shouldUpdateTtsVoice.current = true;
                   const language = e.target.value;
                   setSynthLang(language);
 
@@ -456,6 +473,7 @@ export const SpeechProviderSelection = ({
           )}
           onChange={(e) => {
             const vendor = e.target.value as keyof RecognizerVendors;
+            shouldUpdateSttLanguage.current = true;
             setRecogVendor(vendor);
             setRecogLabel("");
 
