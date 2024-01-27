@@ -102,6 +102,8 @@ export const SpeechProviderSelection = ({
   const currentVendor = useRef(synthVendor);
   const shouldUpdateTtsVoice = useRef(false);
   const shouldUpdateSttLanguage = useRef(false);
+  const ttsEffectTimer = useRef<number | null>(null);
+  const sttEffectTimer = useRef<number | null>(null);
 
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
@@ -121,7 +123,14 @@ export const SpeechProviderSelection = ({
       setSynthVoice("");
       return;
     }
-    configSynthesis();
+    // just execute last change
+    if (ttsEffectTimer.current) {
+      clearTimeout(ttsEffectTimer.current);
+    }
+
+    ttsEffectTimer.current = setTimeout(() => {
+      configSynthesis();
+    }, 200);
   }, [synthVendor, synthLabel, currentServiceProvider]);
 
   // Get Recognizer languages and voices
@@ -139,7 +148,14 @@ export const SpeechProviderSelection = ({
     ) {
       return;
     }
-    configRecognizer();
+    // just execute last change
+    if (sttEffectTimer.current) {
+      clearTimeout(sttEffectTimer.current);
+    }
+
+    sttEffectTimer.current = setTimeout(() => {
+      configRecognizer();
+    }, 200);
   }, [recogVendor, recogLabel, currentServiceProvider]);
 
   useEffect(() => {
