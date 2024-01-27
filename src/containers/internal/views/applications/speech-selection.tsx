@@ -99,25 +99,23 @@ export const SpeechProviderSelection = ({
     SelectorOption[]
   >([]);
 
-  const currentVendor = useRef(synthVendor);
+  const currentTtsVendor = useRef(synthVendor);
+  const currentSttVendor = useRef(recogVendor);
   const shouldUpdateTtsVoice = useRef(false);
   const shouldUpdateSttLanguage = useRef(false);
   const ttsEffectTimer = useRef<number | null>(null);
   const sttEffectTimer = useRef<number | null>(null);
-
-  const currentServiceProvider = useSelectState("currentServiceProvider");
 
   // Get Synthesis languages and voices
   useEffect(() => {
     if (
       !user ||
       !synthVendor ||
-      (user?.scope === USER_ADMIN &&
-        !currentServiceProvider?.service_provider_sid)
+      (user?.scope === USER_ADMIN && !serviceProviderSid)
     ) {
       return;
     }
-    currentVendor.current = synthVendor;
+    currentTtsVendor.current = synthVendor;
     /** When Custom Vendor is used, user you have to input the lange and voice. */
     if (synthVendor.toString().startsWith(VENDOR_CUSTOM)) {
       setSynthVoice("");
@@ -131,7 +129,7 @@ export const SpeechProviderSelection = ({
     ttsEffectTimer.current = setTimeout(() => {
       configSynthesis();
     }, 200);
-  }, [synthVendor, synthLabel, currentServiceProvider]);
+  }, [synthVendor, synthLabel, serviceProviderSid]);
 
   // Get Recognizer languages and voices
   useEffect(() => {
@@ -143,11 +141,11 @@ export const SpeechProviderSelection = ({
     if (
       !user ||
       !recogVendor ||
-      (user?.scope === USER_ADMIN &&
-        !currentServiceProvider?.service_provider_sid)
+      (user?.scope === USER_ADMIN && !serviceProviderSid)
     ) {
       return;
     }
+    currentSttVendor.current = recogVendor;
     // just execute last change
     if (sttEffectTimer.current) {
       clearTimeout(sttEffectTimer.current);
@@ -156,7 +154,7 @@ export const SpeechProviderSelection = ({
     sttEffectTimer.current = setTimeout(() => {
       configRecognizer();
     }, 200);
-  }, [recogVendor, recogLabel, currentServiceProvider]);
+  }, [recogVendor, recogLabel, serviceProviderSid]);
 
   useEffect(() => {
     if (credentials) {
@@ -187,39 +185,40 @@ export const SpeechProviderSelection = ({
           }
           return lang.value === synthLang;
         })?.voices || [];
-      setSynthesisVoiceOptions(voicesOpts);
 
-      if (synthVendor === VENDOR_GOOGLE) {
-        getGoogleCustomVoices({
-          ...(synthLabel && { label: synthLabel }),
-          account_sid: accountSid,
-          service_provider_sid: serviceProviderSid,
-        }).then(({ json }) => {
-          // If after successfully fetching data, vendor is still good, then apply value
-          if (currentVendor.current !== VENDOR_GOOGLE) {
-            return;
-          }
-          const customVOices = json.map((v) => ({
-            name: `${v.name} (Custom)`,
-            value: `custom_${v.google_custom_voice_sid}`,
-          }));
-          setSynthesisGoogleCustomVoiceOptions(customVOices);
-          setSynthesisVoiceOptions([...customVOices, ...voicesOpts]);
-          if (customVOices.length > 0) {
-            setSynthVoice(customVOices[0].value);
-          }
-        });
+      if (synthVendor === VENDOR_GOOGLE && synthesisGoogleCustomVoiceOptions) {
+        if (synthesisGoogleCustomVoiceOptions) {
+          setSynthesisVoiceOptions([
+            ...synthesisGoogleCustomVoiceOptions,
+            ...voicesOpts,
+          ]);
+        } else {
+          setSynthesisVoiceOptions(voicesOpts);
+        }
+        if (synthesisGoogleCustomVoiceOptions.length > 0) {
+          setSynthVoice(synthesisGoogleCustomVoiceOptions[0].value);
+        }
+      } else {
+        setSynthesisVoiceOptions(voicesOpts);
       }
     }
-  }, [synthLang, synthesisSupportedLanguagesAndVoices]);
+  }, [
+    synthLang,
+    synthesisSupportedLanguagesAndVoices,
+    synthesisGoogleCustomVoiceOptions,
+  ]);
 
   const configSynthesis = () => {
     getSpeechSupportedLanguagesAndVoices(
-      currentServiceProvider?.service_provider_sid,
+      serviceProviderSid,
       synthVendor,
       synthLabel
     )
       .then(({ json }) => {
+        // while fetching data, user might change the vendor
+        if (currentTtsVendor.current !== synthVendor) {
+          return;
+        }
         setSynthesisSupportedLanguagesAndVoices(json);
         // Extract model
         if (json.models && json.models.length) {
@@ -239,7 +238,13 @@ export const SpeechProviderSelection = ({
           setSynthesisLanguageOptions(langOpts);
 
           // Default setting
-          if (synthVendor === VENDOR_GOOGLE && synthLang === LANG_EN_US) {
+          const googleLang = json.tts.find((lang) => lang.value === synthLang);
+          if (
+            synthVendor === VENDOR_GOOGLE &&
+            (!googleLang ||
+              !googleLang.voices.find((v) => v.value === synthVoice))
+          ) {
+            setSynthLang(LANG_EN_US);
             updateTtsVoice(LANG_EN_US_STANDARD_C);
             return;
           }
@@ -274,6 +279,24 @@ export const SpeechProviderSelection = ({
       .catch((error) => {
         toastError(error.msg);
       });
+
+    if (synthVendor === VENDOR_GOOGLE) {
+      getGoogleCustomVoices({
+        ...(synthLabel && { label: synthLabel }),
+        account_sid: accountSid,
+        service_provider_sid: serviceProviderSid,
+      }).then(({ json }) => {
+        // If after successfully fetching data, vendor is still good, then apply value
+        if (currentTtsVendor.current !== VENDOR_GOOGLE) {
+          return;
+        }
+        const customVOices = json.map((v) => ({
+          name: `${v.name} (Custom)`,
+          value: `custom_${v.google_custom_voice_sid}`,
+        }));
+        setSynthesisGoogleCustomVoiceOptions(customVOices);
+      });
+    }
   };
 
   const updateTtsVoice = (value: string) => {
@@ -285,11 +308,15 @@ export const SpeechProviderSelection = ({
 
   const configRecognizer = () => {
     getSpeechSupportedLanguagesAndVoices(
-      currentServiceProvider?.service_provider_sid,
+      serviceProviderSid,
       recogVendor,
       recogLabel
     )
       .then(({ json }) => {
+        // while fetching data, the user might change the vendor
+        if (currentSttVendor.current !== recogVendor) {
+          return;
+        }
         // Extract Language
         const langOpts = json.stt.map((lang) => ({
           name: lang.name,
