@@ -144,6 +144,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
+  const [useStreaming, setUseStreaming] = useState(false);
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -291,6 +292,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_ELEVENLABS && {
           options: options || null,
+        }),
+        ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && {
+          use_streaming: useStreaming ? 1 : 0,
         }),
       };
 
@@ -535,6 +539,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setOptions(credential.data.options);
       setOptionsInitialChecked(true);
     }
+    if (credential?.data?.use_streaming) {
+      setUseStreaming(credential.data.use_streaming > 0 ? true : false);
+    }
     if (credential?.data?.vendor === VENDOR_GOOGLE) {
       // let try to check if there is custom voices
       getGoogleCustomVoices({
@@ -747,6 +754,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 </Checkzone>
               </Fragment>
             )}
+          </fieldset>
+        )}
+        {(vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && (
+          <fieldset>
+            <label htmlFor="streaming_mode" className="chk">
+              <input
+                id="streaming_mode"
+                name="streaming_mode"
+                type="checkbox"
+                onChange={(e) => setUseStreaming(e.target.checked)}
+                defaultChecked={useStreaming}
+              />
+              <div>Use Streaming</div>
+            </label>
           </fieldset>
         )}
         {vendor === VENDOR_COBALT && (
