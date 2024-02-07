@@ -48,6 +48,7 @@ import {
   isUserAccountScope,
   isNotBlank,
   hasLength,
+  hasValue,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
@@ -145,6 +146,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
   const [useStreaming, setUseStreaming] = useState(false);
+  const [deepgramUri, setDeepgramUri] = useState("");
+  const [tmpDeepgramUri, setTmpDeepgramUri] = useState("");
+  const [deepgramUseTls, setDeepgramUseTls] = useState(false);
+  const [tmpDeepgramUseTls, setTmpDeepgramUseTls] = useState(false);
+  const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
+    useState(false);
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -293,8 +300,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_ELEVENLABS && {
           options: options || null,
         }),
-        ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && {
-          use_streaming: useStreaming ? 1 : 0,
+        ...((vendor === VENDOR_ELEVENLABS /* || vendor === VENDOR_WHISPER */) && {
+          use_streaming: useStreaming ? 1 : 0
+        }),
+        ...(vendor === VENDOR_DEEPGRAM && {
+          deepgram_uri: deepgramUri || null,
+          deepgram_use_tls: deepgramUseTls ? 1 : 0,
         }),
       };
 
@@ -551,6 +562,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setUseCustomVoicesCheck(json.length > 0);
       });
     }
+    if (credential?.data?.deepgram_uri) {
+      setDeepgramUri(credential.data.deepgram_uri);
+    }
+    if (credential?.data?.deepgram_use_tls) {
+      setDeepgramUseTls(credential?.data?.deepgram_use_tls > 0 ? true : false);
+    }
+    setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_uri));
   }, [credential]);
 
   const updateCustomVoices = (
@@ -1345,6 +1363,55 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
+        {vendor === VENDOR_DEEPGRAM && (
+          <fieldset>
+            <Checkzone
+              hidden
+              name="use_hosted_deepgram_service"
+              label="Use hosted Deepgram service"
+              initialCheck={initialDeepgramOnpremCheck}
+              handleChecked={(e) => {
+                // setInitialDeepgramOnpremCheck(!e.target.checked);
+                if (e.target.checked) {
+                  if (tmpDeepgramUri) {
+                    setDeepgramUri(tmpDeepgramUri);
+                  }
+                  if (tmpDeepgramUseTls) {
+                    setDeepgramUseTls(tmpDeepgramUseTls);
+                  }
+                } else {
+                  setTmpDeepgramUri(deepgramUri);
+                  setDeepgramUri("");
+                  setTmpDeepgramUseTls(deepgramUseTls);
+                  setDeepgramUseTls(false);
+                }
+              }}
+            >
+              <label htmlFor="deepgram_uri_for_tts">
+                Container URI<span>*</span>
+              </label>
+              <input
+                id="deepgram_uri_for_tts"
+                required
+                type="text"
+                name="deepgram_uri_for_tts"
+                placeholder="Container URI for TTS"
+                value={deepgramUri}
+                onChange={(e) => setDeepgramUri(e.target.value)}
+              />
+              <label htmlFor="deepgram_tts_use_tls" className="chk">
+                <input
+                  id="deepgram_tts_use_tls"
+                  name="deepgram_tts_use_tls"
+                  type="checkbox"
+                  onChange={(e) => setDeepgramUseTls(e.target.checked)}
+                  defaultChecked={deepgramUseTls}
+                />
+                <div>Use TLS</div>
+              </label>
+            </Checkzone>
+          </fieldset>
+        )}
         {vendor === VENDOR_MICROSOFT && (
           <React.Fragment>
             <fieldset>
