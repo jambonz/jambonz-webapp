@@ -304,8 +304,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           use_streaming: useStreaming ? 1 : 0
         }),
         ...(vendor === VENDOR_DEEPGRAM && {
-          deepgram_uri: deepgramUri || null,
-          deepgram_use_tls: deepgramUseTls ? 1 : 0,
+          deepgram_stt_uri: deepgramUri || null,
+          deepgram_stt_use_tls: deepgramUseTls ? 1 : 0,
         }),
       };
 
@@ -562,13 +562,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setUseCustomVoicesCheck(json.length > 0);
       });
     }
-    if (credential?.data?.deepgram_uri) {
-      setDeepgramUri(credential.data.deepgram_uri);
+    if (credential?.data?.deepgram_stt_uri) {
+      setDeepgramUri(credential.data.deepgram_stt_uri);
     }
-    if (credential?.data?.deepgram_use_tls) {
-      setDeepgramUseTls(credential?.data?.deepgram_use_tls > 0 ? true : false);
+    if (credential?.data?.deepgram_stt_use_tls) {
+      setDeepgramUseTls(
+        credential?.data?.deepgram_stt_use_tls > 0 ? true : false
+      );
     }
-    setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_uri));
+    setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_stt_uri));
   }, [credential]);
 
   const updateCustomVoices = (
