@@ -11,6 +11,7 @@ type CheckzoneProps = {
   hidden?: boolean;
   children: React.ReactNode;
   initialCheck: boolean;
+  disabled?: boolean;
   handleChecked?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -28,6 +29,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
       children,
       initialCheck,
       handleChecked,
+      disabled = false,
     }: CheckzoneProps,
     ref
   ) => {
@@ -51,6 +53,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
         <label>
           <div className="label-container">
             <input
+              disabled={disabled}
               ref={ref}
               type="checkbox"
               name={name}
