@@ -419,6 +419,7 @@ export interface SpeechCredential {
   model_id: null | string;
   model: null | string;
   options: null | string;
+  use_streaming: number;
 }
 
 export interface Alert {
