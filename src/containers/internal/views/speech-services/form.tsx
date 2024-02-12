@@ -301,8 +301,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_ELEVENLABS && {
           options: options || null,
         }),
-        ...((vendor === VENDOR_ELEVENLABS /* || vendor === VENDOR_WHISPER */) && {
-          use_streaming: useStreaming ? 1 : 0
+        ...(vendor === VENDOR_ELEVENLABS && {
+          use_streaming: useStreaming ? 1 : 0,
         }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
