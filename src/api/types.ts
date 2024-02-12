@@ -420,6 +420,8 @@ export interface SpeechCredential {
   model: null | string;
   options: null | string;
   use_streaming: number;
+  deepgram_stt_uri: null | string;
+  deepgram_stt_use_tls: number;
 }
 
 export interface Alert {
