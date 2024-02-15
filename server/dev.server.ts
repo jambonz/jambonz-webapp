@@ -58,7 +58,7 @@ app.get(
     const query: CallQuery = {
       ...req.query,
       page: Number(req.query.page),
-      count: Number(req.query.count),
+      limit: Number(req.query.limit),
     };
 
     let filtered = data;
@@ -98,16 +98,16 @@ app.get(
 
     console.log("RecentCalls: filtered", filtered.length);
 
-    const begin = (query.page - 1) * query.count;
-    const end = begin + query.count;
+    const begin = (query.page - 1) * query.limit;
+    const end = begin + query.limit;
     const paged = filtered.slice(begin, end);
 
     console.log("RecentCalls: paged", paged.length);
     console.log("---");
 
     res.status(200).json(<PagedResponse<RecentCall>>{
-      page_size: query.count,
-      total: filtered.length,
+      page_size: query.limit,
+      total_items: filtered.length,
       page: query.page,
       data: paged,
     });
@@ -223,7 +223,7 @@ app.get("/api/Accounts/:account_sid/Alerts", (req: Request, res: Response) => {
   const query: PageQuery = {
     ...req.query,
     page: Number(req.query.page),
-    count: Number(req.query.count),
+    limit: Number(req.query.limit),
   };
 
   let filtered = data;
@@ -247,16 +247,16 @@ app.get("/api/Accounts/:account_sid/Alerts", (req: Request, res: Response) => {
 
   console.log("Alerts: filtered", filtered.length);
 
-  const begin = (query.page - 1) * query.count;
-  const end = begin + query.count;
+  const begin = (query.page - 1) * query.limit;
+  const end = begin + query.limit;
   const paged = filtered.slice(begin, end);
 
   console.log("Alerts: paged", paged.length);
   console.log("---");
 
   res.status(200).json(<PagedResponse<Alert>>{
-    page_size: query.count,
-    total: filtered.length,
+    page_size: query.limit,
+    total_items: filtered.length,
     page: query.page,
     data: paged,
   });

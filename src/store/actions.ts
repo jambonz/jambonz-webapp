@@ -1,10 +1,15 @@
-import { getLcrs, getServiceProviders } from "src/api";
+import {
+  getLcrs,
+  getServiceProviders,
+  listServiceProvidersPaginated,
+} from "src/api";
 import { sortLocaleName } from "src/utils";
 import { getToken, parseJwt } from "src/router/auth";
 
 import type { State, Action, UserData } from "./types";
 import { Scope } from "./types";
 import { Lcr, ServiceProvider } from "src/api/types";
+import { PAGINATION } from "src/api/constants";
 
 /** A generic action assumes action.type is ALWAYS our state key */
 /** Since this is how we're designing our state interface we cool */
@@ -73,6 +78,15 @@ export const userAsyncAction = async (): Promise<UserData> => {
 export const serviceProvidersAsyncAction = async (): Promise<
   ServiceProvider[]
 > => {
+  if (PAGINATION) {
+    const query = {
+      limit: 25,
+      page: 1,
+    };
+    const response = await listServiceProvidersPaginated(query);
+    return response.json.data;
+  }
+
   const response = await getServiceProviders();
   return response.json;
 };

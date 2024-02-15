@@ -9,11 +9,12 @@ import { ScopedAccess } from "src/components/scoped-access";
 import type { ServiceProvider } from "src/api/types";
 import { Section } from "src/components";
 
-import { USER_ACCOUNT, USER_ADMIN } from "src/api/constants";
+import { USER_ACCOUNT, USER_ADMIN, PAGINATION } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { useSelectState } from "src/store";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
+import { ApiKeysPaginated } from "../../api-keys/paginated";
 
 type SettingsProps = {
   currentServiceProvider: ServiceProvider;
@@ -57,7 +58,20 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
       </Section>
 
       {currentServiceProvider &&
-        (activeTab === "serviceProvider" || user?.scope !== USER_ACCOUNT) && (
+        (activeTab === "serviceProvider" || user?.scope !== USER_ACCOUNT) &&
+        PAGINATION && (
+          <ApiKeysPaginated
+            key={currentServiceProvider.service_provider_sid}
+            path={`ServiceProviders/${currentServiceProvider.service_provider_sid}/ApiKeys`}
+            post={{
+              service_provider_sid: currentServiceProvider.service_provider_sid,
+            }}
+            label="Service provider"
+          />
+        )}
+      {currentServiceProvider &&
+        (activeTab === "serviceProvider" || user?.scope !== USER_ACCOUNT) &&
+        !PAGINATION && (
           <ApiKeys
             key={currentServiceProvider.service_provider_sid}
             path={`ServiceProviders/${currentServiceProvider.service_provider_sid}/ApiKeys`}

@@ -60,7 +60,7 @@ export const RecentCalls = () => {
   const handleFilterChange = () => {
     const payload: Partial<CallQuery> = {
       page: pageNumber,
-      count: Number(perPageFilter),
+      limit: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
         : { days: Number(dateFilter) }),
@@ -72,8 +72,8 @@ export const RecentCalls = () => {
     getRecentCalls(accountSid, payload)
       .then(({ json }) => {
         setCalls(json.data);
-        setCallsTotal(json.total);
-        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+        setCallsTotal(json.total_items);
+        setMaxPageNumber(Math.ceil(json.total_items / Number(perPageFilter)));
       })
       .catch((error) => {
         toastError(error.msg);

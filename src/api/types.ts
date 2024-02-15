@@ -70,6 +70,14 @@ export interface UseApiData {
   ];
 }
 
+export interface UseApiDataPaginated {
+  <Type>(apiPath: string, query: Partial<CallQuery>): [
+    Type | undefined,
+    () => void,
+    FetchError | undefined
+  ];
+}
+
 /** API related interfaces */
 
 export interface UseApiDataMap<Type> {
@@ -535,7 +543,7 @@ export interface Client {
 
 export interface PageQuery {
   page: number;
-  count: number;
+  limit: number;
   start?: string;
   days?: number;
 }
@@ -553,8 +561,8 @@ export interface GoogleCustomVoicesQuery {
 }
 
 export interface PagedResponse<Type> {
-  page_size: number;
-  total: number;
+  total_items: number;
+  total_pages: number;
   page: number;
   data: Type[];
 }
