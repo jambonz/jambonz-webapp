@@ -40,6 +40,7 @@ import {
   PlanType,
   USER_ACCOUNT,
   WEBHOOK_METHODS,
+  STRIPE_PUBLISHABLE_KEY,
 } from "src/api/constants";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 
@@ -85,7 +86,10 @@ export const AccountForm = ({
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useApiData<Account[]>("Accounts");
-  const [invoice] = useApiData<Invoice>("Invoices");
+  // Dont get Invoices if the environment is self-hosted
+  const [invoice] = STRIPE_PUBLISHABLE_KEY
+    ? useApiData<Invoice>("Invoices")
+    : [undefined];
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [userCarriers] = useApiData<Carrier[]>(`VoipCarriers`);
   const [userSpeechs] = useApiData<SpeechCredential[]>(
