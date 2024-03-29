@@ -16,7 +16,6 @@ import {
   LANG_EN_US,
   VENDOR_GOOGLE,
   LANG_EN_US_STANDARD_C,
-  useSpeechVendors,
   VENDOR_CUSTOM,
 } from "src/vendor";
 import {
@@ -61,7 +60,6 @@ type ApplicationFormProps = {
 
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const navigate = useNavigate();
-  const { synthesis, recognizers } = useSpeechVendors();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -389,6 +387,53 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   }, [accountSid]);
 
   useEffect(() => {
+    let label: string;
+    // Synthesis Label
+    label = application?.data?.speech_synthesis_label || "";
+    if (ttsLabelOptions && !ttsLabelOptions.find((l) => l.value === label)) {
+      label = ttsLabelOptions.length ? ttsLabelOptions[0].value : "";
+    }
+    setSynthLabel(label);
+
+    // fallback Synthesis Label
+    label = application?.data?.fallback_speech_synthesis_label || "";
+    if (
+      fallbackTtsLabelOptions &&
+      !fallbackTtsLabelOptions.find((l) => l.value === label)
+    ) {
+      label = fallbackTtsLabelOptions.length
+        ? fallbackTtsLabelOptions[0].value
+        : "";
+    }
+    setFallbackSpeechSynthsisLabel(label);
+
+    // regconizer label
+    label = application?.data?.speech_recognizer_label || "";
+    if (sttLabelOptions && !sttLabelOptions.find((l) => l.value === label)) {
+      label = sttLabelOptions.length ? sttLabelOptions[0].value : "";
+    }
+    setRecogLabel(label);
+
+    // fallback regconizer label
+    label = application?.data?.fallback_speech_recognizer_label || "";
+    if (
+      fallbackSttLabelOptions &&
+      !fallbackSttLabelOptions.find((l) => l.value === label)
+    ) {
+      label = fallbackSttLabelOptions.length
+        ? fallbackSttLabelOptions[0].value
+        : "";
+    }
+    setFallbackSpeechRecognizerLabel(label);
+  }, [
+    ttsLabelOptions,
+    sttLabelOptions,
+    fallbackTtsLabelOptions,
+    fallbackSttLabelOptions,
+    application,
+  ]);
+
+  useEffect(() => {
     setLocation();
     if (application && application.data) {
       setApplicationName(application.data.name);
@@ -464,12 +509,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.speech_recognizer_language)
         setRecogLang(application.data.speech_recognizer_language);
-      if (application.data.speech_synthesis_label) {
-        setSynthLabel(application.data.speech_synthesis_label);
-      }
-      if (application.data.speech_recognizer_label) {
-        setRecogLabel(application.data.speech_recognizer_label);
-      }
+
       if (application.data.use_for_fallback_speech) {
         setUseForFallbackSpeech(application.data.use_for_fallback_speech > 0);
         setInitalCheckFallbackSpeech(
@@ -487,11 +527,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           application.data.fallback_speech_recognizer_language
         );
       }
-      if (application.data.fallback_speech_recognizer_label) {
-        setFallbackSpeechRecognizerLabel(
-          application.data.fallback_speech_recognizer_label
-        );
-      }
+
       if (application.data.fallback_speech_synthesis_vendor) {
         setFallbackSpeechSynthsisVendor(
           application.data
@@ -506,11 +542,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       if (application.data.fallback_speech_synthesis_voice) {
         setFallbackSpeechSynthsisVoice(
           application.data.fallback_speech_synthesis_voice
-        );
-      }
-      if (application.data.fallback_speech_synthesis_label) {
-        setFallbackSpeechSynthsisLabel(
-          application.data.fallback_speech_synthesis_label
         );
       }
     }
@@ -685,14 +716,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           }
           accountSid={accountSid}
           credentials={credentials}
-          synthesis={synthesis}
           ttsVendor={[synthVendor, setSynthVendor]}
           ttsVendorOptions={ttsVendorOptions}
           ttsVoice={[synthVoice, setSynthVoice]}
           ttsLang={[synthLang, setSynthLang]}
           ttsLabelOptions={ttsLabelOptions}
           ttsLabel={[synthLabel, setSynthLabel]}
-          recognizers={recognizers}
           sttVendor={[recogVendor, setRecogVendor]}
           sttVendorOptions={sttVendorOptions}
           sttLang={[recogLang, setRecogLang]}
@@ -716,7 +745,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               }
               accountSid={accountSid}
               credentials={credentials}
-              synthesis={synthesis}
               ttsVendor={[
                 fallbackSpeechSynthsisVendor,
                 setFallbackSpeechSynthsisVendor,
@@ -735,7 +763,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 fallbackSpeechSynthsisLabel,
                 setFallbackSpeechSynthsisLabel,
               ]}
-              recognizers={recognizers}
               sttVendor={[
                 fallbackSpeechRecognizerVendor,
                 setFallbackSpeechRecognizerVendor,

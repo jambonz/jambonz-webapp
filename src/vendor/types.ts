@@ -42,7 +42,7 @@ export interface Voice {
 
 export interface Language {
   name: string;
-  code: string;
+  value: string;
   codeMix?: string;
 }
 
@@ -73,6 +73,7 @@ export interface RegionVendors {
 export interface TtsModels {
   elevenlabs: Model[];
   whisper: Model[];
+  deepgram: Model[];
 }
 
 export interface RecognizerVendors {
@@ -98,6 +99,7 @@ export interface SynthesisVendors {
   nvidia: VoiceLanguage[];
   elevenlabs: VoiceLanguage[];
   whisper: VoiceLanguage[];
+  deepgram: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

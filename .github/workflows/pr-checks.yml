@@ -12,18 +12,18 @@ jobs:
   pr-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache node_modules
         id: node-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Cache cypress binary
         id: cypress-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/.cache/Cypress
           key: cypress-${{ hashFiles('package-lock.json') }}

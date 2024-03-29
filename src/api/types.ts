@@ -1,4 +1,4 @@
-import type { Vendor } from "src/vendor/types";
+import type { Language, Model, Vendor, VoiceLanguage } from "src/vendor/types";
 
 /** Simple types */
 
@@ -262,6 +262,7 @@ export interface Account {
   plan_type?: string;
   device_to_call_ratio?: number;
   trial_end_date?: null | string;
+  is_active: boolean;
 }
 
 export interface Product {
@@ -418,6 +419,8 @@ export interface SpeechCredential {
   model_id: null | string;
   model: null | string;
   options: null | string;
+  deepgram_stt_uri: null | string;
+  deepgram_stt_use_tls: number;
 }
 
 export interface Alert {
@@ -698,21 +701,15 @@ export interface SignIn {
   account_sid?: null | string;
 }
 
-export interface GetVoices {
+export interface GetLanguagesAndVoices {
   vendor: string;
   label: string;
 }
 
-export interface VoiceOption extends SelectorOptions {
-  [key: string]: unknown;
-}
-
-export interface GetLanguages extends GetVoices {
-  [key: string]: unknown;
-}
-
-export interface LanguageOption extends SelectorOptions {
-  [key: string]: unknown;
+export interface SpeechSupportedLanguagesAndVoices {
+  tts: VoiceLanguage[];
+  stt: Language[];
+  models: Model[];
 }
 
 export interface ElevenLabsOptions {

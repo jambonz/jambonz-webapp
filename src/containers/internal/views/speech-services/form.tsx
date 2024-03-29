@@ -16,6 +16,7 @@ import { toastError, toastSuccess, useSelectState } from "src/store";
 import {
   deleteGoogleCustomVoice,
   getGoogleCustomVoices,
+  getSpeechSupportedLanguagesAndVoices,
   postGoogleCustomVoice,
   postSpeechService,
   putGoogleCustomVoice,
@@ -39,7 +40,6 @@ import {
   VENDOR_ELEVENLABS,
   VENDOR_ASSEMBLYAI,
   VENDOR_WHISPER,
-  useTtsModels,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -48,6 +48,7 @@ import {
   isUserAccountScope,
   isNotBlank,
   hasLength,
+  hasValue,
 } from "src/utils";
 import { getObscuredGoogleServiceKey } from "./utils";
 import { CredentialStatus } from "./status";
@@ -56,7 +57,7 @@ import type {
   RegionVendors,
   GoogleServiceKey,
   Vendor,
-  TtsModels,
+  Model,
 } from "src/vendor/types";
 import type {
   Account,
@@ -140,10 +141,17 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [useCustomVoicesCheck, setUseCustomVoicesCheck] = useState(false);
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
-  const ttsModels = useTtsModels();
+  const [ttsModels, setTtsModels] = useState<Model[]>([]);
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
+  const [deepgramSttUri, setDeepgramSttUri] = useState("");
+  const [tmpDeepgramSttUri, setTmpDeepgramSttUri] = useState("");
+  const [deepgramSttUseTls, setDeepgramSttUseTls] = useState(false);
+  const [tmpDeepgramSttUseTls, setTmpDeepgramSttUseTls] = useState(false);
+  const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
+    useState(false);
+  const [isDeepgramOnpremEnabled, setIsDeepgramOnpremEnabled] = useState(false);
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -292,6 +300,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_ELEVENLABS && {
           options: options || null,
         }),
+        ...(vendor === VENDOR_DEEPGRAM && {
+          deepgram_stt_uri: deepgramSttUri || null,
+          deepgram_stt_use_tls: deepgramSttUseTls ? 1 : 0,
+        }),
       };
 
       if (credential && credential.data) {
@@ -365,6 +377,28 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) {
+      getSpeechSupportedLanguagesAndVoices(
+        currentServiceProvider?.service_provider_sid,
+        vendor,
+        ""
+      ).then(({ json }) => {
+        if (json.models) {
+          setTtsModels(json.models);
+          if (
+            json.models.length > 0 &&
+            (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER)
+          ) {
+            setTtsModelId(json.models[0].value);
+          }
+        }
+      });
+    } else {
+      setTtsModels([]);
+    }
+  }, [vendor]);
 
   useEffect(() => {
     setLocation();
@@ -522,6 +556,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setUseCustomVoicesCheck(json.length > 0);
       });
     }
+    if (credential?.data?.deepgram_stt_uri) {
+      setDeepgramSttUri(credential.data.deepgram_stt_uri);
+    }
+    if (credential?.data?.deepgram_stt_use_tls) {
+      setDeepgramSttUseTls(
+        credential?.data?.deepgram_stt_use_tls > 0 ? true : false
+      );
+    }
+    setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_stt_uri));
+    setIsDeepgramOnpremEnabled(hasValue(credential?.data?.deepgram_stt_uri));
   }, [credential]);
 
   const updateCustomVoices = (
@@ -581,15 +625,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setRegion("");
               setApiKey("");
               setGoogleServiceKey(null);
-              if (
-                ttsModels &&
-                (e.target.value === VENDOR_ELEVENLABS ||
-                  e.target.value === VENDOR_WHISPER)
-              ) {
-                setTtsModelId(
-                  ttsModels[e.target.value as keyof TtsModels][0].value
-                );
-              }
             }}
             disabled={credential ? true : false}
             required
@@ -639,8 +674,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         </fieldset>
         {vendor && (
           <fieldset>
-            {vendor !== VENDOR_DEEPGRAM &&
-              vendor !== VENDOR_ASSEMBLYAI &&
+            {vendor !== VENDOR_ASSEMBLYAI &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor != VENDOR_CUSTOM && (
@@ -1100,7 +1134,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
         {(vendor === VENDOR_WELLSAID ||
-          vendor === VENDOR_DEEPGRAM ||
           vendor === VENDOR_ASSEMBLYAI ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
@@ -1120,15 +1153,31 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
+        {vendor === VENDOR_DEEPGRAM && (
+          <fieldset>
+            <label htmlFor={`${vendor}_apikey`}>
+              API key{!isDeepgramOnpremEnabled && <span>*</span>}
+            </label>
+            <Passwd
+              id={`${vendor}_apikey`}
+              required={!isDeepgramOnpremEnabled}
+              name={`${vendor}_apikey`}
+              placeholder="API key"
+              value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
         {(vendor == VENDOR_ELEVENLABS || vendor == VENDOR_WHISPER) &&
-          ttsModels && (
+          ttsModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
               <Selector
                 id={"tts_model_id"}
                 name={"tts_model_id"}
                 value={ttsModelId}
-                options={ttsModels[vendor as keyof TtsModels]}
+                options={ttsModels}
                 onChange={(e) => {
                   setTtsModelId(e.target.value);
                 }}
@@ -1312,6 +1361,57 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
+        {vendor === VENDOR_DEEPGRAM && (
+          <fieldset>
+            <Checkzone
+              disabled={hasValue(credential)}
+              hidden
+              name="use_hosted_deepgram_service"
+              label="Use on-prem Deepgram container"
+              initialCheck={initialDeepgramOnpremCheck}
+              handleChecked={(e) => {
+                // setInitialDeepgramOnpremCheck(!e.target.checked);
+                setIsDeepgramOnpremEnabled(e.target.checked);
+                if (e.target.checked) {
+                  if (tmpDeepgramSttUri) {
+                    setDeepgramSttUri(tmpDeepgramSttUri);
+                  }
+                  if (tmpDeepgramSttUseTls) {
+                    setDeepgramSttUseTls(tmpDeepgramSttUseTls);
+                  }
+                } else {
+                  setTmpDeepgramSttUri(deepgramSttUri);
+                  setDeepgramSttUri("");
+                  setTmpDeepgramSttUseTls(deepgramSttUseTls);
+                  setDeepgramSttUseTls(false);
+                }
+              }}
+            >
+              <label htmlFor="deepgram_uri_for_tts">
+                Container URI<span>*</span>
+              </label>
+              <input
+                id="deepgram_uri_for_tts"
+                required
+                type="text"
+                name="deepgram_uri_for_tts"
+                placeholder="Container URI for TTS"
+                value={deepgramSttUri}
+                onChange={(e) => setDeepgramSttUri(e.target.value)}
+              />
+              <label htmlFor="deepgram_tts_use_tls" className="chk">
+                <input
+                  id="deepgram_tts_use_tls"
+                  name="deepgram_tts_use_tls"
+                  type="checkbox"
+                  onChange={(e) => setDeepgramSttUseTls(e.target.checked)}
+                  defaultChecked={deepgramSttUseTls}
+                />
+                <div>Use TLS</div>
+              </label>
+            </Checkzone>
+          </fieldset>
+        )}
         {vendor === VENDOR_MICROSOFT && (
           <React.Fragment>
             <fieldset>
