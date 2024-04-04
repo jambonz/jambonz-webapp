@@ -448,6 +448,7 @@ export interface Carrier {
   application_sid: null | string;
   e164_leading_plus: boolean;
   requires_register: boolean;
+  register_use_tls: boolean;
   register_username: null | string;
   register_password: null | string;
   register_sip_realm: null | string;
