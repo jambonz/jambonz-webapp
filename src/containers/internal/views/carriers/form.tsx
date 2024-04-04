@@ -899,7 +899,7 @@ export const CarrierForm = ({
                         checked={sipRegisterUseTls}
                         onChange={(e) => setSipRegisterUseTls(e.target.checked)}
                       />
-                      <div>Use TLS</div>
+                      <div>Use SIP over TLS</div>
                     </label>
                   </>
                 )}
