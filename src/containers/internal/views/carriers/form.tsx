@@ -103,6 +103,7 @@ export const CarrierForm = ({
   const [accountSid, setAccountSid] = useState("");
 
   const [sipRegister, setSipRegister] = useState(false);
+  const [sipRegisterUseTls, setSipRegisterUseTls] = useState(false);
   const [sipUser, setSipUser] = useState("");
   const [sipPass, setSipPass] = useState("");
   const [sipRealm, setSipRealm] = useState("");
@@ -190,6 +191,8 @@ export const CarrierForm = ({
       } else {
         setInitialRegister(false);
       }
+
+      setSipRegisterUseTls(obj.register_use_tls);
 
       if (obj.tech_prefix) {
         setPrefix(obj.tech_prefix);
@@ -510,6 +513,7 @@ export const CarrierForm = ({
         service_provider_sid: currentServiceProvider.service_provider_sid,
         account_sid: accountSid || null,
         requires_register: sipRegister,
+        register_use_tls: sipRegisterUseTls,
         register_username: sipUser.trim() || null,
         register_password: sipPass.trim() || null,
         register_sip_realm: sipRealm.trim() || null,
@@ -886,6 +890,16 @@ export const CarrierForm = ({
                         }
                       />
                       <div>Use public IP in contact</div>
+                    </label>
+                    <label htmlFor="register_use_tls" className="chk">
+                      <input
+                        id="register_use_tls"
+                        name="register_use_tls"
+                        type="checkbox"
+                        checked={sipRegisterUseTls}
+                        onChange={(e) => setSipRegisterUseTls(e.target.checked)}
+                      />
+                      <div>Use TLS</div>
                     </label>
                   </>
                 )}
