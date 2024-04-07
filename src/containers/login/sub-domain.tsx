@@ -44,8 +44,8 @@ export const RegisterChooseSubdomain = () => {
       getAvailability(`${name}.${rootDomain}`)
         .then(({ json }) =>
           setIsValidDomain(
-            Boolean(json.available) && hasValue(name) && name.length != 0
-          )
+            Boolean(json.available) && hasValue(name) && name.length != 0,
+          ),
         )
         .catch((error) => {
           setErrorMessage(error.msg);

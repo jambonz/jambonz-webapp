@@ -31,7 +31,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
       handleChecked,
       disabled = false,
     }: CheckzoneProps,
-    ref
+    ref,
   ) => {
     const [checked, setChecked] = useState(false);
     const classesTop = classNames({
@@ -74,7 +74,7 @@ export const Checkzone = forwardRef<CheckzoneRef, CheckzoneProps>(
         {checked && <div className={classesIn}>{children}</div>}
       </div>
     );
-  }
+  },
 );
 
 Checkzone.displayName = "Checkzone";

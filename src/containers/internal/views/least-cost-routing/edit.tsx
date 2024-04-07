@@ -7,10 +7,10 @@ import { useParams } from "react-router-dom";
 export const EditLcr = () => {
   const params = useParams();
   const [lcrData, lcrRefect, lcrError] = useApiData<Lcr>(
-    `Lcrs/${params.lcr_sid}`
+    `Lcrs/${params.lcr_sid}`,
   );
   const [lcrRouteData, lcrRouteRefect, lcrRouteError] = useApiData<LcrRoute[]>(
-    `LcrRoutes?lcr_sid=${params.lcr_sid}`
+    `LcrRoutes?lcr_sid=${params.lcr_sid}`,
   );
   return (
     <>

@@ -165,7 +165,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
-    "You must create an account before you can create an application."
+    "You must create an account before you can create an application.",
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -173,7 +173,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
     if (isUserAccountScope(accountSid, user)) {
       toastError(
-        "You do not have permissions to make changes to these Speech Credentials"
+        "You do not have permissions to make changes to these Speech Credentials",
       );
       return;
     }
@@ -187,11 +187,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             a.name === applicationName &&
             (!application ||
               !application.data ||
-              a.application_sid !== application.data.application_sid)
+              a.application_sid !== application.data.application_sid),
         )
       ) {
         setMessage(
-          "The name you have entered is already in use on another one of your applications."
+          "The name you have entered is already in use on another one of your applications.",
         );
         return;
       }
@@ -242,7 +242,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           application.refetch();
           toastSuccess("Application updated successfully");
           navigate(
-            `${ROUTE_INTERNAL_APPLICATIONS}/${application.data?.application_sid}/edit`
+            `${ROUTE_INTERNAL_APPLICATIONS}/${application.data?.application_sid}/edit`,
           );
         })
         .catch((error) => {
@@ -271,7 +271,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
               ` (${VENDOR_CUSTOM})`,
             value: tv.vendor,
-          })
+          }),
         );
       setttsVendorOptions(vendors.concat(v));
 
@@ -283,7 +283,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               tv.vendor.substring(VENDOR_CUSTOM.length + 1) +
               ` (${VENDOR_CUSTOM})`,
             value: tv.vendor,
-          })
+          }),
         );
       setSttVendorOptions(vendors.concat(v2));
 
@@ -296,7 +296,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         (c) =>
           c.vendor === synthVendor &&
           (!c.account_sid || c.account_sid === accountSid) &&
-          c.use_for_tts
+          c.use_for_tts,
       );
       let c2 = c1
         .filter((c) => c.label)
@@ -304,11 +304,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           Object.assign({
             name: c.label,
             value: c.label,
-          })
+          }),
         );
 
       setTtsLabelOptions(
-        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2,
       );
 
       c1 = fallbackSpeechSynthsisVendor
@@ -316,7 +316,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             (c) =>
               c.vendor === fallbackSpeechSynthsisVendor &&
               (!c.account_sid || c.account_sid === accountSid) &&
-              c.use_for_tts
+              c.use_for_tts,
           )
         : [];
 
@@ -326,17 +326,17 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           Object.assign({
             name: c.label,
             value: c.label,
-          })
+          }),
         );
       setFallbackTtsLabelOptions(
-        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2,
       );
 
       c1 = credentials.filter(
         (c) =>
           c.vendor === recogVendor &&
           (!c.account_sid || c.account_sid === accountSid) &&
-          c.use_for_stt
+          c.use_for_stt,
       );
       c2 = c1
         .filter((c) => c.label)
@@ -344,11 +344,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           Object.assign({
             name: c.label,
             value: c.label,
-          })
+          }),
         );
 
       setSttLabelOptions(
-        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2,
       );
 
       c1 = fallbackSpeechRecognizerVendor
@@ -356,7 +356,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             (c) =>
               c.vendor === fallbackSpeechRecognizerVendor &&
               (!c.account_sid || c.account_sid === accountSid) &&
-              c.use_for_stt
+              c.use_for_stt,
           )
         : [];
       c2 = c1
@@ -365,11 +365,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           Object.assign({
             name: c.label,
             value: c.label,
-          })
+          }),
         );
 
       setFallbackSttLabelOptions(
-        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2
+        c1.length !== c2.length ? [noneLabelObject, ...c2] : c2,
       );
     }
   }, [
@@ -444,7 +444,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       setTmpApplicationJson(applicationJson);
       setInitialApplicationJson(
         application.data.app_json != undefined &&
-          application.data.app_json.length !== 0
+          application.data.app_json.length !== 0,
       );
 
       if (application.data.call_hook) {
@@ -491,12 +491,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.speech_synthesis_vendor)
         setSynthVendor(
-          application.data.speech_synthesis_vendor as keyof SynthesisVendors
+          application.data.speech_synthesis_vendor as keyof SynthesisVendors,
         );
 
       if (application.data.speech_synthesis_language)
         setSynthLang(
-          application.data.speech_synthesis_language as keyof RecognizerVendors
+          application.data.speech_synthesis_language as keyof RecognizerVendors,
         );
 
       if (application.data.speech_synthesis_voice)
@@ -504,7 +504,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
 
       if (application.data.speech_recognizer_vendor)
         setRecogVendor(
-          application.data.speech_recognizer_vendor as keyof RecognizerVendors
+          application.data.speech_recognizer_vendor as keyof RecognizerVendors,
         );
 
       if (application.data.speech_recognizer_language)
@@ -513,35 +513,35 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       if (application.data.use_for_fallback_speech) {
         setUseForFallbackSpeech(application.data.use_for_fallback_speech > 0);
         setInitalCheckFallbackSpeech(
-          application.data.use_for_fallback_speech > 0
+          application.data.use_for_fallback_speech > 0,
         );
       }
       if (application.data.fallback_speech_recognizer_vendor) {
         setFallbackSpeechRecognizerVendor(
           application.data
-            .fallback_speech_recognizer_vendor as keyof RecognizerVendors
+            .fallback_speech_recognizer_vendor as keyof RecognizerVendors,
         );
       }
       if (application.data.fallback_speech_recognizer_language) {
         setFallbackSpeechRecognizerLanguage(
-          application.data.fallback_speech_recognizer_language
+          application.data.fallback_speech_recognizer_language,
         );
       }
 
       if (application.data.fallback_speech_synthesis_vendor) {
         setFallbackSpeechSynthsisVendor(
           application.data
-            .fallback_speech_synthesis_vendor as keyof SynthesisVendors
+            .fallback_speech_synthesis_vendor as keyof SynthesisVendors,
         );
       }
       if (application.data.fallback_speech_synthesis_language) {
         setFallbackSpeechSynthsisLanguage(
-          application.data.fallback_speech_synthesis_language
+          application.data.fallback_speech_synthesis_language,
         );
       }
       if (application.data.fallback_speech_synthesis_voice) {
         setFallbackSpeechSynthsisVoice(
-          application.data.fallback_speech_synthesis_voice
+          application.data.fallback_speech_synthesis_voice,
         );
       }
     }

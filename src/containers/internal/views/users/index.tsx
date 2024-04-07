@@ -60,7 +60,7 @@ export const Users = () => {
 
     if (scopeFilter !== "all" && accountSid) {
       return serviceProviderUsers?.filter(
-        (e) => e.scope === scopeFilter && accountSid === e.account_sid
+        (e) => e.scope === scopeFilter && accountSid === e.account_sid,
       );
     }
 
@@ -71,7 +71,7 @@ export const Users = () => {
   }, [accountSid, scopeFilter, users, accounts, currentServiceProvider]);
 
   const filteredUsers = useFilteredResults<User>(filter, usersFiltered)?.sort(
-    sortUsersAlpha
+    sortUsersAlpha,
   );
 
   useEffect(() => {
@@ -137,8 +137,8 @@ export const Users = () => {
                     {user.scope === USER_ADMIN
                       ? "All"
                       : user.account_name
-                      ? `Account: ${user.account_name}`
-                      : `Service Provider: ${user.service_provider_name}`}
+                        ? `Account: ${user.account_name}`
+                        : `Service Provider: ${user.service_provider_name}`}
                   </div>
                   <div className="item__actions">
                     <Link

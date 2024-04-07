@@ -98,7 +98,7 @@ export const CallTracing = ({ call }: CallTracingProps) => {
         rootGroup.children = buildChildren(
           rootGroup.level + 1,
           rootGroup,
-          groups
+          groups,
         );
         setJaegerGroup(rootGroup);
       }
@@ -108,7 +108,7 @@ export const CallTracing = ({ call }: CallTracingProps) => {
   const buildChildren = (
     level: number,
     rootGroup: JaegerGroup,
-    groups: JaegerGroup[]
+    groups: JaegerGroup[],
   ): JaegerGroup[] => {
     return getGroupsByParent(rootGroup.spanId, groups).map((group) => {
       group.level = level;

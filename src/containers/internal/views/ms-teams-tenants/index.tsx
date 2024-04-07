@@ -32,10 +32,10 @@ import type { ACLGetIMessage } from "src/utils/with-access-control";
 
 export const MSTeamsTenants = () => {
   const [msTeamsTenant, setMsTeamsTenant] = useState<MSTeamsTenant | null>(
-    null
+    null,
   );
   const [msTeamsTenants, refetch] = useApiData<MSTeamsTenant[]>(
-    "MicrosoftTeamsTenants"
+    "MicrosoftTeamsTenants",
   );
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
@@ -45,14 +45,14 @@ export const MSTeamsTenants = () => {
   const msTeamsTenantsFiltered = useMemo(() => {
     return msTeamsTenants
       ? msTeamsTenants.filter(
-          (mst) => !accountSid || mst.account_sid === accountSid
+          (mst) => !accountSid || mst.account_sid === accountSid,
         )
       : [];
   }, [accountSid, msTeamsTenants]);
 
   const filteredMsTeamsTenants = useFilteredResults<MSTeamsTenant>(
     filter,
-    msTeamsTenantsFiltered
+    msTeamsTenantsFiltered,
   );
 
   const handleDelete = () => {
@@ -65,7 +65,7 @@ export const MSTeamsTenants = () => {
             <>
               Deleted Microsoft Teams Tenant{" "}
               <strong>{msTeamsTenant.tenant_fqdn}</strong>
-            </>
+            </>,
           );
         })
         .catch((error) => {
@@ -131,7 +131,8 @@ export const MSTeamsTenants = () => {
                             {
                               accounts?.find(
                                 (acct) =>
-                                  acct.account_sid === msTeamsTenant.account_sid
+                                  acct.account_sid ===
+                                  msTeamsTenant.account_sid,
                               )?.name
                             }
                           </span>
@@ -148,7 +149,7 @@ export const MSTeamsTenants = () => {
                             {applications?.find(
                               (app) =>
                                 app.application_sid ===
-                                msTeamsTenant.application_sid
+                                msTeamsTenant.application_sid,
                             )?.name || "None"}
                           </span>
                         </div>
@@ -217,5 +218,5 @@ const getAclIMessage: ACLGetIMessage = (currentServiceProvider) => {
 
 export default withAccessControl(
   "hasMSTeamsFqdn",
-  getAclIMessage
+  getAclIMessage,
 )(MSTeamsTenants);

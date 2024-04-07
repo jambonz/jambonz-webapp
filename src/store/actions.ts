@@ -17,7 +17,7 @@ export const genericAction = (state: State, action: Action<keyof State>) => {
 
 export const serviceProvidersAction = (
   state: State,
-  action: Action<keyof State>
+  action: Action<keyof State>,
 ) => {
   // Sorts for consistent list view
   action.payload = (<ServiceProvider[]>action.payload).sort(sortLocaleName);
@@ -33,7 +33,7 @@ export const serviceProvidersAction = (
     const serviceProvider = action.payload.find(
       (sp: ServiceProvider) =>
         sp.service_provider_sid ===
-        state.currentServiceProvider?.service_provider_sid
+        state.currentServiceProvider?.service_provider_sid,
     );
     // The `serviceProvider` will be undefined if this is after a DELETE
     // For this case we want to just reset to the first provider in the list
@@ -51,7 +51,7 @@ export const serviceProvidersAction = (
 
 export const currentServiceProviderAction = (
   state: State,
-  action: Action<keyof State>
+  action: Action<keyof State>,
 ) => {
   // Set MS Teams Tenants ACL condition
   state.accessControl.hasMSTeamsFqdn = (<ServiceProvider>action.payload)

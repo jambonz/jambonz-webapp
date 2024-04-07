@@ -17,7 +17,7 @@ export const useScopedRedirect = (
   redirect: string,
   user?: UserData,
   message?: IMessage,
-  data?: Account | User | Application | Carrier | SpeechCredential
+  data?: Account | User | Application | Carrier | SpeechCredential,
 ) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");

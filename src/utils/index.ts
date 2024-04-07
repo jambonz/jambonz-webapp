@@ -29,14 +29,14 @@ import type { UserData } from "src/store/types";
 import { getQueryFilter } from "src/store/localStore";
 
 export const hasValue = <Type>(
-  variable: Type | null | undefined
+  variable: Type | null | undefined,
 ): variable is NonNullable<Type> => {
   return variable !== null && variable !== undefined;
 };
 
 export const hasLength = <Type>(
   variable: Type[] | null | undefined,
-  minlength = 0
+  minlength = 0,
 ): variable is NonNullable<Type[]> => {
   return hasValue(variable) && variable.length > minlength;
 };
@@ -52,7 +52,7 @@ export const isObject = (obj: unknown) => {
 
 export const isValidPasswd = (
   password: string,
-  passwordSettings: PasswordSettings
+  passwordSettings: PasswordSettings,
 ) => {
   if (passwordSettings) {
     return (
@@ -78,14 +78,14 @@ export const isValidPort = (port: number) => {
 export const getIpValidationType = (ipv4: string): IpType => {
   const type =
     /^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])$/.test(
-      ipv4.trim()
+      ipv4.trim(),
     )
       ? IP
       : /^([a-zA-Z0-9][^.]*)(\.[^.]+){2,}$/.test(ipv4.trim())
-      ? FQDN
-      : /^([a-zA-Z][^.]*)(\.[^.]+)$/.test(ipv4.trim())
-      ? FQDN_TOP_LEVEL
-      : INVALID;
+        ? FQDN
+        : /^([a-zA-Z][^.]*)(\.[^.]+)$/.test(ipv4.trim())
+          ? FQDN_TOP_LEVEL
+          : INVALID;
   return type;
 };
 
@@ -114,16 +114,16 @@ export const getHumanDateTime = (date: string, fallbackText = "Never used") => {
   currDate.setHours(0, 0, 0, 0);
   argDate.setHours(0, 0, 0, 0);
   const daysDiff = Math.round(
-    (currDate.getTime() - argDate.getTime()) / 1000 / 60 / 60 / 24
+    (currDate.getTime() - argDate.getTime()) / 1000 / 60 / 60 / 24,
   );
 
   return daysDiff > 1
     ? `${daysDiff} days ago`
     : daysDiff === 1
-    ? "Yesterday"
-    : daysDiff === 0
-    ? "Today"
-    : fallbackText;
+      ? "Yesterday"
+      : daysDiff === 0
+        ? "Today"
+        : fallbackText;
 };
 
 export const formatPhoneNumber = (number: string) => {
@@ -150,7 +150,7 @@ export const formatTime = (seconds: number) => {
 
 export const sortLocaleName = (
   a: Required<{ name: string }>,
-  b: Required<{ name: string }>
+  b: Required<{ name: string }>,
 ) => a.name.localeCompare(b.name);
 
 export const getUserScope = (user: User): UserScopes => {
@@ -172,7 +172,7 @@ export const isUserAccountScope = (accountSid: string, user?: UserData) => {
 
 export const checkSelectOptions = (
   user?: UserData,
-  resource?: SpeechCredential | Carrier
+  resource?: SpeechCredential | Carrier,
 ) => {
   if (user?.scope === USER_ACCOUNT) {
     if (!resource) {
@@ -203,7 +203,7 @@ export const sortUsersAlpha = (a: User, b: User) => {
 
 export const filterScopeOptions = (
   optionArray: SelectorOptions[],
-  user: UserData
+  user: UserData,
 ) => {
   if (user.scope === USER_SP) {
     return optionArray.filter((option) => option.value !== USER_ADMIN);

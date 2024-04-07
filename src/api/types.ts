@@ -63,11 +63,9 @@ export interface FetchError {
 }
 
 export interface UseApiData {
-  <Type>(apiPath: string): [
-    Type | undefined,
-    () => void,
-    FetchError | undefined
-  ];
+  <Type>(
+    apiPath: string,
+  ): [Type | undefined, () => void, FetchError | undefined];
 }
 
 /** API related interfaces */

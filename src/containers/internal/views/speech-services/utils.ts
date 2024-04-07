@@ -14,7 +14,7 @@ export const getObscuredGoogleServiceKey = (key: GoogleServiceKey) => {
   return {
     ...key,
     private_key: `${keyHeader}${getObscuredSecret(
-      key.private_key.slice(keyHeader.length, key.private_key.length)
+      key.private_key.slice(keyHeader.length, key.private_key.length),
     )}`,
   };
 };
@@ -23,15 +23,15 @@ export const getUsage = (cred: SpeechCredential) => {
   return cred.use_for_tts && cred.use_for_stt
     ? "TTS/STT"
     : cred.use_for_tts
-    ? "TTS"
-    : cred.use_for_stt
-    ? "STT"
-    : "Not in use";
+      ? "TTS"
+      : cred.use_for_stt
+        ? "STT"
+        : "Not in use";
 };
 
 export const getStatus = (
   cred: SpeechCredential,
-  testResult: CredentialTestResult
+  testResult: CredentialTestResult,
 ): CredentialStatus => {
   if (
     (cred.use_for_tts &&
@@ -60,7 +60,7 @@ export const getStatus = (
 
 export const getReason = (
   cred: SpeechCredential,
-  testResult: CredentialTestResult
+  testResult: CredentialTestResult,
 ) => {
   const ok = "Connection test successful";
 

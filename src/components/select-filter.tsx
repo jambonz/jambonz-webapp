@@ -42,7 +42,7 @@ export const SelectFilter = ({
             setFilterValue(e.target.value);
             const queryFilter = createFilterString(
               e.target.value,
-              label as string
+              label as string,
             );
             setQueryFilter(queryFilter);
 

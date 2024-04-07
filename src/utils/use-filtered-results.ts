@@ -18,7 +18,7 @@ const fuzzyMatch = (patterns: string[], items: string[]) => {
 
 export const useFilteredResults = <Type>(
   rawFilter: string,
-  rawCollection: Type[] | undefined
+  rawCollection: Type[] | undefined,
 ) => {
   const splitFilter = useMemo(() => rawFilter.split(" "), [rawFilter]);
   const filteredCollection = useMemo(() => {

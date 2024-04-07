@@ -20,7 +20,7 @@ export const ResetPassword = () => {
     setMessage("");
     if (newPassword !== confirmNewPassword) {
       setMessage(
-        "The confirmation password does not match the new password. Please ensure both passwords are identical."
+        "The confirmation password does not match the new password. Please ensure both passwords are identical.",
       );
       return;
     }

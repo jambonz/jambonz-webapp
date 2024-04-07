@@ -11,7 +11,7 @@ export const ClientsEdit = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [data, refetch, error] = useApiData<Client>(
-    `Clients/${params.client_sid}`
+    `Clients/${params.client_sid}`,
   );
 
   /** Handle error toast at top level... */

@@ -24,7 +24,7 @@ export const Passwd = forwardRef<PasswdRef, PasswdProps>(
       locked = false,
       ...restProps
     }: PasswdProps,
-    ref
+    ref,
   ) => {
     const [reveal, setReveal] = useState(false);
 
@@ -55,7 +55,7 @@ export const Passwd = forwardRef<PasswdRef, PasswdProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Passwd.displayName = "Passwd";

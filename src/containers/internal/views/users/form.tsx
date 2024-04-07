@@ -55,7 +55,7 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [email, setEmail] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
   const [scope, setScope] = useState<UserScopes | null>(
-    currentUser?.scope || null
+    currentUser?.scope || null,
   );
   const [isActive, setIsActive] = useState(true);
   const [forceChange, setForceChange] = useState(true);
@@ -80,7 +80,7 @@ export const UserForm = ({ user }: UserFormProps) => {
           toastSuccess(
             <>
               Deleted user <strong>{user?.data?.name}</strong>
-            </>
+            </>,
           );
           handleSelfDetete();
         })
@@ -202,7 +202,8 @@ export const UserForm = ({ user }: UserFormProps) => {
                 options={
                   currentUser?.scope === USER_SP
                     ? USER_SCOPE_SELECTION.filter(
-                        (opt) => opt.value !== USER_ADMIN && opt.value !== "all"
+                        (opt) =>
+                          opt.value !== USER_ADMIN && opt.value !== "all",
                       )
                     : USER_SCOPE_SELECTION.filter((e) => e.value !== "all")
                 }

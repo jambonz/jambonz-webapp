@@ -25,7 +25,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
       disabled,
       ...restProps
     }: FileProps,
-    ref
+    ref,
   ) => {
     const [fileName, setFileName] = useState("");
     const [focus, setFocus] = useState(false);
@@ -73,7 +73,7 @@ export const FileUpload = forwardRef<FileRef, FileProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FileUpload.displayName = "FileUpload";

@@ -109,7 +109,7 @@ const storeLocation = "location";
 export const setLocation = () => {
   return localStorage.setItem(
     storeLocation,
-    window.location.pathname.split("/")[2]
+    window.location.pathname.split("/")[2],
   );
 };
 

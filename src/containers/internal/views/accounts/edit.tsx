@@ -19,14 +19,14 @@ export const EditAccount = () => {
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Account>(
-    `Accounts/${params.account_sid}`
+    `Accounts/${params.account_sid}`,
   );
   const [limitsData, refetchLimits] = useApiData<Limit[]>(
-    `Accounts/${params.account_sid}/Limits`
+    `Accounts/${params.account_sid}/Limits`,
   );
   const [apps] = useApiData<Application[]>("Applications");
   const [ttsCache, ttsCacheFetcher] = useApiData<TtsCache>(
-    `Accounts/${params.account_sid}/TtsCache`
+    `Accounts/${params.account_sid}/TtsCache`,
   );
 
   useScopedRedirect(
@@ -36,7 +36,7 @@ export const EditAccount = () => {
       : ROUTE_INTERNAL_APPLICATIONS,
     user,
     "You do not have access to this resource",
-    data
+    data,
   );
 
   /** Handle error toast at top level... */

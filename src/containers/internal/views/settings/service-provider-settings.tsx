@@ -56,13 +56,13 @@ export const ServiceProviderSettings = ({
             return limit.quantity === ""
               ? deleteServiceProviderLimit(
                   currentServiceProvider.service_provider_sid,
-                  limit.category
+                  limit.category,
                 )
               : postServiceProviderLimit(
                   currentServiceProvider.service_provider_sid,
-                  limit
+                  limit,
                 );
-          })
+          }),
         )
           .then(() => {
             refetchLimits();
@@ -93,7 +93,7 @@ export const ServiceProviderSettings = ({
           <>
             Deleted service provider{" "}
             <strong>{currentServiceProvider.name}</strong>
-          </>
+          </>,
         );
         removeActiveSP();
       })
@@ -193,5 +193,5 @@ export const ServiceProviderSettings = ({
 };
 
 export default withSelectState(["serviceProviders", "currentServiceProvider"])(
-  ServiceProviderSettings
+  ServiceProviderSettings,
 );

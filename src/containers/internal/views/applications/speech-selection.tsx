@@ -41,7 +41,7 @@ type SpeechProviderSelectionProbs = {
   credentials: SpeechCredential[] | undefined;
   ttsVendor: [
     keyof SynthesisVendors,
-    React.Dispatch<React.SetStateAction<keyof SynthesisVendors>>
+    React.Dispatch<React.SetStateAction<keyof SynthesisVendors>>,
   ];
   ttsVendorOptions: VendorOptions[];
   ttsVoice: [string, React.Dispatch<React.SetStateAction<string>>];
@@ -50,7 +50,7 @@ type SpeechProviderSelectionProbs = {
   ttsLabel: [string, React.Dispatch<React.SetStateAction<string>>];
   sttVendor: [
     keyof RecognizerVendors,
-    React.Dispatch<React.SetStateAction<keyof RecognizerVendors>>
+    React.Dispatch<React.SetStateAction<keyof RecognizerVendors>>,
   ];
   sttVendorOptions: VendorOptions[];
   sttLang: [string, React.Dispatch<React.SetStateAction<string>>];
@@ -160,8 +160,8 @@ export const SpeechProviderSelection = ({
     if (credentials) {
       setSelectedCredential(
         credentials.find(
-          (c) => c.vendor === synthVendor && (c.label || "") === synthLabel
-        )
+          (c) => c.vendor === synthVendor && (c.label || "") === synthLabel,
+        ),
       );
     }
   }, [synthVendor, synthLabel, credentials]);
@@ -212,7 +212,7 @@ export const SpeechProviderSelection = ({
     getSpeechSupportedLanguagesAndVoices(
       serviceProviderSid,
       synthVendor,
-      synthLabel
+      synthLabel,
     )
       .then(({ json }) => {
         // while fetching data, user might change the vendor
@@ -310,7 +310,7 @@ export const SpeechProviderSelection = ({
     getSpeechSupportedLanguagesAndVoices(
       serviceProviderSid,
       recogVendor,
-      recogLabel
+      recogLabel,
     )
       .then(({ json }) => {
         // while fetching data, the user might change the vendor
@@ -363,7 +363,7 @@ export const SpeechProviderSelection = ({
               vendor.value != VENDOR_ASSEMBLYAI &&
               vendor.value != VENDOR_SONIOX &&
               vendor.value !== VENDOR_CUSTOM &&
-              vendor.value !== VENDOR_COBALT
+              vendor.value !== VENDOR_COBALT,
           )}
           onChange={(e) => {
             const vendor = e.target.value as keyof SynthesisVendors;
@@ -427,7 +427,7 @@ export const SpeechProviderSelection = ({
 
                   const voices =
                     synthesisSupportedLanguagesAndVoices?.tts.find(
-                      (lang) => lang.value === language
+                      (lang) => lang.value === language,
                     )?.voices || [];
                   if (
                     synthVendor === VENDOR_GOOGLE &&
@@ -512,7 +512,7 @@ export const SpeechProviderSelection = ({
               vendor.value != VENDOR_WELLSAID &&
               vendor.value != VENDOR_ELEVENLABS &&
               vendor.value != VENDOR_WHISPER &&
-              vendor.value !== VENDOR_CUSTOM
+              vendor.value !== VENDOR_CUSTOM,
           )}
           onChange={(e) => {
             const vendor = e.target.value as keyof RecognizerVendors;

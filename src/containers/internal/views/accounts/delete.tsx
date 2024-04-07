@@ -75,19 +75,19 @@ export const DeleteAccount = ({
       getFetch<PhoneNumber[]>(API_PHONE_NUMBERS),
       getFetch<MSTeamsTenant[]>(API_MS_TEAMS_TENANTS),
       getFetch<ApiKey[]>(
-        `${API_BASE_URL}/Accounts/${account.account_sid}/ApiKeys`
+        `${API_BASE_URL}/Accounts/${account.account_sid}/ApiKeys`,
       ),
     ]).then(([appsRes, phonesRes, teamsRes, apiKeysRes]) => {
       if (!ignore) {
         const used = {
           apps: appsRes.json.filter(
-            (app) => app.account_sid === account.account_sid
+            (app) => app.account_sid === account.account_sid,
           ),
           phones: phonesRes.json.filter(
-            (phone) => phone.account_sid === account.account_sid
+            (phone) => phone.account_sid === account.account_sid,
           ),
           teams: teamsRes.json.filter(
-            (team) => team.account_sid === account.account_sid
+            (team) => team.account_sid === account.account_sid,
           ),
           apiKeys: apiKeysRes.json,
         };

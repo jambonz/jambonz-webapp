@@ -18,7 +18,7 @@ export interface ACLGetIMessage {
 
 export const withAccessControl = (
   acl: keyof ACL,
-  getMessage: ACLGetIMessage
+  getMessage: ACLGetIMessage,
 ) => {
   return function WithAccessControl(Component: React.ComponentType) {
     return function ComponentWithAccessControl(props: PassthroughProps) {

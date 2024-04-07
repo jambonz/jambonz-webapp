@@ -20,7 +20,7 @@ type SelectorRef = HTMLSelectElement;
 export const Selector = forwardRef<SelectorRef, SelectorProps>(
   (
     { id, name, value, options, disabled, ...restProps }: SelectorProps,
-    ref
+    ref,
   ) => {
     const [focus, setFocus] = useState(false);
     const classes = {
@@ -53,7 +53,7 @@ export const Selector = forwardRef<SelectorRef, SelectorProps>(
         </span>
       </div>
     );
-  }
+  },
 );
 
 Selector.displayName = "Selector";

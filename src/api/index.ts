@@ -101,7 +101,7 @@ import { JaegerRoot } from "./jaeger-types";
 /** Wrap all requests to normalize response handling */
 const fetchTransport = <Type>(
   url: string,
-  options: RequestInit
+  options: RequestInit,
 ): Promise<FetchTransport<Type>> => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -189,7 +189,7 @@ const getAuthHeaders = () => {
 
 const getQuery = <Type>(query: Type) => {
   return decodeURIComponent(
-    new URLSearchParams(query as unknown as Record<string, string>).toString()
+    new URLSearchParams(query as unknown as Record<string, string>).toString(),
   );
 };
 
@@ -235,7 +235,7 @@ export const getFetch = <Type>(url: string) => {
 
 export const postFetch = <Type, Payload = undefined>(
   url: string,
-  payload?: Payload
+  payload?: Payload,
 ) => {
   return fetchTransport<Type>(url, {
     method: "POST",
@@ -261,7 +261,7 @@ export const deleteFetch = <Type>(url: string) => {
 
 export const deleteFetchWithPayload = <Type, Payload>(
   url: string,
-  payload: Payload
+  payload: Payload,
 ) => {
   return fetchTransport<Type>(url, {
     method: "DELETE",
@@ -291,7 +291,7 @@ export const postLogout = () => {
 export const postServiceProviders = (payload: Partial<ServiceProvider>) => {
   return postFetch<SidResponse, Partial<ServiceProvider>>(
     API_SERVICE_PROVIDERS,
-    payload
+    payload,
   );
 };
 
@@ -305,24 +305,24 @@ export const postAccount = (payload: Partial<Account>) => {
 
 export const postAccountBucketCredentialTest = (
   sid: string,
-  payload: Partial<BucketCredential>
+  payload: Partial<BucketCredential>,
 ) => {
   return postFetch<BucketCredentialTestResult, Partial<BucketCredential>>(
     `${API_ACCOUNTS}/${sid}/BucketCredentialTest`,
-    payload
+    payload,
   );
 };
 
 export const postApplication = (payload: Partial<Application>) => {
   return postFetch<SidResponse, Partial<Application>>(
     API_APPLICATIONS,
-    payload
+    payload,
   );
 };
 
 export const postSpeechService = (
   sid: string,
-  payload: Partial<SpeechCredential>
+  payload: Partial<SpeechCredential>,
 ) => {
   const userData = parseJwt(getToken());
   const apiUrl =
@@ -336,14 +336,14 @@ export const postSpeechService = (
 export const postMsTeamsTentant = (payload: Partial<MSTeamsTenant>) => {
   return postFetch<SidResponse, Partial<MSTeamsTenant>>(
     API_MS_TEAMS_TENANTS,
-    payload
+    payload,
   );
 };
 
 export const postPhoneNumber = (payload: Partial<PhoneNumber>) => {
   return postFetch<SidResponse, Partial<PhoneNumber>>(
     API_PHONE_NUMBERS,
-    payload
+    payload,
   );
 };
 
@@ -359,19 +359,19 @@ export const postCarrier = (sid: string, payload: Partial<Carrier>) => {
 
 export const postPredefinedCarrierTemplate = (
   currentServiceProviderSid: string,
-  predefinedCarrierSid: string
+  predefinedCarrierSid: string,
 ) => {
   return postFetch<SidResponse>(
-    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`
+    `${API_BASE_URL}/ServiceProviders/${currentServiceProviderSid}/PredefinedCarriers/${predefinedCarrierSid}`,
   );
 };
 
 export const postPredefinedCarrierTemplateAccount = (
   accountSid: string,
-  predefinedCarrierSid: string
+  predefinedCarrierSid: string,
 ) => {
   return postFetch<SidResponse>(
-    `${API_BASE_URL}/Accounts/${accountSid}/PredefinedCarriers/${predefinedCarrierSid}`
+    `${API_BASE_URL}/Accounts/${accountSid}/PredefinedCarriers/${predefinedCarrierSid}`,
   );
 };
 
@@ -382,45 +382,45 @@ export const postSipGateway = (payload: Partial<SipGateway>) => {
 export const postSmppGateway = (payload: Partial<SmppGateway>) => {
   return postFetch<SidResponse, Partial<SmppGateway>>(
     API_SMPP_GATEWAY,
-    payload
+    payload,
   );
 };
 
 export const postServiceProviderLimit = (
   sid: string,
-  payload: Partial<Limit>
+  payload: Partial<Limit>,
 ) => {
   return postFetch<SidResponse, Partial<Limit>>(
     `${API_SERVICE_PROVIDERS}/${sid}/Limits`,
-    payload
+    payload,
   );
 };
 
 export const postAccountLimit = (sid: string, payload: Partial<Limit>) => {
   return postFetch<SidResponse, Partial<Limit>>(
     `${API_ACCOUNTS}/${sid}/Limits`,
-    payload
+    payload,
   );
 };
 
 export const postPasswordSettings = (payload: Partial<PasswordSettings>) => {
   return postFetch<EmptyResponse, Partial<PasswordSettings>>(
     API_PASSWORD_SETTINGS,
-    payload
+    payload,
   );
 };
 
 export const postForgotPassword = (payload: Partial<ForgotPassword>) => {
   return postFetch<EmptyResponse, Partial<ForgotPassword>>(
     API_FORGOT_PASSWORD,
-    payload
+    payload,
   );
 };
 
 export const postSystemInformation = (payload: Partial<SystemInformation>) => {
   return postFetch<SystemInformation, Partial<SystemInformation>>(
     API_SYSTEM_INFORMATION,
-    payload
+    payload,
   );
 };
 
@@ -430,11 +430,11 @@ export const postLcr = (payload: Partial<Lcr>) => {
 
 export const postLcrCreateRoutes = (
   sid: string,
-  payload: Partial<LcrRoute[]>
+  payload: Partial<LcrRoute[]>,
 ) => {
   return postFetch<EmptyResponse, Partial<LcrRoute[]>>(
     `${API_LCRS}/${sid}/Routes`,
-    payload
+    payload,
   );
 };
 
@@ -443,11 +443,11 @@ export const postLcrRoute = (payload: Partial<LcrRoute>) => {
 };
 
 export const postLcrCarrierSetEntry = (
-  payload: Partial<LcrCarrierSetEntry>
+  payload: Partial<LcrCarrierSetEntry>,
 ) => {
   return postFetch<SidResponse, Partial<LcrCarrierSetEntry>>(
     API_LCR_CARRIER_SET_ENTRIES,
-    payload
+    payload,
   );
 };
 
@@ -458,27 +458,27 @@ export const postClient = (payload: Partial<Client>) => {
 export const postRegister = (payload: Partial<RegisterRequest>) => {
   return postFetch<RegisterResponse, Partial<RegisterRequest>>(
     API_REGISTER,
-    payload
+    payload,
   );
 };
 
 export const postSipRealms = (accountSid: string, domain: string) => {
   return postFetch<EmptyResponse>(
-    `${API_ACCOUNTS}/${accountSid}/SipRealms/${domain}`
+    `${API_ACCOUNTS}/${accountSid}/SipRealms/${domain}`,
   );
 };
 
 export const postSubscriptions = (payload: Partial<Subscription>) => {
   return postFetch<Subscription, Partial<Subscription>>(
     API_SUBSCRIPTIONS,
-    payload
+    payload,
   );
 };
 
 export const postChangepassword = (payload: Partial<ChangePassword>) => {
   return postFetch<EmptyResponse, Partial<ChangePassword>>(
     API_CHANGE_PASSWORD,
-    payload
+    payload,
   );
 };
 
@@ -489,7 +489,7 @@ export const postSignIn = (payload: Partial<SignIn>) => {
 export const postGoogleCustomVoice = (payload: Partial<GoogleCustomVoice>) => {
   return postFetch<SidResponse, Partial<GoogleCustomVoice>>(
     API_GOOGLE_CUSTOM_VOICES,
-    payload
+    payload,
   );
 };
 /** Named wrappers for `putFetch` */
@@ -497,38 +497,38 @@ export const postGoogleCustomVoice = (payload: Partial<GoogleCustomVoice>) => {
 export const putUser = (sid: string, payload: Partial<UserUpdatePayload>) => {
   return putFetch<EmptyResponse, Partial<UserUpdatePayload>>(
     `${API_USERS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putServiceProvider = (
   sid: string,
-  payload: Partial<ServiceProvider>
+  payload: Partial<ServiceProvider>,
 ) => {
   return putFetch<EmptyResponse, Partial<ServiceProvider>>(
     `${API_SERVICE_PROVIDERS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putAccount = (sid: string, payload: Partial<Account>) => {
   return putFetch<EmptyResponse, Partial<Account>>(
     `${API_ACCOUNTS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putApplication = (sid: string, payload: Partial<Application>) => {
   return putFetch<EmptyResponse, Partial<Application>>(
     `${API_APPLICATIONS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putSpeechService = (
   sid1: string,
   sid2: string,
-  payload: Partial<SpeechCredential>
+  payload: Partial<SpeechCredential>,
 ) => {
   const userData = parseJwt(getToken());
   const apiUrl =
@@ -541,25 +541,25 @@ export const putSpeechService = (
 
 export const putMsTeamsTenant = (
   sid: string,
-  payload: Partial<MSTeamsTenant>
+  payload: Partial<MSTeamsTenant>,
 ) => {
   return putFetch<EmptyResponse, Partial<MSTeamsTenant>>(
     `${API_MS_TEAMS_TENANTS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putPhoneNumber = (sid: string, payload: Partial<PhoneNumber>) => {
   return putFetch<EmptyResponse, Partial<PhoneNumber>>(
     `${API_PHONE_NUMBERS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putCarrier = (
   sid1: string,
   sid2: string,
-  payload: Partial<Carrier>
+  payload: Partial<Carrier>,
 ) => {
   const userData = parseJwt(getToken());
   const apiUrl =
@@ -573,14 +573,14 @@ export const putCarrier = (
 export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
   return putFetch<EmptyResponse, Partial<SipGateway>>(
     `${API_SIP_GATEWAY}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
   return putFetch<EmptyResponse, Partial<SmppGateway>>(
     `${API_SMPP_GATEWAY}/${sid}`,
-    payload
+    payload,
   );
 };
 
@@ -590,55 +590,55 @@ export const putLcr = (sid: string, payload: Partial<Lcr>) => {
 
 export const putLcrUpdateRoutes = (
   sid: string,
-  payload: Partial<LcrRoute[]>
+  payload: Partial<LcrRoute[]>,
 ) => {
   return putFetch<EmptyResponse, Partial<LcrRoute[]>>(
     `${API_LCRS}/${sid}/Routes`,
-    payload
+    payload,
   );
 };
 
 export const putLcrRoutes = (sid: string, payload: Partial<LcrRoute>) => {
   return putFetch<EmptyResponse, Partial<LcrRoute>>(
     `${API_LCR_ROUTES}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putLcrCarrierSetEntries = (
   sid: string,
-  payload: Partial<LcrCarrierSetEntry>
+  payload: Partial<LcrCarrierSetEntry>,
 ) => {
   return putFetch<EmptyResponse, Partial<LcrCarrierSetEntry>>(
     `${API_LCR_CARRIER_SET_ENTRIES}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putClient = (sid: string, payload: Partial<Client>) => {
   return putFetch<EmptyResponse, Partial<Client>>(
     `${API_CLIENTS}/${sid}`,
-    payload
+    payload,
   );
 };
 
 export const putActivationCode = (
   code: string,
-  payload: Partial<ActivationCode>
+  payload: Partial<ActivationCode>,
 ) => {
   return putFetch<EmptyResponse, Partial<ActivationCode>>(
     `${API_ACTIVATION_CODE}/${code}`,
-    payload
+    payload,
   );
 };
 
 export const putGoogleCustomVoice = (
   sid: string,
-  payload: Partial<GoogleCustomVoice>
+  payload: Partial<GoogleCustomVoice>,
 ) => {
   return putFetch<EmptyResponse, Partial<GoogleCustomVoice>>(
     `${API_GOOGLE_CUSTOM_VOICES}/${sid}`,
-    payload
+    payload,
   );
 };
 
@@ -659,7 +659,7 @@ export const deleteApiKey = (sid: string) => {
 export const deleteAccount = (sid: string, payload: Partial<DeleteAccount>) => {
   return deleteFetchWithPayload<EmptyResponse, Partial<DeleteAccount>>(
     `${API_ACCOUNTS}/${sid}`,
-    payload
+    payload,
   );
 };
 
@@ -669,7 +669,7 @@ export const deleteApplication = (sid: string) => {
 
 export const deleteSpeechService = (sid1: string, sid2: string) => {
   return deleteFetch<EmptyResponse>(
-    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`
+    `${API_SERVICE_PROVIDERS}/${sid1}/SpeechCredentials/${sid2}`,
   );
 };
 
@@ -695,16 +695,16 @@ export const deleteSmppGateway = (sid: string) => {
 
 export const deleteServiceProviderLimit = (
   sid: string,
-  cat: LimitCategories
+  cat: LimitCategories,
 ) => {
   return deleteFetch<EmptyResponse>(
-    `${API_SERVICE_PROVIDERS}/${sid}/Limits?category=${cat}`
+    `${API_SERVICE_PROVIDERS}/${sid}/Limits?category=${cat}`,
   );
 };
 
 export const deleteAccountLimit = (sid: string, cat: LimitCategories) => {
   return deleteFetch<EmptyResponse>(
-    `${API_ACCOUNTS}/${sid}/Limits?category=${cat}`
+    `${API_ACCOUNTS}/${sid}/Limits?category=${cat}`,
   );
 };
 
@@ -747,7 +747,7 @@ export const getServiceProviders = () => {
 
 export const getAccountWebhook = (sid: string) => {
   return getFetch<SecretResponse>(
-    `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`
+    `${API_ACCOUNTS}/${sid}/WebhookSecret?regenerate=true`,
   );
 };
 
@@ -769,7 +769,7 @@ export const getLcrRoute = (sid: string) => {
 
 export const getLcrCarrierSetEtries = (sid: string) => {
   return getFetch<LcrCarrierSetEntry[]>(
-    `${API_LCR_CARRIER_SET_ENTRIES}?lcr_route_sid=${sid}`
+    `${API_LCR_CARRIER_SET_ENTRIES}?lcr_route_sid=${sid}`,
   );
 };
 
@@ -783,12 +783,12 @@ export const getClient = (sid: string) => {
 
 export const getAvailability = (domain: string) => {
   return getFetch<Availability>(
-    `${API_AVAILABILITY}?type=subdomain&value=${domain}`
+    `${API_AVAILABILITY}?type=subdomain&value=${domain}`,
   );
 };
 
 export const getGoogleCustomVoices = (
-  query: Partial<GoogleCustomVoicesQuery>
+  query: Partial<GoogleCustomVoicesQuery>,
 ) => {
   const qryStr = getQuery<Partial<GoogleCustomVoicesQuery>>(query);
   return getFetch<GoogleCustomVoice[]>(`${API_GOOGLE_CUSTOM_VOICES}?${qryStr}`);
@@ -806,7 +806,7 @@ export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
   return getFetch<PagedResponse<RecentCall>>(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls?${qryStr}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls?${qryStr}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls?${qryStr}`,
   );
 };
 
@@ -814,7 +814,7 @@ export const getRecentCall = (sid: string, sipCallId: string) => {
   return getFetch<TotalResponse>(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}`,
   );
 };
 
@@ -822,7 +822,7 @@ export const getPcap = (sid: string, sipCallId: string, method: string) => {
   return getBlob(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`,
   );
 };
 
@@ -830,30 +830,30 @@ export const getJaegerTrace = (sid: string, traceId: string) => {
   return getFetch<JaegerRoot>(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/trace/${traceId}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/trace/${traceId}`
+      : `${API_ACCOUNTS}/${sid}/RecentCalls/trace/${traceId}`,
   );
 };
 
 export const getServiceProviderRecentCall = (
   sid: string,
-  sipCallId: string
+  sipCallId: string,
 ) => {
   return getFetch<TotalResponse>(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}`
-      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}`
+      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}`,
   );
 };
 
 export const getServiceProviderPcap = (
   sid: string,
   sipCallId: string,
-  method: string
+  method: string,
 ) => {
   return getBlob(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/ServiceProviders/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
-      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`
+      : `${API_SERVICE_PROVIDERS}/${sid}/RecentCalls/${sipCallId}/${method}/pcap`,
   );
 };
 
@@ -863,7 +863,7 @@ export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
   return getFetch<PagedResponse<Alert>>(
     import.meta.env.DEV
       ? `${DEV_BASE_URL}/Accounts/${sid}/Alerts?${qryStr}`
-      : `${API_ACCOUNTS}/${sid}/Alerts?${qryStr}`
+      : `${API_ACCOUNTS}/${sid}/Alerts?${qryStr}`,
   );
 };
 
@@ -874,7 +874,7 @@ export const getPrice = () => {
 export const getSpeechSupportedLanguagesAndVoices = (
   sid: string | undefined,
   vendor: string,
-  label: string
+  label: string,
 ) => {
   const userData = parseJwt(getToken());
   const apiUrl =
@@ -946,7 +946,7 @@ export const useServiceProviderData: UseApiData = <Type>(apiPath: string) => {
 
     if (currentServiceProvider) {
       getFetch<Type>(
-        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/${apiPath}`
+        `${API_SERVICE_PROVIDERS}/${currentServiceProvider.service_provider_sid}/${apiPath}`,
       )
         .then(({ json }) => {
           if (!ignore) {

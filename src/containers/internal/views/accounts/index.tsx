@@ -30,7 +30,7 @@ export const Accounts = () => {
     Scope.service_provider,
     `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
     user,
-    "You do not have permissions to manage all accounts"
+    "You do not have permissions to manage all accounts",
   );
 
   const handleDelete = () => {
@@ -40,7 +40,7 @@ export const Accounts = () => {
         user.account_sid !== account.account_sid
       ) {
         toastError(
-          "You do not have permissions to make changes to this Account"
+          "You do not have permissions to make changes to this Account",
         );
         return;
       }
@@ -52,7 +52,7 @@ export const Accounts = () => {
           toastSuccess(
             <>
               Deleted account <strong>{account.name}</strong>
-            </>
+            </>,
           );
         })
         .catch((error) => {

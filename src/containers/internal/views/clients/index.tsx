@@ -40,7 +40,7 @@ export const Clients = () => {
     setSelectedAccount(
       accountSid
         ? accounts?.find((a: Account) => a.account_sid === accountSid)
-        : null
+        : null,
     );
 
     return clients
@@ -48,8 +48,8 @@ export const Clients = () => {
           return accountSid
             ? c.account_sid === accountSid
             : accounts
-            ? accounts.map((a) => a.account_sid).includes(c.account_sid || "")
-            : false;
+              ? accounts.map((a) => a.account_sid).includes(c.account_sid || "")
+              : false;
         })
       : [];
   }, [accountSid, clients, accounts]);
@@ -63,7 +63,7 @@ export const Clients = () => {
           toastSuccess(
             <>
               Deleted sip client <strong>{client.username}</strong>
-            </>
+            </>,
           );
           setClient(null);
           refetch();
@@ -179,7 +179,7 @@ export const Clients = () => {
                         <span>
                           {
                             accounts?.find(
-                              (acct) => acct.account_sid === c.account_sid
+                              (acct) => acct.account_sid === c.account_sid,
                             )?.name
                           }
                         </span>

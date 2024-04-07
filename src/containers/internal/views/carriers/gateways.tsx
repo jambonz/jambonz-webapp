@@ -12,7 +12,7 @@ type GatewaysProps = {
 
 export const Gateways = ({ carrier }: GatewaysProps) => {
   const [gateways, , error] = useApiData<SipGateway[]>(
-    `SipGateways?voip_carrier_sid=${carrier.voip_carrier_sid}`
+    `SipGateways?voip_carrier_sid=${carrier.voip_carrier_sid}`,
   );
 
   const renderGateways = () => {
