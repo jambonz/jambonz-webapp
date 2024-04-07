@@ -10,7 +10,7 @@ export const useMobileMedia = () => {
 
   useEffect(() => {
     const mql = window.matchMedia(
-      `(max-width: ${getCssVar("--mobile-media")})`
+      `(max-width: ${getCssVar("--mobile-media")})`,
     );
 
     mql.addEventListener("change", handleMedia);

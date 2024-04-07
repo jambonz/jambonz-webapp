@@ -89,7 +89,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [initialSttCheck, setInitialSttCheck] = useState(false);
   const [sttCheck, setSttCheck] = useState(false);
   const [vendor, setVendor] = useState<Lowercase<Vendor>>(
-    "" as Lowercase<Vendor>
+    "" as Lowercase<Vendor>,
   );
   const [region, setRegion] = useState("");
   const [apiKey, setApiKey] = useState("");
@@ -196,13 +196,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               speech_credential_sid: credential.data?.speech_credential_sid,
             });
           }
-        })
+        }),
       )
         .then(() => {
           toastSuccess("Speech credential updated successfully");
           credential.refetch();
           navigate(
-            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`
+            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`,
           );
         })
         .catch((error) => {
@@ -214,13 +214,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           if (v.google_custom_voice_sid) {
             return deleteGoogleCustomVoice(v.google_custom_voice_sid);
           }
-        })
+        }),
       )
         .then(() => {
           toastSuccess("Speech credential updated successfully");
           credential.refetch();
           navigate(
-            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`
+            `${ROUTE_INTERNAL_SPEECH}/${credential?.data?.speech_credential_sid}/edit`,
           );
         })
         .catch((error) => {
@@ -230,7 +230,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       toastSuccess("Speech credential updated successfully");
       credential.refetch();
       navigate(
-        `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+        `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`,
       );
     }
   };
@@ -240,7 +240,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
     if (isUserAccountScope(accountSid, user)) {
       toastError(
-        "You do not have permissions to make changes to these Speech Credentials"
+        "You do not have permissions to make changes to these Speech Credentials",
       );
       return;
     }
@@ -312,7 +312,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         putSpeechService(
           currentServiceProvider.service_provider_sid,
           credential.data.speech_credential_sid,
-          payload
+          payload,
         )
           .then(() => {
             if (credential && credential.data) {
@@ -322,7 +322,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 toastSuccess("Speech credential updated successfully");
                 credential.refetch();
                 navigate(
-                  `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`
+                  `${ROUTE_INTERNAL_SPEECH}/${credential.data.speech_credential_sid}/edit`,
                 );
               }
             }
@@ -358,8 +358,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   postGoogleCustomVoice({
                     ...v,
                     speech_credential_sid: json.sid,
-                  })
-                )
+                  }),
+                ),
               ).then(() => {
                 toastSuccess("Speech credential created successfully");
                 navigate(ROUTE_INTERNAL_SPEECH);
@@ -383,7 +383,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
         vendor,
-        ""
+        "",
       ).then(({ json }) => {
         if (json.models) {
           setTtsModels(json.models);
@@ -520,13 +520,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setInitialCheckCustomStt(isNotBlank(credential.data.custom_stt_endpoint));
       setInitialCheckOnpremAzureService(
         isNotBlank(credential.data.custom_tts_endpoint_url) ||
-          isNotBlank(credential.data.custom_stt_endpoint_url)
+          isNotBlank(credential.data.custom_stt_endpoint_url),
       );
 
       setCustomVendorName(
         credential.data.vendor.startsWith(VENDOR_CUSTOM)
           ? credential.data.vendor.substring(VENDOR_CUSTOM.length + 1)
-          : credential.data.vendor
+          : credential.data.vendor,
       );
       setCustomVendorAuthToken(credential.data.auth_token || "");
       setCustomVendorSttUrl(credential.data.custom_stt_url || "");
@@ -561,7 +561,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     if (credential?.data?.deepgram_stt_use_tls) {
       setDeepgramSttUseTls(
-        credential?.data?.deepgram_stt_use_tls > 0 ? true : false
+        credential?.data?.deepgram_stt_use_tls > 0 ? true : false,
       );
     }
     setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_stt_uri));
@@ -571,7 +571,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const updateCustomVoices = (
     index: number,
     key: string,
-    value: typeof customVoices[number][keyof GoogleCustomVoice]
+    value: (typeof customVoices)[number][keyof GoogleCustomVoice],
   ) => {
     setCustomVoices((prev) =>
       prev.map((g, i) =>
@@ -580,8 +580,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               ...g,
               [key]: value,
             }
-          : g
-      )
+          : g,
+      ),
     );
   };
 
@@ -618,7 +618,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             ]
               .concat(vendors)
               .filter(
-                (v) => !DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM
+                (v) => !DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM,
               )}
             onChange={(e) => {
               setVendor(e.target.value as Lowercase<Vendor>);
@@ -828,7 +828,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     {JSON.stringify(
                       getObscuredGoogleServiceKey(googleServiceKey),
                       null,
-                      2
+                      2,
                     )}
                   </code>
                 </pre>
@@ -903,7 +903,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                   updateCustomVoices(
                                     i,
                                     "reported_usage",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                               />
@@ -930,7 +930,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                   updateCustomVoices(
                                     i,
                                     "model",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                               />
@@ -945,19 +945,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                               setCustomVoicesMessage("");
                               if (customVoices.length === 1) {
                                 setCustomVoicesMessage(
-                                  "You must provide at least one custom voice."
+                                  "You must provide at least one custom voice.",
                                 );
                                 return;
                               }
                               if (v.google_custom_voice_sid) {
                                 deleteGoogleCustomVoice(
-                                  v.google_custom_voice_sid
+                                  v.google_custom_voice_sid,
                                 ).finally(() => {
                                   credential?.refetch();
                                 });
                               }
                               setCustomVoices((prev) =>
-                                prev.filter((_, idx) => idx !== i)
+                                prev.filter((_, idx) => idx !== i),
                               );
                             }}
                           >
@@ -1196,7 +1196,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   setOptions(
                     tmpOptions
                       ? tmpOptions
-                      : JSON.stringify(DEFAULT_ELEVENLABS_OPTIONS, null, 2)
+                      : JSON.stringify(DEFAULT_ELEVENLABS_OPTIONS, null, 2),
                   );
                 }
                 if (!e.target.checked) {

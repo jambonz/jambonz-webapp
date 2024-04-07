@@ -12,7 +12,7 @@ import applications from "../../cypress/fixtures/applications.json";
 
 /** Wrapper to perform React state setup */
 const ApplicationFilterTestWrapper = (
-  props: Partial<ApplicationFilterProps>
+  props: Partial<ApplicationFilterProps>,
 ) => {
   const [application, setApplication] = useState("");
 
@@ -47,7 +47,7 @@ describe("<ApplicationFilter>", () => {
     /** Default value is properly set to first option */
     cy.get("select").should(
       "have.value",
-      applicationsSorted[0].application_sid
+      applicationsSorted[0].application_sid,
     );
   });
 
@@ -58,7 +58,7 @@ describe("<ApplicationFilter>", () => {
     cy.get("select").select(applicationsSorted[1].application_sid);
     cy.get("select").should(
       "have.value",
-      applicationsSorted[1].application_sid
+      applicationsSorted[1].application_sid,
     );
   });
 
@@ -75,7 +75,7 @@ describe("<ApplicationFilter>", () => {
   it("renders default option", () => {
     /** Test with the `defaultOption` prop */
     cy.mount(
-      <ApplicationFilterTestWrapper defaultOption="Choose Application" />
+      <ApplicationFilterTestWrapper defaultOption="Choose Application" />,
     );
 
     /** No default value is set when this prop is present */

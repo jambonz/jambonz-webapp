@@ -51,13 +51,13 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
-    "You must create an account before you can create a phone number."
+    "You must create an account before you can create a phone number.",
   );
 
   useRedirect<Carrier>(
     carriers,
     ROUTE_INTERNAL_CARRIERS,
-    "You must create a SIP trunk before you can create a phone number."
+    "You must create a SIP trunk before you can create a phone number.",
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,7 +69,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
       const filtered =
         phoneNumber && phoneNumber.data
           ? phoneNumbers.filter(
-              (a) => a.phone_number_sid !== phoneNumber.data!.phone_number_sid
+              (a) => a.phone_number_sid !== phoneNumber.data!.phone_number_sid,
             )
           : phoneNumbers;
 
@@ -90,7 +90,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
           phoneNumber.refetch();
           toastSuccess("Phone number updated successfully");
           navigate(
-            `${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.data?.phone_number_sid}/edit`
+            `${ROUTE_INTERNAL_PHONE_NUMBERS}/${phoneNumber.data?.phone_number_sid}/edit`,
           );
         })
         .catch((error) => {
@@ -201,7 +201,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
               applications={
                 applications
                   ? applications.filter(
-                      (application) => application.account_sid === accountSid
+                      (application) => application.account_sid === accountSid,
                     )
                   : []
               }

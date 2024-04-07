@@ -72,7 +72,7 @@ export const AdminSettings = () => {
     if (hasValue(passwordSettings)) {
       setRequireDigit(passwordSettings.require_digit > 0 ? true : false);
       setRequireSpecialCharacter(
-        passwordSettings.require_special_character > 0 ? true : false
+        passwordSettings.require_special_character > 0 ? true : false,
       );
       if (passwordSettings.min_password_length) {
         setMinPasswordLength(passwordSettings.min_password_length);

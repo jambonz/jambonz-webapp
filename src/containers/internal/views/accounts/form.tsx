@@ -93,7 +93,7 @@ export const AccountForm = ({
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [userCarriers] = useApiData<Carrier[]>(`VoipCarriers`);
   const [userSpeechs] = useApiData<SpeechCredential[]>(
-    `/Accounts/${params.account_sid}/SpeechCredentials`
+    `/Accounts/${params.account_sid}/SpeechCredentials`,
   );
   const [name, setName] = useState("");
   const [realm, setRealm] = useState("");
@@ -187,7 +187,7 @@ export const AccountForm = ({
 
     if (deleteMessage !== "delete my account") {
       toastError(
-        "You must type the delete message correctly in order to delete your account."
+        "You must type the delete message correctly in order to delete your account.",
       );
       if (
         deleteMessageRef.current &&
@@ -285,7 +285,7 @@ export const AccountForm = ({
         } else {
           toastError(json.reason);
         }
-      }
+      },
     );
   };
 
@@ -310,7 +310,7 @@ export const AccountForm = ({
           return limit.quantity === ""
             ? deleteAccountLimit(sid, limit.category)
             : postAccountLimit(sid, limit);
-        })
+        }),
       )
         .then(() => {
           if (limits) {
@@ -361,18 +361,18 @@ export const AccountForm = ({
         filtered.find(
           (a) =>
             a.service_provider_sid !== account.data!.service_provider_sid &&
-            a.name === name
+            a.name === name,
         )
       ) {
         setMessage(
-          "The name you have entered is already in use on another one of your accounts."
+          "The name you have entered is already in use on another one of your accounts.",
         );
         return;
       }
 
       if (filtered.find((a) => a.sip_realm === realm)) {
         setMessage(
-          "The SIP Realm you have entered is already in use on another one of your accounts."
+          "The SIP Realm you have entered is already in use on another one of your accounts.",
         );
         return;
       }
@@ -522,7 +522,7 @@ export const AccountForm = ({
       }
       if (account.data.bucket_credential?.secret_access_key) {
         setBucketSecretAccessKey(
-          account.data.bucket_credential?.secret_access_key
+          account.data.bucket_credential?.secret_access_key,
         );
       }
       if (account.data.bucket_credential?.region) {
@@ -530,7 +530,7 @@ export const AccountForm = ({
       }
       if (account.data.bucket_credential?.connection_string) {
         setAzureConnectionString(
-          account.data.bucket_credential.connection_string
+          account.data.bucket_credential.connection_string,
         );
       }
       if (account.data.bucket_credential?.endpoint) {
@@ -540,7 +540,7 @@ export const AccountForm = ({
         setRecordAllCalls(account.data.record_all_calls ? true : false);
       }
       setBucketCredentialChecked(
-        hasValue(bucketVendor) && bucketVendor.length !== 0
+        hasValue(bucketVendor) && bucketVendor.length !== 0,
       );
       if (account.data.bucket_credential?.tags) {
         setBucketTags(account.data.bucket_credential?.tags);
@@ -552,11 +552,11 @@ export const AccountForm = ({
         setBucketGoogleServiceKey(tmpBucketGoogleServiceKey);
       } else if (account.data.bucket_credential?.service_key) {
         setBucketGoogleServiceKey(
-          JSON.parse(account.data.bucket_credential?.service_key)
+          JSON.parse(account.data.bucket_credential?.service_key),
         );
       }
       setInitialCheckRecordAllCall(
-        hasValue(bucketVendor) && bucketVendor.length !== 0
+        hasValue(bucketVendor) && bucketVendor.length !== 0,
       );
     }
   }, [account]);
@@ -576,7 +576,7 @@ export const AccountForm = ({
           : { quantity: 0 };
         const callSessionRecord = products
           ? products.find(
-              (item) => item.name === "concurrent call session"
+              (item) => item.name === "concurrent call session",
             ) || { quantity: 0 }
           : { quantity: 0 };
         const quantity =
@@ -592,10 +592,10 @@ export const AccountForm = ({
               } simultaneous calls and ${quantity} registered devices.${
                 trial_end_date
                   ? ` Your free trial will end on ${dayjs(
-                      trial_end_date
+                      trial_end_date,
                     ).format("MMM DD, YYYY")}.`
                   : ""
-              }`
+              }`,
             );
             break;
           case PlanType.PAID:
@@ -607,7 +607,7 @@ export const AccountForm = ({
                   CurrencySymbol[invoice.currency || "usd"]
                 }${(invoice.total || 0) / 100} on ${dayjs
                   .unix(Number(invoice.next_payment_attempt))
-                  .format("MMM DD, YYYY")}.`
+                  .format("MMM DD, YYYY")}.`,
               );
             }
 
@@ -615,11 +615,11 @@ export const AccountForm = ({
           case PlanType.FREE:
             if (is_active) {
               setSubscriptionDescription(
-                `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`
+                `You are currently on the Free plan (trial period expired). You are limited to ${callSessionRecord.quantity} simultaneous calls and ${quantity} registered devices`,
               );
             } else {
               setSubscriptionDescription(
-                "Your free trial has expired.  Please upgrade your subscription to a paid plan to continue service"
+                "Your free trial has expired.  Please upgrade your subscription to a paid plan to continue service",
               );
             }
             break;
@@ -633,10 +633,10 @@ export const AccountForm = ({
   const updateBucketTags = (
     index: number,
     key: string,
-    value: typeof bucketTags[number][keyof AwsTag]
+    value: (typeof bucketTags)[number][keyof AwsTag],
   ) => {
     setBucketTags(
-      bucketTags.map((b, i) => (i === index ? { ...b, [key]: value } : b))
+      bucketTags.map((b, i) => (i === index ? { ...b, [key]: value } : b)),
     );
   };
 
@@ -910,7 +910,7 @@ export const AccountForm = ({
                     defaultOption="None"
                     application={[application.stateVal, application.stateSet]}
                     applications={apps.filter(
-                      (app) => app.account_sid === account.data!.account_sid
+                      (app) => app.account_sid === account.data!.account_sid,
                     )}
                   />
                 </fieldset>
@@ -918,7 +918,7 @@ export const AccountForm = ({
             })}
           {webhooks.map((webhook) => {
             const selectOptions = WEBHOOK_METHODS.filter((wm) =>
-              webhook.prefix === "queue_event_hook" ? wm.name !== "GET" : true
+              webhook.prefix === "queue_event_hook" ? wm.name !== "GET" : true,
             );
 
             return (
@@ -1175,10 +1175,10 @@ export const AccountForm = ({
                           <code>
                             {JSON.stringify(
                               getObscuredGoogleServiceKey(
-                                bucketGoogleServiceKey
+                                bucketGoogleServiceKey,
                               ),
                               null,
-                              2
+                              2,
                             )}
                           </code>
                         </pre>
@@ -1208,10 +1208,10 @@ export const AccountForm = ({
                     bucketVendor === BUCKET_VENDOR_S3_COMPATIBLE
                       ? "S3"
                       : bucketVendor === BUCKET_VENDOR_GOOGLE
-                      ? "Google Cloud Storage"
-                      : bucketVendor === BUCKET_VENDOR_AZURE
-                      ? "Azure Cloud Storage"
-                      : ""}{" "}
+                        ? "Google Cloud Storage"
+                        : bucketVendor === BUCKET_VENDOR_AZURE
+                          ? "Azure Cloud Storage"
+                          : ""}{" "}
                     Tags
                   </label>
                   {hasLength(bucketTags) &&
@@ -1251,7 +1251,7 @@ export const AccountForm = ({
                           type="button"
                           onClick={() => {
                             setBucketTags(
-                              bucketTags.filter((g2, i2) => i2 !== i)
+                              bucketTags.filter((g2, i2) => i2 !== i),
                             );
                           }}
                         >

@@ -27,7 +27,7 @@ export const Settings = ({ currentServiceProvider }: SettingsProps) => {
     Scope.service_provider,
     `${ROUTE_INTERNAL_ACCOUNTS}/${user?.account_sid}/edit`,
     user,
-    "You do not have permissions to manage Settings"
+    "You do not have permissions to manage Settings",
   );
 
   return (

@@ -29,7 +29,7 @@ describe("<ScopedAccess>", () => {
     cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: admin</H1>
-      </ScopedAccessTestWrapper>
+      </ScopedAccessTestWrapper>,
     );
     cy.get(".scope-div").should("exist");
   });
@@ -44,7 +44,7 @@ describe("<ScopedAccess>", () => {
     cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: service_provider</H1>
-      </ScopedAccessTestWrapper>
+      </ScopedAccessTestWrapper>,
     );
     cy.get(".scope-div").should("not.exist");
   });
@@ -59,7 +59,7 @@ describe("<ScopedAccess>", () => {
     cy.mountTestProvider(
       <ScopedAccessTestWrapper scope={Scope.admin} user={user}>
         <H1>ScopedAccess: account</H1>
-      </ScopedAccessTestWrapper>
+      </ScopedAccessTestWrapper>,
     );
     cy.get(".scope-div").should("not.exist");
   });

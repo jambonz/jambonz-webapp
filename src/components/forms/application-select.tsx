@@ -34,7 +34,7 @@ export const ApplicationSelect = forwardRef<
       defaultOption,
       ...restProps
     }: ApplicationSelectProps,
-    ref
+    ref,
   ) => {
     useEffect(() => {
       if (hasLength(applications) && !applicationSid && !defaultOption) {
@@ -62,14 +62,14 @@ export const ApplicationSelect = forwardRef<
                   name: application.name,
                   value: application.application_sid,
                 }))
-              : []
+              : [],
           )}
           onChange={(e) => setApplicationSid(e.target.value)}
           {...restProps}
         />
       </>
     );
-  }
+  },
 );
 
 ApplicationSelect.displayName = "ApplicationSelect";

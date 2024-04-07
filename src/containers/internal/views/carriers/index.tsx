@@ -66,14 +66,14 @@ export const Carriers = () => {
       ? carriers.filter((carrier) =>
           accountSid
             ? carrier.account_sid === accountSid
-            : carrier.account_sid === null
+            : carrier.account_sid === null,
         )
       : [];
   }, [accountSid, carrier, carriers]);
 
   const filteredCarriers = useFilteredResults<Carrier>(
     filter,
-    carriersFiltered
+    carriersFiltered,
   );
 
   const handleDelete = () => {
@@ -87,10 +87,10 @@ export const Carriers = () => {
         .then(() => {
           Promise.all([
             getFetch<SipGateway[]>(
-              `${API_SIP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`
+              `${API_SIP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`,
             ),
             getFetch<SmppGateway[]>(
-              `${API_SMPP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`
+              `${API_SMPP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`,
             ),
           ]).then(([sipGatewaysRes, smppGatewaysRes]) => {
             hasLength(sipGatewaysRes.json) &&
@@ -99,8 +99,8 @@ export const Carriers = () => {
                   g &&
                   g.sip_gateway_sid &&
                   deleteSipGateway(g.sip_gateway_sid).catch((error) =>
-                    toastError(error.msg)
-                  )
+                    toastError(error.msg),
+                  ),
               );
             hasLength(smppGatewaysRes.json) &&
               smppGatewaysRes.json.forEach(
@@ -108,8 +108,8 @@ export const Carriers = () => {
                   g &&
                   g.smpp_gateway_sid &&
                   deleteSmppGateway(g.smpp_gateway_sid).catch((error) =>
-                    toastError(error.msg)
-                  )
+                    toastError(error.msg),
+                  ),
               );
           });
           setCarrier(null);
@@ -117,7 +117,7 @@ export const Carriers = () => {
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
-            </>
+            </>,
           );
         })
         .catch((error) => {
@@ -130,7 +130,7 @@ export const Carriers = () => {
     setLocation();
     if (currentServiceProvider) {
       setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`,
       );
     }
   }, [user, currentServiceProvider, accountSid]);

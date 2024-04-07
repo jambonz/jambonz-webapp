@@ -23,6 +23,6 @@ export const Toast = ({ type, message }: ToastProps) => {
         {message}
       </div>
     </div>,
-    portal
+    portal,
   );
 };

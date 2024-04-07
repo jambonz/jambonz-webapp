@@ -33,7 +33,7 @@ const SubscriptionForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isModifySubscription = location.pathname.includes(
-    "modify-subscription"
+    "modify-subscription",
   );
   const [billingCharge, setBillingCharge] = useState<Subscription | null>(null);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
@@ -69,7 +69,7 @@ const SubscriptionForm = () => {
         if (json.status === "success") {
           toastSuccess("Payment completed successfully");
           navigate(
-            `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+            `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
           );
         } else if (json.status === "action required") {
           if (stripe) {
@@ -176,7 +176,7 @@ const SubscriptionForm = () => {
       .then(() => {
         toastSuccess("Downgrade to free plan completed successfully");
         navigate(
-          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
         );
       })
       .catch((error) => {
@@ -201,16 +201,16 @@ const SubscriptionForm = () => {
     })
       .then(() => {
         toastSuccess(
-          "Your subscription capacity has been successfully modified."
+          "Your subscription capacity has been successfully modified.",
         );
         navigate(
-          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+          `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
         );
       })
       .catch(() => {
         toastError(
           `The additional capacity you that you requested could not be granted due to a failure processing payment.
-          Please configure a valid credit card for your account and the upgrade will be automatically processed`
+          Please configure a valid credit card for your account and the upgrade will be automatically processed`,
         );
       })
       .finally(() => {
@@ -254,18 +254,18 @@ const SubscriptionForm = () => {
     },
   ]);
   const [originalServiceData, setOriginalServiceData] = useState<ServiceData[]>(
-    []
+    [],
   );
 
   const initFeesAndCost = (priceData: PriceInfo[]) => {
     serviceData.forEach((service) => {
       const record = priceData.find(
-        (item) => item.category === service.category
+        (item) => item.category === service.category,
       );
 
       if (record) {
         const price = record.prices.find(
-          (item) => item.currency === service.currency
+          (item) => item.currency === service.currency,
         );
 
         if (price) {
@@ -299,7 +299,7 @@ const SubscriptionForm = () => {
 
   const getServicePrice = (
     service: ServiceData,
-    capacity: number
+    capacity: number,
   ): [number, string, number] => {
     let fees = 0;
     let feesLabel = "";
@@ -311,7 +311,7 @@ const SubscriptionForm = () => {
     } else if (service.billing_scheme === "tiered") {
       const filteredTiers = service.tiers
         ? service.tiers.filter(
-            (item) => !item.up_to || item.up_to >= capacityNum
+            (item) => !item.up_to || item.up_to >= capacityNum,
           )
         : [];
       if (filteredTiers.length) {
@@ -360,7 +360,7 @@ const SubscriptionForm = () => {
   const updateServiceData = (
     index: number,
     key: string,
-    value: typeof serviceData[number][keyof ServiceData]
+    value: (typeof serviceData)[number][keyof ServiceData],
   ) => {
     setServiceData(
       serviceData.map((g, i) =>
@@ -370,8 +370,8 @@ const SubscriptionForm = () => {
               [key]: value,
               ...(key === "capacity" && { cost: Number(value) * g.fees }),
             }
-          : g
-      )
+          : g,
+      ),
     );
   };
 
@@ -389,7 +389,7 @@ const SubscriptionForm = () => {
     if (isModifySubscription && originalServiceData.length > 0) {
       setIsDisableSubmitButton(
         serviceData[0].capacity === originalServiceData[0].capacity &&
-          serviceData[1].capacity === originalServiceData[1].capacity
+          serviceData[1].capacity === originalServiceData[1].capacity,
       );
     }
     setTotal(serviceData.reduce((res, service) => res + service.cost || 0, 0));
@@ -506,7 +506,7 @@ const SubscriptionForm = () => {
                             updateServiceData(
                               idx,
                               "capacity",
-                              e.target.value ? Number(e.target.value) : ""
+                              e.target.value ? Number(e.target.value) : "",
                             );
                           }}
                         />

@@ -28,8 +28,8 @@ export const DeleteCarrier = ({
       if (!ignore) {
         setPhoneNumbers(
           json.filter(
-            (phone) => phone.voip_carrier_sid === carrier.voip_carrier_sid
-          )
+            (phone) => phone.voip_carrier_sid === carrier.voip_carrier_sid,
+          ),
         );
       }
     });

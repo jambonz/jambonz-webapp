@@ -40,14 +40,14 @@ export const Applications = () => {
 
   const filteredApplications = useFilteredResults<Application>(
     filter,
-    applications
+    applications,
   );
 
   const handleDelete = () => {
     if (application) {
       if (isUserAccountScope(accountSid, user)) {
         toastError(
-          "You do not have permissions to make changes to this Application"
+          "You do not have permissions to make changes to this Application",
         );
         return;
       }
@@ -59,7 +59,7 @@ export const Applications = () => {
           toastSuccess(
             <>
               Deleted application <strong>{application.name}</strong>
-            </>
+            </>,
           );
         })
         .catch((error) => {
@@ -139,7 +139,7 @@ export const Applications = () => {
                             {
                               accounts?.find(
                                 (acct) =>
-                                  acct.account_sid === application.account_sid
+                                  acct.account_sid === application.account_sid,
                               )?.name
                             }
                           </span>

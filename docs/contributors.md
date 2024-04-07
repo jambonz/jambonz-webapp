@@ -100,7 +100,7 @@ export const postAccount = (payload: Partial<Account>) => {
 export const putAccount = (sid: string, payload: Partial<Account>) => {
   return putFetch<EmptyResponse, Partial<Account>>(
     `${API_ACCOUNTS}/${sid}`,
-    payload
+    payload,
   );
 };
 ```

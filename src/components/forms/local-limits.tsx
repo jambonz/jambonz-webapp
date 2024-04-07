@@ -52,12 +52,12 @@ export const LocalLimits = ({
     ? LIMITS.filter((limit) =>
         unit === LIMIT_SESS
           ? !limit.category.includes(LIMIT_MIN)
-          : limit.category.includes(LIMIT_MIN)
+          : limit.category.includes(LIMIT_MIN),
       )
     : LIMITS.filter(
         (limit) =>
           !limit.category.includes("license") &&
-          !limit.category.includes(LIMIT_MIN)
+          !limit.category.includes(LIMIT_MIN),
       );
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export const LocalLimits = ({
                   }
                   onChange={(e) => {
                     const limit = localLimits.find(
-                      (l) => l.category === category
+                      (l) => l.category === category,
                     );
                     const value = e.target.value ? Number(e.target.value) : "";
 
@@ -139,8 +139,8 @@ export const LocalLimits = ({
                         localLimits.map((l) =>
                           l.category === category
                             ? { ...l, quantity: value }
-                            : l
-                        )
+                            : l,
+                        ),
                       );
                     } else {
                       setLocalLimits([

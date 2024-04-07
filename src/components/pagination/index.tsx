@@ -32,7 +32,7 @@ export const Pagination = ({
     (num: number) => {
       setPageNumber(Math.max(1, Math.min(maxPageNumber, num)));
     },
-    [maxPageNumber, setPageNumber]
+    [maxPageNumber, setPageNumber],
   );
 
   const handleNumberMapping = useCallback(
@@ -100,7 +100,7 @@ export const Pagination = ({
         );
       }
     },
-    [maxPageNumber, pageNumber]
+    [maxPageNumber, pageNumber],
   );
 
   return (
