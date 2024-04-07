@@ -236,7 +236,7 @@ export const CarrierForm = ({
   const updateSipGateways = (
     index: number,
     key: string,
-    value: typeof sipGateways[number][keyof SipGateway]
+    value: (typeof sipGateways)[number][keyof SipGateway],
   ) => {
     setSipGateways(
       sipGateways.map((g, i) =>
@@ -251,18 +251,18 @@ export const CarrierForm = ({
                 getIpValidationType(value) === IP &&
                 g.port === null && { port: 5060 }),
             }
-          : g
-      )
+          : g,
+      ),
     );
   };
 
   const updateSmppGateways = (
     index: number,
     key: string,
-    value: typeof smppGateways[number][keyof SmppGateway]
+    value: (typeof smppGateways)[number][keyof SmppGateway],
   ) => {
     setSmppGateways(
-      smppGateways.map((g, i) => (i === index ? { ...g, [key]: value } : g))
+      smppGateways.map((g, i) => (i === index ? { ...g, [key]: value } : g)),
     );
   };
 
@@ -271,8 +271,8 @@ export const CarrierForm = ({
       sipGateways.map(({ sip_gateway_sid, ...g }: SipGateway) =>
         sip_gateway_sid
           ? putSipGateway(sip_gateway_sid, g)
-          : postSipGateway({ ...g, voip_carrier_sid })
-      )
+          : postSipGateway({ ...g, voip_carrier_sid }),
+      ),
     ).then(() => {
       if (carrierSipGateways) {
         carrierSipGateways.refetch();
@@ -289,7 +289,7 @@ export const CarrierForm = ({
           smpp_gateway_sid
             ? putSmppGateway(smpp_gateway_sid, g)
             : postSmppGateway({ ...g, voip_carrier_sid });
-        })
+        }),
     ).then(() => {
       if (carrierSmppGateways) {
         carrierSmppGateways.refetch();
@@ -300,7 +300,7 @@ export const CarrierForm = ({
   const handleSipGatewayDelete = (g?: SipGateway) => {
     if (g && g.sip_gateway_sid) {
       deleteSipGateway(g.sip_gateway_sid).then(() =>
-        toastSuccess("SIP gateway successfully deleted")
+        toastSuccess("SIP gateway successfully deleted"),
       );
     }
   };
@@ -311,8 +311,8 @@ export const CarrierForm = ({
         toastSuccess(
           `SMPP ${
             g.outbound ? "outbound" : "inbound"
-          } gateway successfully deleted`
-        )
+          } gateway successfully deleted`,
+        ),
       );
     }
   };
@@ -429,7 +429,7 @@ export const CarrierForm = ({
 
     const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
     const invalidSipPort = sipGateways.find(
-      (g) => hasValue(g.port) && !isValidPort(g.port)
+      (g) => hasValue(g.port) && !isValidPort(g.port),
     );
     const sipGatewayValidation = getSipValidation();
 
@@ -530,7 +530,7 @@ export const CarrierForm = ({
         putCarrier(
           currentServiceProvider.service_provider_sid,
           carrier.data.voip_carrier_sid,
-          carrierPayload
+          carrierPayload,
         )
           .then(() => {
             if (carrier.data?.voip_carrier_sid) {
@@ -541,7 +541,7 @@ export const CarrierForm = ({
             toastSuccess("Carrier updated successfully");
             carrier.refetch();
             navigate(
-              `${ROUTE_INTERNAL_CARRIERS}/${carrier.data?.voip_carrier_sid}/edit`
+              `${ROUTE_INTERNAL_CARRIERS}/${carrier.data?.voip_carrier_sid}/edit`,
             );
           })
           .catch((error) => {
@@ -571,7 +571,7 @@ export const CarrierForm = ({
     setLocation();
     if (predefinedName && hasLength(predefinedCarriers)) {
       const predefinedCarrierSid = predefinedCarriers.find(
-        (a) => a.name === predefinedName
+        (a) => a.name === predefinedName,
       )?.predefined_carrier_sid;
 
       if (currentServiceProvider && predefinedCarrierSid) {
@@ -579,11 +579,11 @@ export const CarrierForm = ({
           user?.scope === USER_ACCOUNT
             ? postPredefinedCarrierTemplateAccount(
                 accountSid,
-                predefinedCarrierSid
+                predefinedCarrierSid,
               )
             : postPredefinedCarrierTemplate(
                 currentServiceProvider.service_provider_sid,
-                predefinedCarrierSid
+                predefinedCarrierSid,
               );
 
         postPredefinedCarrier
@@ -693,9 +693,9 @@ export const CarrierForm = ({
                           (carrier: PredefinedCarrier) => ({
                             name: carrier.name,
                             value: carrier.name,
-                          })
+                          }),
                         )
-                      : []
+                      : [],
                   )}
                   onChange={(e) => setPredefinedName(e.target.value)}
                 />
@@ -748,7 +748,7 @@ export const CarrierForm = ({
                 accounts={
                   user?.scope === USER_ACCOUNT
                     ? accounts?.filter(
-                        (acct) => user.account_sid === acct.account_sid
+                        (acct) => user.account_sid === acct.account_sid,
                       )
                     : accounts
                 }
@@ -760,8 +760,8 @@ export const CarrierForm = ({
                   user?.scope !== USER_ACCOUNT
                     ? false
                     : user.account_sid !== accountSid
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
               />
               {user &&
@@ -774,7 +774,7 @@ export const CarrierForm = ({
                       defaultOption="None"
                       application={[applicationSid, setApplicationSid]}
                       applications={applications.filter(
-                        (application) => application.account_sid === accountSid
+                        (application) => application.account_sid === accountSid,
                       )}
                     />
                   </>
@@ -1002,7 +1002,7 @@ export const CarrierForm = ({
                                 !isNotBlank(e.target.value) &&
                                 getIpValidationType(g.ipv4) !== IP
                                 ? null
-                                : Number(e.target.value)
+                                : Number(e.target.value),
                             );
                           }}
                           ref={(ref: HTMLInputElement) =>
@@ -1015,7 +1015,6 @@ export const CarrierForm = ({
                           <Selector
                             id={`sip_protocol_${i}`}
                             name={`sip_protocol${i}`}
-                            placeholder=""
                             value={g.protocol}
                             options={SIP_GATEWAY_PROTOCOL_OPTIONS}
                             onChange={(e) => {
@@ -1028,7 +1027,6 @@ export const CarrierForm = ({
                           <Selector
                             id={`sip_netmask_${i}`}
                             name={`sip_netmask${i}`}
-                            placeholder="32"
                             value={g.netmask}
                             options={NETMASK_OPTIONS}
                             onChange={(e) => {
@@ -1053,7 +1051,7 @@ export const CarrierForm = ({
                               updateSipGateways(
                                 i,
                                 "is_active",
-                                e.target.checked ? 1 : 0
+                                e.target.checked ? 1 : 0,
                               );
                             }}
                           />
@@ -1072,7 +1070,7 @@ export const CarrierForm = ({
                               updateSipGateways(
                                 i,
                                 "inbound",
-                                e.target.checked ? 1 : 0
+                                e.target.checked ? 1 : 0,
                               );
                             }}
                           />
@@ -1091,7 +1089,7 @@ export const CarrierForm = ({
                               updateSipGateways(
                                 i,
                                 "outbound",
-                                e.target.checked
+                                e.target.checked,
                               );
                             }}
                           />
@@ -1113,7 +1111,7 @@ export const CarrierForm = ({
                                 updateSipGateways(
                                   i,
                                   "pad_crypto",
-                                  e.target.checked
+                                  e.target.checked,
                                 );
                               }}
                             />
@@ -1132,15 +1130,15 @@ export const CarrierForm = ({
 
                         if (sipGateways.length === 1) {
                           setSipMessage(
-                            "You must provide at least one SIP Gateway."
+                            "You must provide at least one SIP Gateway.",
                           );
                         } else {
                           handleSipGatewayDelete(
-                            sipGateways.find((g2, i2) => i2 === i)
+                            sipGateways.find((g2, i2) => i2 === i),
                           );
 
                           setSipGateways(
-                            sipGateways.filter((g2, i2) => i2 !== i)
+                            sipGateways.filter((g2, i2) => i2 !== i),
                           );
                         }
                       }}
@@ -1254,7 +1252,7 @@ export const CarrierForm = ({
                               updateSmppGateways(
                                 i,
                                 "port",
-                                Number(e.target.value)
+                                Number(e.target.value),
                               )
                             }
                             ref={(ref: HTMLInputElement) =>
@@ -1273,7 +1271,7 @@ export const CarrierForm = ({
                                 updateSmppGateways(
                                   i,
                                   "use_tls",
-                                  e.target.checked
+                                  e.target.checked,
                                 )
                               }
                             />
@@ -1295,15 +1293,15 @@ export const CarrierForm = ({
                             (smppSystemId || smppPass)
                           ) {
                             setSmppOutboundMessage(
-                              "You must provide at least one Outbound Gateway."
+                              "You must provide at least one Outbound Gateway.",
                             );
                           } else {
                             handleSmppGatewayDelete(
-                              smppGateways.find((g2, i2) => i2 === i)
+                              smppGateways.find((g2, i2) => i2 === i),
                             );
 
                             setSmppGateways(
-                              smppGateways.filter((g2, i2) => i2 !== i)
+                              smppGateways.filter((g2, i2) => i2 !== i),
                             );
                           }
                         }}
@@ -1397,7 +1395,6 @@ export const CarrierForm = ({
                           <Selector
                             id={`smpp_netmask_${i}`}
                             name={`smpp_netmask_${i}`}
-                            placeholder="32"
                             options={NETMASK_OPTIONS}
                             value={g.netmask}
                             onChange={(e) =>
@@ -1412,11 +1409,11 @@ export const CarrierForm = ({
                         type="button"
                         onClick={() => {
                           handleSmppGatewayDelete(
-                            smppGateways.find((g2, i2) => i2 === i)
+                            smppGateways.find((g2, i2) => i2 === i),
                           );
 
                           setSmppGateways(
-                            smppGateways.filter((g2, i2) => i2 !== i)
+                            smppGateways.filter((g2, i2) => i2 !== i),
                           );
                         }}
                       >
