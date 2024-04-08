@@ -63,9 +63,11 @@ export interface FetchError {
 }
 
 export interface UseApiData {
-  <Type>(
-    apiPath: string,
-  ): [Type | undefined, () => void, FetchError | undefined];
+  <Type>(apiPath: string): [
+    Type | undefined,
+    () => void,
+    FetchError | undefined
+  ];
 }
 
 /** API related interfaces */
@@ -390,6 +392,7 @@ export interface SpeechCredential {
   region: null | string;
   aws_region: null | string;
   api_key: null | string;
+  user_id: null | string;
   access_key_id: null | string;
   secret_access_key: null | string;
   service_key: null | string;
@@ -415,6 +418,7 @@ export interface SpeechCredential {
   label: null | string;
   cobalt_server_uri: null | string;
   model_id: null | string;
+  voice_engine: null | string;
   model: null | string;
   options: null | string;
   deepgram_stt_uri: null | string;
@@ -717,4 +721,15 @@ export interface ElevenLabsOptions {
     style: number;
     use_speaker_boost: boolean;
   }>;
+}
+
+export interface PlayHTOptions {
+  quality: string;
+  speed: number;
+  seed: number;
+  temperature: number;
+  emotion: string;
+  voice_guidance: number;
+  style_guidance: number;
+  text_guidance: number;
 }
