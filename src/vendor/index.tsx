@@ -108,7 +108,7 @@ export const useRegionVendors = () => {
             ibm: ibmRegions,
           });
         }
-      }
+      },
     );
 
     return function cleanup() {
