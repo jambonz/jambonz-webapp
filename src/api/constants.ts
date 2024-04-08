@@ -227,7 +227,7 @@ export const DEFAULT_PLAYHT_OPTIONS: Partial<PlayHTOptions> = {
   quality: "medium",
   speed: 1,
   seed: 1,
-  temperature: 0,
+  temperature: 1,
   emotion: "female_happy",
   voice_guidance: 3,
   style_guidance: 20,

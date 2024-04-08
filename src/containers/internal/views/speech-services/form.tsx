@@ -429,7 +429,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           setTtsModels(json.models);
           if (
             json.models.length > 0 &&
-            (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER)
+            (vendor === VENDOR_ELEVENLABS ||
+              vendor === VENDOR_WHISPER ||
+              vendor === VENDOR_PLAYHT)
           ) {
             setTtsModelId(json.models[0].value);
           }
