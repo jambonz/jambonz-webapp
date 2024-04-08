@@ -725,7 +725,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {vendor !== VENDOR_ASSEMBLYAI &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
-              vendor !== VENDOR_PLAYHT &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
                   <input
@@ -741,6 +740,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {vendor !== VENDOR_WELLSAID &&
               vendor !== VENDOR_CUSTOM &&
               vendor !== VENDOR_WHISPER &&
+              vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
