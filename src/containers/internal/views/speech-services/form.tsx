@@ -40,6 +40,7 @@ import {
   VENDOR_ELEVENLABS,
   VENDOR_ASSEMBLYAI,
   VENDOR_WHISPER,
+  VENDOR_PLAYHT,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -69,6 +70,7 @@ import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+  DEFAULT_PLAYHT_OPTIONS,
   DISABLE_CUSTOM_SPEECH,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
 } from "src/api/constants";
@@ -93,6 +95,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   );
   const [region, setRegion] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [userId, setUserId] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [clientId, setClientId] = useState("");
@@ -177,6 +180,30 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       .catch(() => {
         handleError();
       });
+  };
+
+  const getDefaultVendorOptions = () => {
+    if (vendor) {
+      switch (vendor) {
+        case VENDOR_ELEVENLABS:
+          return DEFAULT_ELEVENLABS_OPTIONS;
+        case VENDOR_PLAYHT:
+          return DEFAULT_PLAYHT_OPTIONS;
+      }
+    }
+    return "";
+  };
+
+  const getDefaultVendorApiDoc = () => {
+    if (vendor) {
+      switch (vendor) {
+        case VENDOR_ELEVENLABS:
+          return "https://elevenlabs.io/docs/api-reference/streaming";
+        case VENDOR_PLAYHT:
+          return "https://docs.play.ht/reference/api-generate-tts-audio-stream";
+      }
+    }
+    return "";
   };
 
   const handlePutGoogleCustomVoices = () => {
@@ -297,9 +324,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && {
           model_id: ttsModelId || null,
         }),
-        ...(vendor === VENDOR_ELEVENLABS && {
+        ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_PLAYHT) && {
           options: options || null,
         }),
+        ...(vendor === VENDOR_PLAYHT &&
+          ttsModelId && {
+            voice_engine: ttsModelId,
+          }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_stt_use_tls: deepgramSttUseTls ? 1 : 0,
@@ -345,10 +376,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_ASSEMBLYAI ||
               vendor === VENDOR_SONIOX ||
               vendor === VENDOR_ELEVENLABS ||
+              vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_WHISPER
                 ? apiKey
                 : null,
           }),
+          ...(vendor === VENDOR_PLAYHT &&
+            userId && {
+              user_id: userId,
+            }),
           riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
           .then(({ json }) => {
@@ -379,7 +415,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   };
 
   useEffect(() => {
-    if (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) {
+    if (
+      vendor === VENDOR_ELEVENLABS ||
+      vendor === VENDOR_WHISPER ||
+      vendor === VENDOR_PLAYHT
+    ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
         vendor,
@@ -389,7 +429,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           setTtsModels(json.models);
           if (
             json.models.length > 0 &&
-            (vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER)
+            (vendor === VENDOR_ELEVENLABS ||
+              vendor === VENDOR_WHISPER ||
+              vendor === VENDOR_PLAYHT)
           ) {
             setTtsModelId(json.models[0].value);
           }
@@ -566,6 +608,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_stt_uri));
     setIsDeepgramOnpremEnabled(hasValue(credential?.data?.deepgram_stt_uri));
+
+    if (credential?.data?.user_id) {
+      setUserId(credential.data.user_id);
+    }
+
+    if (credential?.data?.voice_engine) {
+      setTtsModelId(credential.data.voice_engine);
+    }
   }, [credential]);
 
   const updateCustomVoices = (
@@ -692,6 +742,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {vendor !== VENDOR_WELLSAID &&
               vendor !== VENDOR_CUSTOM &&
               vendor !== VENDOR_WHISPER &&
+              vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1133,12 +1184,33 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
+
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
+          vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>
+            {vendor === VENDOR_PLAYHT && (
+              <>
+                <label htmlFor={`${vendor}_userid`}>
+                  User ID<span>*</span>
+                </label>
+                <input
+                  id="playht_user_id"
+                  type="text"
+                  name="playht_user_id"
+                  placeholder="User ID"
+                  required
+                  value={userId}
+                  onChange={(e) => {
+                    setUserId(e.target.value);
+                  }}
+                  disabled={credential ? true : false}
+                />
+              </>
+            )}
             <label htmlFor={`${vendor}_apikey`}>
               API key<span>*</span>
             </label>
@@ -1150,6 +1222,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
+        {vendor === VENDOR_PLAYHT && ttsModels.length > 0 && (
+          <fieldset>
+            <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
+            <Selector
+              id={"tts_model_id"}
+              name={"tts_model_id"}
+              value={ttsModelId}
+              options={ttsModels}
+              onChange={(e) => {
+                setTtsModelId(e.target.value);
+              }}
             />
           </fieldset>
         )}
@@ -1184,7 +1270,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
-        {vendor === VENDOR_ELEVENLABS && (
+        {(vendor === VENDOR_ELEVENLABS || vendor === VENDOR_PLAYHT) && (
           <fieldset>
             <Checkzone
               hidden
@@ -1196,7 +1282,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   setOptions(
                     tmpOptions
                       ? tmpOptions
-                      : JSON.stringify(DEFAULT_ELEVENLABS_OPTIONS, null, 2),
+                      : JSON.stringify(getDefaultVendorOptions(), null, 2),
                   );
                 }
                 if (!e.target.checked) {
@@ -1219,7 +1305,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                 >
                   <a
-                    href="https://elevenlabs.io/docs/api-reference/streaming"
+                    href={getDefaultVendorApiDoc()}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ marginRight: "10px", fontSize: "16px" }}
