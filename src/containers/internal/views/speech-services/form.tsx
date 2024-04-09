@@ -429,6 +429,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           setTtsModels(json.models);
           if (
             json.models.length > 0 &&
+            !json.models.find((m) => m.value === ttsModelId) &&
             (vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_WHISPER ||
               vendor === VENDOR_PLAYHT)
@@ -1227,7 +1228,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {vendor === VENDOR_PLAYHT && ttsModels.length > 0 && (
           <fieldset>
-            <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
+            <label htmlFor={`${vendor}_tts_model_id`}>Voice engine</label>
             <Selector
               id={"tts_model_id"}
               name={"tts_model_id"}
