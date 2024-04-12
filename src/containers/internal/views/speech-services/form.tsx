@@ -41,6 +41,7 @@ import {
   VENDOR_ASSEMBLYAI,
   VENDOR_WHISPER,
   VENDOR_PLAYHT,
+  VENDOR_RIMELABS,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -71,6 +72,7 @@ import {
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DEFAULT_PLAYHT_OPTIONS,
+  DEFAULT_RIMELABS_OPTIONS,
   DISABLE_CUSTOM_SPEECH,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
 } from "src/api/constants";
@@ -189,6 +191,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return DEFAULT_ELEVENLABS_OPTIONS;
         case VENDOR_PLAYHT:
           return DEFAULT_PLAYHT_OPTIONS;
+        case VENDOR_RIMELABS:
+          return DEFAULT_RIMELABS_OPTIONS;
       }
     }
     return "";
@@ -201,6 +205,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return "https://elevenlabs.io/docs/api-reference/streaming";
         case VENDOR_PLAYHT:
           return "https://docs.play.ht/reference/api-generate-tts-audio-stream";
+        case VENDOR_RIMELABS:
+          return "https://rimelabs.mintlify.app/api-reference/endpoint/streaming-mp3#variable-parameters";
       }
     }
     return "";
@@ -321,10 +327,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
         }),
-        ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_WHISPER) && {
+        ...((vendor === VENDOR_ELEVENLABS ||
+          vendor === VENDOR_WHISPER ||
+          vendor === VENDOR_RIMELABS) && {
           model_id: ttsModelId || null,
         }),
-        ...((vendor === VENDOR_ELEVENLABS || vendor === VENDOR_PLAYHT) && {
+        ...((vendor === VENDOR_ELEVENLABS ||
+          vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_RIMELABS) && {
           options: options || null,
         }),
         ...(vendor === VENDOR_PLAYHT &&
@@ -377,6 +387,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_SONIOX ||
               vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_PLAYHT ||
+              vendor === VENDOR_RIMELABS ||
               vendor === VENDOR_WHISPER
                 ? apiKey
                 : null,
@@ -418,7 +429,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     if (
       vendor === VENDOR_ELEVENLABS ||
       vendor === VENDOR_WHISPER ||
-      vendor === VENDOR_PLAYHT
+      vendor === VENDOR_PLAYHT ||
+      vendor === VENDOR_RIMELABS
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -429,10 +441,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           setTtsModels(json.models);
           if (
             json.models.length > 0 &&
-            !json.models.find((m) => m.value === ttsModelId) &&
-            (vendor === VENDOR_ELEVENLABS ||
-              vendor === VENDOR_WHISPER ||
-              vendor === VENDOR_PLAYHT)
+            !json.models.find((m) => m.value === ttsModelId)
           ) {
             setTtsModelId(json.models[0].value);
           }
@@ -744,6 +753,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_CUSTOM &&
               vendor !== VENDOR_WHISPER &&
               vendor !== VENDOR_PLAYHT &&
+              vendor !== VENDOR_RIMELABS &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1191,6 +1201,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_SONIOX) && (
           <fieldset>
             {vendor === VENDOR_PLAYHT && (
@@ -1256,7 +1267,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {(vendor == VENDOR_ELEVENLABS || vendor == VENDOR_WHISPER) &&
+        {(vendor == VENDOR_ELEVENLABS ||
+          vendor == VENDOR_WHISPER ||
+          vendor == VENDOR_RIMELABS) &&
           ttsModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
@@ -1271,7 +1284,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
-        {(vendor === VENDOR_ELEVENLABS || vendor === VENDOR_PLAYHT) && (
+        {(vendor === VENDOR_ELEVENLABS ||
+          vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_RIMELABS) && (
           <fieldset>
             <Checkzone
               hidden

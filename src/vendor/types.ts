@@ -13,7 +13,8 @@ export type Vendor =
   | "ElevenLabs"
   | "assemblyai"
   | "whisper"
-  | "playht";
+  | "playht"
+  | "rimelabs";
 
 export interface VendorOptions {
   name: Vendor;
