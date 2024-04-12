@@ -5,6 +5,7 @@ import type {
   LimitUnitOption,
   PasswordSettings,
   PlayHTOptions,
+  RimelabsOptions,
   SelectorOptions,
   SipGateway,
   SmppGateway,
@@ -220,6 +221,12 @@ export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
     similarity_boost: 0.5,
     use_speaker_boost: true,
   },
+};
+
+// Rimelabs options
+export const DEFAULT_RIMELABS_OPTIONS: Partial<RimelabsOptions> = {
+  speedAlpha: 1.0,
+  reduceLatency: true,
 };
 
 // PlayHT options

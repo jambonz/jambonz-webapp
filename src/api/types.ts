@@ -731,3 +731,8 @@ export interface PlayHTOptions {
   style_guidance: number;
   text_guidance: number;
 }
+
+export interface RimelabsOptions {
+  speedAlpha: number;
+  reduceLatency: boolean;
+}
