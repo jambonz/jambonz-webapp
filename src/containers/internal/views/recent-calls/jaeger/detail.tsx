@@ -3,6 +3,7 @@ import { JaegerGroup, JaegerValue } from "src/api/jaeger-types";
 import dayjs from "dayjs";
 import "./styles.scss";
 import { formattedDuration } from "./utils";
+import { getSpansByNameRegex } from "../utils";
 
 type JaegerDetailProps = {
   group: JaegerGroup;
@@ -65,6 +66,37 @@ export const JaegerDetail = ({ group }: JaegerDetailProps) => {
             </div>
           </div>
         ))}
+
+        {/* TTS Streaming Attrs */}
+        {group.children.length &&
+          getSpansByNameRegex(group.children, /tts-generation/)?.map((span) => {
+            return span.attributes.map((attribute) => {
+              if (
+                ![
+                  "tts.vendor",
+                  "tts.language",
+                  "tts.voice",
+                  "tts.cached",
+                  "engine",
+                  "voice",
+                ].includes(attribute.key)
+              ) {
+                return (
+                  <div
+                    key={attribute.key}
+                    className="spanDetailsWrapper__details"
+                  >
+                    <div className="spanDetailsWrapper__details_header">
+                      <strong>{attribute.key}</strong>:
+                    </div>
+                    <div className="spanDetailsWrapper__details_body">
+                      {extractSpanGroupValue(attribute.value)}
+                    </div>
+                  </div>
+                );
+              }
+            });
+          })}
       </div>
     </div>
   );
