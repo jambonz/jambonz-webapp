@@ -27,7 +27,9 @@ export const Bar = ({ group }: BarProps) => {
       <div
         className="barWrapper"
         role={"presentation"}
-        onClick={() => setJaegerDetail(group)}
+        onClick={() => {
+          setJaegerDetail(group);
+        }}
       >
         <div role="presentation" className="barWrapper__row">
           <div
