@@ -15,13 +15,13 @@ export const EditCarrier = () => {
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Carrier>(
-    `VoipCarriers/${params.voip_carrier_sid}`
+    `VoipCarriers/${params.voip_carrier_sid}`,
   );
   const [sipGateways, sipGatewaysRefetch] = useApiData<SipGateway[]>(
-    `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+    `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`,
   );
   const [smppGateways, smppGatewaysRefetch] = useApiData<SmppGateway[]>(
-    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`
+    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`,
   );
 
   useScopedRedirect(
@@ -29,7 +29,7 @@ export const EditCarrier = () => {
     ROUTE_INTERNAL_CARRIERS,
     user,
     "You do not have access to this resource",
-    data
+    data,
   );
 
   useEffect(() => {

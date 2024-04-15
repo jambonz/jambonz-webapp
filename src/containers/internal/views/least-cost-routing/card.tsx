@@ -27,7 +27,7 @@ type CardProps = {
     index1: number,
     index2: number,
     key: string,
-    value: unknown
+    value: unknown,
   ) => void;
   handleRouteDelete: (lr: LcrRoute, index: number) => void;
   carrierSelectorOptions: SelectorOption[];
@@ -141,7 +141,6 @@ export const Card = ({
         <Selector
           id={`lcr_carrier_set_entry_carrier_${index}`}
           name={`lcr_carrier_set_entry_carrier_${index}`}
-          placeholder="Carrier"
           value={
             lr.lcr_carrier_set_entries && lr.lcr_carrier_set_entries.length > 0
               ? lr.lcr_carrier_set_entries[0].voip_carrier_sid
@@ -156,7 +155,7 @@ export const Card = ({
               index,
               0,
               "voip_carrier_sid",
-              e.target.value
+              e.target.value,
             );
           }}
         />

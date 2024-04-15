@@ -10,6 +10,10 @@ export const regions: Region[] = [
     value: "brazilsouth",
   },
   {
+    name: "Qatar - Central (qatarcentral)",
+    value: "qatarcentral",
+  },
+  {
     name: "Canada - Central (canadacentral)",
     value: "canadacentral",
   },
@@ -52,6 +56,10 @@ export const regions: Region[] = [
   {
     name: "Norway - East (norwayeast)",
     value: "norwayeast",
+  },
+  {
+    name: "Sweden - Central (swedencentral)",
+    value: "swedencentral",
   },
   {
     name: "South Africa - North (southafricanorth)",

@@ -24,17 +24,17 @@ export const EditSpeechService = () => {
     ROUTE_INTERNAL_SPEECH,
     user,
     "You do not have access to this resource",
-    data
+    data,
   );
 
   const getUrlForSpeech = () => {
     if (user && user?.scope === USER_ACCOUNT) {
       setUrl(
-        `Accounts/${user?.account_sid}/SpeechCredentials/${params.speech_credential_sid}`
+        `Accounts/${user?.account_sid}/SpeechCredentials/${params.speech_credential_sid}`,
       );
     } else {
       setUrl(
-        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials/${params.speech_credential_sid}`
+        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials/${params.speech_credential_sid}`,
       );
     }
   };

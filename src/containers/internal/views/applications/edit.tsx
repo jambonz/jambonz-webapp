@@ -15,7 +15,7 @@ export const EditApplication = () => {
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Application>(
-    `Applications/${params.application_sid}`
+    `Applications/${params.application_sid}`,
   );
 
   useScopedRedirect(
@@ -23,7 +23,7 @@ export const EditApplication = () => {
     ROUTE_INTERNAL_APPLICATIONS,
     user,
     "You do not have access to this resource",
-    data
+    data,
   );
 
   useEffect(() => {

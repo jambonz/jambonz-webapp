@@ -4,6 +4,8 @@ import type {
   LimitField,
   LimitUnitOption,
   PasswordSettings,
+  PlayHTOptions,
+  RimelabsOptions,
   SelectorOptions,
   SipGateway,
   SmppGateway,
@@ -211,7 +213,7 @@ export const GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = [
   { name: "REALTIME", value: "REALTIME" },
   { name: "OFFLINE", value: "OFFLINE" },
 ];
-// Eleven Labs options
+// ElevenLabs options
 export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
   optimize_streaming_latency: 3,
   voice_settings: {
@@ -219,6 +221,24 @@ export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
     similarity_boost: 0.5,
     use_speaker_boost: true,
   },
+};
+
+// Rimelabs options
+export const DEFAULT_RIMELABS_OPTIONS: Partial<RimelabsOptions> = {
+  speedAlpha: 1.0,
+  reduceLatency: true,
+};
+
+// PlayHT options
+export const DEFAULT_PLAYHT_OPTIONS: Partial<PlayHTOptions> = {
+  quality: "medium",
+  speed: 1,
+  seed: 1,
+  temperature: 1,
+  emotion: "female_happy",
+  voice_guidance: 3,
+  style_guidance: 20,
+  text_guidance: 1,
 };
 /** Password Length options */
 

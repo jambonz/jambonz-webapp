@@ -37,8 +37,8 @@ export const CredentialStatus = ({
             status === CRED_OK
               ? "teal"
               : status === CRED_NOT_TESTED
-              ? "jean"
-              : "jam"
+                ? "jean"
+                : "jam"
           }`}
           title={status === CRED_NOT_TESTED ? notTestedTxt : reason}
         >
@@ -61,11 +61,11 @@ export const CredentialStatus = ({
   useEffect(() => {
     if (user && user.scope === USER_ACCOUNT) {
       setApiUrl(
-        `Accounts/${user.account_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+        `Accounts/${user.account_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`,
       );
     } else if (currentServiceProvider) {
       setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/SpeechCredentials/${cred.speech_credential_sid}/test`,
       );
     }
   }, [user, cred, currentServiceProvider]);

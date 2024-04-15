@@ -46,7 +46,7 @@ export const SearchFilter = ({
         setAppearance(false);
       }
     },
-    [setFilterValue]
+    [setFilterValue],
   );
 
   const handleActive = useCallback(() => {

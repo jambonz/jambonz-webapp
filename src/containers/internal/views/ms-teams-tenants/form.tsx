@@ -49,7 +49,7 @@ export const MsTeamsTenantForm = ({
   useRedirect<Account>(
     accounts,
     ROUTE_INTERNAL_ACCOUNTS,
-    "You must create an account before you can create an Microsoft Teams Tenant."
+    "You must create an account before you can create an Microsoft Teams Tenant.",
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,7 +63,7 @@ export const MsTeamsTenantForm = ({
           ? msTeamsTenants.filter(
               (a) =>
                 a.ms_teams_tenant_sid !==
-                msTeamsTenant.data!.ms_teams_tenant_sid
+                msTeamsTenant.data!.ms_teams_tenant_sid,
             )
           : msTeamsTenants;
 
@@ -156,7 +156,7 @@ export const MsTeamsTenantForm = ({
             applications={
               applications
                 ? applications.filter(
-                    (application) => application.account_sid === accountSid
+                    (application) => application.account_sid === accountSid,
                   )
                 : []
             }

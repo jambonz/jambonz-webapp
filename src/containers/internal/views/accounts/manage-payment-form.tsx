@@ -35,7 +35,7 @@ export const ManagePaymentForm = () => {
         if (json.status === "success") {
           toastSuccess("Payment completed successfully");
           navigate(
-            `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`
+            `${ROUTE_INTERNAL_ACCOUNTS}/${userData?.account?.account_sid}/edit`,
           );
         } else if (json.status === "action required") {
           if (stripe) {

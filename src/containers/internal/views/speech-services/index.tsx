@@ -49,27 +49,27 @@ export const SpeechServices = () => {
       ? credentials.filter((credential) =>
           accountSid
             ? credential.account_sid === accountSid
-            : credential.account_sid === null
+            : credential.account_sid === null,
         )
       : [];
   }, [accountSid, accounts, credentials]);
 
   const filteredCredentials = useFilteredResults<SpeechCredential>(
     filter,
-    credentialsFiltered
+    credentialsFiltered,
   );
 
   const handleDelete = () => {
     if (credential && currentServiceProvider) {
       if (isUserAccountScope(accountSid, user)) {
         toastError(
-          "You do not have permissions to delete these Speech Credentials"
+          "You do not have permissions to delete these Speech Credentials",
         );
         return;
       }
       deleteSpeechService(
         currentServiceProvider.service_provider_sid,
-        credential.speech_credential_sid
+        credential.speech_credential_sid,
       )
         .then(() => {
           setCredential(null);
@@ -81,7 +81,7 @@ export const SpeechServices = () => {
                 {credential.vendor}
                 {credential.label ? ` (${credential.label})` : ""}
               </strong>{" "}
-            </>
+            </>,
           );
         })
         .catch((error) => {
@@ -97,7 +97,7 @@ export const SpeechServices = () => {
       setApiUrl(`Accounts/${accountSid}/SpeechCredentials`);
     } else {
       setApiUrl(
-        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`
+        `ServiceProviders/${currentServiceProvider?.service_provider_sid}/SpeechCredentials`,
       );
     }
   }, [currentServiceProvider, accountSid]);
@@ -149,7 +149,7 @@ export const SpeechServices = () => {
                             Vendor:{" "}
                             {credential.vendor.startsWith(VENDOR_CUSTOM)
                               ? credential.vendor.substring(
-                                  VENDOR_CUSTOM.length + 1
+                                  VENDOR_CUSTOM.length + 1,
                                 )
                               : credential.vendor}
                           </strong>

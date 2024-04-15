@@ -20,6 +20,8 @@ export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
 export const VENDOR_ASSEMBLYAI = "assemblyai";
 export const VENDOR_WHISPER = "whisper";
+export const VENDOR_PLAYHT = "playht";
+export const VENDOR_RIMELABS = "rimelabs";
 
 export const vendors: VendorOptions[] = [
   {
@@ -78,6 +80,14 @@ export const vendors: VendorOptions[] = [
     name: "Whisper",
     value: VENDOR_WHISPER,
   },
+  {
+    name: "PlayHT",
+    value: VENDOR_PLAYHT,
+  },
+  {
+    name: "RimeLabs",
+    value: VENDOR_RIMELABS,
+  },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
 export const useRegionVendors = () => {
@@ -103,7 +113,7 @@ export const useRegionVendors = () => {
             ibm: ibmRegions,
           });
         }
-      }
+      },
     );
 
     return function cleanup() {

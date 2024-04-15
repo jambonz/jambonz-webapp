@@ -66,10 +66,10 @@ export const DeleteApplication = ({
             (account) =>
               account.device_calling_application_sid ===
                 application.application_sid ||
-              account.siprec_hook_sid === application.application_sid
+              account.siprec_hook_sid === application.application_sid,
           ),
           teams: msteamRes.json.filter(
-            (team) => team.application_sid === application.application_sid
+            (team) => team.application_sid === application.application_sid,
           ),
         };
         const deletable =

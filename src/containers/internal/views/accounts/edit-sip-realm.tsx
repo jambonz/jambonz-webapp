@@ -44,8 +44,8 @@ export const EditSipRealm = () => {
       getAvailability(`${name}.${userData?.account?.root_domain}`)
         .then(({ json }) =>
           setIsValidDomain(
-            Boolean(json.available) && hasValue(name) && name.length != 0
-          )
+            Boolean(json.available) && hasValue(name) && name.length != 0,
+          ),
         )
         .catch((error) => {
           setErrorMessage(error.msg);

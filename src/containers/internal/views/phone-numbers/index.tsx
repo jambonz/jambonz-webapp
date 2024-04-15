@@ -56,14 +56,14 @@ export const PhoneNumbers = () => {
     setAccountSid(getAccountFilter());
     return phoneNumbers
       ? phoneNumbers.filter(
-          (phn) => !accountSid || phn.account_sid === accountSid
+          (phn) => !accountSid || phn.account_sid === accountSid,
         )
       : [];
   }, [accountSid, phoneNumbers]);
 
   const filteredPhoneNumbers = useFilteredResults<PhoneNumber>(
     filter,
-    phoneNumbersFiltered
+    phoneNumbersFiltered,
   );
 
   const handleMassEdit = () => {
@@ -74,7 +74,7 @@ export const PhoneNumbers = () => {
         };
 
         return putPhoneNumber(phoneNumber.phone_number_sid, payload);
-      })
+      }),
     )
       .then(() => {
         refetch();
@@ -98,7 +98,7 @@ export const PhoneNumbers = () => {
           toastSuccess(
             <>
               Deleted phone number <strong>{phoneNumber.number}</strong>
-            </>
+            </>,
           );
         })
         .catch((error) => {
@@ -177,7 +177,7 @@ export const PhoneNumbers = () => {
                           application={[applicationSid, setApplicationSid]}
                           applications={applications?.filter(
                             (application) =>
-                              application.account_sid === accountSid
+                              application.account_sid === accountSid,
                           )}
                           defaultOption="None"
                         />
@@ -224,7 +224,7 @@ export const PhoneNumbers = () => {
                               selectedPhoneNumbers.find(
                                 (phone) =>
                                   phone.phone_number_sid ===
-                                  phoneNumber.phone_number_sid
+                                  phoneNumber.phone_number_sid,
                               )
                                 ? true
                                 : false
@@ -240,8 +240,8 @@ export const PhoneNumbers = () => {
                                   curr.filter(
                                     (phone) =>
                                       phone.phone_number_sid !==
-                                      phoneNumber.phone_number_sid
-                                  )
+                                      phoneNumber.phone_number_sid,
+                                  ),
                                 );
                               }
                             }}
@@ -270,7 +270,8 @@ export const PhoneNumbers = () => {
                               {
                                 accounts?.find(
                                   (acct) =>
-                                    acct.account_sid === phoneNumber.account_sid
+                                    acct.account_sid ===
+                                    phoneNumber.account_sid,
                                 )?.name
                               }
                             </span>
@@ -287,7 +288,7 @@ export const PhoneNumbers = () => {
                               {applications?.find(
                                 (app) =>
                                   app.application_sid ===
-                                  phoneNumber.application_sid
+                                  phoneNumber.application_sid,
                               )?.name || "None"}
                             </span>
                           </div>

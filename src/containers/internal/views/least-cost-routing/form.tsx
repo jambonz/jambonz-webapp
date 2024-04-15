@@ -85,7 +85,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     setLocation();
     if (currentServiceProvider) {
       setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`,
       );
     }
   }, [user, currentServiceProvider, accountSid]);
@@ -99,7 +99,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       ? carriers.filter((carrier) =>
           accountSid
             ? carrier.account_sid === accountSid
-            : carrier.account_sid === null
+            : carrier.account_sid === null,
         )
       : [];
 
@@ -118,7 +118,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       setErrorMessage(
         accountSid
           ? "There are no available carriers defined for this account"
-          : "There are no available carriers"
+          : "There are no available carriers",
       );
     } else {
       setErrorMessage("");
@@ -149,7 +149,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           ) {
             setDefaultLcrCarrier(entry.voip_carrier_sid || defaultCarrier);
             setDefaultLcrCarrierSetEntrySid(
-              entry.lcr_carrier_set_entry_sid || null
+              entry.lcr_carrier_set_entry_sid || null,
             );
             default_lcr_route_sid = entry.lcr_route_sid || "";
             setDefaultLcrRoute(lr);
@@ -161,8 +161,8 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     if (lcrRouteDataMap && lcrRouteDataMap.data)
       setLcrRoutes(
         lcrRouteDataMap.data.filter(
-          (route) => route.lcr_route_sid !== default_lcr_route_sid
-        )
+          (route) => route.lcr_route_sid !== default_lcr_route_sid,
+        ),
       );
   }, [lcrRouteDataMap?.data]);
 
@@ -177,7 +177,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           (r) => ({
             ...r,
             voip_carrier_sid: defaultCarrier || carrierSelectorOptions[0].value,
-          })
+          }),
         ),
       },
     ];
@@ -235,7 +235,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
                 navigate(ROUTE_INTERNAL_LEST_COST_ROUTING);
               } else {
                 navigate(
-                  `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${json.sid}/edit`
+                  `${ROUTE_INTERNAL_LEST_COST_ROUTING}/${json.sid}/edit`,
                 );
               }
               // Update global state
@@ -301,7 +301,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
           toastSuccess(
             <>
               Deleted least cost routing <strong>{lcrForDelete?.name}</strong>
-            </>
+            </>,
           );
           setLcrForDelete(null);
           if (user?.access === Scope.admin) {

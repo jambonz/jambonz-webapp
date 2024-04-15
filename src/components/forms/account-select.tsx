@@ -28,7 +28,7 @@ export const AccountSelect = forwardRef<SelectorRef, AccountSelectProps>(
       defaultOption,
       ...restProps
     }: AccountSelectProps,
-    ref
+    ref,
   ) => {
     useEffect(() => {
       if (hasLength(accounts) && !accountSid && !defaultOption) {
@@ -56,14 +56,14 @@ export const AccountSelect = forwardRef<SelectorRef, AccountSelectProps>(
                   name: account.name,
                   value: account.account_sid,
                 }))
-              : []
+              : [],
           )}
           onChange={(e) => setAccountSid(e.target.value)}
           {...restProps}
         />
       </>
     );
-  }
+  },
 );
 
 AccountSelect.displayName = "AccountSelect";

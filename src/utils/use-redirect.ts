@@ -8,7 +8,7 @@ import type { IMessage } from "src/store/types";
 export const useRedirect = <Type>(
   collection: Type[] | undefined,
   redirect: string,
-  message: IMessage
+  message: IMessage,
 ) => {
   const navigate = useNavigate();
 

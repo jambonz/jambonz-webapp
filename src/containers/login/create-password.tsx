@@ -63,7 +63,7 @@ export const CreatePassword = () => {
               <li>Contain at least one special character</li>
             )}
           </ul>
-        </>
+        </>,
       );
       return;
     }
@@ -90,7 +90,7 @@ export const CreatePassword = () => {
             navigate(
               userData.scope !== USER_ACCOUNT
                 ? ROUTE_INTERNAL_ACCOUNTS
-                : ROUTE_INTERNAL_APPLICATIONS
+                : ROUTE_INTERNAL_APPLICATIONS,
             );
           } else {
             setMessage(MSG_SOMETHING_WRONG);

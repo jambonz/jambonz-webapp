@@ -32,7 +32,7 @@ export const Lcrs = () => {
     Scope.admin,
     `${ROUTE_INTERNAL_LEST_COST_ROUTING}/add`,
     user,
-    "You do not have permissions to manage all outbound call routes"
+    "You do not have permissions to manage all outbound call routes",
   );
   const [lcrs, refetch] = useApiData<Lcr[]>("Lcrs");
   const [filter, setFilter] = useState("");
@@ -53,9 +53,9 @@ export const Lcrs = () => {
           accountSid
             ? lcr.account_sid === accountSid
             : currentServiceProvider?.service_provider_sid
-            ? lcr.service_provider_sid ==
-              currentServiceProvider.service_provider_sid
-            : lcr.account_sid === null
+              ? lcr.service_provider_sid ==
+                currentServiceProvider.service_provider_sid
+              : lcr.account_sid === null,
         )
       : [];
   }, [accountSid, lcrs]);
@@ -68,7 +68,7 @@ export const Lcrs = () => {
           toastSuccess(
             <>
               Deleted outbound call route <strong>{lcr?.name}</strong>
-            </>
+            </>,
           );
           setLcr(null);
           refetch();
@@ -156,7 +156,7 @@ export const Lcrs = () => {
                         <span>
                           {lcr.account_sid
                             ? accounts?.find(
-                                (acct) => acct.account_sid === lcr.account_sid
+                                (acct) => acct.account_sid === lcr.account_sid,
                               )?.name
                             : currentServiceProvider?.name}
                         </span>

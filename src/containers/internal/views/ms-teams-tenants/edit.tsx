@@ -11,7 +11,7 @@ import type { MSTeamsTenant } from "src/api/types";
 export const EditMsTeamsTenant = () => {
   const params = useParams();
   const [data, refetch, error] = useApiData<MSTeamsTenant>(
-    `MicrosoftTeamsTenants/${params.ms_teams_tenant_sid}`
+    `MicrosoftTeamsTenants/${params.ms_teams_tenant_sid}`,
   );
 
   useEffect(() => {

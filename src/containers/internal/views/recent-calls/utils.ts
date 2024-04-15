@@ -11,12 +11,12 @@ export const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
               !(
                 attr.key.startsWith("telemetry") ||
                 attr.key.startsWith("internal")
-              )
+              ),
           );
           value.attributes = attrs;
           spans.push(value);
         });
-      }
+      },
     );
   });
   spans.sort((a, b) => a.startTimeUnixNano - b.startTimeUnixNano);
@@ -25,14 +25,14 @@ export const getSpansFromJaegerRoot = (trace: JaegerRoot) => {
 
 export const getSpansByName = (
   spans: JaegerSpan[],
-  name: string
+  name: string,
 ): JaegerSpan[] => {
   return spans.filter((s) => s.name === name);
 };
 
 export const getSpansByNameRegex = (
   spans: JaegerSpan[],
-  pattern: RegExp
+  pattern: RegExp,
 ): JaegerSpan[] => {
   const matcher = new RegExp(pattern);
   return spans.filter((s) => matcher.test(s.name));
@@ -40,7 +40,7 @@ export const getSpansByNameRegex = (
 
 export const getSpanAttributeByName = (
   attr: JaegerAttribute[],
-  name: string
+  name: string,
 ): JaegerAttribute[] => {
   return attr.filter((a) => a.key === name);
 };

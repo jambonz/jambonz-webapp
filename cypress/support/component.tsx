@@ -44,7 +44,7 @@ declare global {
        */
       mountTestProvider(
         component: React.ReactNode,
-        options?: MountOptions & { authProps?: TestProviderProps["authProps"] }
+        options?: MountOptions & { authProps?: TestProviderProps["authProps"] },
       ): Cypress.Chainable<MountReturn>;
     }
   }

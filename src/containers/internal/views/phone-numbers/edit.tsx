@@ -11,7 +11,7 @@ import type { PhoneNumber } from "src/api/types";
 export const EditPhoneNumber = () => {
   const params = useParams();
   const [data, refetch, error] = useApiData<PhoneNumber>(
-    `PhoneNumbers/${params.phone_number_sid}`
+    `PhoneNumbers/${params.phone_number_sid}`,
   );
 
   useEffect(() => {

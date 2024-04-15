@@ -76,7 +76,7 @@ export const Navi = ({
 
   const naviByoFiltered = useMemo(() => {
     return naviByo.filter(
-      (item) => !item.acl || (item.acl && accessControl[item.acl])
+      (item) => !item.acl || (item.acl && accessControl[item.acl]),
     );
   }, [accessControl, currentServiceProvider]);
 
@@ -100,7 +100,7 @@ export const Navi = ({
         toastSuccess(
           <>
             Added new service provider <strong>{name}</strong>
-          </>
+          </>,
         );
         dispatch({ type: "serviceProviders" });
         setSid(json.sid);
@@ -123,7 +123,7 @@ export const Navi = ({
     setSid(getActiveSP());
     if (sid) {
       const serviceProvider = serviceProviders.find(
-        (sp) => sp.service_provider_sid === sid
+        (sp) => sp.service_provider_sid === sid,
       );
 
       if (serviceProvider) {

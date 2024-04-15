@@ -23,13 +23,13 @@ export const Container = ({
           [dragIndex, 1],
           [hoverIndex, 0, prevCards[dragIndex]],
         ],
-      })
+      }),
     );
   };
 
   const updateLcrRoute = (index: number, key: string, value: unknown) => {
     setLcrRoutes(
-      lcrRoutes.map((lr, i) => (i === index ? { ...lr, [key]: value } : lr))
+      lcrRoutes.map((lr, i) => (i === index ? { ...lr, [key]: value } : lr)),
     );
   };
 
@@ -37,7 +37,7 @@ export const Container = ({
     index1: number,
     index2: number,
     key: string,
-    value: unknown
+    value: unknown,
   ) => {
     setLcrRoutes(
       lcrRoutes.map((lr, i) =>
@@ -51,11 +51,11 @@ export const Container = ({
                         ...entry,
                         [key]: value,
                       }
-                    : entry
+                    : entry,
               ),
             }
-          : lr
-      )
+          : lr,
+      ),
     );
   };
 

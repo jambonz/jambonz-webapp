@@ -84,7 +84,7 @@ export const parseJwt = (token: string) => {
       .map((c) => {
         return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
       })
-      .join("")
+      .join(""),
   );
 
   return JSON.parse(jsonPayload);
@@ -117,7 +117,7 @@ export const useProvideAuth = (): AuthStateContext => {
                     navigate(
                       userData.scope !== USER_ACCOUNT
                         ? ROUTE_INTERNAL_ACCOUNTS
-                        : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
+                        : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`,
                     );
                   }
                 })
@@ -132,7 +132,7 @@ export const useProvideAuth = (): AuthStateContext => {
               navigate(
                 userData.scope !== USER_ACCOUNT
                   ? ROUTE_INTERNAL_ACCOUNTS
-                  : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`
+                  : `${ROUTE_INTERNAL_ACCOUNTS}/${userData.account_sid}/edit`,
               );
             }
 

@@ -71,7 +71,7 @@ export const Player = ({ call }: PlayerProps) => {
         const [dtmfValue] = getSpanAttributeByName(s.attributes, "dtmf");
         const [durationValue] = getSpanAttributeByName(
           s.attributes,
-          "duration"
+          "duration",
         );
         if (dtmfValue && durationValue) {
           const start =
@@ -127,7 +127,7 @@ export const Player = ({ call }: PlayerProps) => {
   const getSilenceStartTime = (
     start: number,
     end: number,
-    channel: number
+    channel: number,
   ): number => {
     if (waveSurferRef.current) {
       const duration = waveSurferRef.current.getDecodedData()?.duration;
@@ -161,7 +161,7 @@ export const Player = ({ call }: PlayerProps) => {
   const drawSttRegionForSpan = (
     s: JaegerSpan,
     startPoint: JaegerSpan,
-    channel = 0
+    channel = 0,
   ) => {
     if (waveSurferRegionsPluginRef.current) {
       const r = waveSurferRegionsPluginRef.current
@@ -191,7 +191,7 @@ export const Player = ({ call }: PlayerProps) => {
 
           const [sttResolve] = getSpanAttributeByName(
             s.attributes,
-            "stt.resolve"
+            "stt.resolve",
           );
           if (
             endSpeechTime > 0 &&
@@ -213,7 +213,7 @@ export const Player = ({ call }: PlayerProps) => {
         } else {
           const [sttResolve] = getSpanAttributeByName(
             s.attributes,
-            "stt.resolve"
+            "stt.resolve",
           );
           if (sttResolve && sttResolve.value.stringValue === "timeout") {
             att = {
@@ -266,7 +266,7 @@ export const Player = ({ call }: PlayerProps) => {
         const [ttsCache] = getSpanAttributeByName(s.attributes, "tts.cached");
         const [streamLatency] = getSpanAttributeByName(
           s.attributes,
-          "time_to_first_byte_ms"
+          "time_to_first_byte_ms",
         );
         if (streamLatency && streamLatency.value.stringValue) {
           end = start + Number(streamLatency.value.stringValue) / 1_000;
@@ -320,7 +320,7 @@ export const Player = ({ call }: PlayerProps) => {
         });
         const [statusCode] = getSpanAttributeByName(
           s.attributes,
-          "http.statusCode"
+          "http.statusCode",
         );
         changeRegionMouseStyle(latencyRegion, 0);
         latencyRegion.on("click", () => {
@@ -363,7 +363,7 @@ export const Player = ({ call }: PlayerProps) => {
           drawSttRegionForSpan(
             cs,
             startPoint,
-            channel > 0 ? channel - 1 : channel
+            channel > 0 ? channel - 1 : channel,
           );
         });
         // DTMF
@@ -383,11 +383,11 @@ export const Player = ({ call }: PlayerProps) => {
           .filter((s) => {
             const [httpBody] = getSpanAttributeByName(
               s.attributes,
-              "http.body"
+              "http.body",
             );
             return (
               httpBody.value.stringValue.includes(
-                '"reason":"speechDetected"'
+                '"reason":"speechDetected"',
               ) ||
               httpBody.value.stringValue.includes('"reason":"dtmfDetected"')
             );
@@ -515,8 +515,8 @@ export const Player = ({ call }: PlayerProps) => {
         idx <= 0
           ? 0
           : idx >= waveSurferRef.current.getDuration()
-          ? waveSurferRef.current.getDuration() - 1
-          : idx;
+            ? waveSurferRef.current.getDuration() - 1
+            : idx;
       waveSurferRef.current.setTime(value);
       setPlayBackTime(formatTime(value));
     }

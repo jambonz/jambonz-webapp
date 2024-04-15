@@ -20,7 +20,7 @@ export const ClipBoard = ({ text, id = "", name = "" }: ClipBoardProps) => {
         toastSuccess(
           <>
             <strong>{text}</strong> copied to clipboard
-          </>
+          </>,
         );
       })
       .catch(() => {
@@ -28,7 +28,7 @@ export const ClipBoard = ({ text, id = "", name = "" }: ClipBoardProps) => {
           <>
             Unable to copy <strong>{text}</strong>, please select the text and
             right click to copy
-          </>
+          </>,
         );
       });
   };

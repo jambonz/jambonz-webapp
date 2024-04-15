@@ -50,7 +50,7 @@ export const Modal = ({
         </ButtonGroup>
       </div>
     </div>,
-    portal
+    portal,
   );
 };
 
@@ -87,7 +87,7 @@ export const ModalForm = ({
         </ButtonGroup>
       </form>
     </div>,
-    portal
+    portal,
   );
 };
 
@@ -113,7 +113,7 @@ export const ModalClose = ({ children, handleClose }: CloseProps) => {
         </ButtonGroup>
       </div>
     </div>,
-    portal
+    portal,
   );
 };
 
@@ -147,6 +147,6 @@ export const ModalLoader = ({ children }: LoaderProps) => {
         </div>
       </div>
     </div>,
-    portal
+    portal,
   );
 };

@@ -111,14 +111,14 @@ app.get(
       page: query.page,
       data: paged,
     });
-  }
+  },
 );
 
 app.get(
   "/api/Accounts/:account_sid/RecentCalls/:call_sid",
   (req: Request, res: Response) => {
     res.status(200).json({ total: Math.random() > 0.5 ? 1 : 0 });
-  }
+  },
 );
 
 app.get(
@@ -126,7 +126,7 @@ app.get(
   (req: Request, res: Response) => {
     /** Sample pcap file from: https://wiki.wireshark.org/SampleCaptures#sip-and-rtp */
     const pcap: Buffer = fs.readFileSync(
-      path.resolve(process.cwd(), "server", "sample-sip-rtp-traffic.pcap")
+      path.resolve(process.cwd(), "server", "sample-sip-rtp-traffic.pcap"),
     );
 
     res
@@ -136,7 +136,7 @@ app.get(
         "Content-Disposition": "attachment",
       })
       .send(pcap); // server: Buffer => client: Blob
-  }
+  },
 );
 
 app.get(
@@ -144,7 +144,7 @@ app.get(
   (req: Request, res: Response) => {
     /** Sample pcap file from: https://wiki.wireshark.org/SampleCaptures#sip-and-rtp */
     const wav: Buffer = fs.readFileSync(
-      path.resolve(process.cwd(), "server", "example.mp3")
+      path.resolve(process.cwd(), "server", "example.mp3"),
     );
 
     res
@@ -154,7 +154,7 @@ app.get(
         "Content-Disposition": "attachment",
       })
       .send(wav); // server: Buffer => client: Blob
-  }
+  },
 );
 
 app.get(
@@ -162,10 +162,10 @@ app.get(
   (req: Request, res: Response) => {
     const json = fs.readFileSync(
       path.resolve(process.cwd(), "server", "sample-jaeger.json"),
-      { encoding: "utf8" }
+      { encoding: "utf8" },
     );
     res.status(200).json(JSON.parse(json));
-  }
+  },
 );
 
 /** Alerts mock API responses for local dev */

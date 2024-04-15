@@ -31,7 +31,7 @@ export const ClientsForm = ({ client }: ClientsFormProps) => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [isActive, setIsActive] = useState(
-    client ? client.data?.is_active : true
+    client ? client.data?.is_active : true,
   );
   const [allowDirectAppCalling, setAllowDirectAppCalling] = useState(true);
   const [allowDirectQueueCalling, setAllowDirectQueueCalling] = useState(true);
