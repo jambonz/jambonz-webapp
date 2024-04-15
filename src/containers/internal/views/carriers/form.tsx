@@ -1134,11 +1134,11 @@ export const CarrierForm = ({
                                 updateSipGateways(
                                   i,
                                   "send_options_ping",
-                                  e.target.checked
+                                  e.target.checked,
                                 );
                               }}
                             />
-                            <div>Options ping</div>
+                            <div>Send OPTIONS ping</div>
                           </label>
                         </div>
                       )}
