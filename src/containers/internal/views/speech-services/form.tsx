@@ -157,6 +157,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
     useState(false);
   const [isDeepgramOnpremEnabled, setIsDeepgramOnpremEnabled] = useState(false);
+  const [useAwsRoleArn, setUseAwsRoleArn] = useState(false);
+  const [roleArn, setRoleArn] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -378,6 +380,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
           access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
           secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+          role_arn: vendor === VENDOR_AWS ? roleArn : null,
           ...(apiKey && {
             api_key:
               vendor === VENDOR_MICROSOFT ||
@@ -625,6 +628,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
     if (credential?.data?.voice_engine) {
       setTtsModelId(credential.data.voice_engine);
+    }
+    if (credential?.data?.role_arn) {
+      setUseAwsRoleArn(true);
+      setRoleArn(credential.data.role_arn);
     }
   }, [credential]);
 
@@ -1164,35 +1171,66 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
-            <label htmlFor="aws_access_key">
-              Access key ID<span>*</span>
+            <label htmlFor="use_role_arn" className="chk">
+              <input
+                id="use_role_arn"
+                name="use_role_arn"
+                type="checkbox"
+                onChange={(e) => setUseAwsRoleArn(e.target.checked)}
+                defaultChecked={useAwsRoleArn}
+                disabled={credential ? true : false}
+              />
+              <div>Use AWS RoleArn</div>
             </label>
-            <input
-              id="aws_access_key"
-              required
-              type="text"
-              name="aws_access_key"
-              placeholder="Access Key ID"
-              value={accessKeyId}
-              onChange={(e) => setAccessKeyId(e.target.value)}
-              disabled={credential ? true : false}
-            />
-            <label htmlFor="aws_secret_key">
-              Secret access key<span>*</span>
-            </label>
-            <Passwd
-              id="aws_secret_key"
-              required
-              name="aws_secret_key"
-              placeholder="Secret Access Key"
-              value={
-                secretAccessKey
-                  ? getObscuredSecret(secretAccessKey)
-                  : secretAccessKey
-              }
-              onChange={(e) => setSecretAccessKey(e.target.value)}
-              disabled={credential ? true : false}
-            />
+            {!useAwsRoleArn ? (
+              <>
+                <label htmlFor="aws_access_key">
+                  Access key ID<span>*</span>
+                </label>
+                <input
+                  id="aws_access_key"
+                  required
+                  type="text"
+                  name="aws_access_key"
+                  placeholder="Access Key ID"
+                  value={accessKeyId}
+                  onChange={(e) => setAccessKeyId(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+                <label htmlFor="aws_secret_key">
+                  Secret access key<span>*</span>
+                </label>
+                <Passwd
+                  id="aws_secret_key"
+                  required
+                  name="aws_secret_key"
+                  placeholder="Secret Access Key"
+                  value={
+                    secretAccessKey
+                      ? getObscuredSecret(secretAccessKey)
+                      : secretAccessKey
+                  }
+                  onChange={(e) => setSecretAccessKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="aws_access_key">
+                  RoleArn<span>*</span>
+                </label>
+                <input
+                  id="aws_role_arn"
+                  required
+                  type="text"
+                  name="aws_role_arn"
+                  placeholder="RoleArn"
+                  value={roleArn}
+                  onChange={(e) => setRoleArn(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </>
+            )}
           </fieldset>
         )}
 
