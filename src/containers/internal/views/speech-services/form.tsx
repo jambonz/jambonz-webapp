@@ -42,6 +42,10 @@ import {
   VENDOR_WHISPER,
   VENDOR_PLAYHT,
   VENDOR_RIMELABS,
+  AWS_CREDENTIAL_TYPES,
+  AWS_CREDENTIAL_IAM_ROLE_ARN,
+  AWS_CREDENTIAL_ACCESS_KEY,
+  AWS_CREDENTIAL_ASSUME_ROLE,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -157,7 +161,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
     useState(false);
   const [isDeepgramOnpremEnabled, setIsDeepgramOnpremEnabled] = useState(false);
-  const [useAwsRoleArn, setUseAwsRoleArn] = useState(false);
+  const [awsCredentialType, setAwsCredentialType] = useState(
+    AWS_CREDENTIAL_ACCESS_KEY,
+  );
   const [roleArn, setRoleArn] = useState("");
 
   const handleFile = (file: File) => {
@@ -630,8 +636,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTtsModelId(credential.data.voice_engine);
     }
     if (credential?.data?.role_arn) {
-      setUseAwsRoleArn(true);
       setRoleArn(credential.data.role_arn);
+    }
+    if (credential) {
+      setAwsCredentialType(
+        credential?.data?.access_key_id
+          ? AWS_CREDENTIAL_ACCESS_KEY
+          : credential?.data?.role_arn
+            ? AWS_CREDENTIAL_IAM_ROLE_ARN
+            : AWS_CREDENTIAL_ASSUME_ROLE,
+      );
     }
   }, [credential]);
 
@@ -1171,18 +1185,24 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
-            <label htmlFor="use_role_arn" className="chk">
-              <input
-                id="use_role_arn"
-                name="use_role_arn"
-                type="checkbox"
-                onChange={(e) => setUseAwsRoleArn(e.target.checked)}
-                defaultChecked={useAwsRoleArn}
-                disabled={credential ? true : false}
-              />
-              <div>Use AWS RoleArn</div>
+            <label htmlFor="vendor">
+              Credential type<span>*</span>
             </label>
-            {!useAwsRoleArn ? (
+            <Selector
+              id="aws_credential_type"
+              name="aws_credential_type"
+              value={awsCredentialType}
+              options={AWS_CREDENTIAL_TYPES}
+              onChange={(e) => {
+                setAccessKeyId("");
+                setSecretAccessKey("");
+                setRoleArn("");
+                setAwsCredentialType(e.target.value);
+              }}
+              disabled={credential ? true : false}
+              required
+            />
+            {awsCredentialType === AWS_CREDENTIAL_ACCESS_KEY ? (
               <>
                 <label htmlFor="aws_access_key">
                   Access key ID<span>*</span>
@@ -1214,7 +1234,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   disabled={credential ? true : false}
                 />
               </>
-            ) : (
+            ) : awsCredentialType === AWS_CREDENTIAL_IAM_ROLE_ARN ? (
               <>
                 <label htmlFor="aws_access_key">
                   RoleArn<span>*</span>
@@ -1230,6 +1250,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   disabled={credential ? true : false}
                 />
               </>
+            ) : (
+              <></>
             )}
           </fieldset>
         )}

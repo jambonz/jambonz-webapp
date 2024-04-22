@@ -90,6 +90,25 @@ export const vendors: VendorOptions[] = [
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
+export const AWS_CREDENTIAL_ACCESS_KEY = "access_key";
+export const AWS_CREDENTIAL_IAM_ROLE_ARN = "role_arn";
+export const AWS_CREDENTIAL_ASSUME_ROLE = "assume_role";
+
+export const AWS_CREDENTIAL_TYPES = [
+  {
+    name: "Access Key",
+    value: AWS_CREDENTIAL_ACCESS_KEY,
+  },
+  {
+    name: "IAM Role ARN",
+    value: AWS_CREDENTIAL_IAM_ROLE_ARN,
+  },
+  {
+    name: "Assume Role",
+    value: AWS_CREDENTIAL_ASSUME_ROLE,
+  },
+];
+
 export const useRegionVendors = () => {
   const [regions, setRegions] = useState<RegionVendors>();
 
