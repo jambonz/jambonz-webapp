@@ -43,9 +43,9 @@ import {
   VENDOR_PLAYHT,
   VENDOR_RIMELABS,
   AWS_CREDENTIAL_TYPES,
-  AWS_CREDENTIAL_IAM_ROLE_ARN,
+  AWS_CREDENTIAL_IAM_ASSUME_ROLE,
   AWS_CREDENTIAL_ACCESS_KEY,
-  AWS_CREDENTIAL_ASSUME_ROLE,
+  AWS_INSTANCE_PROFILE,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -643,8 +643,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         credential?.data?.access_key_id
           ? AWS_CREDENTIAL_ACCESS_KEY
           : credential?.data?.role_arn
-            ? AWS_CREDENTIAL_IAM_ROLE_ARN
-            : AWS_CREDENTIAL_ASSUME_ROLE,
+            ? AWS_CREDENTIAL_IAM_ASSUME_ROLE
+            : AWS_INSTANCE_PROFILE,
       );
     }
   }, [credential]);
@@ -1234,7 +1234,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   disabled={credential ? true : false}
                 />
               </>
-            ) : awsCredentialType === AWS_CREDENTIAL_IAM_ROLE_ARN ? (
+            ) : awsCredentialType === AWS_CREDENTIAL_IAM_ASSUME_ROLE ? (
               <>
                 <label htmlFor="aws_access_key">
                   RoleArn<span>*</span>
