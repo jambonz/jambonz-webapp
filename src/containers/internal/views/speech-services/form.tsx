@@ -42,6 +42,10 @@ import {
   VENDOR_WHISPER,
   VENDOR_PLAYHT,
   VENDOR_RIMELABS,
+  AWS_CREDENTIAL_TYPES,
+  AWS_CREDENTIAL_IAM_ASSUME_ROLE,
+  AWS_CREDENTIAL_ACCESS_KEY,
+  AWS_INSTANCE_PROFILE,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -157,6 +161,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
     useState(false);
   const [isDeepgramOnpremEnabled, setIsDeepgramOnpremEnabled] = useState(false);
+  const [awsCredentialType, setAwsCredentialType] = useState(
+    AWS_CREDENTIAL_ACCESS_KEY,
+  );
+  const [roleArn, setRoleArn] = useState("");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -378,6 +386,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             vendor === VENDOR_GOOGLE ? JSON.stringify(googleServiceKey) : null,
           access_key_id: vendor === VENDOR_AWS ? accessKeyId : null,
           secret_access_key: vendor === VENDOR_AWS ? secretAccessKey : null,
+          role_arn: vendor === VENDOR_AWS ? roleArn : null,
           ...(apiKey && {
             api_key:
               vendor === VENDOR_MICROSOFT ||
@@ -625,6 +634,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
     if (credential?.data?.voice_engine) {
       setTtsModelId(credential.data.voice_engine);
+    }
+    if (credential?.data?.role_arn) {
+      setRoleArn(credential.data.role_arn);
+    }
+    if (credential) {
+      setAwsCredentialType(
+        credential?.data?.access_key_id
+          ? AWS_CREDENTIAL_ACCESS_KEY
+          : credential?.data?.role_arn
+            ? AWS_CREDENTIAL_IAM_ASSUME_ROLE
+            : AWS_INSTANCE_PROFILE,
+      );
     }
   }, [credential]);
 
@@ -1164,35 +1185,74 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
-            <label htmlFor="aws_access_key">
-              Access key ID<span>*</span>
+            <label htmlFor="vendor">
+              Credential type<span>*</span>
             </label>
-            <input
-              id="aws_access_key"
-              required
-              type="text"
-              name="aws_access_key"
-              placeholder="Access Key ID"
-              value={accessKeyId}
-              onChange={(e) => setAccessKeyId(e.target.value)}
+            <Selector
+              id="aws_credential_type"
+              name="aws_credential_type"
+              value={awsCredentialType}
+              options={AWS_CREDENTIAL_TYPES}
+              onChange={(e) => {
+                setAccessKeyId("");
+                setSecretAccessKey("");
+                setRoleArn("");
+                setAwsCredentialType(e.target.value);
+              }}
               disabled={credential ? true : false}
-            />
-            <label htmlFor="aws_secret_key">
-              Secret access key<span>*</span>
-            </label>
-            <Passwd
-              id="aws_secret_key"
               required
-              name="aws_secret_key"
-              placeholder="Secret Access Key"
-              value={
-                secretAccessKey
-                  ? getObscuredSecret(secretAccessKey)
-                  : secretAccessKey
-              }
-              onChange={(e) => setSecretAccessKey(e.target.value)}
-              disabled={credential ? true : false}
             />
+            {awsCredentialType === AWS_CREDENTIAL_ACCESS_KEY ? (
+              <>
+                <label htmlFor="aws_access_key">
+                  Access key ID<span>*</span>
+                </label>
+                <input
+                  id="aws_access_key"
+                  required
+                  type="text"
+                  name="aws_access_key"
+                  placeholder="Access Key ID"
+                  value={accessKeyId}
+                  onChange={(e) => setAccessKeyId(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+                <label htmlFor="aws_secret_key">
+                  Secret access key<span>*</span>
+                </label>
+                <Passwd
+                  id="aws_secret_key"
+                  required
+                  name="aws_secret_key"
+                  placeholder="Secret Access Key"
+                  value={
+                    secretAccessKey
+                      ? getObscuredSecret(secretAccessKey)
+                      : secretAccessKey
+                  }
+                  onChange={(e) => setSecretAccessKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </>
+            ) : awsCredentialType === AWS_CREDENTIAL_IAM_ASSUME_ROLE ? (
+              <>
+                <label htmlFor="aws_access_key">
+                  RoleArn<span>*</span>
+                </label>
+                <input
+                  id="aws_role_arn"
+                  required
+                  type="text"
+                  name="aws_role_arn"
+                  placeholder="RoleArn"
+                  value={roleArn}
+                  onChange={(e) => setRoleArn(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </>
+            ) : (
+              <></>
+            )}
           </fieldset>
         )}
 

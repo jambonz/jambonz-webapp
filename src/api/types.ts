@@ -390,6 +390,7 @@ export interface SpeechCredential {
   region: null | string;
   aws_region: null | string;
   api_key: null | string;
+  role_arn: null | string;
   user_id: null | string;
   access_key_id: null | string;
   secret_access_key: null | string;
