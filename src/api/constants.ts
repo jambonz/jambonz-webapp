@@ -205,6 +205,14 @@ export const DEFAULT_ELEVENLABS_MODEL = "eleven_multilingual_v2";
 
 export const DEFAULT_WHISPER_MODEL = "tts-1";
 
+// VERBIO
+export const VERBIO_STT_MODELS = [
+  { name: "V1", value: "V1" },
+  { name: "V2", value: "V2" },
+];
+
+export const DEFAULT_VERBIO_MODEL = "V1";
+
 // Google Custom Voice reported usage options
 
 export const DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = "REALTIME";

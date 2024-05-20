@@ -46,6 +46,7 @@ import {
   AWS_CREDENTIAL_IAM_ASSUME_ROLE,
   AWS_CREDENTIAL_ACCESS_KEY,
   AWS_INSTANCE_PROFILE,
+  VENDOR_VERBIO,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -77,8 +78,10 @@ import {
   DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DEFAULT_PLAYHT_OPTIONS,
   DEFAULT_RIMELABS_OPTIONS,
+  DEFAULT_VERBIO_MODEL,
   DISABLE_CUSTOM_SPEECH,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+  VERBIO_STT_MODELS,
 } from "src/api/constants";
 
 type SpeechServiceFormProps = {
@@ -106,6 +109,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [clientId, setClientId] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
   const [sttRegion, setSttRegion] = useState("");
@@ -113,6 +117,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
   const [ttsModelId, setTtsModelId] = useState("");
+  const [engineVersion, setEngineVersion] = useState(DEFAULT_VERBIO_MODEL);
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
   const [initialCheckCustomStt, setInitialCheckCustomStt] = useState(false);
@@ -353,6 +358,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_stt_use_tls: deepgramSttUseTls ? 1 : 0,
         }),
+        ...(vendor === VENDOR_VERBIO && {
+          engine_version: engineVersion,
+        }),
       };
 
       if (credential && credential.data) {
@@ -405,6 +413,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             userId && {
               user_id: userId,
             }),
+          ...(vendor === VENDOR_VERBIO && {
+            client_id: clientId,
+            client_secret: clientSecret,
+          }),
           riva_server_uri: vendor == VENDOR_NVIDIA ? rivaServerUri : null,
         })
           .then(({ json }) => {
@@ -646,6 +658,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             ? AWS_CREDENTIAL_IAM_ASSUME_ROLE
             : AWS_INSTANCE_PROFILE,
       );
+    }
+    if (credential?.data?.client_id) {
+      setClientId(credential.data.client_id);
+    }
+    if (credential?.data?.client_secret) {
+      setClientSecret(credential.data.client_secret);
+    }
+    if (credential?.data?.engine_version) {
+      setEngineVersion(credential.data.engine_version);
     }
   }, [credential]);
 
@@ -1180,6 +1201,58 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   />
                 </Checkzone>
               </>
+            </fieldset>
+          </>
+        )}
+        {vendor === VENDOR_VERBIO && (
+          <>
+            <fieldset>
+              <label htmlFor="verbio_client_id">
+                Client ID
+                {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && (
+                  <span>*</span>
+                )}
+              </label>
+              <input
+                id="verbio_client_id"
+                required
+                type="text"
+                name="verbio_client_id"
+                placeholder="Client ID"
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value)}
+                disabled={credential ? true : false}
+              />
+              <label htmlFor="verbio_client_secret">
+                Client secret
+                {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && (
+                  <span>*</span>
+                )}
+              </label>
+              <input
+                id="verbio_client_secret"
+                required
+                type="text"
+                name="verbio_client_secret"
+                placeholder="Client secret"
+                value={clientSecret}
+                onChange={(e) => setClientSecret(e.target.value)}
+                disabled={credential ? true : false}
+              />
+            </fieldset>
+            <fieldset>
+              <label htmlFor={`${vendor}_tts_model_id`}>
+                Engine version<span>*</span>
+              </label>
+              <Selector
+                id={"verbio_engine_version"}
+                name={"verbio_engine_version"}
+                value={engineVersion}
+                options={VERBIO_STT_MODELS}
+                onChange={(e) => {
+                  setEngineVersion(e.target.value);
+                }}
+              />
             </fieldset>
           </>
         )}
