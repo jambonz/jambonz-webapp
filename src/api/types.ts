@@ -402,6 +402,7 @@ export interface SpeechCredential {
   custom_stt_endpoint_url: null | string;
   custom_stt_endpoint: null | string;
   client_id: null | string;
+  client_secret: null | string;
   secret: null | string;
   nuance_tts_uri: null | string;
   nuance_stt_uri: null | string;
@@ -418,6 +419,7 @@ export interface SpeechCredential {
   cobalt_server_uri: null | string;
   model_id: null | string;
   voice_engine: null | string;
+  engine_version: null | string;
   model: null | string;
   options: null | string;
   deepgram_stt_uri: null | string;
