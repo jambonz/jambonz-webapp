@@ -1142,6 +1142,30 @@ export const CarrierForm = ({
                           </label>
                         </div>
                       )}
+                      {Boolean(g.outbound) &&
+                        (g.protocol === "tls" || g.protocol === "tls/srtp") && (
+                          <div>
+                            <label
+                              htmlFor={`use_sips_scheme_${i}`}
+                              className="chk"
+                            >
+                              <input
+                                id={`use_sips_scheme_${i}`}
+                                name={`use_sips_scheme_${i}`}
+                                type="checkbox"
+                                checked={g.use_sips_scheme ? true : false}
+                                onChange={(e) => {
+                                  updateSipGateways(
+                                    i,
+                                    "use_sips_scheme",
+                                    e.target.checked,
+                                  );
+                                }}
+                              />
+                              <div>Use sips scheme</div>
+                            </label>
+                          </div>
+                        )}
                     </div>
 
                     <button
