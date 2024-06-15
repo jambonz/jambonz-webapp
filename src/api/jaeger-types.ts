@@ -4,7 +4,8 @@ export interface JaegerRoot {
 
 export interface JaegerResourceSpan {
   resource: JaegerResource;
-  instrumentationLibrarySpans: InstrumentationLibrarySpan[];
+  instrumentationLibrarySpans?: InstrumentationLibrarySpan[];
+  scopeSpans?: ScopeSpan[];
 }
 
 export interface JaegerResource {
@@ -16,7 +17,17 @@ export interface InstrumentationLibrarySpan {
   spans: JaegerSpan[];
 }
 
+export interface ScopeSpan {
+  scope: Scope;
+  spans: JaegerSpan[];
+}
+
 export interface InstrumentationLibrary {
+  name: string;
+  version: string;
+}
+
+export interface Scope {
   name: string;
   version: string;
 }
