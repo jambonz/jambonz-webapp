@@ -1,3 +1,4 @@
+import { hasValue } from "src/utils";
 import type {
   Currency,
   ElevenLabsOptions,
@@ -39,9 +40,9 @@ declare global {
 /** https://vitejs.dev/guide/env-and-mode.html#env-files */
 const CONFIGURED_API_BASE_URL =
   window.JAMBONZ?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL;
-export const API_BASE_URL = CONFIGURED_API_BASE_URL
+export const API_BASE_URL = hasValue(CONFIGURED_API_BASE_URL)
   ? CONFIGURED_API_BASE_URL
-  : `${window.location.protocol}://${window.location.hostname}/api`;
+  : `${window.location.protocol}//${window.location.hostname}/api/v1`;
 
 /** Serves mock API responses from a local dev API server */
 export const DEV_BASE_URL = import.meta.env.VITE_DEV_BASE_URL;
