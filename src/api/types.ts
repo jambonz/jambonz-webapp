@@ -423,6 +423,7 @@ export interface SpeechCredential {
   model: null | string;
   options: null | string;
   deepgram_stt_uri: null | string;
+  deepgram_tts_uri: null | string;
   deepgram_stt_use_tls: number;
 }
 
