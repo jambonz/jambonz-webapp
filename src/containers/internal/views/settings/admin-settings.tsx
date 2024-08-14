@@ -10,7 +10,7 @@ import {
 import { PasswordSettings, SystemInformation, TtsCache } from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
-import { hasValue } from "src/utils";
+import { hasValue, isvalidIpv4OrCidr } from "src/utils";
 import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
 import { Modal } from "src/components";
 
@@ -25,6 +25,7 @@ export const AdminSettings = () => {
   const [requireDigit, setRequireDigit] = useState(false);
   const [requireSpecialCharacter, setRequireSpecialCharacter] = useState(false);
   const [domainName, setDomainName] = useState("");
+  const [privateNetworkCidr, setPrivateNetworkCidr] = useState("");
   const [sipDomainName, setSipDomainName] = useState("");
   const [monitoringDomainName, setMonitoringDomainName] = useState("");
   const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
@@ -44,10 +45,21 @@ export const AdminSettings = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (privateNetworkCidr) {
+      const cidrs = privateNetworkCidr.split(",");
+      for (const cidr of cidrs) {
+        if (cidr && !isvalidIpv4OrCidr(cidr)) {
+          toastError(`Invalid private network CIDR "${cidr}"`);
+          return;
+        }
+      }
+    }
+
     const systemInformationPayload: Partial<SystemInformation> = {
-      domain_name: domainName,
-      sip_domain_name: sipDomainName,
-      monitoring_domain_name: monitoringDomainName,
+      domain_name: domainName || null,
+      sip_domain_name: sipDomainName || null,
+      monitoring_domain_name: monitoringDomainName || null,
+      private_network_cidr: privateNetworkCidr || null,
     };
     const passwordSettingsPayload: Partial<PasswordSettings> = {
       min_password_length: minPasswordLength,
@@ -61,7 +73,7 @@ export const AdminSettings = () => {
       .then(() => {
         passwordSettingsFetcher();
         systemInformationFetcher();
-        toastSuccess("Password settings successfully updated");
+        toastSuccess("Admin settings updated successfully");
       })
       .catch((error) => {
         toastError(error.msg);
@@ -78,10 +90,17 @@ export const AdminSettings = () => {
         setMinPasswordLength(passwordSettings.min_password_length);
       }
     }
-    if (hasValue(systemInformation)) {
+    if (systemInformation?.domain_name) {
       setDomainName(systemInformation.domain_name);
+    }
+    if (systemInformation?.sip_domain_name) {
       setSipDomainName(systemInformation.sip_domain_name);
+    }
+    if (systemInformation?.monitoring_domain_name) {
       setMonitoringDomainName(systemInformation.monitoring_domain_name);
+    }
+    if (systemInformation?.private_network_cidr) {
+      setPrivateNetworkCidr(systemInformation.private_network_cidr);
     }
   }, [passwordSettings, systemInformation]);
 
@@ -106,6 +125,15 @@ export const AdminSettings = () => {
           placeholder="Sip domain name"
           value={sipDomainName}
           onChange={(e) => setSipDomainName(e.target.value)}
+        />
+        <label htmlFor="name">Private Network CIDR</label>
+        <input
+          id="private_network_cidr"
+          type="text"
+          name="private_network_cidr"
+          placeholder="Private network CIDR"
+          value={privateNetworkCidr}
+          onChange={(e) => setPrivateNetworkCidr(e.target.value)}
         />
         <label htmlFor="name">Monitoring Domain Name</label>
         <input

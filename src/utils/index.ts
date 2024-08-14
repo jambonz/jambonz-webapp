@@ -89,6 +89,22 @@ export const getIpValidationType = (ipv4: string): IpType => {
   return type;
 };
 
+function isValidIPV4(ip: string): boolean {
+  const ipv4Pattern =
+    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  return ipv4Pattern.test(ip);
+}
+
+function isValidCIDR(cidr: string): boolean {
+  const cidrPattern =
+    /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(\/([0-9]|[1-2][0-9]|3[0-2]))$/;
+  return cidrPattern.test(cidr);
+}
+
+export function isvalidIpv4OrCidr(input: string): boolean {
+  return isValidIPV4(input) || isValidCIDR(input);
+}
+
 export const getObscured = (str: string, sub = 4, char = "*") => {
   const len = str.length - sub;
   const obscured = str.substring(0, len).replace(/[a-zA-Z0-9]/g, char);
