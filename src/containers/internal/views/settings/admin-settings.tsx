@@ -49,7 +49,7 @@ export const AdminSettings = () => {
       const cidrs = privateNetworkCidr.split(",");
       for (const cidr of cidrs) {
         if (!isvalidIpv4OrCidr(cidr)) {
-          toastError(`Invalid Private Network CIDR for "${cidr}"`);
+          toastError(`Invalid Private network CIDR for "${cidr}"`);
           return;
         }
       }
