@@ -126,7 +126,7 @@ export const AdminSettings = () => {
           value={sipDomainName}
           onChange={(e) => setSipDomainName(e.target.value)}
         />
-        <label htmlFor="name">Private Netowrk CIDR</label>
+        <label htmlFor="name">Private Network CIDR</label>
         <input
           id="private_network_cidr"
           type="text"
