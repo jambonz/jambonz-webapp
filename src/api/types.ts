@@ -122,9 +122,10 @@ export interface ForgotPassword {
 }
 
 export interface SystemInformation {
-  domain_name: string;
-  sip_domain_name: string;
-  monitoring_domain_name: string;
+  domain_name: null | string;
+  sip_domain_name: null | string;
+  monitoring_domain_name: null | string;
+  private_network_cidr: null | string;
 }
 
 export interface TtsCache {
