@@ -469,6 +469,7 @@ export interface Carrier {
   smpp_inbound_password: null | string;
   smpp_enquire_link_interval: number;
   register_status: CarrierRegisterStatus;
+  pad_crypto: boolean;
 }
 
 export interface PredefinedCarrier extends Carrier {

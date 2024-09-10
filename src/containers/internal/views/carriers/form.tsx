@@ -120,6 +120,7 @@ export const CarrierForm = ({
   const [smppPass, setSmppPass] = useState("");
   const [smppInboundSystemId, setSmppInboundSystemId] = useState("");
   const [smppInboundPass, setSmppInboundPass] = useState("");
+  const [padCrypto, setPadCrypto] = useState(false);
 
   const [sipGateways, setSipGateways] = useState<SipGateway[]>([
     DEFAULT_SIP_GATEWAY,
@@ -216,6 +217,7 @@ export const CarrierForm = ({
       if (obj.smpp_inbound_password) {
         setSmppInboundPass(obj.smpp_inbound_password);
       }
+      setPadCrypto(obj.pad_crypto ? true : false);
     }
   };
 
@@ -524,6 +526,7 @@ export const CarrierForm = ({
         smpp_password: smppPass.trim() || null,
         smpp_inbound_system_id: smppInboundSystemId.trim() || null,
         smpp_inbound_password: smppInboundPass.trim() || null,
+        pad_crypto: padCrypto,
       };
 
       if (carrier && carrier.data) {
@@ -743,6 +746,20 @@ export const CarrierForm = ({
               </label>
               <MXS>
                 <em>Prepend a leading + on origination attempts.</em>
+              </MXS>
+
+              <label htmlFor="pad_crypto" className="chk">
+                <input
+                  id="pad_crypto"
+                  name="pad_crypto"
+                  type="checkbox"
+                  checked={padCrypto}
+                  onChange={(e) => setPadCrypto(e.target.checked)}
+                />
+                <div>Pad crypto</div>
+              </label>
+              <MXS>
+                <em>Apply padding to crypto attribute on inbound calls</em>
               </MXS>
               <AccountSelect
                 accounts={
