@@ -113,59 +113,62 @@ export const Applications = () => {
           {!hasValue(applications) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(filteredApplications) ? (
-            filteredApplications.map((application) => {
-              return (
-                <div className="item" key={application.application_sid}>
-                  <div className="item__info">
-                    <div className="item__title">
-                      <Link
-                        to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
-                        title="Edit application"
-                        className="i"
-                      >
-                        <strong>{application.name}</strong>
-                        <Icons.ArrowRight />
-                      </Link>
-                    </div>
-                    <div className="item__meta">
-                      <div>
-                        <div
-                          className={`i txt--${
-                            application.account_sid ? "teal" : "grey"
-                          }`}
+            filteredApplications
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((application) => {
+                return (
+                  <div className="item" key={application.application_sid}>
+                    <div className="item__info">
+                      <div className="item__title">
+                        <Link
+                          to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
+                          title="Edit application"
+                          className="i"
                         >
-                          <Icons.Activity />
-                          <span>
-                            {
-                              accounts?.find(
-                                (acct) =>
-                                  acct.account_sid === application.account_sid,
-                              )?.name
-                            }
-                          </span>
+                          <strong>{application.name}</strong>
+                          <Icons.ArrowRight />
+                        </Link>
+                      </div>
+                      <div className="item__meta">
+                        <div>
+                          <div
+                            className={`i txt--${
+                              application.account_sid ? "teal" : "grey"
+                            }`}
+                          >
+                            <Icons.Activity />
+                            <span>
+                              {
+                                accounts?.find(
+                                  (acct) =>
+                                    acct.account_sid ===
+                                    application.account_sid,
+                                )?.name
+                              }
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div className="item__actions">
+                      <Link
+                        to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
+                        title="Edit application"
+                      >
+                        <Icons.Edit3 />
+                      </Link>
+                      <button
+                        type="button"
+                        title="Delete application"
+                        onClick={() => setApplication(application)}
+                        className="btnty"
+                      >
+                        <Icons.Trash />
+                      </button>
+                    </div>
                   </div>
-                  <div className="item__actions">
-                    <Link
-                      to={`${ROUTE_INTERNAL_APPLICATIONS}/${application.application_sid}/edit`}
-                      title="Edit application"
-                    >
-                      <Icons.Edit3 />
-                    </Link>
-                    <button
-                      type="button"
-                      title="Delete application"
-                      onClick={() => setApplication(application)}
-                      className="btnty"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
-                </div>
-              );
-            })
+                );
+              })
           ) : accountSid ? (
             <M>No applications.</M>
           ) : (
