@@ -200,9 +200,11 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
               application={[applicationSid, setApplicationSid]}
               applications={
                 applications
-                  ? applications.filter(
-                      (application) => application.account_sid === accountSid,
-                    )
+                  ? applications
+                      .filter(
+                        (application) => application.account_sid === accountSid,
+                      )
+                      .sort((a, b) => a.name.localeCompare(b.name))
                   : []
               }
             />
