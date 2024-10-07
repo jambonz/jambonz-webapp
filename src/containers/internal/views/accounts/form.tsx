@@ -14,7 +14,14 @@ import {
   postAccountBucketCredentialTest,
   deleteAccount,
 } from "src/api";
-import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
+import {
+  ClipBoard,
+  Icons,
+  Modal,
+  ScopedAccess,
+  Section,
+  Tooltip,
+} from "src/components";
 import {
   Selector,
   Checkzone,
@@ -67,6 +74,7 @@ import dayjs from "dayjs";
 import { EditBoard } from "src/components/editboard";
 import { ModalLoader } from "src/components/modal";
 import { useAuth } from "src/router/auth";
+import { Scope } from "src/store/types";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -137,6 +145,7 @@ export const AccountForm = ({
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
   const [azureConnectionString, setAzureConnectionString] = useState("");
   const [endpoint, setEndpoint] = useState("");
+  const [enableDebugLog, setEnableDebugLog] = useState(false);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -381,6 +390,7 @@ export const AccountForm = ({
     if (account && account.data) {
       putAccount(account.data.account_sid, {
         name,
+        enable_debug_log: enableDebugLog,
         ...(!ENABLE_HOSTED_SYSTEM && { sip_realm: realm || null }),
         webhook_secret: account.data.webhook_secret,
         siprec_hook_sid: recId || null,
@@ -450,6 +460,7 @@ export const AccountForm = ({
         queue_event_hook: queueHook || null,
         registration_hook: regHook || null,
         service_provider_sid: currentServiceProvider.service_provider_sid,
+        enable_debug_log: enableDebugLog,
       })
         .then(({ json }) => {
           toastSuccess("Account created successfully");
@@ -465,6 +476,7 @@ export const AccountForm = ({
   /** Set current account data values if applicable -- e.g. "edit mode" */
   useEffect(() => {
     if (account && account.data) {
+      setEnableDebugLog(account.data.enable_debug_log);
       setName(account.data.name);
 
       if (account.data.sip_realm) {
@@ -1021,6 +1033,22 @@ export const AccountForm = ({
               } cached TTS prompts`}</MS>
             </fieldset>
           )}
+          <ScopedAccess scope={Scope.admin} user={user}>
+            <fieldset>
+              <label htmlFor="enable_debug_log" className="chk">
+                <input
+                  id="enable_debug_log"
+                  name="enable_debug_log"
+                  type="checkbox"
+                  onChange={(e) => setEnableDebugLog(e.target.checked)}
+                  checked={enableDebugLog}
+                />
+                <Tooltip text="You can enable debug log for calls only to this account">
+                  Enable debug log for this account
+                </Tooltip>
+              </label>
+            </fieldset>
+          </ScopedAccess>
           {!DISABLE_CALL_RECORDING && (
             <>
               <fieldset>

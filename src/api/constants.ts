@@ -205,6 +205,17 @@ export const AUDIO_FORMAT_OPTIONS = [
   },
 ];
 
+export const LOG_LEVEL_OPTIONS = [
+  {
+    name: "Info",
+    value: "info",
+  },
+  {
+    name: "Debug",
+    value: "debug",
+  },
+];
+
 export const DEFAULT_ELEVENLABS_MODEL = "eleven_multilingual_v2";
 
 export const DEFAULT_WHISPER_MODEL = "tts-1";
