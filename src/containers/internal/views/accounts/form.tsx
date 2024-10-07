@@ -14,7 +14,14 @@ import {
   postAccountBucketCredentialTest,
   deleteAccount,
 } from "src/api";
-import { ClipBoard, Icons, Modal, Section, Tooltip } from "src/components";
+import {
+  ClipBoard,
+  Icons,
+  Modal,
+  ScopedAccess,
+  Section,
+  Tooltip,
+} from "src/components";
 import {
   Selector,
   Checkzone,
@@ -67,6 +74,7 @@ import dayjs from "dayjs";
 import { EditBoard } from "src/components/editboard";
 import { ModalLoader } from "src/components/modal";
 import { useAuth } from "src/router/auth";
+import { Scope } from "src/store/types";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -1025,20 +1033,22 @@ export const AccountForm = ({
               } cached TTS prompts`}</MS>
             </fieldset>
           )}
-          <fieldset>
-            <label htmlFor="enable_debug_log" className="chk">
-              <input
-                id="enable_debug_log"
-                name="enable_debug_log"
-                type="checkbox"
-                onChange={(e) => setEnableDebugLog(e.target.checked)}
-                checked={enableDebugLog}
-              />
-              <Tooltip text="You can enable debug log for calls only to this account">
-                Enable debug log for this account
-              </Tooltip>
-            </label>
-          </fieldset>
+          <ScopedAccess scope={Scope.admin} user={user}>
+            <fieldset>
+              <label htmlFor="enable_debug_log" className="chk">
+                <input
+                  id="enable_debug_log"
+                  name="enable_debug_log"
+                  type="checkbox"
+                  onChange={(e) => setEnableDebugLog(e.target.checked)}
+                  checked={enableDebugLog}
+                />
+                <Tooltip text="You can enable debug log for calls only to this account">
+                  Enable debug log for this account
+                </Tooltip>
+              </label>
+            </fieldset>
+          </ScopedAccess>
           {!DISABLE_CALL_RECORDING && (
             <>
               <fieldset>
