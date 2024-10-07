@@ -7,11 +7,20 @@ import {
   postSystemInformation,
   deleteTtsCache,
 } from "src/api";
-import { PasswordSettings, SystemInformation, TtsCache } from "src/api/types";
+import {
+  LogLevel,
+  PasswordSettings,
+  SystemInformation,
+  TtsCache,
+} from "src/api/types";
 import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue, isvalidIpv4OrCidr } from "src/utils";
-import { PASSWORD_LENGTHS_OPTIONS, PASSWORD_MIN } from "src/api/constants";
+import {
+  LOG_LEVEL_OPTIONS,
+  PASSWORD_LENGTHS_OPTIONS,
+  PASSWORD_MIN,
+} from "src/api/constants";
 import { Modal } from "src/components";
 
 export const AdminSettings = () => {
@@ -29,6 +38,7 @@ export const AdminSettings = () => {
   const [sipDomainName, setSipDomainName] = useState("");
   const [monitoringDomainName, setMonitoringDomainName] = useState("");
   const [clearTtsCacheFlag, setClearTtsCacheFlag] = useState(false);
+  const [logLevel, setLogLevel] = useState<LogLevel>("info");
 
   const handleClearCache = () => {
     deleteTtsCache()
@@ -60,6 +70,7 @@ export const AdminSettings = () => {
       sip_domain_name: sipDomainName || null,
       monitoring_domain_name: monitoringDomainName || null,
       private_network_cidr: privateNetworkCidr || null,
+      log_level: logLevel,
     };
     const passwordSettingsPayload: Partial<PasswordSettings> = {
       min_password_length: minPasswordLength,
@@ -102,6 +113,9 @@ export const AdminSettings = () => {
     if (systemInformation?.private_network_cidr) {
       setPrivateNetworkCidr(systemInformation.private_network_cidr);
     }
+    if (systemInformation?.log_level) {
+      setLogLevel(systemInformation.log_level);
+    }
   }, [passwordSettings, systemInformation]);
 
   return (
@@ -143,6 +157,17 @@ export const AdminSettings = () => {
           placeholder="Monitoring domain name"
           value={monitoringDomainName}
           onChange={(e) => setMonitoringDomainName(e.target.value)}
+        />
+
+        <label htmlFor="audio_format">Log Level</label>
+        <Selector
+          id={"audio_format"}
+          name={"audio_format"}
+          value={logLevel}
+          options={LOG_LEVEL_OPTIONS}
+          onChange={(e) => {
+            setLogLevel(e.target.value as LogLevel);
+          }}
         />
       </fieldset>
       <fieldset>

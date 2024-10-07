@@ -26,6 +26,8 @@ export interface LimitUnitOption {
 /** User roles / permissions */
 export type UserScopes = "admin" | "service_provider" | "account";
 
+export type LogLevel = "info" | "debug";
+
 export type UserPermissions =
   | "VIEW_ONLY"
   | "PROVISION_SERVICES"
@@ -126,6 +128,7 @@ export interface SystemInformation {
   sip_domain_name: null | string;
   monitoring_domain_name: null | string;
   private_network_cidr: null | string;
+  log_level: LogLevel;
 }
 
 export interface TtsCache {
@@ -262,6 +265,7 @@ export interface Account {
   device_to_call_ratio?: number;
   trial_end_date?: null | string;
   is_active: boolean;
+  enable_debug_log: boolean;
 }
 
 export interface Product {
