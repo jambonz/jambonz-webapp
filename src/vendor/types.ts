@@ -8,6 +8,7 @@ export type Vendor =
   | "IBM"
   | "Nvidia"
   | "Soniox"
+  | "Speechmatics"
   | "Cobalt"
   | "Custom"
   | "ElevenLabs"
@@ -88,6 +89,7 @@ export interface RecognizerVendors {
   ibm: Language[];
   nvidia: Language[];
   soniox: Language[];
+  speechmatics: Language[];
   cobalt: Language[];
   assemblyai: Language[];
 }

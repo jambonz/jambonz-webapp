@@ -28,6 +28,7 @@ import {
   VENDOR_SONIOX,
   VENDOR_WELLSAID,
   VENDOR_WHISPER,
+  VENDOR_SPEECHMATICS,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -360,8 +361,9 @@ export const SpeechProviderSelection = ({
           value={synthVendor}
           options={ttsVendorOptions.filter(
             (vendor) =>
-              vendor.value != VENDOR_ASSEMBLYAI &&
-              vendor.value != VENDOR_SONIOX &&
+              vendor.value !== VENDOR_ASSEMBLYAI &&
+              vendor.value !== VENDOR_SONIOX &&
+              vendor.value !== VENDOR_SPEECHMATICS &&
               vendor.value !== VENDOR_CUSTOM &&
               vendor.value !== VENDOR_COBALT,
           )}

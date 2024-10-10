@@ -47,6 +47,7 @@ import {
   AWS_CREDENTIAL_ACCESS_KEY,
   AWS_INSTANCE_PROFILE,
   VENDOR_VERBIO,
+  VENDOR_SPEECHMATICS,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -404,6 +405,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_DEEPGRAM ||
               vendor === VENDOR_ASSEMBLYAI ||
               vendor === VENDOR_SONIOX ||
+              vendor === VENDOR_SPEECHMATICS ||
               vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_RIMELABS ||
@@ -783,6 +785,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {vendor !== VENDOR_ASSEMBLYAI &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
+              vendor !== VENDOR_SPEECHMATICS &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
                   <input
@@ -1339,7 +1342,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_RIMELABS ||
-          vendor === VENDOR_SONIOX) && (
+          vendor === VENDOR_SONIOX ||
+          vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
             {vendor === VENDOR_PLAYHT && (
               <>
