@@ -13,6 +13,7 @@ import type {
   WebHook,
   WebhookOption,
 } from "./types";
+import { Vendor } from "src/vendor/types";
 
 /** This window object is serialized and injected at docker runtime */
 /** The API url is constructed with the docker containers `ip:port` */
@@ -29,6 +30,7 @@ interface JambonzWindowObject {
   BASE_URL: string;
   DEFAULT_SERVICE_PROVIDER_SID: string;
   STRIPE_PUBLISHABLE_KEY: string;
+  DISABLE_ADDITIONAL_SPEECH_VENDORS: string;
 }
 
 declare global {
@@ -75,6 +77,13 @@ export const DISABLE_JAEGER_TRACING: boolean =
 export const DISABLE_CALL_RECORDING: boolean =
   window.JAMBONZ?.DISABLE_CALL_RECORDING === "true" ||
   JSON.parse(import.meta.env.VITE_APP_DISABLE_CALL_RECORDING || "false");
+
+/** Disable additional speech vendors */
+export const DISABLE_ADDITIONAL_SPEECH_VENDORS: boolean =
+  window.JAMBONZ?.DISABLE_ADDITIONAL_SPEECH_VENDORS === "true" ||
+  JSON.parse(
+    import.meta.env.VITE_APP_DISABLE_ADDITIONAL_SPEECH_VENDORS || "false",
+  );
 
 export const DEFAULT_SERVICE_PROVIDER_SID: string =
   window.JAMBONZ?.DEFAULT_SERVICE_PROVIDER_SID ||
@@ -227,6 +236,8 @@ export const VERBIO_STT_MODELS = [
 ];
 
 export const DEFAULT_VERBIO_MODEL = "V1";
+
+export const ADDITIONAL_SPEECH_VENDORS: Lowercase<Vendor>[] = ["speechmatics"];
 
 // Google Custom Voice reported usage options
 

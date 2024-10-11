@@ -8,6 +8,7 @@ export type Vendor =
   | "IBM"
   | "Nvidia"
   | "Soniox"
+  | "Speechmatics"
   | "Cobalt"
   | "Custom"
   | "ElevenLabs"
@@ -71,6 +72,7 @@ export interface RegionVendors {
   aws: Region[];
   microsoft: Region[];
   ibm: Region[];
+  speechmatics: Region[];
 }
 
 export interface TtsModels {
@@ -88,6 +90,7 @@ export interface RecognizerVendors {
   ibm: Language[];
   nvidia: Language[];
   soniox: Language[];
+  speechmatics: Language[];
   cobalt: Language[];
   assemblyai: Language[];
 }

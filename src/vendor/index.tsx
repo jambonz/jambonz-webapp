@@ -15,6 +15,7 @@ export const VENDOR_DEEPGRAM = "deepgram";
 export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
+export const VENDOR_SPEECHMATICS = "speechmatics";
 export const VENDOR_CUSTOM = "custom";
 export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
@@ -60,6 +61,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Soniox",
     value: VENDOR_SONIOX,
+  },
+  {
+    name: "Speechmatics",
+    value: VENDOR_SPEECHMATICS,
   },
   {
     name: "Custom",
@@ -124,17 +129,20 @@ export const useRegionVendors = () => {
       import("./regions/aws-regions"),
       import("./regions/ms-azure-regions"),
       import("./regions/ibm-regions"),
+      import("./regions/speechmatics-regions"),
     ]).then(
       ([
         { default: awsRegions },
         { default: msRegions },
         { default: ibmRegions },
+        { default: speechmaticsRegions },
       ]) => {
         if (!ignore) {
           setRegions({
             aws: awsRegions,
             microsoft: msRegions,
             ibm: ibmRegions,
+            speechmatics: speechmaticsRegions,
           });
         }
       },
