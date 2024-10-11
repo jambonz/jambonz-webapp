@@ -168,6 +168,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpDeepgramSttUseTls, setTmpDeepgramSttUseTls] = useState(false);
   const [initialDeepgramOnpremCheck, setInitialDeepgramOnpremCheck] =
     useState(false);
+  const [initialSpeechmaticsOnpremCheck, setInitialSpeechMaticsOnpremCheck] =
+    useState(false);
+  const [speechmaticsEndpoint, setSpeechmaticsEndpoint] = useState("");
+  const [tmpHostedSpeechmaticsEndpoint, setTmpHostedSpeechmaticsEndpoint] =
+    useState("");
+  const [tmpOnpremSpeechmaticsEndpoint, setTmpOnpremSpeechmaticsEndpoint] =
+    useState("");
   const [awsCredentialType, setAwsCredentialType] = useState(
     AWS_CREDENTIAL_ACCESS_KEY,
   );
@@ -360,6 +367,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
           deepgram_stt_use_tls: deepgramSttUseTls ? 1 : 0,
+        }),
+        ...(vendor === VENDOR_SPEECHMATICS && {
+          speechmatics_stt_uri: speechmaticsEndpoint || null,
         }),
         ...(vendor === VENDOR_VERBIO && {
           engine_version: engineVersion,
@@ -673,6 +683,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     if (credential?.data?.engine_version) {
       setEngineVersion(credential.data.engine_version);
+    }
+
+    if (credential?.data?.speechmatics_stt_uri) {
+      setInitialSpeechMaticsOnpremCheck(
+        !credential.data.speechmatics_stt_uri?.includes("speechmatics.com"),
+      );
+      setSpeechmaticsEndpoint(credential.data.speechmatics_stt_uri);
     }
   }, [credential]);
 
@@ -1494,6 +1511,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {regions &&
           regions[vendor as keyof RegionVendors] &&
           vendor !== VENDOR_IBM &&
+          vendor !== VENDOR_SPEECHMATICS &&
           vendor !== VENDOR_MICROSOFT && (
             <fieldset>
               <label htmlFor="region">
@@ -1908,6 +1926,73 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             </fieldset>
           </React.Fragment>
         )}
+        {vendor === VENDOR_SPEECHMATICS &&
+          regions &&
+          regions[vendor as keyof RegionVendors] && (
+            <fieldset>
+              <Checkzone
+                disabled={hasValue(credential)}
+                hidden
+                name="use_hosted_speechmatics_service"
+                label="Use hosted Speechmatics Service"
+                initialCheck={!initialSpeechmaticsOnpremCheck}
+                handleChecked={(e) => {
+                  setInitialSpeechMaticsOnpremCheck(!e.target.checked);
+                  if (e.target.checked) {
+                    setTmpOnpremSpeechmaticsEndpoint(speechmaticsEndpoint);
+                    setSpeechmaticsEndpoint(tmpHostedSpeechmaticsEndpoint);
+                    setTmpHostedSpeechmaticsEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="speechmatics_endpoint">
+                  Endpoint {sttCheck && <span>*</span>}
+                </label>
+                <Selector
+                  id="speechmatics_endpoint"
+                  name="speechmatics_endpoint"
+                  value={speechmaticsEndpoint}
+                  required
+                  options={[
+                    {
+                      name: "Select a endpoint",
+                      value: "",
+                    },
+                  ].concat(regions[vendor as keyof RegionVendors])}
+                  onChange={(e) => setSpeechmaticsEndpoint(e.target.value)}
+                />
+              </Checkzone>
+
+              <Checkzone
+                disabled={hasValue(credential)}
+                hidden
+                name="use_on-prem_speechmatics_container"
+                label="Use on-prem Speechmatics container"
+                initialCheck={initialSpeechmaticsOnpremCheck}
+                handleChecked={(e) => {
+                  setInitialSpeechMaticsOnpremCheck(e.target.checked);
+                  if (e.target.checked) {
+                    setTmpHostedSpeechmaticsEndpoint(speechmaticsEndpoint);
+                    setSpeechmaticsEndpoint(tmpOnpremSpeechmaticsEndpoint);
+                    setTmpOnpremSpeechmaticsEndpoint("");
+                  }
+                }}
+              >
+                <label htmlFor="speechmatics_uri_for_stt">
+                  Endpoint URI<span>*</span>
+                </label>
+                <input
+                  id="speechmatics_uri_for_stt"
+                  required
+                  type="text"
+                  name="speechmatics_uri_for_stt"
+                  placeholder="Speechmatics URI for STT"
+                  value={speechmaticsEndpoint}
+                  onChange={(e) => setSpeechmaticsEndpoint(e.target.value)}
+                />
+              </Checkzone>
+            </fieldset>
+          )}
 
         <fieldset>
           <ButtonGroup left>

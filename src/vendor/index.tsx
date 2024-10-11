@@ -129,17 +129,20 @@ export const useRegionVendors = () => {
       import("./regions/aws-regions"),
       import("./regions/ms-azure-regions"),
       import("./regions/ibm-regions"),
+      import("./regions/speechmatics-regions"),
     ]).then(
       ([
         { default: awsRegions },
         { default: msRegions },
         { default: ibmRegions },
+        { default: speechmaticsRegions },
       ]) => {
         if (!ignore) {
           setRegions({
             aws: awsRegions,
             microsoft: msRegions,
             ibm: ibmRegions,
+            speechmatics: speechmaticsRegions,
           });
         }
       },

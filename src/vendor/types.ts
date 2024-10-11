@@ -72,6 +72,7 @@ export interface RegionVendors {
   aws: Region[];
   microsoft: Region[];
   ibm: Region[];
+  speechmatics: Region[];
 }
 
 export interface TtsModels {
