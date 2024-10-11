@@ -75,11 +75,13 @@ import type {
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
+  ADDITIONAL_SPEECH_VENDORS,
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   DEFAULT_PLAYHT_OPTIONS,
   DEFAULT_RIMELABS_OPTIONS,
   DEFAULT_VERBIO_MODEL,
+  DISABLE_ADDITIONAL_SPEECH_VENDORS,
   DISABLE_CUSTOM_SPEECH,
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   VERBIO_STT_MODELS,
@@ -743,7 +745,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             ]
               .concat(vendors)
               .filter(
-                (v) => !DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM,
+                (v) =>
+                  (!DISABLE_CUSTOM_SPEECH || v.value !== VENDOR_CUSTOM) &&
+                  (!DISABLE_ADDITIONAL_SPEECH_VENDORS ||
+                    !ADDITIONAL_SPEECH_VENDORS.includes(
+                      v.value as Lowercase<Vendor>,
+                    )),
               )}
             onChange={(e) => {
               setVendor(e.target.value as Lowercase<Vendor>);
