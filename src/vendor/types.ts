@@ -106,6 +106,7 @@ export interface SynthesisVendors {
   elevenlabs: VoiceLanguage[];
   whisper: VoiceLanguage[];
   deepgram: VoiceLanguage[];
+  playht: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

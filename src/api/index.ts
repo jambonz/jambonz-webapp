@@ -875,6 +875,7 @@ export const getSpeechSupportedLanguagesAndVoices = (
   sid: string | undefined,
   vendor: string,
   label: string,
+  create_new: boolean = false,
 ) => {
   const userData = parseJwt(getToken());
   const apiUrl =
@@ -883,7 +884,7 @@ export const getSpeechSupportedLanguagesAndVoices = (
       : `${API_SERVICE_PROVIDERS}/${sid}`) +
     `/SpeechCredentials/speech/supportedLanguagesAndVoices?vendor=${vendor}${
       label ? `&label=${label}` : ""
-    }`;
+    }${create_new ? "&create_new=true" : ""}`;
   return getFetch<SpeechSupportedLanguagesAndVoices>(apiUrl);
 };
 

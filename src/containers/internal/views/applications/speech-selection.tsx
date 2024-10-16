@@ -29,6 +29,7 @@ import {
   VENDOR_WELLSAID,
   VENDOR_WHISPER,
   VENDOR_SPEECHMATICS,
+  VENDOR_PLAYHT,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -199,6 +200,19 @@ export const SpeechProviderSelection = ({
         if (synthesisGoogleCustomVoiceOptions.length > 0) {
           updateTtsVoice(synthesisGoogleCustomVoiceOptions[0].value);
         }
+      }
+      // PlayHT3.0 all voices are listed under english language, all voices can be used for multiple languages
+      else if (
+        synthVendor === VENDOR_PLAYHT &&
+        synthesisSupportedLanguagesAndVoices.tts.some(
+          (l) => l.value === "english",
+        )
+      ) {
+        setSynthesisVoiceOptions(
+          synthesisSupportedLanguagesAndVoices.tts.find(
+            (tts) => tts.value === "english",
+          )!.voices,
+        );
       } else {
         setSynthesisVoiceOptions(voicesOpts);
       }
@@ -259,6 +273,14 @@ export const SpeechProviderSelection = ({
           if (synthVendor === VENDOR_WHISPER) {
             const newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
             setSynthLang(LANG_EN_US);
+            updateTtsVoice(newLang!.voices[0].value);
+            return;
+          }
+          if (synthVendor === VENDOR_PLAYHT) {
+            const newLang = json.tts.find(
+              (lang) => lang.value === LANG_EN_US || lang.value === "english",
+            );
+            setSynthLang(newLang!.value);
             updateTtsVoice(newLang!.voices[0].value);
             return;
           }
@@ -412,7 +434,9 @@ export const SpeechProviderSelection = ({
                 id="synthesis_lang"
                 name="synthesis_lang"
                 value={synthLang}
-                options={synthesisLanguageOptions}
+                options={synthesisLanguageOptions.sort((a, b) =>
+                  a.name.localeCompare(b.name),
+                )}
                 onChange={(e) => {
                   shouldUpdateTtsVoice.current = true;
                   const language = e.target.value;
@@ -467,7 +491,9 @@ export const SpeechProviderSelection = ({
                   id="synthesis_voice"
                   name="synthesis_voice"
                   value={synthVoice}
-                  options={synthesisVoiceOptions}
+                  options={synthesisVoiceOptions.sort((a, b) =>
+                    a.name.localeCompare(b.name),
+                  )}
                   onChange={(e) => setSynthVoice(e.target.value)}
                 />
               )}

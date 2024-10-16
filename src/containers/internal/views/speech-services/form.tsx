@@ -473,6 +473,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         currentServiceProvider?.service_provider_sid,
         vendor,
         "",
+        credential ? false : true,
       ).then(({ json }) => {
         if (json.models) {
           setTtsModels(json.models);
