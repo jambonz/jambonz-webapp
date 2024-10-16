@@ -407,6 +407,7 @@ export const SpeechProviderSelection = ({
               value={synthLabel}
               options={ttsLabelOptions}
               onChange={(e) => {
+                shouldUpdateTtsVoice.current = true;
                 setSynthLabel(e.target.value);
               }}
             />
