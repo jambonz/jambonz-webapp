@@ -1170,7 +1170,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                         );
                                       });
                                     }}
-                                    required={!v.model && !v.voice_cloning_key}
+                                    required={!v.voice_cloning_key}
                                   />
                                 </div>
                               </div>
