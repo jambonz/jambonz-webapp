@@ -1097,7 +1097,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                               id={`use_voice_cloning_key_${i}`}
                               name={`use_voice_cloning_key_${i}`}
                               type="checkbox"
-                              disabled={credential ? true : false}
                               onChange={(e) => {
                                 updateCustomVoices(
                                   i,
@@ -1171,7 +1170,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                                         );
                                       });
                                     }}
-                                    required
+                                    required={!v.model && !v.voice_cloning_key}
                                   />
                                 </div>
                               </div>
