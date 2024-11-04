@@ -225,6 +225,16 @@ export const getBlob = (url: string) => {
   });
 };
 
+export const postBlobFetch = <Type>(url: string, formdata?: FormData) => {
+  return fetchTransport<Type>(url, {
+    method: "POST",
+    body: formdata,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+};
+
 /** Simple wrappers for fetchTransport calls to any API, :GET, :POST, :PUT, :DELETE */
 
 export const getFetch = <Type>(url: string) => {
@@ -490,6 +500,15 @@ export const postGoogleCustomVoice = (payload: Partial<GoogleCustomVoice>) => {
   return postFetch<SidResponse, Partial<GoogleCustomVoice>>(
     API_GOOGLE_CUSTOM_VOICES,
     payload,
+  );
+};
+
+export const postGoogleVoiceCloningKey = (sid: string, file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return postBlobFetch<EmptyResponse>(
+    `${API_GOOGLE_CUSTOM_VOICES}/${sid}/VoiceCloningKey`,
+    formData,
   );
 };
 /** Named wrappers for `putFetch` */

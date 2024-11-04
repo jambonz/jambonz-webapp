@@ -18,6 +18,7 @@ import {
   getGoogleCustomVoices,
   getSpeechSupportedLanguagesAndVoices,
   postGoogleCustomVoice,
+  postGoogleVoiceCloningKey,
   postSpeechService,
   putGoogleCustomVoice,
   putSpeechService,
@@ -77,7 +78,7 @@ import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   ADDITIONAL_SPEECH_VENDORS,
   DEFAULT_ELEVENLABS_OPTIONS,
-  DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+  DEFAULT_GOOGLE_CUSTOM_VOICE,
   DEFAULT_PLAYHT_OPTIONS,
   DEFAULT_RIMELABS_OPTIONS,
   DEFAULT_VERBIO_MODEL,
@@ -243,14 +244,43 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     if (useCustomVoicesCheck) {
       Promise.all(
         customVoices.map((v) => {
+          // voice cloning key is 200kb file, the content should be uploaded in separated api
+          const voice_cloning_key = v.voice_cloning_key_file;
+          delete v.voice_cloning_key_file;
+          delete v.voice_cloning_key;
+
+          const uploadVoiceCloningKey = (sid: string) => {
+            if (voice_cloning_key) {
+              return postGoogleVoiceCloningKey(sid, voice_cloning_key);
+            }
+          };
+
           if (v.google_custom_voice_sid) {
             const sid = v.google_custom_voice_sid;
             delete v.google_custom_voice_sid;
-            return putGoogleCustomVoice(sid, v);
+            return new Promise((res, rej) => {
+              putGoogleCustomVoice(sid, v)
+                .then((resp) => {
+                  if (!voice_cloning_key) {
+                    return res(resp);
+                  }
+                  uploadVoiceCloningKey(sid)?.then(res).catch(rej);
+                })
+                .catch(rej);
+            });
           } else {
-            return postGoogleCustomVoice({
-              ...v,
-              speech_credential_sid: credential.data?.speech_credential_sid,
+            return new Promise((res, rej) => {
+              postGoogleCustomVoice({
+                ...v,
+                speech_credential_sid: credential.data?.speech_credential_sid,
+              })
+                .then(({ json }) => {
+                  if (!voice_cloning_key) {
+                    return res(json);
+                  }
+                  uploadVoiceCloningKey(json.sid)?.then(res).catch(rej);
+                })
+                .catch(rej);
             });
           }
         }),
@@ -265,7 +295,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         .catch((error) => {
           toastError(error.msg);
         });
-    } else if (useCustomVoicesCheck && customVoices.length > 0) {
+    } else if (!useCustomVoicesCheck && customVoices.length > 0) {
       Promise.all(
         customVoices.map((v) => {
           if (v.google_custom_voice_sid) {
@@ -438,12 +468,32 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           .then(({ json }) => {
             if (vendor === VENDOR_GOOGLE && useCustomVoicesCheck) {
               Promise.all(
-                customVoices.map((v) =>
-                  postGoogleCustomVoice({
-                    ...v,
-                    speech_credential_sid: json.sid,
-                  }),
-                ),
+                customVoices.map((v) => {
+                  // voice cloning key is 200kb file, the content should be uploaded in separated api
+                  const voice_cloning_key = v.voice_cloning_key_file;
+                  delete v.voice_cloning_key_file;
+                  delete v.voice_cloning_key;
+
+                  const uploadVoiceCloningKey = (sid: string) => {
+                    if (voice_cloning_key) {
+                      return postGoogleVoiceCloningKey(sid, voice_cloning_key);
+                    }
+                  };
+
+                  return new Promise((res, rej) => {
+                    postGoogleCustomVoice({
+                      ...v,
+                      speech_credential_sid: json.sid,
+                    })
+                      .then(({ json }) => {
+                        if (!voice_cloning_key) {
+                          res(json);
+                        }
+                        uploadVoiceCloningKey(json.sid)?.then(res).catch(rej);
+                      })
+                      .catch(rej);
+                  });
+                }),
               ).then(() => {
                 toastSuccess("Speech credential created successfully");
                 navigate(ROUTE_INTERNAL_SPEECH);
@@ -978,15 +1028,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     name="use_custom_voice"
                     type="checkbox"
                     onChange={(e) => {
-                      if (customVoices.length === 0) {
-                        setCustomVoices([
-                          {
-                            name: "",
-                            reported_usage:
-                              DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
-                            model: "",
-                          },
-                        ]);
+                      if (e.target.checked && customVoices.length === 0) {
+                        setCustomVoices([DEFAULT_GOOGLE_CUSTOM_VOICE]);
                       }
                       setUseCustomVoicesCheck(e.target.checked);
                     }}
@@ -1009,7 +1052,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                           <div>
                             <div>
                               <label htmlFor="custom_voice_name">
-                                Name / Reported Usage
+                                Name
+                                {!v.use_voice_cloning_key
+                                  ? " / Reported Usage"
+                                  : ""}
                               </label>
                             </div>
                           </div>
@@ -1029,49 +1075,112 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                               />
                             </div>
 
-                            <div>
-                              <Selector
-                                id={"google_custom_voices_reported_usage"}
-                                name={"google_custom_voices_reported_usage"}
-                                value={v.reported_usage}
-                                options={GOOGLE_CUSTOM_VOICES_REPORTED_USAGE}
-                                onChange={(e) => {
-                                  updateCustomVoices(
-                                    i,
-                                    "reported_usage",
-                                    e.target.value,
-                                  );
-                                }}
-                              />
-                            </div>
+                            {!v.use_voice_cloning_key && (
+                              <div>
+                                <Selector
+                                  id={"google_custom_voices_reported_usage"}
+                                  name={"google_custom_voices_reported_usage"}
+                                  value={v.reported_usage}
+                                  options={GOOGLE_CUSTOM_VOICES_REPORTED_USAGE}
+                                  onChange={(e) => {
+                                    updateCustomVoices(
+                                      i,
+                                      "reported_usage",
+                                      e.target.value,
+                                    );
+                                  }}
+                                />
+                              </div>
+                            )}
                           </div>
 
-                          <div>
-                            <div>
-                              <label htmlFor="custom_voice_name">Model</label>
-                            </div>
-                          </div>
+                          <label
+                            htmlFor={`use_voice_cloning_key_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`use_voice_cloning_key_${i}`}
+                              name={`use_voice_cloning_key_${i}`}
+                              type="checkbox"
+                              onChange={(e) => {
+                                updateCustomVoices(
+                                  i,
+                                  "use_voice_cloning_key",
+                                  e.target.checked ? 1 : 0,
+                                );
+                              }}
+                              checked={v.use_voice_cloning_key ? true : false}
+                            />
+                            <div>Use voice cloning key</div>
+                          </label>
 
-                          <div>
-                            <div>
-                              <input
-                                id={`sip_ip_${i}`}
-                                name={`sip_ip_${i}`}
-                                type="text"
-                                placeholder="Model"
-                                required
-                                value={v.model}
-                                style={{ maxWidth: "100%" }}
-                                onChange={(e) => {
-                                  updateCustomVoices(
-                                    i,
-                                    "model",
-                                    e.target.value,
-                                  );
-                                }}
-                              />
-                            </div>
-                          </div>
+                          {!v.use_voice_cloning_key && (
+                            <>
+                              <div>
+                                <div>
+                                  <label htmlFor="custom_voice_name">
+                                    Model
+                                  </label>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div>
+                                  <input
+                                    id={`sip_ip_${i}`}
+                                    name={`sip_ip_${i}`}
+                                    type="text"
+                                    placeholder="Model"
+                                    required
+                                    value={v.model}
+                                    style={{ maxWidth: "100%" }}
+                                    onChange={(e) => {
+                                      updateCustomVoices(
+                                        i,
+                                        "model",
+                                        e.target.value,
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          {v.use_voice_cloning_key === 1 && (
+                            <>
+                              <div>
+                                <div>
+                                  {hasValue(v.voice_cloning_key) && (
+                                    <pre>
+                                      <code>{v.voice_cloning_key}</code>
+                                    </pre>
+                                  )}
+                                </div>
+                                <div>
+                                  <FileUpload
+                                    id={`google_voice_cloning_key_${i}`}
+                                    name={`google_voice_cloning_key_${i}`}
+                                    handleFile={(file) => {
+                                      updateCustomVoices(
+                                        i,
+                                        "voice_cloning_key_file",
+                                        file,
+                                      );
+                                      file.text().then((text) => {
+                                        updateCustomVoices(
+                                          i,
+                                          "voice_cloning_key",
+                                          text.substring(0, 100) + "...",
+                                        );
+                                      });
+                                    }}
+                                    required={!v.voice_cloning_key}
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          )}
 
                           <button
                             className="btnty"
@@ -1112,12 +1221,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                           setCustomVoicesMessage("");
                           setCustomVoices((prev) => [
                             ...prev,
-                            {
-                              name: "",
-                              reported_usage:
-                                DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
-                              model: "",
-                            },
+                            DEFAULT_GOOGLE_CUSTOM_VOICE,
                           ]);
                         }}
                       >
