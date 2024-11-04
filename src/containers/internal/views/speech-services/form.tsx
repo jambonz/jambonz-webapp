@@ -244,14 +244,17 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     if (useCustomVoicesCheck) {
       Promise.all(
         customVoices.map((v) => {
+          // voice cloning key is 200kb file, the content should be uploaded in separated api
           const voice_cloning_key = v.voice_cloning_key_file;
           delete v.voice_cloning_key_file;
+          delete v.voice_cloning_key;
 
           const uploadVoiceCloningKey = (sid: string) => {
             if (voice_cloning_key) {
               return postGoogleVoiceCloningKey(sid, voice_cloning_key);
             }
           };
+
           if (v.google_custom_voice_sid) {
             const sid = v.google_custom_voice_sid;
             delete v.google_custom_voice_sid;
@@ -292,7 +295,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         .catch((error) => {
           toastError(error.msg);
         });
-    } else if (useCustomVoicesCheck && customVoices.length > 0) {
+    } else if (!useCustomVoicesCheck && customVoices.length > 0) {
       Promise.all(
         customVoices.map((v) => {
           if (v.google_custom_voice_sid) {
@@ -466,8 +469,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             if (vendor === VENDOR_GOOGLE && useCustomVoicesCheck) {
               Promise.all(
                 customVoices.map((v) => {
+                  // voice cloning key is 200kb file, the content should be uploaded in separated api
                   const voice_cloning_key = v.voice_cloning_key_file;
                   delete v.voice_cloning_key_file;
+                  delete v.voice_cloning_key;
 
                   const uploadVoiceCloningKey = (sid: string) => {
                     if (voice_cloning_key) {
@@ -1023,7 +1028,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     name="use_custom_voice"
                     type="checkbox"
                     onChange={(e) => {
-                      if (customVoices.length === 0) {
+                      if (e.target.checked && customVoices.length === 0) {
                         setCustomVoices([DEFAULT_GOOGLE_CUSTOM_VOICE]);
                       }
                       setUseCustomVoicesCheck(e.target.checked);
