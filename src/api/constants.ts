@@ -295,6 +295,7 @@ export const PASSWORD_LENGTHS_OPTIONS = Array(13)
 /** List view filters */
 export const DATE_SELECTION = [
   { name: "today", value: "today" },
+  { name: "yesterday", value: "1" },
   { name: "last 7d", value: "7" },
   { name: "last 14d", value: "14" },
   { name: "last 30d", value: "30" },
