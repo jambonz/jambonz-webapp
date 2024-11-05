@@ -2,6 +2,7 @@ import { hasValue } from "src/utils";
 import type {
   Currency,
   ElevenLabsOptions,
+  GoogleCustomVoice,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -247,6 +248,13 @@ export const GOOGLE_CUSTOM_VOICES_REPORTED_USAGE = [
   { name: "REALTIME", value: "REALTIME" },
   { name: "OFFLINE", value: "OFFLINE" },
 ];
+export const DEFAULT_GOOGLE_CUSTOM_VOICE: GoogleCustomVoice = {
+  name: "",
+  reported_usage: DEFAULT_GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
+  model: "",
+  use_voice_cloning_key: 0,
+  voice_cloning_key_file: null,
+};
 // ElevenLabs options
 export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
   optimize_streaming_latency: 3,

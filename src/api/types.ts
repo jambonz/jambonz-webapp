@@ -381,7 +381,10 @@ export interface GoogleCustomVoice {
   speech_credential_sid?: string;
   name: string;
   reported_usage: string;
-  model: string;
+  model?: string;
+  use_voice_cloning_key: number;
+  voice_cloning_key?: string | null;
+  voice_cloning_key_file?: File | null;
 }
 
 export interface SpeechCredential {

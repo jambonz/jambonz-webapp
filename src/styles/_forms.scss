@@ -329,6 +329,11 @@ fieldset {
       grid-template-columns: [col] 100%;
       margin-top: ui-vars.$px02;
     }
+
+    &:nth-child(5) {
+      grid-template-columns: [col] 100%;
+      margin-top: ui-vars.$px02;
+    }
   }
 
   > button {
