@@ -451,6 +451,8 @@ export interface CarrierRegisterStatus {
   callId: null | string;
 }
 
+export type DtmfType = "rfc2833" | "tones" | "info";
+
 export interface Carrier {
   voip_carrier_sid: string;
   name: string;
@@ -477,6 +479,7 @@ export interface Carrier {
   smpp_inbound_password: null | string;
   smpp_enquire_link_interval: number;
   register_status: CarrierRegisterStatus;
+  dtmf_type: DtmfType;
 }
 
 export interface PredefinedCarrier extends Carrier {
