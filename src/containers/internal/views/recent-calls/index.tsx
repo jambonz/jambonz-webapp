@@ -63,7 +63,12 @@ export const RecentCalls = () => {
       count: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
-        : { days: Number(dateFilter) }),
+        : dateFilter === "yesterday"
+          ? {
+              start: dayjs().subtract(1, "day").startOf("day").toISOString(),
+              end: dayjs().subtract(1, "day").endOf("day").toISOString(),
+            }
+          : { days: Number(dateFilter) }),
       ...(statusFilter !== "all" && { answered: statusFilter }),
       ...(directionFilter !== "io" && { direction: directionFilter }),
       ...(filter && { filter }),
