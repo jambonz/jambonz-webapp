@@ -157,7 +157,10 @@ export const RecentCalls = () => {
           {!hasValue(calls) && hasLength(accounts) ? (
             <Spinner />
           ) : hasLength(calls) ? (
-            calls.map((call) => <DetailsItem key={call.call_sid} call={call} />)
+            //call.call_sid is null incase of failure, cannot be used as key
+            calls.map((call) => (
+              <DetailsItem key={call.sip_callid} call={call} />
+            ))
           ) : (
             <M>No data.</M>
           )}
