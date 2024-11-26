@@ -12,7 +12,6 @@ import {
 } from "src/api";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import {
-  getHumanDateTime,
   isUserAccountScope,
   hasLength,
   hasValue,
@@ -176,24 +175,6 @@ export const SpeechServices = () => {
                             <Icons.XCircle />
                           )}
                           <span>{getUsage(credential)}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`i txt--${
-                            credential.last_used ? "teal" : "grey"
-                          }`}
-                        >
-                          {credential.last_used ? (
-                            <Icons.CheckCircle />
-                          ) : (
-                            <Icons.XCircle />
-                          )}
-                          <span>
-                            {credential.last_used
-                              ? getHumanDateTime(credential.last_used)
-                              : "Never used"}
-                          </span>
                         </div>
                       </div>
                       <div>
