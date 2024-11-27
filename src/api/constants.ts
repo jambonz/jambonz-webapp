@@ -316,7 +316,6 @@ export const USER_SCOPE_SELECTION: SelectorOptions[] = [
 export const DTMF_TYPE_SELECTION: SelectorOptions[] = [
   { name: "RFC 2833", value: "rfc2833" },
   { name: "Tones", value: "tones" },
-  { name: "SIP INFO", value: "info" },
 ];
 
 /** Available webhook methods */

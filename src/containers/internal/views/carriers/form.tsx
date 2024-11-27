@@ -30,7 +30,7 @@ import {
   TECH_PREFIX_MINLENGTH,
   USER_ACCOUNT,
 } from "src/api/constants";
-import { Icons, Section } from "src/components";
+import { Icons, Section, Tooltip } from "src/components";
 import {
   Checkzone,
   Message,
@@ -772,7 +772,15 @@ export const CarrierForm = ({
                 }
               />
 
-              <label htmlFor="dtmf_type">DTMF types</label>
+              <label htmlFor="dtmf_type">
+                <Tooltip
+                  text={
+                    "RFC 2833 is commonly used on VoIP networks. Do not change unless you are certain this carrier does not support it"
+                  }
+                >
+                  DTMF type
+                </Tooltip>
+              </label>
               <Selector
                 id="dtmf_type"
                 name="dtmf_type"
