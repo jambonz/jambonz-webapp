@@ -313,6 +313,11 @@ export const USER_SCOPE_SELECTION: SelectorOptions[] = [
   { name: "Account", value: "account" },
 ];
 
+export const DTMF_TYPE_SELECTION: SelectorOptions[] = [
+  { name: "RFC 2833", value: "rfc2833" },
+  { name: "Tones", value: "tones" },
+];
+
 /** Available webhook methods */
 export const WEBHOOK_METHODS: WebhookOption[] = [
   {
