@@ -49,6 +49,7 @@ import {
   AWS_INSTANCE_PROFILE,
   VENDOR_VERBIO,
   VENDOR_SPEECHMATICS,
+  VENDOR_CARTESIA,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -77,6 +78,7 @@ import type {
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   ADDITIONAL_SPEECH_VENDORS,
+  DEFAULT_CARTESIA_OPTIONS,
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICE,
   DEFAULT_PLAYHT_OPTIONS,
@@ -218,6 +220,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return DEFAULT_PLAYHT_OPTIONS;
         case VENDOR_RIMELABS:
           return DEFAULT_RIMELABS_OPTIONS;
+        case VENDOR_CARTESIA:
+          return DEFAULT_CARTESIA_OPTIONS;
       }
     }
     return "";
@@ -232,6 +236,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return "https://docs.play.ht/reference/api-generate-tts-audio-stream";
         case VENDOR_RIMELABS:
           return "https://rimelabs.mintlify.app/api-reference/endpoint/streaming-mp3#variable-parameters";
+        case VENDOR_CARTESIA:
+          return "https://docs.cartesia.ai/api-reference/tts/bytes";
       }
     }
     return "";
@@ -364,6 +370,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_NVIDIA && {
           riva_server_uri: rivaServerUri || null,
         }),
+        ...(vendor === VENDOR_CARTESIA && {
+          model_id: ttsModelId || null,
+          options: options || null,
+        }),
         ...(vendor === VENDOR_CUSTOM && {
           vendor: (vendor + ":" + customVendorName) as Lowercase<Vendor>,
           use_for_tts: ttsCheck ? 1 : 0,
@@ -451,7 +461,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_RIMELABS ||
-              vendor === VENDOR_WHISPER
+              vendor === VENDOR_WHISPER ||
+              vendor === VENDOR_CARTESIA
                 ? apiKey
                 : null,
           }),
@@ -517,7 +528,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_ELEVENLABS ||
       vendor === VENDOR_WHISPER ||
       vendor === VENDOR_PLAYHT ||
-      vendor === VENDOR_RIMELABS
+      vendor === VENDOR_RIMELABS ||
+      vendor === VENDOR_CARTESIA
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -878,6 +890,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_WHISPER &&
               vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_RIMELABS &&
+              vendor !== VENDOR_CARTESIA &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1472,6 +1485,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_SONIOX ||
+          vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
             {vendor === VENDOR_PLAYHT && (
@@ -1521,6 +1535,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
+        {vendor === VENDOR_CARTESIA && ttsModels.length > 0 && (
+          <fieldset>
+            <label htmlFor={`${vendor}_tts_model_id`}>Model Id</label>
+            <Selector
+              id={"tts_model_id"}
+              name={"tts_model_id"}
+              value={ttsModelId}
+              options={ttsModels}
+              onChange={(e) => {
+                setTtsModelId(e.target.value);
+              }}
+            />
+          </fieldset>
+        )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
           vendor == VENDOR_RIMELABS) &&
@@ -1540,6 +1568,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_RIMELABS) && (
           <fieldset>
             <Checkzone
