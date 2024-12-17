@@ -16,7 +16,8 @@ export type Vendor =
   | "whisper"
   | "playht"
   | "rimelabs"
-  | "verbio";
+  | "verbio"
+  | "Cartesia";
 
 export interface VendorOptions {
   name: Vendor;
@@ -107,6 +108,7 @@ export interface SynthesisVendors {
   whisper: VoiceLanguage[];
   deepgram: VoiceLanguage[];
   playht: VoiceLanguage[];
+  cartesia: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {
