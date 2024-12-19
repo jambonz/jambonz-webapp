@@ -754,3 +754,26 @@ export interface RimelabsOptions {
   speedAlpha: number;
   reduceLatency: boolean;
 }
+
+export type CartesiaEmotions =
+  | "anger:lowest"
+  | "anger:low"
+  | "anger:high"
+  | "anger:highest"
+  | "positivity:lowest"
+  | "positivity:low"
+  | "positivity:high"
+  | "positivity:highest"
+  | "surprise:lowest"
+  | "surprise:high"
+  | "surprise:highest"
+  | "sadness:lowest"
+  | "sadness:low"
+  | "curiosity:low"
+  | "curiosity:high"
+  | "curiosity:highest";
+
+export interface CartesiaOptions {
+  speed: number;
+  emotion: CartesiaEmotions;
+}
