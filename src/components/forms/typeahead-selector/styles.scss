@@ -1,0 +1,110 @@
+@use "src/styles/vars";
+@use "src/styles/mixins";
+@use "@jambonz/ui-kit/src/styles/index";
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/mixins" as ui-mixins;
+
+.typeahead-selector {
+  position: relative;
+  width: 100%;
+  max-width: vars.$widthtypeaheadselector;
+
+  &.disabled {
+    @include mixins.disabled();
+  }
+
+  &.focused {
+    input {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
+
+    span {
+      background-color: ui-vars.$dark;
+    }
+  }
+
+  input {
+    @include ui-mixins.m();
+    appearance: none;
+    padding: ui-vars.$px01 ui-vars.$px02;
+    border-radius: ui-vars.$px01;
+    border: 2px solid ui-vars.$grey;
+    background-color: ui-vars.$white;
+    width: 100%;
+    max-width: vars.$widthtypeaheadinput;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: ui-vars.$dark;
+      outline: 0;
+    }
+
+    &[disabled] {
+      @include mixins.disabled();
+    }
+  }
+
+  span {
+    height: 100%;
+    width: 50px;
+    background-color: ui-vars.$grey;
+    border-radius: 0 ui-vars.$px01 ui-vars.$px01 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+
+    &.disabled {
+      @include mixins.disabled();
+    }
+
+    &.active {
+      background-color: ui-vars.$dark;
+    }
+
+    svg {
+      stroke: ui-vars.$white;
+      cursor: pointer;
+
+      &:first-child {
+        transform: translateY(5px);
+      }
+      &:last-child {
+        transform: translateY(-5px);
+      }
+    }
+  }
+
+  .typeahead-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: ui-vars.$white;
+    border: 1px solid ui-vars.$dark;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+
+  .typeahead-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &.active {
+      background-color: #006dff;
+      color: ui-vars.$white;
+    }
+
+    &.active {
+      cursor: default;
+    }
+  }
+}
