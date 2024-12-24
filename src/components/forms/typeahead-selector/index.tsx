@@ -77,7 +77,8 @@ export const TypeaheadSelector = forwardRef<
      * - Runs when either the value prop or options array changes
      */
     useEffect(() => {
-      const selectedIndex = options.findIndex((opt) => opt.value === value);
+      let selectedIndex = options.findIndex((opt) => opt.value === value);
+      selectedIndex = selectedIndex < 0 ? 0 : selectedIndex;
       const selected = options[selectedIndex];
       setInputValue(selected?.name ?? "");
       setActiveIndex(selectedIndex);
