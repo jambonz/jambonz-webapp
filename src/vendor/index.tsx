@@ -24,6 +24,7 @@ export const VENDOR_WHISPER = "whisper";
 export const VENDOR_PLAYHT = "playht";
 export const VENDOR_RIMELABS = "rimelabs";
 export const VENDOR_VERBIO = "verbio";
+export const VENDOR_CARTESIA = "cartesia";
 
 export const vendors: VendorOptions[] = [
   {
@@ -97,6 +98,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Verbio",
     value: VENDOR_VERBIO,
+  },
+  {
+    name: "Cartesia",
+    value: VENDOR_CARTESIA,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 

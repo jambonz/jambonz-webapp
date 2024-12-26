@@ -1,5 +1,6 @@
 import { hasValue } from "src/utils";
 import type {
+  CartesiaOptions,
   Currency,
   ElevenLabsOptions,
   GoogleCustomVoice,
@@ -281,6 +282,12 @@ export const DEFAULT_PLAYHT_OPTIONS: Partial<PlayHTOptions> = {
   voice_guidance: 3,
   style_guidance: 20,
   text_guidance: 1,
+};
+
+// Cartesia options
+export const DEFAULT_CARTESIA_OPTIONS: Partial<CartesiaOptions> = {
+  speed: 0.0,
+  emotion: "positivity:high",
 };
 /** Password Length options */
 

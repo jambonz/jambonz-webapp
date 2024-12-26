@@ -30,6 +30,7 @@ import {
   VENDOR_WHISPER,
   VENDOR_SPEECHMATICS,
   VENDOR_PLAYHT,
+  VENDOR_CARTESIA,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -280,6 +281,12 @@ export const SpeechProviderSelection = ({
             const newLang = json.tts.find(
               (lang) => lang.value === LANG_EN_US || lang.value === "english",
             );
+            setSynthLang(newLang!.value);
+            updateTtsVoice(newLang!.voices[0].value);
+            return;
+          }
+          if (synthVendor === VENDOR_CARTESIA) {
+            const newLang = json.tts.find((lang) => lang.value === "en");
             setSynthLang(newLang!.value);
             updateTtsVoice(newLang!.voices[0].value);
             return;
