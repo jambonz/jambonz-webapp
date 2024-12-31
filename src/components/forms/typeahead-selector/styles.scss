@@ -81,6 +81,7 @@
   }
 
   .typeahead-dropdown {
+    @include ui-mixins.m();
     position: absolute;
     top: 100%;
     left: 0;
@@ -93,10 +94,16 @@
   }
 
   .typeahead-option {
-    padding: 8px 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-
+    font-weight: normal;
+    display: block;
+    padding-block-start: 0px;
+    padding-block-end: 1px;
+    min-block-size: 1.2em;
+    padding-inline: 2px;
+    white-space: nowrap;
+    padding-left: 16px;
     &:hover,
     &.active {
       background-color: #006dff;
@@ -106,5 +113,7 @@
     &.active {
       cursor: default;
     }
+    font-family: Arial;
+    line-height: 30.4px;
   }
 }
