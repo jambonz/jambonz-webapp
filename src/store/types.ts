@@ -44,8 +44,6 @@ export interface State {
   lcr?: Lcr;
   /** current selected service provider */
   currentServiceProvider?: ServiceProvider;
-
-  read_only_feature: boolean;
 }
 
 /** Generic interface enforces type-safety with global dispatch */

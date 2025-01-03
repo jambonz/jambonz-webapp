@@ -62,7 +62,7 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [modal, setModal] = useState(false);
   const [accountSid, setAccountSid] = useState("");
   const [isReadOnly, setIsReadOnly] = useState(false);
-  const readOnlyFeature = useSelectState("read_only_feature");
+  const readOnlyFeature = currentUser?.read_only_feature;
 
   const handleCancel = () => {
     setModal(false);

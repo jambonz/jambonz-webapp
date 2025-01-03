@@ -62,14 +62,6 @@ export const currentServiceProviderAction = (
   return genericAction(state, action);
 };
 
-export const readOnlyFeatureAction = (
-  state: State,
-  action: Action<keyof State>,
-) => {
-  state.read_only_feature = action.payload ? true : false;
-  return genericAction(state, action);
-};
-
 export const userAsyncAction = async (): Promise<UserData> => {
   const token = getToken();
   const userData = parseJwt(token);
