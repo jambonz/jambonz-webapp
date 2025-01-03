@@ -25,7 +25,7 @@ import {
 import type { UserLogin } from "src/api/types";
 import { ENABLE_HOSTED_SYSTEM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
-import { toastError } from "src/store";
+import { toastError, useDispatch } from "src/store";
 import {
   removeLocationBeforeOauth,
   removeOauthState,
@@ -86,7 +86,6 @@ export const parseJwt = (token: string) => {
       })
       .join(""),
   );
-
   return JSON.parse(jsonPayload);
 };
 
@@ -107,7 +106,11 @@ export const useProvideAuth = (): AuthStateContext => {
             token = response.json.token;
             setToken(token);
             userData = parseJwt(token);
-
+            const dispatch = useDispatch();
+            dispatch({
+              type: "read_only_feature",
+              payload: userData.read_only_feature,
+            });
             if (ENABLE_HOSTED_SYSTEM) {
               getMe()
                 .then(({ json }) => {

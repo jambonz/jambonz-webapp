@@ -26,6 +26,7 @@ export enum Scope {
 
 export interface UserData extends UserJWT {
   access: Scope;
+  read_only_feature: boolean;
 }
 
 export interface State {
@@ -43,6 +44,8 @@ export interface State {
   lcr?: Lcr;
   /** current selected service provider */
   currentServiceProvider?: ServiceProvider;
+
+  read_only_feature: boolean;
 }
 
 /** Generic interface enforces type-safety with global dispatch */

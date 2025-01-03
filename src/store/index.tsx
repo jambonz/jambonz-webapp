@@ -8,6 +8,7 @@ import {
   serviceProvidersAsyncAction,
   currentServiceProviderAction,
   lcrAsyncAction,
+  readOnlyFeatureAction,
 } from "./actions";
 
 import type {
@@ -32,6 +33,7 @@ export const initialState: State = {
     hasMSTeamsFqdn: false,
   },
   serviceProviders: [],
+  read_only_feature: false,
 };
 
 const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
@@ -44,7 +46,8 @@ const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
       return serviceProvidersAction(state, action);
     case "currentServiceProvider":
       return currentServiceProviderAction(state, action);
-
+    case "read_only_feature":
+      return readOnlyFeatureAction(state, action);
     default:
       throw new Error();
   }
@@ -55,8 +58,10 @@ let toastTimeout: number;
 /** Async middlewares */
 /** Proxies dispatch to reducer */
 const middleware: MiddleWare = (dispatch) => {
+  console.log("11111111111111111111 middleware");
   /** This generic implementation enforces global dispatch type-safety */
   return <Type extends keyof State>(action: Action<Type>) => {
+    console.log("11111111111111111111 action", action);
     switch (action.type) {
       case "toast":
         if (toastTimeout) {

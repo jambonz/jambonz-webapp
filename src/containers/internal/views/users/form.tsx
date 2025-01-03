@@ -61,7 +61,8 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
   const [accountSid, setAccountSid] = useState("");
-  const [isReadOnly, setIsReadOnly] = useState(true);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const readOnlyFeature = useSelectState("read_only_feature");
 
   const handleCancel = () => {
     setModal(false);
@@ -257,16 +258,18 @@ export const UserForm = ({ user }: UserFormProps) => {
                 />
                 <div>User is active</div>
               </label>
-              <label htmlFor="is_read_only" className="chk">
-                <input
-                  id="is_read_only"
-                  name="is_read_only"
-                  type="checkbox"
-                  checked={isReadOnly}
-                  onChange={(e) => setIsReadOnly(e.target.checked)}
-                />
-                <div>Read-only User</div>
-              </label>
+              {readOnlyFeature && (
+                <label htmlFor="is_read_only" className="chk">
+                  <input
+                    id="is_read_only"
+                    name="is_read_only"
+                    type="checkbox"
+                    checked={isReadOnly}
+                    onChange={(e) => setIsReadOnly(e.target.checked)}
+                  />
+                  <div>Read-only User</div>
+                </label>
+              )}
             </fieldset>
           )}
           <fieldset>
@@ -297,7 +300,7 @@ export const UserForm = ({ user }: UserFormProps) => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </fieldset>
-          {!user && (
+          {!user && readOnlyFeature && (
             <fieldset>
               <label htmlFor="is_read_only" className="chk">
                 <input
