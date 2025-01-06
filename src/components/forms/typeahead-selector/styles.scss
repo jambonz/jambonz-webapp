@@ -150,8 +150,8 @@
 
   input {
     @include typeahead-input();
-    width: auto;
     height: 34px;
+    min-width: 370px;
     font-size: var(--mxs-size);
   }
 
@@ -161,6 +161,7 @@
 
   .typeahead-dropdown {
     @include typeahead-dropdown();
+    width: 100%;
   }
 
   .typeahead-option {
