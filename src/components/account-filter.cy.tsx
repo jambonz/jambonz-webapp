@@ -78,6 +78,28 @@ describe("<AccountFilter>", () => {
     cy.mount(<AccountFilterTestWrapper defaultOption />);
     cy.get("input").clear();
     cy.get("input").type("cus");
-    cy.get("div").should("have.class", "typeahead-option active");
+    cy.get("div#account_filter-option-1").should("have.text", "custom account");
+  });
+  it("handles Enter key press", () => {
+    cy.mount(<AccountFilterTestWrapper />);
+
+    cy.get("input").clear();
+    cy.get("input").type("cus{enter}");
+    cy.get("input").should("have.value", "custom account");
+  });
+  it("navigates down and up with arrow keys", () => {
+    cy.mount(<AccountFilterTestWrapper />);
+
+    cy.get("input").clear();
+    // Press arrow down to move to the first option
+    cy.get("input").type("{downarrow}");
+    cy.get("input").type("{enter}");
+    cy.get("input").should("have.value", "default account");
+
+    // Press up to move to the previous option
+    cy.get("input").type("{uparrow}");
+    cy.get("input").type("{uparrow}");
+    cy.get("input").type("{enter}");
+    cy.get("input").should("have.value", "custom account");
   });
 });
