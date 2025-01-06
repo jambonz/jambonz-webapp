@@ -72,4 +72,12 @@ describe("<AccountFilter>", () => {
     /** No default value is set when this prop is present */
     cy.get("input").should("have.value", "All accounts");
   });
+
+  it("verify the typeahead dropdown", () => {
+    /** Test by typing cus then custom account is selected */
+    cy.mount(<AccountFilterTestWrapper defaultOption />);
+    cy.get("input").clear();
+    cy.get("input").type("cus");
+    cy.get("div").should("have.class", "typeahead-option active");
+  });
 });
