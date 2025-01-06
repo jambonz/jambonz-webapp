@@ -4,19 +4,27 @@ import { Icons } from "src/components/icons";
 
 import "./styles.scss";
 
-export interface TypeaheadOption {
-  name: string;
-  value: string;
-}
-
 /**
  * Represents an option in the typeahead selector dropdown
  * @interface TypeaheadOption
  * @property {string} name - The display text shown in the dropdown
  * @property {string} value - The underlying value used when the option is selected
  */
+export interface TypeaheadOption {
+  name: string;
+  value: string;
+}
+
+/**
+ * Props for the TypeaheadSelector component
+ * @extends {JSX.IntrinsicElements["input"]} - Inherits all standard HTML input props
+ * @typedef TypeaheadSelectorProps
+ * @property {TypeaheadOption[]} options - Array of selectable options to display in the dropdown
+ * @property {string} [className] - Optional CSS class name to apply to the component
+ */
 type TypeaheadSelectorProps = JSX.IntrinsicElements["input"] & {
   options: TypeaheadOption[];
+  className?: string;
 };
 
 type TypeaheadSelectorRef = HTMLInputElement;
@@ -54,6 +62,7 @@ export const TypeaheadSelector = forwardRef<
       options,
       disabled,
       onChange,
+      className,
       ...restProps
     }: TypeaheadSelectorProps,
     ref,
@@ -64,6 +73,7 @@ export const TypeaheadSelector = forwardRef<
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const classes = {
       "typeahead-selector": true,
+      [`typeahead-selector${className}`]: true,
       focused: isOpen,
       disabled: !!disabled,
     };
@@ -327,6 +337,7 @@ export const TypeaheadSelector = forwardRef<
           className={classNames({
             active: isOpen,
             disabled: !!disabled,
+            pointerevents: true,
           })}
           onClick={() => {
             setIsOpen(!isOpen);
