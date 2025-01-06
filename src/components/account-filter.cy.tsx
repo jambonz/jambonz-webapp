@@ -43,32 +43,33 @@ describe("<AccountFilter>", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Default value is properly set to first option */
-    cy.get("select").should("have.value", accountsSorted[0].account_sid);
+    cy.get("input").should("have.value", accountsSorted[0].name);
   });
 
   it("updates value onChange", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Assert onChange value updates */
-    cy.get("select").select(accountsSorted[1].account_sid);
-    cy.get("select").should("have.value", accountsSorted[1].account_sid);
+    cy.get("input").clear();
+    cy.get("input").type(accountsSorted[1].name);
+    cy.get("input").should("have.value", accountsSorted[1].name);
   });
 
   it("manages the focused state", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Test the `focused` state className (applied onFocus) */
-    cy.get("select").select(accountsSorted[1].account_sid);
-    cy.get(".account-filter").should("have.class", "focused");
-    cy.get("select").blur();
-    cy.get(".account-filter").should("not.have.class", "focused");
+    cy.get("input").clear();
+    cy.get("input").type(accountsSorted[1].name);
+    cy.get("input").parent().should("have.class", "focused");
+    cy.get("input").blur();
+    cy.get("input").parent().should("not.have.class", "focused");
   });
 
   it("renders with default option", () => {
     /** Test with the `defaultOption` prop */
     cy.mount(<AccountFilterTestWrapper defaultOption />);
-
     /** No default value is set when this prop is present */
-    cy.get("select").should("have.value", "");
+    cy.get("input").should("have.value", "All accounts");
   });
 });
