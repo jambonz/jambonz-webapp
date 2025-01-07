@@ -184,6 +184,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     AWS_CREDENTIAL_ACCESS_KEY,
   );
   const [roleArn, setRoleArn] = useState("");
+  const [useAudioResampling, setUseAudioResampling] = useState(false);
+  const [tmpUseAudioResampling, setTmpUseAudioResampling] = useState(false);
+  const [useBase64Encoding, setUseBase64Encoding] = useState(false);
+  const [tmpUseBase64Encoding, setTmpUseBase64Encoding] = useState(false);
+  const [useTls, setUseTls] = useState(false);
+  const [tmpUseTls, setTmpUseTls] = useState(false);
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -381,6 +387,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           custom_tts_url: customVendorTtsUrl || null,
           custom_stt_url: customVendorSttUrl || null,
           auth_token: customVendorAuthToken || null,
+          use_audio_resampling: useAudioResampling ? 1 : 0,
+          use_base64_encoding: useBase64Encoding ? 1 : 0,
+          use_tls: useTls ? 1 : 0,
         }),
         ...(vendor === VENDOR_NUANCE && {
           client_id: clientId || null,
@@ -756,6 +765,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       );
       setSpeechmaticsEndpoint(credential.data.speechmatics_stt_uri);
     }
+    setUseAudioResampling(
+      (credential?.data?.use_audio_resampling || 0) > 0 ? true : false,
+    );
+    setTmpUseAudioResampling(
+      (credential?.data?.use_audio_resampling || 0) > 0 ? true : false,
+    );
+    setUseBase64Encoding(
+      (credential?.data?.use_base64_encoding || 0) > 0 ? true : false,
+    );
+    setTmpUseBase64Encoding(
+      (credential?.data?.use_base64_encoding || 0) > 0 ? true : false,
+    );
+    setUseTls((credential?.data?.use_tls || 0) > 0 ? true : false);
+    setTmpUseTls((credential?.data?.use_tls || 0) > 0 ? true : false);
   }, [credential]);
 
   const updateCustomVoices = (
@@ -914,14 +937,23 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     setTtsCheck(e.target.checked);
                     if (!e.target.checked) {
                       setTmpCustomVendorTtsUrl(customVendorTtsUrl);
+                      setTmpUseAudioResampling(useAudioResampling);
+                      setTmpUseTls(useTls);
+                      setTmpUseBase64Encoding(useBase64Encoding);
                       setCustomVendorTtsUrl("");
+                      setUseAudioResampling(false);
+                      setUseTls(false);
+                      setUseBase64Encoding(false);
                     } else {
                       setCustomVendorTtsUrl(tmpCustomVendorTtsUrl);
+                      setUseAudioResampling(tmpUseAudioResampling);
+                      setUseTls(tmpUseTls);
+                      setUseBase64Encoding(tmpUseBase64Encoding);
                     }
                   }}
                 >
                   <label htmlFor="custom_vendor_use_for_tts">
-                    TTS HTTP URL<span>*</span>
+                    TTS URL<span>*</span>
                   </label>
                   <input
                     id="custom_vendor_use_for_tts"
@@ -934,6 +966,38 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                       setCustomVendorTtsUrl(e.target.value);
                     }}
                   />
+                  <label htmlFor="use_audio_resampling" className="chk">
+                    <input
+                      id="use_audio_resampling"
+                      name="use_audio_resampling"
+                      type="checkbox"
+                      onChange={(e) => setUseAudioResampling(e.target.checked)}
+                      defaultChecked={useAudioResampling}
+                    />
+                    <div>Tts streaming use audio resampling</div>
+                  </label>
+
+                  <label htmlFor="use_base64_encoding" className="chk">
+                    <input
+                      id="use_base64_encoding"
+                      name="use_base64_encoding"
+                      type="checkbox"
+                      onChange={(e) => setUseBase64Encoding(e.target.checked)}
+                      defaultChecked={useBase64Encoding}
+                    />
+                    <div>Tts streaming use base64 encoding</div>
+                  </label>
+
+                  <label htmlFor="use_tls" className="chk">
+                    <input
+                      id="use_tls"
+                      name="use_tls"
+                      type="checkbox"
+                      onChange={(e) => setUseTls(e.target.checked)}
+                      defaultChecked={useTls}
+                    />
+                    <div>Tts streaming use TLS</div>
+                  </label>
                 </Checkzone>
 
                 <Checkzone

@@ -434,6 +434,9 @@ export interface SpeechCredential {
   deepgram_tts_uri: null | string;
   deepgram_stt_use_tls: number;
   speechmatics_stt_uri: null | string;
+  use_audio_resampling: number;
+  use_base64_encoding: number;
+  use_tls: number;
 }
 
 export interface Alert {
