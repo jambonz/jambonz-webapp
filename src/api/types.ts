@@ -436,6 +436,7 @@ export interface SpeechCredential {
   speechmatics_stt_uri: null | string;
   use_audio_resampling: number;
   use_base64_encoding: number;
+  tts_streaming_sample_rate: number;
   use_tls: number;
 }
 

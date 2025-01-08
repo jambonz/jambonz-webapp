@@ -190,6 +190,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpUseBase64Encoding, setTmpUseBase64Encoding] = useState(false);
   const [useTls, setUseTls] = useState(false);
   const [tmpUseTls, setTmpUseTls] = useState(false);
+  const [ttsStreamingSampleRate, setTtsStreamingSampleRate] = useState("8000");
+  const [tmpTtsStreamingSampleRate, setTmpTtsStreamingSampleRate] =
+    useState("8000");
 
   const handleFile = (file: File) => {
     const handleError = () => {
@@ -390,6 +393,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           use_audio_resampling: useAudioResampling ? 1 : 0,
           use_base64_encoding: useBase64Encoding ? 1 : 0,
           use_tls: useTls ? 1 : 0,
+          tts_streaming_sample_rate: Number(ttsStreamingSampleRate || "8000"),
         }),
         ...(vendor === VENDOR_NUANCE && {
           client_id: clientId || null,
@@ -777,6 +781,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     setTmpUseBase64Encoding(
       (credential?.data?.use_base64_encoding || 0) > 0 ? true : false,
     );
+    if (credential?.data?.tts_streaming_sample_rate) {
+      setTtsStreamingSampleRate(`${credential.data.tts_streaming_sample_rate}`);
+      setTmpTtsStreamingSampleRate(
+        `${credential.data.tts_streaming_sample_rate}`,
+      );
+    }
     setUseTls((credential?.data?.use_tls || 0) > 0 ? true : false);
     setTmpUseTls((credential?.data?.use_tls || 0) > 0 ? true : false);
   }, [credential]);
@@ -944,11 +954,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                       setUseAudioResampling(false);
                       setUseTls(false);
                       setUseBase64Encoding(false);
+                      setTmpTtsStreamingSampleRate(ttsStreamingSampleRate);
                     } else {
                       setCustomVendorTtsUrl(tmpCustomVendorTtsUrl);
                       setUseAudioResampling(tmpUseAudioResampling);
                       setUseTls(tmpUseTls);
                       setUseBase64Encoding(tmpUseBase64Encoding);
+                      setTtsStreamingSampleRate(tmpTtsStreamingSampleRate);
                     }
                   }}
                 >
@@ -976,6 +988,27 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     />
                     <div>Tts streaming use audio resampling</div>
                   </label>
+
+                  {useAudioResampling && (
+                    <>
+                      {" "}
+                      <label htmlFor="custom_vendor_tts_streaming_sample_rate">
+                        Tts streaming audio sample rate
+                        {useAudioResampling ? <span>*</span> : ""}
+                      </label>
+                      <input
+                        id="custom_vendor_tts_streaming_sample_rate"
+                        type="number"
+                        name="custom_vendor_tts_streaming_sample_rate"
+                        required={useAudioResampling}
+                        value={ttsStreamingSampleRate}
+                        disabled={!useAudioResampling}
+                        onChange={(e) => {
+                          setTtsStreamingSampleRate(e.target.value);
+                        }}
+                      />
+                    </>
+                  )}
 
                   <label htmlFor="use_base64_encoding" className="chk">
                     <input
