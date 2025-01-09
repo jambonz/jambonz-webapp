@@ -921,7 +921,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                 >
                   <label htmlFor="custom_vendor_use_for_tts">
-                    TTS HTTP URL<span>*</span>
+                    <Tooltip
+                      subStyle="info"
+                      text={
+                        "Select HTTP for non-streaming or WebSocket for streaming."
+                      }
+                    >
+                      TTS URL<span>*</span>
+                    </Tooltip>
                   </label>
                   <input
                     id="custom_vendor_use_for_tts"
