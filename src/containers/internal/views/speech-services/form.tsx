@@ -939,7 +939,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   }}
                 >
                   <label htmlFor="custom_vendor_use_for_tts">
-                    Http URL (non-streaming)<span>*</span>
+                    Http URL (non-streaming)
                   </label>
                   <input
                     id="custom_vendor_use_for_tts"
@@ -953,7 +953,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     }}
                   />
                   <label htmlFor="custom_vendor_use_for_tts_streaming_ws">
-                    Ws URL (streaming)<span>*</span>
+                    Ws URL (streaming)
                   </label>
                   <input
                     id="custom_vendor_use_for_tts_streaming_ws"
