@@ -145,6 +145,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpCustomVendorTtsUrl, setTmpCustomVendorTtsUrl] = useState("");
   const [customVendorTtsUrl, setCustomVendorTtsUrl] = useState("");
   const [tmpCustomVendorSttUrl, setTmpCustomVendorSttUrl] = useState("");
+  const [customVendorTtsStreamingUrl, setCustomVendorTtsStreamingUrl] =
+    useState("");
+  const [tmpCustomVendorTtsStreamingUrl, setTmpCustomVendorTtsStreamingUrl] =
+    useState("");
   const [customVendorSttUrl, setCustomVendorSttUrl] = useState("");
   const [initialOnPremNuanceTtsCheck, setInitialOnPremNuanceTtsCheck] =
     useState(false);
@@ -379,6 +383,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           use_for_tts: ttsCheck ? 1 : 0,
           use_for_stt: sttCheck ? 1 : 0,
           custom_tts_url: customVendorTtsUrl || null,
+          custom_tts_streaming_url: customVendorTtsStreamingUrl || null,
           custom_stt_url: customVendorSttUrl || null,
           auth_token: customVendorAuthToken || null,
         }),
@@ -685,6 +690,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTmpCustomVendorSttUrl(credential.data.custom_stt_url || "");
       setCustomVendorTtsUrl(credential.data.custom_tts_url || "");
       setTmpCustomVendorTtsUrl(credential.data.custom_tts_url || "");
+      setCustomVendorTtsStreamingUrl(
+        credential.data.custom_tts_streaming_url || "",
+      );
+      setTmpCustomVendorTtsStreamingUrl(
+        credential.data.custom_tts_streaming_url || "",
+      );
       if (credential.data.label) {
         setLabel(credential.data.label);
       }
@@ -914,31 +925,45 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     setTtsCheck(e.target.checked);
                     if (!e.target.checked) {
                       setTmpCustomVendorTtsUrl(customVendorTtsUrl);
+                      setTmpCustomVendorTtsStreamingUrl(
+                        customVendorTtsStreamingUrl,
+                      );
                       setCustomVendorTtsUrl("");
+                      setCustomVendorTtsStreamingUrl("");
                     } else {
                       setCustomVendorTtsUrl(tmpCustomVendorTtsUrl);
+                      setCustomVendorTtsStreamingUrl(
+                        tmpCustomVendorTtsStreamingUrl,
+                      );
                     }
                   }}
                 >
                   <label htmlFor="custom_vendor_use_for_tts">
-                    <Tooltip
-                      subStyle="info"
-                      text={
-                        "Select HTTP for non-streaming or WebSocket for streaming."
-                      }
-                    >
-                      TTS URL<span>*</span>
-                    </Tooltip>
+                    Http URL (non-streaming)<span>*</span>
                   </label>
                   <input
                     id="custom_vendor_use_for_tts"
                     type="text"
                     name="custom_vendor_use_for_tts"
                     placeholder="Required"
-                    required={ttsCheck}
+                    required={ttsCheck && !customVendorTtsStreamingUrl}
                     value={customVendorTtsUrl}
                     onChange={(e) => {
                       setCustomVendorTtsUrl(e.target.value);
+                    }}
+                  />
+                  <label htmlFor="custom_vendor_use_for_tts_streaming_ws">
+                    Ws URL (streaming)<span>*</span>
+                  </label>
+                  <input
+                    id="custom_vendor_use_for_tts_streaming_ws"
+                    type="text"
+                    name="custom_vendor_use_for_tts_streaming_ws"
+                    placeholder="Required"
+                    required={ttsCheck && !customVendorTtsUrl}
+                    value={customVendorTtsStreamingUrl}
+                    onChange={(e) => {
+                      setCustomVendorTtsStreamingUrl(e.target.value);
                     }}
                   />
                 </Checkzone>

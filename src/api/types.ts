@@ -423,6 +423,7 @@ export interface SpeechCredential {
   auth_token: null | string;
   custom_stt_url: null | string;
   custom_tts_url: null | string;
+  custom_tts_streaming_url: null | string;
   label: null | string;
   cobalt_server_uri: null | string;
   model_id: null | string;
