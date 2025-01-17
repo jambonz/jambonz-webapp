@@ -10,9 +10,9 @@ import {
 import { Section } from "src/components";
 import {
   Message,
-  Selector,
   AccountSelect,
   ApplicationSelect,
+  TypeaheadSelector,
 } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -169,7 +169,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
             <label htmlFor="sip_trunk">
               Carrier <span>*</span>
             </label>
-            <Selector
+            <TypeaheadSelector
               id="sip_trunk"
               name="sip_trunk"
               required

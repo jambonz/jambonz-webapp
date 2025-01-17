@@ -423,6 +423,7 @@ export interface SpeechCredential {
   auth_token: null | string;
   custom_stt_url: null | string;
   custom_tts_url: null | string;
+  custom_tts_streaming_url: null | string;
   label: null | string;
   cobalt_server_uri: null | string;
   model_id: null | string;
@@ -451,6 +452,8 @@ export interface CarrierRegisterStatus {
   callId: null | string;
 }
 
+export type DtmfType = "rfc2833" | "tones" | "info";
+
 export interface Carrier {
   voip_carrier_sid: string;
   name: string;
@@ -477,6 +480,7 @@ export interface Carrier {
   smpp_inbound_password: null | string;
   smpp_enquire_link_interval: number;
   register_status: CarrierRegisterStatus;
+  dtmf_type: DtmfType;
 }
 
 export interface PredefinedCarrier extends Carrier {
@@ -750,4 +754,27 @@ export interface PlayHTOptions {
 export interface RimelabsOptions {
   speedAlpha: number;
   reduceLatency: boolean;
+}
+
+export type CartesiaEmotions =
+  | "anger:lowest"
+  | "anger:low"
+  | "anger:high"
+  | "anger:highest"
+  | "positivity:lowest"
+  | "positivity:low"
+  | "positivity:high"
+  | "positivity:highest"
+  | "surprise:lowest"
+  | "surprise:high"
+  | "surprise:highest"
+  | "sadness:lowest"
+  | "sadness:low"
+  | "curiosity:low"
+  | "curiosity:high"
+  | "curiosity:highest";
+
+export interface CartesiaOptions {
+  speed: number;
+  emotion: CartesiaEmotions;
 }

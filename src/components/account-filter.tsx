@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { classNames } from "@jambonz/ui-kit";
 
-import { Icons } from "src/components/icons";
+import { TypeaheadSelector } from "src/components/forms";
 
 import type { Account } from "src/api/types";
 import { hasLength, sortLocaleName } from "src/utils";
@@ -22,12 +22,10 @@ export const AccountFilter = ({
   accounts,
   defaultOption,
 }: AccountFilterProps) => {
-  const [focus, setFocus] = useState(false);
   const classes = {
     smsel: true,
     "smsel--filter": true,
     "account-filter": true,
-    focused: focus,
   };
 
   useEffect(() => {
@@ -36,41 +34,30 @@ export const AccountFilter = ({
     }
   }, [accounts, defaultOption, setAccountSid]);
 
+  const options = [
+    ...(defaultOption ? [{ name: "All accounts", value: "" }] : []),
+    ...(hasLength(accounts)
+      ? accounts.sort(sortLocaleName).map((acct) => ({
+          name: acct.name,
+          value: acct.account_sid,
+        }))
+      : []),
+  ];
+
   return (
     <div className={classNames(classes)}>
       {label && <label htmlFor="account_filter">{label}:</label>}
-      <div>
-        <select
-          id="account_filter"
-          name="account_filter"
-          value={accountSid}
-          onChange={(e) => {
-            setAccountSid(e.target.value);
-            setAccountFilter(e.target.value);
-          }}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-        >
-          {defaultOption ? (
-            <option value="">All accounts</option>
-          ) : (
-            accounts &&
-            !accounts.length && <option value="">No accounts</option>
-          )}
-          {hasLength(accounts) &&
-            accounts.sort(sortLocaleName).map((acct) => {
-              return (
-                <option key={acct.account_sid} value={acct.account_sid}>
-                  {acct.name}
-                </option>
-              );
-            })}
-        </select>
-        <span>
-          <Icons.ChevronUp />
-          <Icons.ChevronDown />
-        </span>
-      </div>
+      <TypeaheadSelector
+        id="account_filter"
+        name="account_filter"
+        value={accountSid}
+        options={options}
+        className="small"
+        onChange={(e) => {
+          setAccountSid(e.target.value);
+          setAccountFilter(e.target.value);
+        }}
+      />
     </div>
   );
 };

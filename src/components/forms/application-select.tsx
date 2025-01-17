@@ -1,6 +1,6 @@
 import React, { useEffect, forwardRef } from "react";
 
-import { Selector } from "src/components/forms";
+import { TypeaheadSelector } from "src/components/forms";
 import { hasLength } from "src/utils";
 
 import type { Application } from "src/api/types";
@@ -18,7 +18,7 @@ type ApplicationSelectProps = {
   disabled?: boolean;
 };
 
-type SelectorRef = HTMLSelectElement;
+type SelectorRef = HTMLInputElement;
 
 export const ApplicationSelect = forwardRef<
   SelectorRef,
@@ -47,7 +47,7 @@ export const ApplicationSelect = forwardRef<
         <label htmlFor={id}>
           {label} {required && <span>*</span>}
         </label>
-        <Selector
+        <TypeaheadSelector
           ref={ref}
           id={id}
           name={id}

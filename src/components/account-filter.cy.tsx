@@ -43,32 +43,63 @@ describe("<AccountFilter>", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Default value is properly set to first option */
-    cy.get("select").should("have.value", accountsSorted[0].account_sid);
+    cy.get("input").should("have.value", accountsSorted[0].name);
   });
 
   it("updates value onChange", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Assert onChange value updates */
-    cy.get("select").select(accountsSorted[1].account_sid);
-    cy.get("select").should("have.value", accountsSorted[1].account_sid);
+    cy.get("input").clear();
+    cy.get("input").type(accountsSorted[1].name);
+    cy.get("input").should("have.value", accountsSorted[1].name);
   });
 
   it("manages the focused state", () => {
     cy.mount(<AccountFilterTestWrapper />);
 
     /** Test the `focused` state className (applied onFocus) */
-    cy.get("select").select(accountsSorted[1].account_sid);
-    cy.get(".account-filter").should("have.class", "focused");
-    cy.get("select").blur();
-    cy.get(".account-filter").should("not.have.class", "focused");
+    cy.get("input").clear();
+    cy.get("input").type(accountsSorted[1].name);
+    cy.get("input").parent().should("have.class", "focused");
+    cy.get("input").blur();
+    cy.get("input").parent().should("not.have.class", "focused");
   });
 
   it("renders with default option", () => {
     /** Test with the `defaultOption` prop */
     cy.mount(<AccountFilterTestWrapper defaultOption />);
-
     /** No default value is set when this prop is present */
-    cy.get("select").should("have.value", "");
+    cy.get("input").should("have.value", "All accounts");
+  });
+
+  it("verify the typeahead dropdown", () => {
+    /** Test by typing cus then custom account is selected */
+    cy.mount(<AccountFilterTestWrapper defaultOption />);
+    cy.get("input").clear();
+    cy.get("input").type("cus");
+    cy.get("div#account_filter-option-1").should("have.text", "custom account");
+  });
+  it("handles Enter key press", () => {
+    cy.mount(<AccountFilterTestWrapper />);
+
+    cy.get("input").clear();
+    cy.get("input").type("cus{enter}");
+    cy.get("input").should("have.value", "custom account");
+  });
+  it("navigates down and up with arrow keys", () => {
+    cy.mount(<AccountFilterTestWrapper />);
+
+    cy.get("input").clear();
+    // Press arrow down to move to the first option
+    cy.get("input").type("{downarrow}");
+    cy.get("input").type("{enter}");
+    cy.get("input").should("have.value", "default account");
+
+    // Press up to move to the previous option
+    cy.get("input").type("{uparrow}");
+    cy.get("input").type("{uparrow}");
+    cy.get("input").type("{enter}");
+    cy.get("input").should("have.value", "custom account");
   });
 });

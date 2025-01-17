@@ -6,6 +6,7 @@ import { FileUpload } from "./file-upload";
 import { AccountSelect } from "./account-select";
 import { ApplicationSelect } from "./application-select";
 import { LocalLimits, useLocalLimitsRef } from "./local-limits";
+import { TypeaheadSelector } from "./typeahead-selector";
 
 export {
   Passwd,
@@ -17,4 +18,5 @@ export {
   ApplicationSelect,
   LocalLimits,
   useLocalLimitsRef,
+  TypeaheadSelector,
 };

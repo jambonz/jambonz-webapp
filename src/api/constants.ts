@@ -1,5 +1,6 @@
 import { hasValue } from "src/utils";
 import type {
+  CartesiaOptions,
   Currency,
   ElevenLabsOptions,
   GoogleCustomVoice,
@@ -282,6 +283,12 @@ export const DEFAULT_PLAYHT_OPTIONS: Partial<PlayHTOptions> = {
   style_guidance: 20,
   text_guidance: 1,
 };
+
+// Cartesia options
+export const DEFAULT_CARTESIA_OPTIONS: Partial<CartesiaOptions> = {
+  speed: 0.0,
+  emotion: "positivity:high",
+};
 /** Password Length options */
 
 export const PASSWORD_MIN = 8;
@@ -312,6 +319,11 @@ export const USER_SCOPE_SELECTION: SelectorOptions[] = [
   { name: "Admin", value: "admin" },
   { name: "Service provider", value: "service_provider" },
   { name: "Account", value: "account" },
+];
+
+export const DTMF_TYPE_SELECTION: SelectorOptions[] = [
+  { name: "RFC 2833", value: "rfc2833" },
+  { name: "Tones", value: "tones" },
 ];
 
 /** Available webhook methods */

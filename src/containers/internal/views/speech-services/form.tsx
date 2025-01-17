@@ -49,6 +49,7 @@ import {
   AWS_INSTANCE_PROFILE,
   VENDOR_VERBIO,
   VENDOR_SPEECHMATICS,
+  VENDOR_CARTESIA,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -77,6 +78,7 @@ import type {
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   ADDITIONAL_SPEECH_VENDORS,
+  DEFAULT_CARTESIA_OPTIONS,
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICE,
   DEFAULT_PLAYHT_OPTIONS,
@@ -143,6 +145,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpCustomVendorTtsUrl, setTmpCustomVendorTtsUrl] = useState("");
   const [customVendorTtsUrl, setCustomVendorTtsUrl] = useState("");
   const [tmpCustomVendorSttUrl, setTmpCustomVendorSttUrl] = useState("");
+  const [customVendorTtsStreamingUrl, setCustomVendorTtsStreamingUrl] =
+    useState("");
+  const [tmpCustomVendorTtsStreamingUrl, setTmpCustomVendorTtsStreamingUrl] =
+    useState("");
   const [customVendorSttUrl, setCustomVendorSttUrl] = useState("");
   const [initialOnPremNuanceTtsCheck, setInitialOnPremNuanceTtsCheck] =
     useState(false);
@@ -218,6 +224,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return DEFAULT_PLAYHT_OPTIONS;
         case VENDOR_RIMELABS:
           return DEFAULT_RIMELABS_OPTIONS;
+        case VENDOR_CARTESIA:
+          return DEFAULT_CARTESIA_OPTIONS;
       }
     }
     return "";
@@ -232,6 +240,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return "https://docs.play.ht/reference/api-generate-tts-audio-stream";
         case VENDOR_RIMELABS:
           return "https://rimelabs.mintlify.app/api-reference/endpoint/streaming-mp3#variable-parameters";
+        case VENDOR_CARTESIA:
+          return "https://docs.cartesia.ai/api-reference/tts/bytes";
       }
     }
     return "";
@@ -364,11 +374,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_NVIDIA && {
           riva_server_uri: rivaServerUri || null,
         }),
+        ...(vendor === VENDOR_CARTESIA && {
+          model_id: ttsModelId || null,
+          options: options || null,
+        }),
         ...(vendor === VENDOR_CUSTOM && {
           vendor: (vendor + ":" + customVendorName) as Lowercase<Vendor>,
           use_for_tts: ttsCheck ? 1 : 0,
           use_for_stt: sttCheck ? 1 : 0,
           custom_tts_url: customVendorTtsUrl || null,
+          custom_tts_streaming_url: customVendorTtsStreamingUrl || null,
           custom_stt_url: customVendorSttUrl || null,
           auth_token: customVendorAuthToken || null,
         }),
@@ -451,7 +466,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_RIMELABS ||
-              vendor === VENDOR_WHISPER
+              vendor === VENDOR_WHISPER ||
+              vendor === VENDOR_CARTESIA
                 ? apiKey
                 : null,
           }),
@@ -517,7 +533,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_ELEVENLABS ||
       vendor === VENDOR_WHISPER ||
       vendor === VENDOR_PLAYHT ||
-      vendor === VENDOR_RIMELABS
+      vendor === VENDOR_RIMELABS ||
+      vendor === VENDOR_CARTESIA
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -673,6 +690,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setTmpCustomVendorSttUrl(credential.data.custom_stt_url || "");
       setCustomVendorTtsUrl(credential.data.custom_tts_url || "");
       setTmpCustomVendorTtsUrl(credential.data.custom_tts_url || "");
+      setCustomVendorTtsStreamingUrl(
+        credential.data.custom_tts_streaming_url || "",
+      );
+      setTmpCustomVendorTtsStreamingUrl(
+        credential.data.custom_tts_streaming_url || "",
+      );
       if (credential.data.label) {
         setLabel(credential.data.label);
       }
@@ -878,6 +901,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_WHISPER &&
               vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_RIMELABS &&
+              vendor !== VENDOR_CARTESIA &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -901,24 +925,45 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                     setTtsCheck(e.target.checked);
                     if (!e.target.checked) {
                       setTmpCustomVendorTtsUrl(customVendorTtsUrl);
+                      setTmpCustomVendorTtsStreamingUrl(
+                        customVendorTtsStreamingUrl,
+                      );
                       setCustomVendorTtsUrl("");
+                      setCustomVendorTtsStreamingUrl("");
                     } else {
                       setCustomVendorTtsUrl(tmpCustomVendorTtsUrl);
+                      setCustomVendorTtsStreamingUrl(
+                        tmpCustomVendorTtsStreamingUrl,
+                      );
                     }
                   }}
                 >
                   <label htmlFor="custom_vendor_use_for_tts">
-                    TTS HTTP URL<span>*</span>
+                    Http URL (non-streaming)
                   </label>
                   <input
                     id="custom_vendor_use_for_tts"
                     type="text"
                     name="custom_vendor_use_for_tts"
                     placeholder="Required"
-                    required={ttsCheck}
+                    required={ttsCheck && !customVendorTtsStreamingUrl}
                     value={customVendorTtsUrl}
                     onChange={(e) => {
                       setCustomVendorTtsUrl(e.target.value);
+                    }}
+                  />
+                  <label htmlFor="custom_vendor_use_for_tts_streaming_ws">
+                    Ws URL (streaming)
+                  </label>
+                  <input
+                    id="custom_vendor_use_for_tts_streaming_ws"
+                    type="text"
+                    name="custom_vendor_use_for_tts_streaming_ws"
+                    placeholder="Required"
+                    required={ttsCheck && !customVendorTtsUrl}
+                    value={customVendorTtsStreamingUrl}
+                    onChange={(e) => {
+                      setCustomVendorTtsStreamingUrl(e.target.value);
                     }}
                   />
                 </Checkzone>
@@ -1472,6 +1517,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_SONIOX ||
+          vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
             {vendor === VENDOR_PLAYHT && (
@@ -1521,6 +1567,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
+        {vendor === VENDOR_CARTESIA && ttsModels.length > 0 && (
+          <fieldset>
+            <label htmlFor={`${vendor}_tts_model_id`}>Model Id</label>
+            <Selector
+              id={"tts_model_id"}
+              name={"tts_model_id"}
+              value={ttsModelId}
+              options={ttsModels}
+              onChange={(e) => {
+                setTtsModelId(e.target.value);
+              }}
+            />
+          </fieldset>
+        )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
           vendor == VENDOR_RIMELABS) &&
@@ -1540,6 +1600,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_RIMELABS) && (
           <fieldset>
             <Checkzone
