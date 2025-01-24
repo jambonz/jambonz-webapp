@@ -1,6 +1,6 @@
 import React, { useEffect, forwardRef } from "react";
 
-import { Selector } from "src/components/forms";
+import { TypeaheadSelector } from "src/components/forms";
 
 import type { Account } from "src/api/types";
 import { hasLength } from "src/utils";
@@ -16,7 +16,7 @@ type AccountSelectProps = {
   disabled?: boolean;
 };
 
-type SelectorRef = HTMLSelectElement;
+type SelectorRef = HTMLInputElement;
 
 export const AccountSelect = forwardRef<SelectorRef, AccountSelectProps>(
   (
@@ -41,7 +41,7 @@ export const AccountSelect = forwardRef<SelectorRef, AccountSelectProps>(
         <label htmlFor="account_sid">
           {label} {required && <span>*</span>}
         </label>
-        <Selector
+        <TypeaheadSelector
           ref={ref}
           id="account_sid"
           name="account_sid"
