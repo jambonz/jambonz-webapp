@@ -86,7 +86,6 @@ export const parseJwt = (token: string) => {
       })
       .join(""),
   );
-
   return JSON.parse(jsonPayload);
 };
 
@@ -107,7 +106,6 @@ export const useProvideAuth = (): AuthStateContext => {
             token = response.json.token;
             setToken(token);
             userData = parseJwt(token);
-
             if (ENABLE_HOSTED_SYSTEM) {
               getMe()
                 .then(({ json }) => {
