@@ -143,7 +143,7 @@ export interface User {
   name: string;
   email: string;
   is_active: boolean;
-  is_read_only: boolean;
+  is_view_only: boolean;
   force_change: boolean;
   account_sid: string | null;
   account_name?: string | null;
@@ -175,7 +175,7 @@ export interface UserUpdatePayload {
   name: string;
   force_change: boolean;
   is_active: boolean;
-  is_read_only: boolean;
+  is_view_only: boolean;
   service_provider_sid: string | null;
   account_sid: string | null;
 }

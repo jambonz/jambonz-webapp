@@ -61,8 +61,7 @@ export const UserForm = ({ user }: UserFormProps) => {
   const [forceChange, setForceChange] = useState(true);
   const [modal, setModal] = useState(false);
   const [accountSid, setAccountSid] = useState("");
-  const [isReadOnly, setIsReadOnly] = useState(false);
-  const readOnlyFeature = currentUser?.read_only_feature;
+  const [isViewOnly, setIsViewOnly] = useState(false);
 
   const handleCancel = () => {
     setModal(false);
@@ -117,7 +116,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         initial_password: initialPassword,
         force_change: forceChange,
         is_active: isActive,
-        is_read_only: isReadOnly,
+        is_view_only: isViewOnly,
         service_provider_sid:
           scope === USER_ADMIN && currentUser?.scope === USER_ADMIN
             ? null
@@ -148,7 +147,7 @@ export const UserForm = ({ user }: UserFormProps) => {
         initial_password: initialPassword || null,
         force_change: forceChange,
         is_active: isActive,
-        is_read_only: isReadOnly,
+        is_view_only: isViewOnly,
         service_provider_sid:
           scope === USER_ADMIN && currentUser?.scope === USER_ADMIN
             ? null
@@ -176,7 +175,7 @@ export const UserForm = ({ user }: UserFormProps) => {
       setName(user.data.name);
       setForceChange(!!user.data.force_change);
       setIsActive(!!user.data.is_active);
-      setIsReadOnly(!!user.data.is_read_only);
+      setIsViewOnly(!!user.data.is_view_only);
       setEmail(user.data.email);
       setScope(getUserScope(user.data));
       if (user.data.account_sid) {
@@ -258,18 +257,16 @@ export const UserForm = ({ user }: UserFormProps) => {
                 />
                 <div>User is active</div>
               </label>
-              {readOnlyFeature && (
-                <label htmlFor="is_read_only" className="chk">
-                  <input
-                    id="is_read_only"
-                    name="is_read_only"
-                    type="checkbox"
-                    checked={isReadOnly}
-                    onChange={(e) => setIsReadOnly(e.target.checked)}
-                  />
-                  <div>Read-only User</div>
-                </label>
-              )}
+              <label htmlFor="is_view_only" className="chk">
+                <input
+                  id="is_view_only"
+                  name="is_view_only"
+                  type="checkbox"
+                  checked={isViewOnly}
+                  onChange={(e) => setIsViewOnly(e.target.checked)}
+                />
+                <div>View-only User</div>
+              </label>
             </fieldset>
           )}
           <fieldset>
@@ -300,17 +297,17 @@ export const UserForm = ({ user }: UserFormProps) => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </fieldset>
-          {!user && readOnlyFeature && (
+          {!user && (
             <fieldset>
-              <label htmlFor="is_read_only" className="chk">
+              <label htmlFor="is_view_only" className="chk">
                 <input
-                  id="is_read_only"
-                  name="is_read_only"
+                  id="is_view_only"
+                  name="is_view_only"
                   type="checkbox"
-                  checked={isReadOnly}
-                  onChange={(e) => setIsReadOnly(e.target.checked)}
+                  checked={isViewOnly}
+                  onChange={(e) => setIsViewOnly(e.target.checked)}
                 />
-                <div>Read-only User</div>
+                <div>View-only User</div>
               </label>
             </fieldset>
           )}
