@@ -50,6 +50,7 @@ import {
   VENDOR_VERBIO,
   VENDOR_SPEECHMATICS,
   VENDOR_CARTESIA,
+  VENDOR_VOXIST,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -461,6 +462,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_WELLSAID ||
               vendor === VENDOR_DEEPGRAM ||
               vendor === VENDOR_ASSEMBLYAI ||
+              vendor === VENDOR_VOXIST ||
               vendor === VENDOR_SONIOX ||
               vendor === VENDOR_SPEECHMATICS ||
               vendor === VENDOR_ELEVENLABS ||
@@ -881,6 +883,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor && (
           <fieldset>
             {vendor !== VENDOR_ASSEMBLYAI &&
+              vendor !== VENDOR_VOXIST &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
@@ -1512,6 +1515,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
+          vendor === VENDOR_VOXIST ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_PLAYHT ||

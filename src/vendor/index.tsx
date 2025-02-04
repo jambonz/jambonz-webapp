@@ -20,6 +20,7 @@ export const VENDOR_CUSTOM = "custom";
 export const VENDOR_COBALT = "cobalt";
 export const VENDOR_ELEVENLABS = "elevenlabs";
 export const VENDOR_ASSEMBLYAI = "assemblyai";
+export const VENDOR_VOXIST = "voxist";
 export const VENDOR_WHISPER = "whisper";
 export const VENDOR_PLAYHT = "playht";
 export const VENDOR_RIMELABS = "rimelabs";
@@ -82,6 +83,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "AssemblyAI",
     value: VENDOR_ASSEMBLYAI,
+  },
+  {
+    name: "Voxist",
+    value: VENDOR_VOXIST,
   },
   {
     name: "Whisper",

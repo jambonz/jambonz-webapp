@@ -31,6 +31,7 @@ import {
   VENDOR_SPEECHMATICS,
   VENDOR_PLAYHT,
   VENDOR_CARTESIA,
+  VENDOR_VOXIST,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -391,6 +392,7 @@ export const SpeechProviderSelection = ({
           options={ttsVendorOptions.filter(
             (vendor) =>
               vendor.value !== VENDOR_ASSEMBLYAI &&
+              vendor.value !== VENDOR_VOXIST &&
               vendor.value !== VENDOR_SONIOX &&
               vendor.value !== VENDOR_SPEECHMATICS &&
               vendor.value !== VENDOR_CUSTOM &&
