@@ -13,6 +13,7 @@ export type Vendor =
   | "Custom"
   | "ElevenLabs"
   | "assemblyai"
+  | "voxist"
   | "whisper"
   | "playht"
   | "rimelabs"
