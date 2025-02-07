@@ -110,6 +110,7 @@ export interface SynthesisVendors {
   deepgram: VoiceLanguage[];
   playht: VoiceLanguage[];
   cartesia: VoiceLanguage[];
+  rimelabs: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

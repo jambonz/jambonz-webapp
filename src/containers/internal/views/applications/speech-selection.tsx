@@ -32,6 +32,7 @@ import {
   VENDOR_PLAYHT,
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
+  VENDOR_RIMELABS,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -288,6 +289,12 @@ export const SpeechProviderSelection = ({
           }
           if (synthVendor === VENDOR_CARTESIA) {
             const newLang = json.tts.find((lang) => lang.value === "en");
+            setSynthLang(newLang!.value);
+            updateTtsVoice(newLang!.voices[0].value);
+            return;
+          }
+          if (synthVendor === VENDOR_RIMELABS) {
+            const newLang = json.tts.find((lang) => lang.value === "eng");
             setSynthLang(newLang!.value);
             updateTtsVoice(newLang!.voices[0].value);
             return;
