@@ -51,6 +51,7 @@ import {
   disableDefaultTrunkRouting,
   hasValue,
   isNotBlank,
+  isValidDomainOrIP,
 } from "src/utils";
 
 import {
@@ -118,6 +119,9 @@ export const CarrierForm = ({
   const [initialPrefix, setInitialPrefix] = useState(false);
   const [diversion, setDiversion] = useState("");
   const [initialDiversion, setInitialDiversion] = useState(false);
+
+  const [initialSipProxy, setInitialSipProxy] = useState(false);
+  const [sipProxy, setSipProxy] = useState("");
 
   const [smppSystemId, setSmppSystemId] = useState("");
   const [smppPass, setSmppPass] = useState("");
@@ -205,6 +209,13 @@ export const CarrierForm = ({
         setInitialDiversion(true);
       } else {
         setInitialDiversion(false);
+      }
+
+      if (obj.sip_proxy) {
+        setSipProxy(obj.sip_proxy);
+        setInitialSipProxy(true);
+      } else {
+        setInitialSipProxy(false);
       }
 
       if (obj.smpp_system_id) {
@@ -508,6 +519,18 @@ export const CarrierForm = ({
       }
     }
 
+    console.log(
+      "sipProxy",
+      sipProxy,
+      isNotBlank(sipProxy),
+      !isValidDomainOrIP(sipProxy),
+    );
+
+    if (isNotBlank(sipProxy) && !isValidDomainOrIP(sipProxy)) {
+      toastError("Please provide a valid SIP Proxy domain or IP address.");
+      return;
+    }
+
     if (currentServiceProvider) {
       const carrierPayload: Partial<Carrier> = {
         name: carrierName.trim(),
@@ -531,6 +554,7 @@ export const CarrierForm = ({
         smpp_inbound_system_id: smppInboundSystemId.trim() || null,
         smpp_inbound_password: smppInboundPass.trim() || null,
         dtmf_type: dtmfType,
+        sip_proxy: sipProxy.trim() || null,
       };
 
       if (carrier && carrier.data) {
@@ -967,6 +991,33 @@ export const CarrierForm = ({
                   placeholder="Phone number or SIP URI"
                   onChange={(e) => {
                     setDiversion(e.target.value);
+                  }}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="sip_proxy"
+                label="SIP Proxy"
+                initialCheck={initialSipProxy}
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setSipProxy("");
+                  }
+                }}
+              >
+                <MS>
+                  Enable SIP Proxy by providing a valid domain or IP address.
+                </MS>
+                <input
+                  id="sip_proxy"
+                  name="sip_proxy"
+                  type="text"
+                  value={sipProxy}
+                  placeholder="Sip proxy"
+                  onChange={(e) => {
+                    setSipProxy(e.target.value);
                   }}
                 />
               </Checkzone>
