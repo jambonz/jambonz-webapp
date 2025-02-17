@@ -51,7 +51,6 @@ import {
   disableDefaultTrunkRouting,
   hasValue,
   isNotBlank,
-  isValidDomainOrIP,
 } from "src/utils";
 
 import {
@@ -121,7 +120,7 @@ export const CarrierForm = ({
   const [initialDiversion, setInitialDiversion] = useState(false);
 
   const [initialSipProxy, setInitialSipProxy] = useState(false);
-  const [sipProxy, setSipProxy] = useState("");
+  const [outboundSipProxy, setOutboundSipProxy] = useState("");
 
   const [smppSystemId, setSmppSystemId] = useState("");
   const [smppPass, setSmppPass] = useState("");
@@ -145,6 +144,44 @@ export const CarrierForm = ({
   const [sipMessage, setSipMessage] = useState("");
   const [smppInboundMessage, setSmppInboundMessage] = useState("");
   const [smppOutboundMessage, setSmppOutboundMessage] = useState("");
+
+  const validateOutboundSipGateway = (gateway: string): boolean => {
+    /** validate outbound sip gateway that can be
+     * ip address
+        dns name
+        sip(s):ip address
+        sip(s):dns name
+        full sip uri
+        full sips uri
+     */
+    // firstly checkig it's including sip or sips
+    if (
+      gateway.includes(":") &&
+      !gateway.includes("sip:") &&
+      !gateway.includes("sips:")
+    ) {
+      return false;
+    }
+    if (gateway.includes("sip:") || gateway.includes("sips:")) {
+      const sipGateway = gateway.trim().split(":");
+      if (sipGateway.length === 2) {
+        const sipGatewayType = getIpValidationType(sipGateway[1]);
+        if (sipGatewayType === INVALID) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    // check IP address or domain name
+    else {
+      const sipGatewayType = getIpValidationType(gateway);
+      if (sipGatewayType === INVALID) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   const setCarrierStates = (obj: Carrier) => {
     if (obj) {
@@ -211,8 +248,8 @@ export const CarrierForm = ({
         setInitialDiversion(false);
       }
 
-      if (obj.sip_proxy) {
-        setSipProxy(obj.sip_proxy);
+      if (obj.outbound_sip_proxy) {
+        setOutboundSipProxy(obj.outbound_sip_proxy);
         setInitialSipProxy(true);
       } else {
         setInitialSipProxy(false);
@@ -519,14 +556,10 @@ export const CarrierForm = ({
       }
     }
 
-    console.log(
-      "sipProxy",
-      sipProxy,
-      isNotBlank(sipProxy),
-      !isValidDomainOrIP(sipProxy),
-    );
-
-    if (isNotBlank(sipProxy) && !isValidDomainOrIP(sipProxy)) {
+    if (
+      isNotBlank(outboundSipProxy) &&
+      !validateOutboundSipGateway(outboundSipProxy)
+    ) {
       toastError("Please provide a valid SIP Proxy domain or IP address.");
       return;
     }
@@ -554,7 +587,7 @@ export const CarrierForm = ({
         smpp_inbound_system_id: smppInboundSystemId.trim() || null,
         smpp_inbound_password: smppInboundPass.trim() || null,
         dtmf_type: dtmfType,
-        sip_proxy: sipProxy.trim() || null,
+        outbound_sip_proxy: outboundSipProxy.trim().replaceAll(" ", "") || null,
       };
 
       if (carrier && carrier.data) {
@@ -998,26 +1031,26 @@ export const CarrierForm = ({
             <fieldset>
               <Checkzone
                 hidden
-                name="sip_proxy"
-                label="SIP Proxy"
+                name="outbound_sip_proxy"
+                label="Outbound SIP Proxy"
                 initialCheck={initialSipProxy}
                 handleChecked={(e) => {
                   if (!e.target.checked) {
-                    setSipProxy("");
+                    setOutboundSipProxy("");
                   }
                 }}
               >
                 <MS>
-                  Enable SIP Proxy by providing a valid domain or IP address.
+                  Send all calls to this carrier through an outbound proxy
                 </MS>
                 <input
-                  id="sip_proxy"
-                  name="sip_proxy"
+                  id="outbound_sip_proxy"
+                  name="outbound_sip_proxy"
                   type="text"
-                  value={sipProxy}
-                  placeholder="Sip proxy"
+                  value={outboundSipProxy}
+                  placeholder="Outbound Sip Proxy"
                   onChange={(e) => {
-                    setSipProxy(e.target.value);
+                    setOutboundSipProxy(e.target.value);
                   }}
                 />
               </Checkzone>
