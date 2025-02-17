@@ -119,6 +119,9 @@ export const CarrierForm = ({
   const [diversion, setDiversion] = useState("");
   const [initialDiversion, setInitialDiversion] = useState(false);
 
+  const [initialSipProxy, setInitialSipProxy] = useState(false);
+  const [outboundSipProxy, setOutboundSipProxy] = useState("");
+
   const [smppSystemId, setSmppSystemId] = useState("");
   const [smppPass, setSmppPass] = useState("");
   const [smppInboundSystemId, setSmppInboundSystemId] = useState("");
@@ -141,6 +144,44 @@ export const CarrierForm = ({
   const [sipMessage, setSipMessage] = useState("");
   const [smppInboundMessage, setSmppInboundMessage] = useState("");
   const [smppOutboundMessage, setSmppOutboundMessage] = useState("");
+
+  const validateOutboundSipGateway = (gateway: string): boolean => {
+    /** validate outbound sip gateway that can be
+     * ip address
+        dns name
+        sip(s):ip address
+        sip(s):dns name
+        full sip uri
+        full sips uri
+     */
+    // firstly checkig it's including sip or sips
+    if (
+      gateway.includes(":") &&
+      !gateway.includes("sip:") &&
+      !gateway.includes("sips:")
+    ) {
+      return false;
+    }
+    if (gateway.includes("sip:") || gateway.includes("sips:")) {
+      const sipGateway = gateway.trim().split(":");
+      if (sipGateway.length === 2) {
+        const sipGatewayType = getIpValidationType(sipGateway[1]);
+        if (sipGatewayType === INVALID) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    // check IP address or domain name
+    else {
+      const sipGatewayType = getIpValidationType(gateway);
+      if (sipGatewayType === INVALID) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   const setCarrierStates = (obj: Carrier) => {
     if (obj) {
@@ -205,6 +246,13 @@ export const CarrierForm = ({
         setInitialDiversion(true);
       } else {
         setInitialDiversion(false);
+      }
+
+      if (obj.outbound_sip_proxy) {
+        setOutboundSipProxy(obj.outbound_sip_proxy);
+        setInitialSipProxy(true);
+      } else {
+        setInitialSipProxy(false);
       }
 
       if (obj.smpp_system_id) {
@@ -508,6 +556,14 @@ export const CarrierForm = ({
       }
     }
 
+    if (
+      isNotBlank(outboundSipProxy) &&
+      !validateOutboundSipGateway(outboundSipProxy)
+    ) {
+      toastError("Please provide a valid SIP Proxy domain or IP address.");
+      return;
+    }
+
     if (currentServiceProvider) {
       const carrierPayload: Partial<Carrier> = {
         name: carrierName.trim(),
@@ -531,6 +587,7 @@ export const CarrierForm = ({
         smpp_inbound_system_id: smppInboundSystemId.trim() || null,
         smpp_inbound_password: smppInboundPass.trim() || null,
         dtmf_type: dtmfType,
+        outbound_sip_proxy: outboundSipProxy.trim().replaceAll(" ", "") || null,
       };
 
       if (carrier && carrier.data) {
@@ -967,6 +1024,33 @@ export const CarrierForm = ({
                   placeholder="Phone number or SIP URI"
                   onChange={(e) => {
                     setDiversion(e.target.value);
+                  }}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="outbound_sip_proxy"
+                label="Outbound SIP Proxy"
+                initialCheck={initialSipProxy}
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setOutboundSipProxy("");
+                  }
+                }}
+              >
+                <MS>
+                  Send all calls to this carrier through an outbound proxy
+                </MS>
+                <input
+                  id="outbound_sip_proxy"
+                  name="outbound_sip_proxy"
+                  type="text"
+                  value={outboundSipProxy}
+                  placeholder="Outbound Sip Proxy"
+                  onChange={(e) => {
+                    setOutboundSipProxy(e.target.value);
                   }}
                 />
               </Checkzone>
