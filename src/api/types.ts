@@ -318,7 +318,6 @@ export interface Application {
   app_json: null | string;
   call_hook: null | WebHook;
   account_sid: null | string;
-  messaging_hook: null | WebHook;
   application_sid: string;
   call_status_hook: null | WebHook;
   speech_synthesis_voice: null | string;
