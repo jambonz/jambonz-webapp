@@ -25,7 +25,7 @@ export default function CallRecentLogsButton({
         download={log.file_name}
         className="btn btn--small pcap"
       >
-        Download Logs
+        Download logs
       </a>
     );
   }
