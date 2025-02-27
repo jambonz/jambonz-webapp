@@ -85,3 +85,15 @@
     margin-top: ui-vars.$px01;
   }
 }
+
+.log-container {
+  background-color: black;
+  color: #00ff00; /* Green text for terminal-like effect */
+  font-family: monospace;
+  padding: 10px;
+  border-radius: 5px;
+  max-height: 500px; /* Adjust height as needed */
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

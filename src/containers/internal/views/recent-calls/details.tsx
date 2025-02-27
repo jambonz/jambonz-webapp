@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import { Icons } from "src/components";
@@ -11,6 +11,9 @@ import CallTracing from "./call-tracing";
 import { DISABLE_JAEGER_TRACING } from "src/api/constants";
 import { Player } from "./player";
 import "./styles.scss";
+import CallSystemLogs from "./call-system-logs";
+import CallRecentLogsButton from "./logs";
+import { getRecentCallLog } from "src/api";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -19,12 +22,25 @@ type DetailsItemProps = {
 export const DetailsItem = ({ call }: DetailsItemProps) => {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("");
+  const [logs, setLogs] = useState<string[]>([]);
 
   const transformRecentCall = (call: RecentCall): RecentCall => {
     const newCall = { ...call };
     delete newCall.recording_url;
     return newCall;
   };
+
+  useEffect(() => {
+    if (call && call.account_sid && call.call_sid && open) {
+      getRecentCallLog(call.account_sid, call.call_sid)
+        .then(({ json }) => {
+          setLogs(json);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [call, open]);
 
   return (
     <div className="item">
@@ -78,6 +94,9 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             <Tab id="tracing" label="Tracing">
               {open && <CallTracing call={call} />}
             </Tab>
+            <Tab id="logs" label="Logs">
+              {open && <CallSystemLogs logs={logs} />}
+            </Tab>
           </Tabs>
         )}
         {open && (
@@ -86,6 +105,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
               {hasValue(call.recording_url) && <Player call={call} />}
               <div className="footer__buttons">
                 <PcapButton call={call} />
+                <CallRecentLogsButton call_sid={call.call_sid} logs={logs} />
               </div>
             </div>
           </>
