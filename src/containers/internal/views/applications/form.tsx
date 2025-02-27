@@ -609,7 +609,29 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                       webhook.stateSet({
                         ...webhook.stateVal,
                         url: e.target.value,
+                        ...(e.target.value.startsWith("ws") && {
+                          method: "GET",
+                        }),
                       });
+                      if (
+                        e.target.value.startsWith("ws") &&
+                        webhook.prefix === "call_webhook"
+                      ) {
+                        const statusWebhook = webhooks.find(
+                          (w) => w.prefix === "status_webhook",
+                        );
+                        if (
+                          statusWebhook &&
+                          ((statusWebhook.stateVal?.url || "").length === 0 ||
+                            statusWebhook.stateVal?.url.startsWith("ws"))
+                        ) {
+                          statusWebhook.stateSet({
+                            ...statusWebhook.stateVal,
+                            url: e.target.value,
+                            method: "GET",
+                          });
+                        }
+                      }
                     }}
                   />
                 </div>
@@ -625,6 +647,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                         method: e.target.value as WebhookMethod,
                       });
                     }}
+                    disabled={webhook.stateVal?.url.startsWith("ws")}
                     options={WEBHOOK_METHODS}
                   />
                 </div>
