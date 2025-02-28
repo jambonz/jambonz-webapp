@@ -86,14 +86,64 @@
   }
 }
 
+/* CallSystemLogs.css */
+
+/* Styles for the log container */
 .log-container {
-  background-color: black;
-  color: #00ff00; /* Green text for terminal-like effect */
+  border-radius: 8px;
+  position: relative;
+  background: #1a1a1a; /* Dark background for the container (optional, if you want the entire container dark) */
+  color: #ffffff; /* Ensure text is visible on dark background */
+}
+
+/* Styles for the log buttons container (optional, if you want to style it separately) */
+.log-buttons {
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+/* Styles for the log content (pre element) */
+.log-content {
+  margin-top: 16px;
+  background: #1a1a1a; /* Darker background for the log content */
+
+  overflow: auto;
+  max-height: 500px;
   font-family: monospace;
-  padding: 10px;
-  border-radius: 5px;
-  max-height: 500px; /* Adjust height as needed */
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Slightly darker shadow for contrast */
+  color: #e0e0e0; /* Light gray text for visibility on dark background */
+}
+
+/* Optional: Style for individual log entries (divs within pre) */
+.log-content div {
+  margin-bottom: 10px;
+}
+
+/* Styles for log buttons */
+.log-button {
+  padding: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  background: #fff3f6; /* Light gray background for buttons, unchanged */
+  color: #da1c5c;
+  transition: transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover state for buttons */
+.log-button:hover {
+  background: #d5d5d5;
+  transform: scale(1.05);
 }
