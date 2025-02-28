@@ -11,15 +11,13 @@ type CallSystemLogsProps = {
 // Helper function to format logs
 const formatLog = (log: string): string => {
   try {
-    return JSON.stringify(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      JSON.parse(log).map((l: any) => ({
-        ...l,
-        time: dayjs(l.time).format("YYYY-MM-DD HH:mm:ss"),
-      })),
-      null,
-      2,
-    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsedLog = JSON.parse(log) as any;
+    const l = {
+      ...parsedLog,
+      time: dayjs(parsedLog.time).format("YYYY-MM-DD HH:mm:ssZ"),
+    };
+    return JSON.stringify(l, null, 2);
   } catch {
     return log;
   }
