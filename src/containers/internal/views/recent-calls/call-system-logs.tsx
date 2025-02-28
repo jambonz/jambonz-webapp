@@ -3,6 +3,7 @@ import { Icons } from "src/components";
 import { toastError, toastSuccess } from "src/store";
 
 type CallSystemLogsProps = {
+  callSid: string;
   logs: string[];
 };
 
@@ -15,7 +16,7 @@ const formatLog = (log: string): string => {
   }
 };
 
-export default function CallSystemLogs({ logs }: CallSystemLogsProps) {
+export default function CallSystemLogs({ callSid, logs }: CallSystemLogsProps) {
   const copyToClipboard = () => {
     const textToCopy = logs.map(formatLog).join("\n\n");
 
@@ -31,7 +32,7 @@ export default function CallSystemLogs({ logs }: CallSystemLogsProps) {
     const blob = new Blob([textToDownload], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "logs.txt";
+    a.download = `${callSid}.logs`;
     a.click();
     URL.revokeObjectURL(a.href);
   };

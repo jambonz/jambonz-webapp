@@ -97,7 +97,7 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             </Tab>
             {!logTabDisabled ? (
               <Tab id="logs" label="Logs">
-                {open && <CallSystemLogs logs={logs} />}
+                {open && <CallSystemLogs callSid={call.call_sid} logs={logs} />}
               </Tab>
             ) : (
               <></>
