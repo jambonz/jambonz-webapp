@@ -32,7 +32,7 @@ export default function CallSystemLogs({ callSid, logs }: CallSystemLogsProps) {
     const blob = new Blob([textToDownload], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `${callSid}.logs`;
+    a.download = `${callSid}.log`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
