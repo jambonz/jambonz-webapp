@@ -31,14 +31,12 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
   const [loading, setLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   useEffect(() => {
-    setDisableButton(
-      !call || !call.account_sid || (!call.call_sid && !call.sip_callid),
-    );
+    setDisableButton(!call || !call.account_sid || !call.call_sid);
   }, [call]);
   const getLogs = () => {
-    if (call && call.account_sid && (call.call_sid || call.sip_callid)) {
+    if (call && call.account_sid && call.call_sid) {
       setLoading(true);
-      getRecentCallLog(call.account_sid, call.call_sid || call.sip_callid)
+      getRecentCallLog(call.account_sid, call.call_sid)
         .then(({ json }) => {
           setLogs(json);
         })
