@@ -32,6 +32,7 @@ interface JambonzWindowObject {
   DEFAULT_SERVICE_PROVIDER_SID: string;
   STRIPE_PUBLISHABLE_KEY: string;
   DISABLE_ADDITIONAL_SPEECH_VENDORS: string;
+  AWS_REGION: string;
 }
 
 declare global {
@@ -86,6 +87,9 @@ export const DISABLE_ADDITIONAL_SPEECH_VENDORS: boolean =
   JSON.parse(
     import.meta.env.VITE_APP_DISABLE_ADDITIONAL_SPEECH_VENDORS || "false",
   );
+
+export const AWS_REGION: string =
+  window.JAMBONZ?.AWS_REGION || import.meta.env.VITE_APP_AWS_REGION;
 
 export const DEFAULT_SERVICE_PROVIDER_SID: string =
   window.JAMBONZ?.DEFAULT_SERVICE_PROVIDER_SID ||
