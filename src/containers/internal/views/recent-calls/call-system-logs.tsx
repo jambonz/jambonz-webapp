@@ -29,6 +29,7 @@ const formatLog = (log: string): string => {
 export default function CallSystemLogs({ call }: CallSystemLogsProps) {
   const [logs, setLogs] = useState<string[] | null>();
   const [loading, setLoading] = useState(false);
+  const [disableButton] = useState(hasValue(call.call_sid));
   const getLogs = () => {
     if (call && call.account_sid && call.call_sid) {
       setLoading(true);
@@ -97,7 +98,12 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
         </>
       ) : (
         <div className="log-fetch-container">
-          <Button type="button" small onClick={getLogs} disabled={loading}>
+          <Button
+            type="button"
+            small
+            onClick={getLogs}
+            disabled={loading || disableButton}
+          >
             Retrieve Logs
           </Button>
           {loading && <Spinner small />}
