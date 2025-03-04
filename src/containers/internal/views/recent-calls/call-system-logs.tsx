@@ -1,6 +1,6 @@
 import { Button } from "@jambonz/ui-kit";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getRecentCallLog } from "src/api";
 import { RecentCall } from "src/api/types";
 import { Icons, Spinner } from "src/components";
@@ -29,7 +29,10 @@ const formatLog = (log: string): string => {
 export default function CallSystemLogs({ call }: CallSystemLogsProps) {
   const [logs, setLogs] = useState<string[] | null>();
   const [loading, setLoading] = useState(false);
-  const [disableButton] = useState(hasValue(call.call_sid));
+  const [disableButton, setDisableButton] = useState(false);
+  useEffect(() => {
+    setDisableButton(!call || !call.account_sid || !call.call_sid);
+  }, [call]);
   const getLogs = () => {
     if (call && call.account_sid && call.call_sid) {
       setLoading(true);
