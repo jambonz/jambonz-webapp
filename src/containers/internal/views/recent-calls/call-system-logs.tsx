@@ -20,7 +20,7 @@ const formatLog = (log: string): string => {
 
     const l = {
       ...parsedLog,
-      time: dayjs(parsedLog.time).utc().format("YYYY-MM-DD HH:mm:ss"),
+      time: dayjs(parsedLog.time).utc().format("YYYY-MM-DD HH:mm:ssZ"),
     };
     return JSON.stringify(l, null, 2);
   } catch {
@@ -31,9 +31,11 @@ const formatLog = (log: string): string => {
 export default function CallSystemLogs({ call }: CallSystemLogsProps) {
   const [logs, setLogs] = useState<string[] | null>();
   const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
   useEffect(() => {}, [call]);
   const getLogs = () => {
     setLoading(true);
+    setCount((prev) => prev + 1);
     if (call && call.account_sid && call.call_sid) {
       getRecentCallLog(call.account_sid, call.call_sid)
         .then(({ json }) => {
@@ -118,7 +120,11 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
               ? logs?.map((log, index) => (
                   <div key={index}>{formatLog(log)}</div>
                 ))
-              : "No logs found"}
+              : count === 0
+                ? "Click 'Retrieve Logs' to get logs"
+                : logs === null
+                  ? "No logs found"
+                  : "Loading logs..."}
             {}
           </pre>
         </div>
