@@ -17,7 +17,7 @@ const formatLog = (log: string): string => {
     const parsedLog = JSON.parse(log) as any;
     const l = {
       ...parsedLog,
-      time: dayjs(parsedLog.time).format("YYYY-MM-DD HH:mm:ssZ"),
+      time: dayjs(parsedLog.time).format("YYYY-MM-DD HH:mm:ss"),
     };
     return JSON.stringify(l, null, 2);
   } catch {
