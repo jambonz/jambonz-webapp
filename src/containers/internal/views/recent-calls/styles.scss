@@ -127,7 +127,6 @@
 /* Styles for log buttons */
 .log-button {
   padding: 8px;
-  font-size: 18px;
   cursor: pointer;
   border: none;
   border-radius: 50%;
@@ -140,6 +139,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.log-retrieve-button {
+  @extend .log-button;
+  border-radius: 8px;
+  width: auto;
+  height: 20px;
 }
 
 /* Hover state for buttons */

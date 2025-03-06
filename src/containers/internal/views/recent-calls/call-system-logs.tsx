@@ -1,4 +1,3 @@
-import { Button } from "@jambonz/ui-kit";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { getRecentCallLog } from "src/api";
@@ -29,22 +28,29 @@ const formatLog = (log: string): string => {
 export default function CallSystemLogs({ call }: CallSystemLogsProps) {
   const [logs, setLogs] = useState<string[] | null>();
   const [loading, setLoading] = useState(false);
-  const [disableButton, setDisableButton] = useState(false);
-  useEffect(() => {
-    setDisableButton(!call || !call.account_sid || !call.call_sid);
-  }, [call]);
+  useEffect(() => {}, [call]);
   const getLogs = () => {
+    setLoading(true);
     if (call && call.account_sid && call.call_sid) {
-      setLoading(true);
       getRecentCallLog(call.account_sid, call.call_sid)
         .then(({ json }) => {
           setLogs(json);
+        })
+        .catch((err) => {
+          if (err.status === 404) {
+            toastError("There is no log for this call");
+          } else {
+            toastError(err.msg);
+          }
         })
         .finally(() => {
           setLoading(false);
         });
     }
   };
+  useEffect(() => {
+    getLogs();
+  }, [call]);
   const copyToClipboard = () => {
     if (!logs) {
       return;
@@ -73,45 +79,45 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
 
   return (
     <>
-      {hasValue(logs) ? (
-        <>
-          <div className="log-container">
-            <div className="log-buttons">
-              <button
-                onClick={copyToClipboard}
-                className="log-button"
-                title="Copy to clipboard"
-              >
-                <Icons.Clipboard />
-              </button>
-              <button
-                onClick={downloadLogs}
-                className="log-button"
-                title="Download logs"
-              >
-                <Icons.Download />
-              </button>
-            </div>
-            <pre className="log-content">
-              {logs.map((log, index) => (
-                <div key={index}>{formatLog(log)}</div>
-              ))}
-            </pre>
+      <>
+        <div className="log-container">
+          <div className="log-buttons">
+            <button
+              onClick={getLogs}
+              className="log-retrieve-button"
+              title="Retrieve Logs"
+              disabled={loading}
+            >
+              <div style={{ display: "flex", gap: "5px" }}>
+                Retrieve Logs
+                {loading && <Spinner small />}
+              </div>
+            </button>
+            <button
+              onClick={copyToClipboard}
+              className="log-button"
+              title="Copy to clipboard"
+            >
+              <Icons.Clipboard />
+            </button>
+            <button
+              onClick={downloadLogs}
+              className="log-button"
+              title="Download logs"
+            >
+              <Icons.Download />
+            </button>
           </div>
-        </>
-      ) : (
-        <div className="log-fetch-container">
-          <Button
-            type="button"
-            small
-            onClick={getLogs}
-            disabled={loading || disableButton}
-          >
-            Retrieve Logs
-          </Button>
-          {loading && <Spinner small />}
+          <pre className="log-content">
+            {hasValue(logs) && logs.length !== 0
+              ? logs?.map((log, index) => (
+                  <div key={index}>{formatLog(log)}</div>
+                ))
+              : "No logs found"}
+            {}
+          </pre>
         </div>
-      )}
+      </>
     </>
   );
 }
