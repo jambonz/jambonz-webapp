@@ -93,20 +93,24 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
                 {loading && <Spinner small />}
               </div>
             </button>
-            <button
-              onClick={copyToClipboard}
-              className="log-button"
-              title="Copy to clipboard"
-            >
-              <Icons.Clipboard />
-            </button>
-            <button
-              onClick={downloadLogs}
-              className="log-button"
-              title="Download logs"
-            >
-              <Icons.Download />
-            </button>
+            {hasValue(logs) && logs.length !== 0 && (
+              <>
+                <button
+                  onClick={copyToClipboard}
+                  className="log-button"
+                  title="Copy to clipboard"
+                >
+                  <Icons.Clipboard />
+                </button>
+                <button
+                  onClick={downloadLogs}
+                  className="log-button"
+                  title="Download logs"
+                >
+                  <Icons.Download />
+                </button>
+              </>
+            )}
           </div>
           <pre className="log-content">
             {hasValue(logs) && logs.length !== 0
