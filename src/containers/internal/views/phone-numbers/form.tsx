@@ -41,12 +41,13 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [phoneNumbers] = useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
-  const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
+  const [voipCarriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumberNum, setPhoneNumberNum] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [sipTrunkSid, setSipTrunkSid] = useState("");
   const [applicationSid, setApplicationSid] = useState("");
   const [message, setMessage] = useState("");
+  const [carriers, setCarriers] = useState<Carrier[]>(voipCarriers || []);
 
   useRedirect<Account>(
     accounts,
@@ -55,7 +56,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
   );
 
   useRedirect<Carrier>(
-    carriers,
+    voipCarriers,
     ROUTE_INTERNAL_CARRIERS,
     "You must create a SIP trunk before you can create a phone number.",
   );
@@ -138,6 +139,20 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
     }
   }, [carriers, sipTrunkSid]);
 
+  // Filter carriers based on account_sid
+  useEffect(() => {
+    if (voipCarriers) {
+      setCarriers(
+        voipCarriers?.filter(
+          (carrier) =>
+            !accountSid ||
+            (carrier.is_active &&
+              (!carrier.account_sid || carrier.account_sid === accountSid)),
+        ),
+      );
+    }
+  }, [accountSid, voipCarriers]);
+
   return (
     <>
       <Section slim>
@@ -166,6 +181,12 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
             ></input>
           </fieldset>
           <fieldset>
+            <AccountSelect
+              accounts={accounts}
+              account={[accountSid, setAccountSid]}
+            />
+          </fieldset>
+          <fieldset>
             <label htmlFor="sip_trunk">
               Carrier <span>*</span>
             </label>
@@ -188,12 +209,7 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
               disabled={phoneNumber ? true : false}
             />
           </fieldset>
-          <fieldset>
-            <AccountSelect
-              accounts={accounts}
-              account={[accountSid, setAccountSid]}
-            />
-          </fieldset>
+
           <fieldset>
             <ApplicationSelect
               defaultOption="Choose application"
