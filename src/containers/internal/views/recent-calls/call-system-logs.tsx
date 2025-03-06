@@ -5,6 +5,8 @@ import { RecentCall } from "src/api/types";
 import { Icons, Spinner } from "src/components";
 import { toastError, toastSuccess } from "src/store";
 import { hasValue } from "src/utils";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 type CallSystemLogsProps = {
   call: RecentCall;
@@ -15,9 +17,10 @@ const formatLog = (log: string): string => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const parsedLog = JSON.parse(log) as any;
+
     const l = {
       ...parsedLog,
-      time: dayjs(parsedLog.time).format("YYYY-MM-DD HH:mm:ss"),
+      time: dayjs(parsedLog.time).utc().format("YYYY-MM-DD HH:mm:ss"),
     };
     return JSON.stringify(l, null, 2);
   } catch {
@@ -48,9 +51,7 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
         });
     }
   };
-  useEffect(() => {
-    getLogs();
-  }, [call]);
+
   const copyToClipboard = () => {
     if (!logs) {
       return;
