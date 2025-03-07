@@ -111,6 +111,7 @@
   background: #1a1a1a; /* Darker background for the log content */
 
   overflow: auto;
+  min-height: 250px;
   max-height: 800px;
   font-family: monospace;
   font-size: 14px;

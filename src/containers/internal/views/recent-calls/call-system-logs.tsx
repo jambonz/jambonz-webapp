@@ -120,12 +120,9 @@ export default function CallSystemLogs({ call }: CallSystemLogsProps) {
               ? logs?.map((log, index) => (
                   <div key={index}>{formatLog(log)}</div>
                 ))
-              : count === 0
-                ? "Click 'Retrieve Logs' to get logs"
-                : logs === null
-                  ? "No logs found"
-                  : "Loading logs..."}
-            {}
+              : count !== 0 && logs === null
+                ? "No logs found"
+                : ""}
           </pre>
         </div>
       </>
