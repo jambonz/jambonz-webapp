@@ -8,9 +8,10 @@ import type { RecentCall } from "src/api/types";
 import { Tabs, Tab } from "@jambonz/ui-kit";
 import CallDetail from "./call-detail";
 import CallTracing from "./call-tracing";
-import { DISABLE_JAEGER_TRACING } from "src/api/constants";
+import { AWS_REGION, DISABLE_JAEGER_TRACING } from "src/api/constants";
 import { Player } from "./player";
 import "./styles.scss";
+import CallSystemLogs from "./call-system-logs";
 
 type DetailsItemProps = {
   call: RecentCall;
@@ -78,6 +79,13 @@ export const DetailsItem = ({ call }: DetailsItemProps) => {
             <Tab id="tracing" label="Tracing">
               {open && <CallTracing call={call} />}
             </Tab>
+            {hasValue(AWS_REGION) ? (
+              <Tab id="logs" label="Logs">
+                {open && <CallSystemLogs call={call} />}
+              </Tab>
+            ) : (
+              <></>
+            )}
           </Tabs>
         )}
         {open && (
