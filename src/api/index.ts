@@ -823,17 +823,19 @@ export const getRecentCalls = (sid: string, query: Partial<CallQuery>) => {
   const qryStr = getQuery<Partial<CallQuery>>(query);
 
   return getFetch<PagedResponse<RecentCall>>(
-    import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls?${qryStr}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls?${qryStr}`,
+    `${API_ACCOUNTS}/${sid}/RecentCalls?${qryStr}`,
   );
 };
 
 export const getRecentCall = (sid: string, sipCallId: string) => {
   return getFetch<TotalResponse>(
-    import.meta.env.DEV
-      ? `${DEV_BASE_URL}/Accounts/${sid}/RecentCalls/${sipCallId}`
-      : `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}`,
+    `${API_ACCOUNTS}/${sid}/RecentCalls/${sipCallId}`,
+  );
+};
+
+export const getRecentCallLog = (sid: string, callSid: string) => {
+  return getFetch<string[]>(
+    `${API_ACCOUNTS}/${sid}/RecentCalls/${callSid}/logs`,
   );
 };
 
