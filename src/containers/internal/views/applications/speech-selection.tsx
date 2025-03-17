@@ -201,7 +201,7 @@ export const SpeechProviderSelection = ({
           setSynthesisVoiceOptions(voicesOpts);
         }
         if (synthesisGoogleCustomVoiceOptions.length > 0) {
-          updateTtsVoice(synthesisGoogleCustomVoiceOptions[0].value);
+          updateTtsVoice(synthLang, synthesisGoogleCustomVoiceOptions[0].value);
         }
       }
       // PlayHT3.0 all voices are listed under english language, all voices can be used for multiple languages
@@ -262,41 +262,35 @@ export const SpeechProviderSelection = ({
             (!googleLang ||
               !googleLang.voices.find((v) => v.value === synthVoice))
           ) {
-            setSynthLang(LANG_EN_US);
-            updateTtsVoice(LANG_EN_US_STANDARD_C);
+            updateTtsVoice(LANG_EN_US, LANG_EN_US_STANDARD_C);
             return;
           }
           if (synthVendor === VENDOR_ELEVENLABS) {
             // Samve Voices applied to all languages
             // Voices are only available for the 1st language.
-            setSynthLang(ELEVENLABS_LANG_EN);
-            updateTtsVoice(json.tts[0].voices[0].value);
+            updateTtsVoice(ELEVENLABS_LANG_EN, json.tts[0].voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_WHISPER) {
             const newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
-            setSynthLang(LANG_EN_US);
-            updateTtsVoice(newLang!.voices[0].value);
+            updateTtsVoice(LANG_EN_US, newLang!.voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_PLAYHT) {
             const newLang = json.tts.find(
               (lang) => lang.value === LANG_EN_US || lang.value === "english",
             );
-            setSynthLang(newLang!.value);
-            updateTtsVoice(newLang!.voices[0].value);
+            updateTtsVoice(newLang!.value, newLang!.voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_CARTESIA) {
             const newLang = json.tts.find((lang) => lang.value === "en");
-            setSynthLang(newLang!.value);
-            updateTtsVoice(newLang!.voices[0].value);
+            updateTtsVoice(newLang!.value, newLang!.voices[0].value);
             return;
           }
           if (synthVendor === VENDOR_RIMELABS) {
             const newLang = json.tts.find((lang) => lang.value === "eng");
-            setSynthLang(newLang!.value);
-            updateTtsVoice(newLang!.voices[0].value);
+            updateTtsVoice(newLang!.value, newLang!.voices[0].value);
             return;
           }
           /** Google and AWS have different language lists */
@@ -304,14 +298,13 @@ export const SpeechProviderSelection = ({
           let newLang = json.tts.find((lang) => lang.value === synthLang);
 
           if (newLang) {
-            updateTtsVoice(newLang.voices[0].value);
+            updateTtsVoice(synthLang, newLang.voices[0].value);
             return;
           }
 
           newLang = json.tts.find((lang) => lang.value === LANG_EN_US);
 
-          setSynthLang(LANG_EN_US);
-          updateTtsVoice(newLang!.voices[0].value);
+          updateTtsVoice(LANG_EN_US, newLang!.voices[0].value);
         }
       })
       .catch((error) => {
@@ -337,9 +330,10 @@ export const SpeechProviderSelection = ({
     }
   };
 
-  const updateTtsVoice = (value: string) => {
+  const updateTtsVoice = (language: string, voice: string) => {
     if (shouldUpdateTtsVoice.current) {
-      setSynthVoice(value);
+      setSynthLang(language);
+      setSynthVoice(voice);
       shouldUpdateTtsVoice.current = false;
     }
   };
