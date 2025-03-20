@@ -26,6 +26,7 @@ export enum Scope {
 
 export interface UserData extends UserJWT {
   access: Scope;
+  read_only_feature: boolean;
 }
 
 export interface State {
