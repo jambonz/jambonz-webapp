@@ -13,6 +13,7 @@ export type Vendor =
   | "Custom"
   | "ElevenLabs"
   | "assemblyai"
+  | "voxist"
   | "whisper"
   | "playht"
   | "rimelabs"
@@ -109,6 +110,7 @@ export interface SynthesisVendors {
   deepgram: VoiceLanguage[];
   playht: VoiceLanguage[];
   cartesia: VoiceLanguage[];
+  rimelabs: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {

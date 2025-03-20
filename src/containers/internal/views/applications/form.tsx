@@ -77,11 +77,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const [tmpStatusWebhook, setTmpStatusWebhook] =
     useState<WebHook>(DEFAULT_WEBHOOK);
   const [initialStatusWebhook, setInitialStatusWebhook] = useState(false);
-  const [messageWebhook, setMessageWebhook] =
-    useState<WebHook>(DEFAULT_WEBHOOK);
-  const [tmpMessageWebhook, setTmpMessageWebhook] =
-    useState<WebHook>(DEFAULT_WEBHOOK);
-  const [initialMessageWebhook, setInitialMessageWebhook] = useState(false);
   const [synthVendor, setSynthVendor] =
     useState<keyof SynthesisVendors>(VENDOR_GOOGLE);
   const [synthLang, setSynthLang] = useState(LANG_EN_US);
@@ -150,16 +145,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       initialCheck: initialStatusWebhook,
       required: true,
     },
-    {
-      label: "Messaging",
-      prefix: "message_webhook",
-      stateVal: messageWebhook,
-      tmpStateVal: tmpMessageWebhook,
-      stateSet: setMessageWebhook,
-      tmpStateSet: setTmpMessageWebhook,
-      initialCheck: initialMessageWebhook,
-      required: false,
-    },
   ];
 
   useRedirect<Account>(
@@ -202,7 +187,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       app_json: applicationJson || null,
       call_hook: callWebhook || null,
       account_sid: accountSid || null,
-      messaging_hook: messageWebhook || null,
       call_status_hook: statusWebhook || null,
       speech_synthesis_vendor: synthVendor || null,
       speech_synthesis_language: synthLang || null,
@@ -471,23 +455,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         else setInitialStatusWebhook(false);
       }
 
-      if (application.data.messaging_hook) {
-        setMessageWebhook(application.data.messaging_hook);
-        setTmpMessageWebhook(application.data.messaging_hook);
-
-        if (
-          application.data.messaging_hook.username ||
-          application.data.messaging_hook.password
-        )
-          setInitialMessageWebhook(true);
-        else setInitialMessageWebhook(false);
-      }
-
       if (application.data.account_sid)
         setAccountSid(application.data.account_sid);
-
-      if (application.data.messaging_hook)
-        setMessageWebhook(application.data.messaging_hook);
 
       if (application.data.speech_synthesis_vendor)
         setSynthVendor(
@@ -640,7 +609,29 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                       webhook.stateSet({
                         ...webhook.stateVal,
                         url: e.target.value,
+                        ...(e.target.value.startsWith("ws") && {
+                          method: "GET",
+                        }),
                       });
+                      if (
+                        e.target.value.startsWith("ws") &&
+                        webhook.prefix === "call_webhook"
+                      ) {
+                        const statusWebhook = webhooks.find(
+                          (w) => w.prefix === "status_webhook",
+                        );
+                        if (
+                          statusWebhook &&
+                          ((statusWebhook.stateVal?.url || "").length === 0 ||
+                            statusWebhook.stateVal?.url.startsWith("ws"))
+                        ) {
+                          statusWebhook.stateSet({
+                            ...statusWebhook.stateVal,
+                            url: e.target.value,
+                            method: "GET",
+                          });
+                        }
+                      }
                     }}
                   />
                 </div>
@@ -656,6 +647,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                         method: e.target.value as WebhookMethod,
                       });
                     }}
+                    disabled={webhook.stateVal?.url.startsWith("ws")}
                     options={WEBHOOK_METHODS}
                   />
                 </div>
