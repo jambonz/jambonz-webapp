@@ -728,6 +728,7 @@ export interface SpeechSupportedLanguagesAndVoices {
   tts: VoiceLanguage[];
   stt: Language[];
   models: Model[];
+  sttModels: Model[];
 }
 
 export interface ElevenLabsOptions {
