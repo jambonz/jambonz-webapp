@@ -125,7 +125,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
   const [ttsModelId, setTtsModelId] = useState("");
-  const [sttModelId, setSttModelId] = useState("");
   const [engineVersion, setEngineVersion] = useState(DEFAULT_VERBIO_MODEL);
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
@@ -169,7 +168,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
   const [ttsModels, setTtsModels] = useState<Model[]>([]);
-  const [sttModels, setSttModels] = useState<Model[]>([]);
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
@@ -393,9 +391,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           model_id: ttsModelId || null,
           options: options || null,
         }),
-        ...(vendor === VENDOR_OPENAI && {
-          model_id: sttModelId || null,
-        }),
         ...(vendor === VENDOR_CUSTOM && {
           vendor: (vendor + ":" + customVendorName) as Lowercase<Vendor>,
           use_for_tts: ttsCheck ? 1 : 0,
@@ -572,15 +567,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             setTtsModelId(json.models[0].value);
           }
         }
-        if (json.sttModels) {
-          setSttModels(json.sttModels);
-          if (
-            json.sttModels.length > 0 &&
-            !json.sttModels.find((m) => m.value === sttModelId)
-          ) {
-            setSttModelId(json.sttModels[0].value);
-          }
-        }
       });
     } else {
       setTtsModels([]);
@@ -734,12 +720,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
-      }
-      if (
-        credential.data.vendor === VENDOR_OPENAI &&
-        credential.data.model_id
-      ) {
-        setSttModelId(credential.data.model_id);
       }
     }
     if (credential?.data?.options) {
@@ -1590,20 +1570,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               value={apiKey ? getObscuredSecret(apiKey) : apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               disabled={credential ? true : false}
-            />
-          </fieldset>
-        )}
-        {vendor === VENDOR_OPENAI && sttModels.length > 0 && (
-          <fieldset>
-            <label htmlFor={`${vendor}_stt_model_id`}>Model</label>
-            <Selector
-              id={"stt_model_id"}
-              name={"stt_model_id"}
-              value={sttModelId}
-              options={sttModels}
-              onChange={(e) => {
-                setSttModelId(e.target.value);
-              }}
             />
           </fieldset>
         )}
