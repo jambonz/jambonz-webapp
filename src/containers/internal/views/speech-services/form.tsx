@@ -51,6 +51,7 @@ import {
   VENDOR_SPEECHMATICS,
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
+  VENDOR_OPENAI,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -124,6 +125,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
   const [ttsModelId, setTtsModelId] = useState("");
+  const [sttModelId, setSttModelId] = useState("");
   const [engineVersion, setEngineVersion] = useState(DEFAULT_VERBIO_MODEL);
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
@@ -167,6 +169,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
   const [ttsModels, setTtsModels] = useState<Model[]>([]);
+  const [sttModels, setSttModels] = useState<Model[]>([]);
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
@@ -246,6 +249,17 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
     }
     return "";
+  };
+
+  const getModelLabelByVendor = (vendor: Lowercase<Vendor>) => {
+    switch (vendor) {
+      case VENDOR_PLAYHT:
+        return "Voice Engine";
+      case VENDOR_CARTESIA:
+        return "Model ID";
+      default:
+        return "Model";
+    }
   };
 
   const handlePutGoogleCustomVoices = () => {
@@ -411,6 +425,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           ttsModelId && {
             voice_engine: ttsModelId,
           }),
+        ...(vendor === VENDOR_OPENAI &&
+          sttModelId && {
+            model_id: sttModelId,
+          }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
@@ -469,7 +487,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_RIMELABS ||
               vendor === VENDOR_WHISPER ||
-              vendor === VENDOR_CARTESIA
+              vendor === VENDOR_CARTESIA ||
+              vendor === VENDOR_OPENAI
                 ? apiKey
                 : null,
           }),
@@ -536,7 +555,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_WHISPER ||
       vendor === VENDOR_PLAYHT ||
       vendor === VENDOR_RIMELABS ||
-      vendor === VENDOR_CARTESIA
+      vendor === VENDOR_CARTESIA ||
+      vendor === VENDOR_OPENAI
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -551,6 +571,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             !json.models.find((m) => m.value === ttsModelId)
           ) {
             setTtsModelId(json.models[0].value);
+          }
+        }
+        if (json.sttModels) {
+          setSttModels(json.sttModels);
+          if (
+            json.sttModels.length > 0 &&
+            !json.sttModels.some((m) => m.value === sttModelId)
+          ) {
+            setSttModelId(json.sttModels[0].value);
           }
         }
       });
@@ -706,6 +735,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
+      }
+      if (credential.data.model_id && vendor === VENDOR_OPENAI) {
+        setSttModelId(credential.data.model_id);
       }
     }
     if (credential?.data?.options) {
@@ -887,6 +919,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
+              vendor !== VENDOR_OPENAI &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
                   <input
@@ -1522,6 +1555,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_SONIOX ||
           vendor === VENDOR_CARTESIA ||
+          vendor === VENDOR_OPENAI ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
             {vendor === VENDOR_PLAYHT && (
@@ -1557,40 +1591,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {vendor === VENDOR_PLAYHT && ttsModels.length > 0 && (
-          <fieldset>
-            <label htmlFor={`${vendor}_tts_model_id`}>Voice engine</label>
-            <Selector
-              id={"tts_model_id"}
-              name={"tts_model_id"}
-              value={ttsModelId}
-              options={ttsModels}
-              onChange={(e) => {
-                setTtsModelId(e.target.value);
-              }}
-            />
-          </fieldset>
-        )}
-        {vendor === VENDOR_CARTESIA && ttsModels.length > 0 && (
-          <fieldset>
-            <label htmlFor={`${vendor}_tts_model_id`}>Model Id</label>
-            <Selector
-              id={"tts_model_id"}
-              name={"tts_model_id"}
-              value={ttsModelId}
-              options={ttsModels}
-              onChange={(e) => {
-                setTtsModelId(e.target.value);
-              }}
-            />
-          </fieldset>
-        )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
+          vendor === VENDOR_CARTESIA ||
+          vendor === VENDOR_PLAYHT ||
           vendor == VENDOR_RIMELABS) &&
           ttsModels.length > 0 && (
             <fieldset>
-              <label htmlFor={`${vendor}_tts_model_id`}>Model</label>
+              <label htmlFor={`${vendor}_tts_model_id`}>
+                {getModelLabelByVendor(vendor)}
+              </label>
               <Selector
                 id={"tts_model_id"}
                 name={"tts_model_id"}
@@ -1602,6 +1612,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
+        {vendor == VENDOR_OPENAI && sttModels.length > 0 && (
+          <fieldset>
+            <label htmlFor={`${vendor}_stt_model_id`}>
+              {getModelLabelByVendor(vendor)}
+            </label>
+            <Selector
+              id={"stt_model_id"}
+              name={"stt_model_id"}
+              value={sttModelId}
+              options={sttModels}
+              onChange={(e) => {
+                setSttModelId(e.target.value);
+              }}
+            />
+          </fieldset>
+        )}
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_CARTESIA ||
