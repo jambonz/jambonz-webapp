@@ -125,6 +125,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsRegion, setTtsRegion] = useState("");
   const [ttsApiKey, setTtsApiKey] = useState("");
   const [ttsModelId, setTtsModelId] = useState("");
+  const [sttModelId, setSttModelId] = useState("");
   const [engineVersion, setEngineVersion] = useState(DEFAULT_VERBIO_MODEL);
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
@@ -168,6 +169,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [customVoices, setCustomVoices] = useState<GoogleCustomVoice[]>([]);
   const [customVoicesMessage, setCustomVoicesMessage] = useState("");
   const [ttsModels, setTtsModels] = useState<Model[]>([]);
+  const [sttModels, setSttModels] = useState<Model[]>([]);
   const [optionsInitialChecked, setOptionsInitialChecked] = useState(false);
   const [options, setOptions] = useState("");
   const [tmpOptions, setTmpOptions] = useState("");
@@ -423,6 +425,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           ttsModelId && {
             voice_engine: ttsModelId,
           }),
+        ...(vendor === VENDOR_OPENAI &&
+          sttModelId && {
+            model_id: sttModelId,
+          }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
@@ -565,6 +571,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             !json.models.find((m) => m.value === ttsModelId)
           ) {
             setTtsModelId(json.models[0].value);
+          }
+        }
+        if (json.sttModels) {
+          setSttModels(json.sttModels);
+          if (
+            json.sttModels.length > 0 &&
+            !json.sttModels.some((m) => m.value === sttModelId)
+          ) {
+            setSttModelId(json.sttModels[0].value);
           }
         }
       });
@@ -720,6 +735,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
+      }
+      if (credential.data.model_id && vendor === VENDOR_OPENAI) {
+        setSttModelId(credential.data.model_id);
       }
     }
     if (credential?.data?.options) {
@@ -1594,6 +1612,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
+        {vendor == VENDOR_OPENAI && sttModels.length > 0 && (
+          <fieldset>
+            <label htmlFor={`${vendor}_stt_model_id`}>
+              {getModelLabelByVendor(vendor)}
+            </label>
+            <Selector
+              id={"stt_model_id"}
+              name={"stt_model_id"}
+              value={sttModelId}
+              options={sttModels}
+              onChange={(e) => {
+                setSttModelId(e.target.value);
+              }}
+            />
+          </fieldset>
+        )}
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_CARTESIA ||
