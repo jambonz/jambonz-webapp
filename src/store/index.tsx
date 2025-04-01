@@ -44,7 +44,6 @@ const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
       return serviceProvidersAction(state, action);
     case "currentServiceProvider":
       return currentServiceProviderAction(state, action);
-
     default:
       throw new Error();
   }
