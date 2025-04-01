@@ -18,6 +18,7 @@ export type Vendor =
   | "playht"
   | "rimelabs"
   | "verbio"
+  | "openai"
   | "Cartesia";
 
 export interface VendorOptions {

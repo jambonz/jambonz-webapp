@@ -33,6 +33,7 @@ import {
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
   VENDOR_RIMELABS,
+  VENDOR_OPENAI,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -397,6 +398,7 @@ export const SpeechProviderSelection = ({
               vendor.value !== VENDOR_SONIOX &&
               vendor.value !== VENDOR_SPEECHMATICS &&
               vendor.value !== VENDOR_CUSTOM &&
+              vendor.value !== VENDOR_OPENAI &&
               vendor.value !== VENDOR_COBALT,
           )}
           onChange={(e) => {

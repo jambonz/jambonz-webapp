@@ -47,7 +47,12 @@ export const Alerts = () => {
       count: Number(perPageFilter),
       ...(dateFilter === "today"
         ? { start: dayjs().startOf("date").toISOString() }
-        : { days: Number(dateFilter) }),
+        : dateFilter === "yesterday"
+          ? {
+              start: dayjs().subtract(1, "day").startOf("day").toISOString(),
+              end: dayjs().subtract(1, "day").endOf("day").toISOString(),
+            }
+          : { days: Number(dateFilter) }),
     };
 
     getAlerts(accountSid, payload)
@@ -103,7 +108,7 @@ export const Alerts = () => {
           id="date_filter"
           label="Date"
           filter={[dateFilter, setDateFilter]}
-          options={DATE_SELECTION.slice(0, 2)}
+          options={DATE_SELECTION}
         />
       </section>
       <Section {...(hasLength(alerts) && { slim: true })}>
