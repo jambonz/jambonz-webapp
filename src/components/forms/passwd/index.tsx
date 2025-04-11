@@ -32,7 +32,7 @@ export const Passwd = forwardRef<PasswdRef, PasswdProps>(
       <div className="passwd">
         <input
           autoComplete="off"
-          data-lpignore=true
+          data-lpignore="true"
           ref={ref}
           type={reveal ? "text" : "password"}
           name={name}
