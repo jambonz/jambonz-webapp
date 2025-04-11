@@ -99,6 +99,7 @@ export const Login = () => {
           value={password}
           placeholder="Password"
           setValue={setPassword}
+          ignorePasswordManager={false}
         />
         {message && <Message message={message} />}
         <Button type="submit">Log in</Button>
