@@ -126,7 +126,10 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     useState(false);
   const [appEnv, setAppEnv] = useState<AppEnv | null>(null);
   const appEnvTimeoutRef = useRef<number | null>(null);
-  const [envVars, setEnvVars] = useState<Record<string, string> | null>(null);
+  const [envVars, setEnvVars] = useState<Record<
+    string,
+    string | number | boolean
+  > | null>(null);
 
   /** This lets us map and render the same UI for each... */
   const webhooks = [
@@ -752,30 +755,88 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                       <label htmlFor="env_variable">
                         Application Variables
                       </label>
-                      {Object.keys(webhook.webhookEnv).map((key) => (
-                        <div className="inp" key={key}>
-                          <label htmlFor={`env_${key}`}>
-                            {key}
-                            {webhook.webhookEnv![key].required && (
-                              <span>*</span>
+                      {Object.keys(webhook.webhookEnv).map((key) => {
+                        const envType = webhook.webhookEnv![key].type;
+                        const isBoolean = envType === "boolean";
+                        const isNumber = envType === "number";
+                        const defaultValue = webhook.webhookEnv![key].default;
+
+                        return (
+                          <div className="inp" key={key}>
+                            {isBoolean ? (
+                              // Boolean input as checkbox
+                              <label htmlFor={`env_${key}`} className="chk">
+                                <input
+                                  id={`env_${key}`}
+                                  type="checkbox"
+                                  name={`env_${key}`}
+                                  required={webhook.webhookEnv![key].required}
+                                  checked={
+                                    envVars && envVars[key] !== undefined
+                                      ? Boolean(envVars[key])
+                                      : Boolean(defaultValue)
+                                  }
+                                  onChange={(e) => {
+                                    setEnvVars({
+                                      ...(envVars || {}),
+                                      [key]: e.target.checked,
+                                    });
+                                  }}
+                                />
+                                <div>
+                                  {webhook.webhookEnv![key].description}
+                                  {webhook.webhookEnv![key].required && (
+                                    <span>*</span>
+                                  )}
+                                </div>
+                              </label>
+                            ) : (
+                              // Text or number input
+                              <>
+                                <label htmlFor={`env_${key}`}>
+                                  {key}
+                                  {webhook.webhookEnv![key].required && (
+                                    <span>*</span>
+                                  )}
+                                </label>
+                                <input
+                                  id={`env_${key}`}
+                                  type={isNumber ? "number" : "text"}
+                                  name={`env_${key}`}
+                                  placeholder={
+                                    webhook.webhookEnv![key].description
+                                  }
+                                  required={webhook.webhookEnv![key].required}
+                                  value={
+                                    envVars && envVars[key] !== undefined
+                                      ? String(envVars[key])
+                                      : defaultValue !== undefined
+                                        ? String(defaultValue)
+                                        : ""
+                                  }
+                                  onChange={(e) => {
+                                    // Convert to proper type based on schema
+                                    let newValue;
+                                    if (isNumber) {
+                                      newValue =
+                                        e.target.value === ""
+                                          ? ""
+                                          : Number(e.target.value);
+                                    } else {
+                                      newValue = e.target.value;
+                                    }
+
+                                    setEnvVars({
+                                      ...(envVars || {}),
+                                      [key]: newValue,
+                                    });
+                                  }}
+                                />
+                              </>
                             )}
-                          </label>
-                          <input
-                            id={`env_${key}`}
-                            type="text"
-                            name={`env_${key}`}
-                            placeholder={webhook.webhookEnv![key].description}
-                            required={webhook.webhookEnv![key].required}
-                            value={envVars ? envVars[key] || "" : ""}
-                            onChange={(e) => {
-                              setEnvVars({
-                                ...envVars,
-                                [key]: e.target.value,
-                              });
-                            }}
-                          />
-                        </div>
-                      ))}
+                          </div>
+                        );
+                      })}
                     </fieldset>
                   </>
                 )}
