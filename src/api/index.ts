@@ -34,6 +34,7 @@ import {
   API_CHANGE_PASSWORD,
   API_SIGNIN,
   API_GOOGLE_CUSTOM_VOICES,
+  API_APP_ENV,
 } from "./constants";
 import { ROUTE_LOGIN } from "src/router/routes";
 import {
@@ -94,6 +95,7 @@ import type {
   GoogleCustomVoice,
   GoogleCustomVoicesQuery,
   SpeechSupportedLanguagesAndVoices,
+  AppEnv,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -811,6 +813,11 @@ export const getGoogleCustomVoices = (
 ) => {
   const qryStr = getQuery<Partial<GoogleCustomVoicesQuery>>(query);
   return getFetch<GoogleCustomVoice[]>(`${API_GOOGLE_CUSTOM_VOICES}?${qryStr}`);
+};
+// ENV VARS
+
+export const getAppEnvSchema = (url: string) => {
+  return getFetch<AppEnv>(`${API_APP_ENV}?url=${url}`);
 };
 
 /** Wrappers for APIs that can have a mock dev server response */

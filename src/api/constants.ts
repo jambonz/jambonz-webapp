@@ -447,3 +447,4 @@ export const API_SUBSCRIPTIONS = `${API_BASE_URL}/Subscriptions`;
 export const API_CHANGE_PASSWORD = `${API_BASE_URL}/change-password`;
 export const API_SIGNIN = `${API_BASE_URL}/signin`;
 export const API_GOOGLE_CUSTOM_VOICES = `${API_BASE_URL}/GoogleCustomVoices`;
+export const API_APP_ENV = `${API_BASE_URL}/AppEnv`;
