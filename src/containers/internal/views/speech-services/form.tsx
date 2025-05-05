@@ -192,7 +192,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     AWS_CREDENTIAL_ACCESS_KEY,
   );
   const [roleArn, setRoleArn] = useState("");
-
+  const [playhtTtsUri, setPlayhtTtsUri] = useState("");
+  const [tmpPlayhtTtsUri, setTmpPlayhtTtsUri] = useState("");
+  const [initialPlayhtOnpremCheck, setInitialPlayhtOnpremCheck] =
+    useState(false);
   const handleFile = (file: File) => {
     const handleError = () => {
       setGoogleServiceKey(null);
@@ -439,6 +442,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_VERBIO && {
           engine_version: engineVersion,
+        }),
+        ...(vendor === VENDOR_PLAYHT && {
+          playht_tts_uri: playhtTtsUri || null,
         }),
       };
 
@@ -739,6 +745,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.model_id && vendor === VENDOR_OPENAI) {
         setSttModelId(credential.data.model_id);
       }
+      if (credential?.data?.playht_tts_uri) {
+        setPlayhtTtsUri(credential.data.playht_tts_uri);
+      }
     }
     if (credential?.data?.options) {
       setOptions(credential.data.options);
@@ -801,6 +810,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       );
       setSpeechmaticsEndpoint(credential.data.speechmatics_stt_uri);
     }
+    setInitialPlayhtOnpremCheck(hasValue(credential?.data?.playht_tts_uri));
   }, [credential]);
 
   const updateCustomVoices = (
@@ -1557,25 +1567,120 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_OPENAI ||
           vendor === VENDOR_SPEECHMATICS) && (
-          <fieldset>
+          <>
             {vendor === VENDOR_PLAYHT && (
-              <>
-                <label htmlFor={`${vendor}_userid`}>
-                  User ID<span>*</span>
-                </label>
-                <input
-                  id="playht_user_id"
-                  type="text"
-                  name="playht_user_id"
-                  placeholder="User ID"
-                  required
-                  value={userId}
-                  onChange={(e) => {
-                    setUserId(e.target.value);
+              <fieldset>
+                <Checkzone
+                  disabled={hasValue(credential)}
+                  hidden
+                  name="use_hosted_playht_service"
+                  label="Use hosted PlayHT Service"
+                  initialCheck={!initialPlayhtOnpremCheck}
+                  handleChecked={(e) => {
+                    setInitialPlayhtOnpremCheck(!e.target.checked);
+
+                    if (e.target.checked) {
+                      setTmpPlayhtTtsUri(playhtTtsUri);
+                      setPlayhtTtsUri("");
+                    } else {
+                      if (tmpPlayhtTtsUri) {
+                        setPlayhtTtsUri(tmpPlayhtTtsUri);
+                      }
+                    }
                   }}
-                  disabled={credential ? true : false}
-                />
-              </>
+                >
+                  <fieldset>
+                    <label htmlFor={`${vendor}_userid`}>
+                      User ID<span>*</span>
+                    </label>
+                    <input
+                      id="playht_user_id"
+                      type="text"
+                      name="playht_user_id"
+                      placeholder="User ID"
+                      required
+                      value={userId}
+                      onChange={(e) => {
+                        setUserId(e.target.value);
+                      }}
+                      disabled={credential ? true : false}
+                    />
+                    <label htmlFor={`${vendor}_apikey`}>
+                      API key<span>*</span>
+                    </label>
+                    <Passwd
+                      id={`${vendor}_apikey`}
+                      required
+                      name={`${vendor}_apikey`}
+                      placeholder="API key"
+                      value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      disabled={credential ? true : false}
+                    />
+                  </fieldset>
+                </Checkzone>
+
+                <Checkzone
+                  disabled={hasValue(credential)}
+                  hidden
+                  name="use_on-prem_playht_container"
+                  label="Use on-prem PlayHT container"
+                  initialCheck={initialPlayhtOnpremCheck}
+                  handleChecked={(e) => {
+                    setInitialPlayhtOnpremCheck(e.target.checked);
+                    if (e.target.checked) {
+                      if (tmpPlayhtTtsUri) {
+                        setPlayhtTtsUri(tmpPlayhtTtsUri);
+                      }
+                    } else {
+                      setTmpPlayhtTtsUri(playhtTtsUri);
+                      setPlayhtTtsUri("");
+                    }
+                  }}
+                >
+                  <fieldset>
+                    <label htmlFor="playht_uri_for_tts">
+                      TTS Container URI<span>*</span>
+                    </label>
+                    <input
+                      id="playht_uri_for_tts"
+                      required
+                      type="text"
+                      name="playht_uri_for_tts"
+                      placeholder="http://"
+                      value={playhtTtsUri}
+                      onChange={(e) => setPlayhtTtsUri(e.target.value)}
+                    />
+                    <label htmlFor={`${vendor}_userid`}>
+                      User ID<span>*</span>
+                    </label>
+                    <input
+                      id="playht_user_id"
+                      type="text"
+                      name="playht_user_id"
+                      placeholder="User ID"
+                      required
+                      value={userId}
+                      onChange={(e) => {
+                        setUserId(e.target.value);
+                      }}
+                      disabled={credential ? true : false}
+                    />
+                    <label htmlFor={`${vendor}_apikey`}>
+                      Api key<span>*</span>
+                    </label>
+                    <Passwd
+                      id={`${vendor}_apikey`}
+                      name={`${vendor}_apikey`}
+                      placeholder="API key"
+                      required
+                      value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      disabled={credential ? true : false}
+                    />
+                  </fieldset>
+                </Checkzone>
+              </fieldset>
             )}
             <label htmlFor={`${vendor}_apikey`}>
               API key<span>*</span>
@@ -1589,7 +1694,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               onChange={(e) => setApiKey(e.target.value)}
               disabled={credential ? true : false}
             />
-          </fieldset>
+          </>
         )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
