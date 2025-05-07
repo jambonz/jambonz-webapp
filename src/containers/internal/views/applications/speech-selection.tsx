@@ -290,7 +290,11 @@ export const SpeechProviderSelection = ({
             return;
           }
           if (synthVendor === VENDOR_RIMELABS) {
-            const newLang = json.tts.find((lang) => lang.value === "eng");
+            let newLang = json.tts.find((lang) => lang.value === "eng");
+            // If the new language doesn't map then default to the first one
+            if (!newLang) {
+              newLang = json.tts[0];
+            }
             updateTtsVoice(newLang!.value, newLang!.voices[0].value);
             return;
           }
