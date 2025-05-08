@@ -792,10 +792,14 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                             // Text or number input
                             <>
                               <label htmlFor={`env_${key}`}>
-                                {key}
-                                {webhook.webhookEnv![key].required && (
-                                  <span>*</span>
-                                )}
+                                <Tooltip
+                                  text={webhook.webhookEnv![key].description}
+                                >
+                                  {key}
+                                  {webhook.webhookEnv![key].required && (
+                                    <span>*</span>
+                                  )}
+                                </Tooltip>
                               </label>
                               <input
                                 id={`env_${key}`}
