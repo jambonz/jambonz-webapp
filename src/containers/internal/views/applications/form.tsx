@@ -3,7 +3,7 @@ import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import { ClipBoard, Section } from "src/components";
+import { ClipBoard, Section, Tooltip } from "src/components";
 import {
   Selector,
   Checkzone,
@@ -751,93 +751,90 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
               {webhook.webhookEnv &&
                 Object.keys(webhook.webhookEnv).length > 0 && (
                   <>
-                    <fieldset>
-                      <label htmlFor="env_variable">
-                        Application Variables
-                      </label>
-                      {Object.keys(webhook.webhookEnv).map((key) => {
-                        const envType = webhook.webhookEnv![key].type;
-                        const isBoolean = envType === "boolean";
-                        const isNumber = envType === "number";
-                        const defaultValue = webhook.webhookEnv![key].default;
+                    {Object.keys(webhook.webhookEnv).map((key) => {
+                      const envType = webhook.webhookEnv![key].type;
+                      const isBoolean = envType === "boolean";
+                      const isNumber = envType === "number";
+                      const defaultValue = webhook.webhookEnv![key].default;
 
-                        return (
-                          <div className="inp" key={key}>
-                            {isBoolean ? (
-                              // Boolean input as checkbox
-                              <label htmlFor={`env_${key}`} className="chk">
-                                <input
-                                  id={`env_${key}`}
-                                  type="checkbox"
-                                  name={`env_${key}`}
-                                  required={webhook.webhookEnv![key].required}
-                                  checked={
-                                    envVars && envVars[key] !== undefined
-                                      ? Boolean(envVars[key])
-                                      : Boolean(defaultValue)
-                                  }
-                                  onChange={(e) => {
-                                    setEnvVars({
-                                      ...(envVars || {}),
-                                      [key]: e.target.checked,
-                                    });
-                                  }}
-                                />
-                                <div>
-                                  {webhook.webhookEnv![key].description}
-                                  {webhook.webhookEnv![key].required && (
-                                    <span>*</span>
-                                  )}
-                                </div>
+                      return (
+                        <div className="inp" key={key}>
+                          {isBoolean ? (
+                            // Boolean input as checkbox
+                            <label htmlFor={`env_${key}`} className="chk">
+                              <input
+                                id={`env_${key}`}
+                                type="checkbox"
+                                name={`env_${key}`}
+                                required={webhook.webhookEnv![key].required}
+                                checked={
+                                  envVars && envVars[key] !== undefined
+                                    ? Boolean(envVars[key])
+                                    : Boolean(defaultValue)
+                                }
+                                onChange={(e) => {
+                                  setEnvVars({
+                                    ...(envVars || {}),
+                                    [key]: e.target.checked,
+                                  });
+                                }}
+                              />
+                              <Tooltip
+                                text={webhook.webhookEnv![key].description}
+                              >
+                                {key}
+                                {webhook.webhookEnv![key].required && (
+                                  <span>*</span>
+                                )}
+                              </Tooltip>
+                            </label>
+                          ) : (
+                            // Text or number input
+                            <>
+                              <label htmlFor={`env_${key}`}>
+                                {key}
+                                {webhook.webhookEnv![key].required && (
+                                  <span>*</span>
+                                )}
                               </label>
-                            ) : (
-                              // Text or number input
-                              <>
-                                <label htmlFor={`env_${key}`}>
-                                  {key}
-                                  {webhook.webhookEnv![key].required && (
-                                    <span>*</span>
-                                  )}
-                                </label>
-                                <input
-                                  id={`env_${key}`}
-                                  type={isNumber ? "number" : "text"}
-                                  name={`env_${key}`}
-                                  placeholder={
-                                    webhook.webhookEnv![key].description
+                              <input
+                                id={`env_${key}`}
+                                type={isNumber ? "number" : "text"}
+                                name={`env_${key}`}
+                                placeholder={
+                                  webhook.webhookEnv![key].description
+                                }
+                                required={webhook.webhookEnv![key].required}
+                                value={
+                                  envVars && envVars[key] !== undefined
+                                    ? String(envVars[key])
+                                    : defaultValue !== undefined
+                                      ? String(defaultValue)
+                                      : ""
+                                }
+                                onChange={(e) => {
+                                  // Convert to proper type based on schema
+                                  let newValue;
+                                  if (isNumber) {
+                                    newValue =
+                                      e.target.value === ""
+                                        ? ""
+                                        : Number(e.target.value);
+                                  } else {
+                                    newValue = e.target.value;
                                   }
-                                  required={webhook.webhookEnv![key].required}
-                                  value={
-                                    envVars && envVars[key] !== undefined
-                                      ? String(envVars[key])
-                                      : defaultValue !== undefined
-                                        ? String(defaultValue)
-                                        : ""
-                                  }
-                                  onChange={(e) => {
-                                    // Convert to proper type based on schema
-                                    let newValue;
-                                    if (isNumber) {
-                                      newValue =
-                                        e.target.value === ""
-                                          ? ""
-                                          : Number(e.target.value);
-                                    } else {
-                                      newValue = e.target.value;
-                                    }
 
-                                    setEnvVars({
-                                      ...(envVars || {}),
-                                      [key]: newValue,
-                                    });
-                                  }}
-                                />
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </fieldset>
+                                  setEnvVars({
+                                    ...(envVars || {}),
+                                    [key]: newValue,
+                                  });
+                                }}
+                              />
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
                   </>
                 )}
             </fieldset>
