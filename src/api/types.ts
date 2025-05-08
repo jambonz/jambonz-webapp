@@ -338,6 +338,7 @@ export interface Application {
   fallback_speech_recognizer_vendor: null | string;
   fallback_speech_recognizer_language: null | string;
   fallback_speech_recognizer_label: null | string;
+  env_vars: null | string;
 }
 
 export interface PhoneNumber {
@@ -780,4 +781,15 @@ export type CartesiaEmotions =
 export interface CartesiaOptions {
   speed: number;
   emotion: CartesiaEmotions;
+}
+
+export interface AppEnvProperty {
+  description: string;
+  type: string;
+  required?: boolean;
+  default?: string | number | boolean;
+}
+
+export interface AppEnv {
+  [key: string]: AppEnvProperty;
 }
