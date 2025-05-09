@@ -123,10 +123,13 @@ export const AccountForm = ({
   const [tmpBucketVendor, setTmpBucketVendor] = useState("");
   const [recordFormat, setRecordFormat] = useState("mp3");
   const [bucketRegion, setBucketRegion] = useState("us-east-1");
+  const [tmpBucketRegion, setTmpBucketRegion] = useState("us-east-1");
   const [bucketName, setBucketName] = useState("");
   const [tmpBucketName, setTmpBucketName] = useState("");
   const [bucketAccessKeyId, setBucketAccessKeyId] = useState("");
+  const [tmpBucketAccessKeyId, setTmpBucketAccessKeyId] = useState("");
   const [bucketSecretAccessKey, setBucketSecretAccessKey] = useState("");
+  const [tmpBucketSecretAccessKey, setTmpBucketSecretAccessKey] = useState("");
   const [bucketCredentialChecked, setBucketCredentialChecked] = useState(false);
   const [bucketTags, setBucketTags] = useState<AwsTag[]>([]);
   const [bucketGoogleServiceKey, setBucketGoogleServiceKey] =
@@ -144,7 +147,9 @@ export const AccountForm = ({
   const deleteMessageRef = useRef<HTMLInputElement | null>(null);
   const [isShowModalLoader, setIsShowModalLoader] = useState(false);
   const [azureConnectionString, setAzureConnectionString] = useState("");
+  const [tmpAzureConnectionString, setTmpAzureConnectionString] = useState("");
   const [endpoint, setEndpoint] = useState("");
+  const [tmpEndpoint, setTmpEndpoint] = useState("");
   const [enableDebugLog, setEnableDebugLog] = useState(false);
 
   /** This lets us map and render the same UI for each... */
@@ -529,23 +534,34 @@ export const AccountForm = ({
         setBucketName(account.data.bucket_credential?.name);
       }
 
-      if (account.data.bucket_credential?.access_key_id) {
+      if (tmpBucketAccessKeyId) {
+        setBucketAccessKeyId(tmpBucketAccessKeyId);
+      } else if (account.data.bucket_credential?.access_key_id) {
         setBucketAccessKeyId(account.data.bucket_credential?.access_key_id);
       }
-      if (account.data.bucket_credential?.secret_access_key) {
+      if (tmpBucketSecretAccessKey) {
+        setBucketSecretAccessKey(tmpBucketSecretAccessKey);
+      } else if (account.data.bucket_credential?.secret_access_key) {
         setBucketSecretAccessKey(
           account.data.bucket_credential?.secret_access_key,
         );
       }
-      if (account.data.bucket_credential?.region) {
+      if (tmpBucketRegion) {
+        setBucketRegion(tmpBucketRegion);
+      } else if (account.data.bucket_credential?.region) {
         setBucketRegion(account.data.bucket_credential?.region);
       }
-      if (account.data.bucket_credential?.connection_string) {
+
+      if (tmpAzureConnectionString) {
+        setAzureConnectionString(tmpAzureConnectionString);
+      } else if (account.data.bucket_credential?.connection_string) {
         setAzureConnectionString(
           account.data.bucket_credential.connection_string,
         );
       }
-      if (account.data.bucket_credential?.endpoint) {
+      if (tmpEndpoint) {
+        setEndpoint(tmpEndpoint);
+      } else if (account.data.bucket_credential?.endpoint) {
         setEndpoint(account.data.bucket_credential.endpoint);
       }
       if (account.data.record_all_calls) {
@@ -1103,6 +1119,7 @@ export const AccountForm = ({
                         value={endpoint}
                         onChange={(e) => {
                           setEndpoint(e.target.value);
+                          setTmpEndpoint(e.target.value);
                         }}
                       />
                     </>
@@ -1150,7 +1167,10 @@ export const AccountForm = ({
                                   value: "",
                                 },
                               ].concat(regions["aws"])}
-                              onChange={(e) => setBucketRegion(e.target.value)}
+                              onChange={(e) => {
+                                setBucketRegion(e.target.value);
+                                setTmpBucketRegion(e.target.value);
+                              }}
                             />
                           </>
                         )}
@@ -1166,6 +1186,7 @@ export const AccountForm = ({
                         value={bucketAccessKeyId}
                         onChange={(e) => {
                           setBucketAccessKeyId(e.target.value);
+                          setTmpBucketAccessKeyId(e.target.value);
                         }}
                       />
                       <label htmlFor="bucket_aws_secret_key">
@@ -1179,6 +1200,7 @@ export const AccountForm = ({
                         value={bucketSecretAccessKey}
                         onChange={(e) => {
                           setBucketSecretAccessKey(e.target.value);
+                          setTmpBucketSecretAccessKey(e.target.value);
                         }}
                       />
                     </>
@@ -1227,6 +1249,7 @@ export const AccountForm = ({
                         value={azureConnectionString}
                         onChange={(e) => {
                           setAzureConnectionString(e.target.value);
+                          setTmpAzureConnectionString(e.target.value);
                         }}
                       />
                     </>
