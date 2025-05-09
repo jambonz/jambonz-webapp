@@ -1568,7 +1568,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_OPENAI ||
           vendor === VENDOR_SPEECHMATICS) && (
           <>
-            {vendor === VENDOR_PLAYHT && (
+            {vendor === VENDOR_PLAYHT ? (
               <fieldset>
                 <Checkzone
                   disabled={hasValue(credential)}
@@ -1681,19 +1681,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   </fieldset>
                 </Checkzone>
               </fieldset>
+            ) : (
+              <fieldset>
+                <label htmlFor={`${vendor}_apikey`}>
+                  API key<span>*</span>
+                </label>
+                <Passwd
+                  id={`${vendor}_apikey`}
+                  required
+                  name={`${vendor}_apikey`}
+                  placeholder="API key"
+                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </fieldset>
             )}
-            <label htmlFor={`${vendor}_apikey`}>
-              API key<span>*</span>
-            </label>
-            <Passwd
-              id={`${vendor}_apikey`}
-              required
-              name={`${vendor}_apikey`}
-              placeholder="API key"
-              value={apiKey ? getObscuredSecret(apiKey) : apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              disabled={credential ? true : false}
-            />
           </>
         )}
         {(vendor == VENDOR_ELEVENLABS ||
