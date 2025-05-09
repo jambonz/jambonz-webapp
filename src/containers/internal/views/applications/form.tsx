@@ -207,13 +207,23 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       record_all_calls: recordAllCalls ? 1 : 0,
       use_for_fallback_speech: useForFallbackSpeech ? 1 : 0,
       env_vars: envVars
-        ? JSON.stringify(
-            Object.keys(envVars).reduce(
-              (acc, key) =>
-                appEnv && appEnv[key] ? { ...acc, [key]: envVars[key] } : acc,
-              {},
-            ),
-          )
+        ? Object.keys(envVars).reduce((acc, key) => {
+            const value = envVars[key];
+            // Keep only values that:
+            // 1. Are defined in appEnv schema
+            // 2. Are not empty strings, undefined, or null
+            // 3. For booleans and numbers, keep them even if they're false or 0
+            if (
+              appEnv &&
+              appEnv[key] &&
+              (value === false ||
+                value === 0 ||
+                (value !== "" && value != null))
+            ) {
+              return { ...acc, [key]: value };
+            }
+            return acc;
+          }, {})
         : null,
       fallback_speech_synthesis_vendor: useForFallbackSpeech
         ? fallbackSpeechSynthsisVendor || null
@@ -532,7 +542,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         );
       }
       if (application.data.env_vars) {
-        setEnvVars(JSON.parse(application.data.env_vars));
+        setEnvVars(application.data.env_vars);
       }
     }
   }, [application]);
