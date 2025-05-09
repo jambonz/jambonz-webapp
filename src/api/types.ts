@@ -338,7 +338,7 @@ export interface Application {
   fallback_speech_recognizer_vendor: null | string;
   fallback_speech_recognizer_language: null | string;
   fallback_speech_recognizer_label: null | string;
-  env_vars: null | string;
+  env_vars: null | Record<string, string | number | boolean>;
 }
 
 export interface PhoneNumber {
