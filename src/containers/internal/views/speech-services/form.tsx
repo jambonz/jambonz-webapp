@@ -1556,133 +1556,43 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
 
-        {(vendor === VENDOR_WELLSAID ||
-          vendor === VENDOR_ASSEMBLYAI ||
-          vendor === VENDOR_VOXIST ||
-          vendor == VENDOR_ELEVENLABS ||
-          vendor === VENDOR_WHISPER ||
-          vendor === VENDOR_PLAYHT ||
-          vendor === VENDOR_RIMELABS ||
-          vendor === VENDOR_SONIOX ||
-          vendor === VENDOR_CARTESIA ||
-          vendor === VENDOR_OPENAI ||
-          vendor === VENDOR_SPEECHMATICS) && (
-          <>
-            {vendor === VENDOR_PLAYHT ? (
-              <fieldset>
-                <Checkzone
-                  disabled={hasValue(credential)}
-                  hidden
-                  name="use_hosted_playht_service"
-                  label="Use hosted PlayHT Service"
-                  initialCheck={!initialPlayhtOnpremCheck}
-                  handleChecked={(e) => {
-                    setInitialPlayhtOnpremCheck(!e.target.checked);
+        {vendor === VENDOR_PLAYHT && (
+          <fieldset>
+            <Checkzone
+              disabled={hasValue(credential)}
+              hidden
+              name="use_hosted_playht_service"
+              label="Use hosted PlayHT Service"
+              initialCheck={!initialPlayhtOnpremCheck}
+              handleChecked={(e) => {
+                setInitialPlayhtOnpremCheck(!e.target.checked);
 
-                    if (e.target.checked) {
-                      setTmpPlayhtTtsUri(playhtTtsUri);
-                      setPlayhtTtsUri("");
-                    } else {
-                      if (tmpPlayhtTtsUri) {
-                        setPlayhtTtsUri(tmpPlayhtTtsUri);
-                      }
-                    }
-                  }}
-                >
-                  <fieldset>
-                    <label htmlFor={`${vendor}_userid`}>
-                      User ID<span>*</span>
-                    </label>
-                    <input
-                      id="playht_user_id"
-                      type="text"
-                      name="playht_user_id"
-                      placeholder="User ID"
-                      required
-                      value={userId}
-                      onChange={(e) => {
-                        setUserId(e.target.value);
-                      }}
-                      disabled={credential ? true : false}
-                    />
-                    <label htmlFor={`${vendor}_apikey`}>
-                      API key<span>*</span>
-                    </label>
-                    <Passwd
-                      id={`${vendor}_apikey`}
-                      required
-                      name={`${vendor}_apikey`}
-                      placeholder="API key"
-                      value={apiKey ? getObscuredSecret(apiKey) : apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      disabled={credential ? true : false}
-                    />
-                  </fieldset>
-                </Checkzone>
-
-                <Checkzone
-                  disabled={hasValue(credential)}
-                  hidden
-                  name="use_on-prem_playht_container"
-                  label="Use on-prem PlayHT container"
-                  initialCheck={initialPlayhtOnpremCheck}
-                  handleChecked={(e) => {
-                    setInitialPlayhtOnpremCheck(e.target.checked);
-                    if (e.target.checked) {
-                      if (tmpPlayhtTtsUri) {
-                        setPlayhtTtsUri(tmpPlayhtTtsUri);
-                      }
-                    } else {
-                      setTmpPlayhtTtsUri(playhtTtsUri);
-                      setPlayhtTtsUri("");
-                    }
-                  }}
-                >
-                  <fieldset>
-                    <label htmlFor="playht_uri_for_tts">
-                      TTS Container URI<span>*</span>
-                    </label>
-                    <input
-                      id="playht_uri_for_tts"
-                      required
-                      type="text"
-                      name="playht_uri_for_tts"
-                      placeholder="http://"
-                      value={playhtTtsUri}
-                      onChange={(e) => setPlayhtTtsUri(e.target.value)}
-                    />
-                    <label htmlFor={`${vendor}_userid`}>
-                      User ID<span>*</span>
-                    </label>
-                    <input
-                      id="playht_user_id"
-                      type="text"
-                      name="playht_user_id"
-                      placeholder="User ID"
-                      required
-                      value={userId}
-                      onChange={(e) => {
-                        setUserId(e.target.value);
-                      }}
-                      disabled={credential ? true : false}
-                    />
-                    <label htmlFor={`${vendor}_apikey`}>
-                      Api key<span>*</span>
-                    </label>
-                    <Passwd
-                      id={`${vendor}_apikey`}
-                      name={`${vendor}_apikey`}
-                      placeholder="API key"
-                      required
-                      value={apiKey ? getObscuredSecret(apiKey) : apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      disabled={credential ? true : false}
-                    />
-                  </fieldset>
-                </Checkzone>
-              </fieldset>
-            ) : (
+                if (e.target.checked) {
+                  setTmpPlayhtTtsUri(playhtTtsUri);
+                  setPlayhtTtsUri("");
+                } else {
+                  if (tmpPlayhtTtsUri) {
+                    setPlayhtTtsUri(tmpPlayhtTtsUri);
+                  }
+                }
+              }}
+            >
               <fieldset>
+                <label htmlFor={`${vendor}_userid`}>
+                  User ID<span>*</span>
+                </label>
+                <input
+                  id="playht_user_id"
+                  type="text"
+                  name="playht_user_id"
+                  placeholder="User ID"
+                  required
+                  value={userId}
+                  onChange={(e) => {
+                    setUserId(e.target.value);
+                  }}
+                  disabled={credential ? true : false}
+                />
                 <label htmlFor={`${vendor}_apikey`}>
                   API key<span>*</span>
                 </label>
@@ -1696,8 +1606,95 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   disabled={credential ? true : false}
                 />
               </fieldset>
-            )}
-          </>
+            </Checkzone>
+
+            <Checkzone
+              disabled={hasValue(credential)}
+              hidden
+              name="use_on-prem_playht_container"
+              label="Use on-prem PlayHT container"
+              initialCheck={initialPlayhtOnpremCheck}
+              handleChecked={(e) => {
+                setInitialPlayhtOnpremCheck(e.target.checked);
+                if (e.target.checked) {
+                  if (tmpPlayhtTtsUri) {
+                    setPlayhtTtsUri(tmpPlayhtTtsUri);
+                  }
+                } else {
+                  setTmpPlayhtTtsUri(playhtTtsUri);
+                  setPlayhtTtsUri("");
+                }
+              }}
+            >
+              <fieldset>
+                <label htmlFor="playht_uri_for_tts">
+                  TTS Container URI<span>*</span>
+                </label>
+                <input
+                  id="playht_uri_for_tts"
+                  required
+                  type="text"
+                  name="playht_uri_for_tts"
+                  placeholder="http://"
+                  value={playhtTtsUri}
+                  onChange={(e) => setPlayhtTtsUri(e.target.value)}
+                />
+                <label htmlFor={`${vendor}_userid`}>
+                  User ID<span>*</span>
+                </label>
+                <input
+                  id="playht_user_id"
+                  type="text"
+                  name="playht_user_id"
+                  placeholder="User ID"
+                  required
+                  value={userId}
+                  onChange={(e) => {
+                    setUserId(e.target.value);
+                  }}
+                  disabled={credential ? true : false}
+                />
+                <label htmlFor={`${vendor}_apikey`}>
+                  Api key<span>*</span>
+                </label>
+                <Passwd
+                  id={`${vendor}_apikey`}
+                  name={`${vendor}_apikey`}
+                  placeholder="API key"
+                  required
+                  value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={credential ? true : false}
+                />
+              </fieldset>
+            </Checkzone>
+          </fieldset>
+        )}
+
+        {(vendor === VENDOR_WELLSAID ||
+          vendor === VENDOR_ASSEMBLYAI ||
+          vendor === VENDOR_VOXIST ||
+          vendor == VENDOR_ELEVENLABS ||
+          vendor === VENDOR_WHISPER ||
+          vendor === VENDOR_RIMELABS ||
+          vendor === VENDOR_SONIOX ||
+          vendor === VENDOR_CARTESIA ||
+          vendor === VENDOR_OPENAI ||
+          vendor === VENDOR_SPEECHMATICS) && (
+          <fieldset>
+            <label htmlFor={`${vendor}_apikey`}>
+              API key<span>*</span>
+            </label>
+            <Passwd
+              id={`${vendor}_apikey`}
+              required
+              name={`${vendor}_apikey`}
+              placeholder="API key"
+              value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
         )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
