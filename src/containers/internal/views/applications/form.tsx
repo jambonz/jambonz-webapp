@@ -814,6 +814,12 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                               </label>
                               {webhook.webhookEnv![key].obscure ? (
                                 <ObscureInput
+                                  name={`env_${key}`}
+                                  id={`env_${key}`}
+                                  placeholder={
+                                    webhook.webhookEnv![key].description
+                                  }
+                                  required={webhook.webhookEnv![key].required}
                                   value={
                                     envVars && envVars[key] !== undefined
                                       ? String(envVars[key])
