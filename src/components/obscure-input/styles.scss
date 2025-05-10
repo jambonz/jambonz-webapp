@@ -1,0 +1,39 @@
+@use "src/styles/vars";
+@use "@jambonz/ui-kit/src/styles/vars" as ui-vars;
+@use "@jambonz/ui-kit/src/styles/mixins" as ui-mixins;
+
+.obscure-input {
+  position: relative; // This is correct
+  width: 100%;
+  display: block; // Add this to ensure proper containing block
+
+  &__field {
+    width: 100%;
+    padding-right: 40px;
+    font-family: ui-vars.$font-mono;
+    box-sizing: border-box; // Add this to ensure padding doesn't expand width
+  }
+
+  &__toggle {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    height: 100%; // Make the button take full height of input
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2; // Ensure button is above input
+
+    svg {
+      stroke: ui-vars.$jambonz;
+      pointer-events: none;
+      width: 18px; // Control icon size
+      height: 18px;
+    }
+  }
+}

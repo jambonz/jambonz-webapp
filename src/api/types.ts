@@ -789,6 +789,7 @@ export interface AppEnvProperty {
   type: string;
   required?: boolean;
   default?: string | number | boolean;
+  obscure?: boolean;
 }
 
 export interface AppEnv {

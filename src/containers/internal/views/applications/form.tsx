@@ -55,6 +55,7 @@ import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
 import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import SpeechProviderSelection from "./speech-selection";
+import ObscureInput from "src/components/obscure-input";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
@@ -811,39 +812,74 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                   )}
                                 </Tooltip>
                               </label>
-                              <input
-                                id={`env_${key}`}
-                                type={isNumber ? "number" : "text"}
-                                name={`env_${key}`}
-                                placeholder={
-                                  webhook.webhookEnv![key].description
-                                }
-                                required={webhook.webhookEnv![key].required}
-                                value={
-                                  envVars && envVars[key] !== undefined
-                                    ? String(envVars[key])
-                                    : defaultValue !== undefined
-                                      ? String(defaultValue)
-                                      : ""
-                                }
-                                onChange={(e) => {
-                                  // Convert to proper type based on schema
-                                  let newValue;
-                                  if (isNumber) {
-                                    newValue =
-                                      e.target.value === ""
-                                        ? ""
-                                        : Number(e.target.value);
-                                  } else {
-                                    newValue = e.target.value;
+                              {webhook.webhookEnv![key].obscure ? (
+                                <ObscureInput
+                                  name={`env_${key}`}
+                                  id={`env_${key}`}
+                                  placeholder={
+                                    webhook.webhookEnv![key].description
                                   }
+                                  required={webhook.webhookEnv![key].required}
+                                  value={
+                                    envVars && envVars[key] !== undefined
+                                      ? String(envVars[key])
+                                      : defaultValue !== undefined
+                                        ? String(defaultValue)
+                                        : ""
+                                  }
+                                  onChange={(e) => {
+                                    // Convert to proper type based on schema
+                                    let newValue;
+                                    if (isNumber) {
+                                      newValue =
+                                        e.target.value === ""
+                                          ? ""
+                                          : Number(e.target.value);
+                                    } else {
+                                      newValue = e.target.value;
+                                    }
 
-                                  setEnvVars({
-                                    ...(envVars || {}),
-                                    [key]: newValue,
-                                  });
-                                }}
-                              />
+                                    setEnvVars({
+                                      ...(envVars || {}),
+                                      [key]: newValue,
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                <input
+                                  id={`env_${key}`}
+                                  type={isNumber ? "number" : "text"}
+                                  name={`env_${key}`}
+                                  placeholder={
+                                    webhook.webhookEnv![key].description
+                                  }
+                                  required={webhook.webhookEnv![key].required}
+                                  value={
+                                    envVars && envVars[key] !== undefined
+                                      ? String(envVars[key])
+                                      : defaultValue !== undefined
+                                        ? String(defaultValue)
+                                        : ""
+                                  }
+                                  onChange={(e) => {
+                                    // Convert to proper type based on schema
+                                    let newValue;
+                                    if (isNumber) {
+                                      newValue =
+                                        e.target.value === ""
+                                          ? ""
+                                          : Number(e.target.value);
+                                    } else {
+                                      newValue = e.target.value;
+                                    }
+
+                                    setEnvVars({
+                                      ...(envVars || {}),
+                                      [key]: newValue,
+                                    });
+                                  }}
+                                />
+                              )}
                             </>
                           )}
                         </div>
