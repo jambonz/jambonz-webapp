@@ -145,42 +145,76 @@ export const CarrierForm = ({
   const [smppInboundMessage, setSmppInboundMessage] = useState("");
   const [smppOutboundMessage, setSmppOutboundMessage] = useState("");
 
-  const validateOutboundSipGateway = (gateway: string): boolean => {
-    /** validate outbound sip gateway that can be
-     * ip address
-        dns name
-        sip(s):ip address
-        sip(s):dns name
-        full sip uri
-        full sips uri
+  const validateOutboundSipGateway = (
+    gateway: string,
+    acceptPort: boolean = false,
+  ): boolean => {
+    /** validate outbound sip gateway formats:
+     * - IP address (e.g., "192.168.1.1")
+     * - DNS name (e.g., "example.com")
+     * - Domain with port (e.g., "example.com:5060")
+     * - sip:IP or domain (e.g., "sip:example.com")
+     * - sips:IP or domain (e.g., "sips:example.com")
+     * - sip:IP or domain with port (e.g., "sip:example.com:5060")
+     * - Full SIP URI with optional port (e.g., "sip:user@example.com:5060")
      */
-    // firstly checkig it's including sip or sips
-    if (
-      gateway.includes(":") &&
-      !gateway.includes("sip:") &&
-      !gateway.includes("sips:")
-    ) {
-      return false;
-    }
-    if (gateway.includes("sip:") || gateway.includes("sips:")) {
-      const sipGateway = gateway.trim().split(":");
-      if (sipGateway.length === 2) {
-        const sipGatewayType = getIpValidationType(sipGateway[1]);
-        if (sipGatewayType === INVALID) {
+
+    // First handle URIs with colon but not sip: or sips: prefix
+    if (gateway.includes(":")) {
+      // Check if it's a domain:port format (without sip prefix)
+      if (!gateway.startsWith("sip:") && !gateway.startsWith("sips:")) {
+        if (!acceptPort) {
+          return false; // Reject domain:port if ports not accepted
+        }
+
+        // Extract domain part for validation
+        const parts = gateway.split(":");
+        const domain = parts[0];
+
+        // Validate domain part
+        const domainType = getIpValidationType(domain);
+        if (domainType === INVALID) {
           return false;
         }
-      } else {
-        return false;
+
+        // Optionally validate port range
+        if (parts.length > 1) {
+          const port = parseInt(parts[1]);
+          if (isNaN(port) || port < 1 || port > 65535) {
+            return false;
+          }
+        }
+
+        return true;
       }
-    }
-    // check IP address or domain name
-    else {
-      const sipGatewayType = getIpValidationType(gateway);
-      if (sipGatewayType === INVALID) {
-        return false;
+
+      // Handle sip: or sips: URIs
+      // Use regex to properly extract domain (and port if present)
+      const sipUriPattern = /^(sip|sips):(?:([^@]+)@)?([^:@]+)(?::(\d+))?/;
+      const match = gateway.match(sipUriPattern);
+
+      if (match) {
+        const domain = match[3];
+        const domainType = getIpValidationType(domain);
+
+        if (domainType === INVALID) {
+          return false;
+        }
+
+        // If port is present, validate it
+        if (match[4] && !acceptPort) {
+          return false; // Reject if port not accepted
+        }
+
+        return true;
       }
+
+      return false;
     }
-    return true;
+
+    // Simple IP or domain name without any colons
+    const gatewayType = getIpValidationType(gateway);
+    return gatewayType !== INVALID;
   };
 
   const setCarrierStates = (obj: Carrier) => {
@@ -558,7 +592,7 @@ export const CarrierForm = ({
 
     if (
       isNotBlank(outboundSipProxy) &&
-      !validateOutboundSipGateway(outboundSipProxy)
+      !validateOutboundSipGateway(outboundSipProxy, true)
     ) {
       toastError("Please provide a valid SIP Proxy domain or IP address.");
       return;
