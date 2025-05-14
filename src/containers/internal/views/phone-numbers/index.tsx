@@ -66,10 +66,14 @@ export const PhoneNumbers = () => {
     : phoneNumbersFiltered;
 
   const refetch = () => {
-    getPhoneNumbers({
-      ...(accountSid && { account_sid: accountSid }),
-      ...(filter && { filter }),
-    })
+    getPhoneNumbers(
+      !ENABLE_PHONE_NUMBER_LAZY_LOAD
+        ? {}
+        : {
+            ...(accountSid && { account_sid: accountSid }),
+            ...(filter && { filter }),
+          },
+    )
       .then(({ json }) => {
         if (json) {
           setPhoneNumbers(json);
