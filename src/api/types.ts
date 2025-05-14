@@ -562,6 +562,11 @@ export interface PageQuery {
   days?: number;
 }
 
+export interface PhoneNumberQuery extends PageQuery {
+  account_sid?: string;
+  filter?: string;
+}
+
 export interface CallQuery extends PageQuery {
   direction?: string;
   answered?: string;

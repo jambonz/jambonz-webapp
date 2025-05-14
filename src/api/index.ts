@@ -96,6 +96,7 @@ import type {
   GoogleCustomVoicesQuery,
   SpeechSupportedLanguagesAndVoices,
   AppEnv,
+  PhoneNumberQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -897,6 +898,12 @@ export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
 
 export const getPrice = () => {
   return getFetch<PriceInfo[]>(API_PRICE);
+};
+
+export const getPhoneNumbers = (query: Partial<PhoneNumberQuery>) => {
+  const qryStr = getQuery<Partial<PhoneNumberQuery>>(query);
+
+  return getFetch<PhoneNumber[]>(`${API_PHONE_NUMBERS}?${qryStr}`);
 };
 
 export const getSpeechSupportedLanguagesAndVoices = (

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import {
   deletePhoneNumber,
+  getPhoneNumbers,
   putPhoneNumber,
   useServiceProviderData,
 } from "src/api";
@@ -30,7 +31,7 @@ import {
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
-import { USER_ACCOUNT } from "src/api/constants";
+import { ENABLE_PHONE_NUMBER_LAZY_LOAD, USER_ACCOUNT } from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
@@ -41,8 +42,7 @@ export const PhoneNumbers = () => {
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumber | null>(null);
-  const [phoneNumbers, refetch] =
-    useServiceProviderData<PhoneNumber[]>("PhoneNumbers");
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[] | null>(null);
   const [selectedPhoneNumbers, setSelectedPhoneNumbers] = useState<
     PhoneNumber[]
   >([]);
@@ -59,12 +59,30 @@ export const PhoneNumbers = () => {
           (phn) => !accountSid || phn.account_sid === accountSid,
         )
       : [];
-  }, [accountSid, phoneNumbers]);
+  }, [phoneNumbers, ...[!ENABLE_PHONE_NUMBER_LAZY_LOAD && accountSid]]);
 
-  const filteredPhoneNumbers = useFilteredResults<PhoneNumber>(
-    filter,
-    phoneNumbersFiltered,
-  );
+  const filteredPhoneNumbers = !ENABLE_PHONE_NUMBER_LAZY_LOAD
+    ? useFilteredResults<PhoneNumber>(filter, phoneNumbersFiltered)
+    : phoneNumbersFiltered;
+
+  const refetch = () => {
+    getPhoneNumbers(
+      !ENABLE_PHONE_NUMBER_LAZY_LOAD
+        ? {}
+        : {
+            ...(accountSid && { account_sid: accountSid }),
+            ...(filter && { filter }),
+          },
+    )
+      .then(({ json }) => {
+        if (json) {
+          setPhoneNumbers(json);
+        }
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleMassEdit = () => {
     Promise.all(
@@ -114,6 +132,15 @@ export const PhoneNumbers = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (ENABLE_PHONE_NUMBER_LAZY_LOAD) {
+      setPhoneNumbers([]);
+      return;
+    }
+
+    refetch();
+  }, []);
+
   return (
     <>
       <section className="mast">
@@ -141,6 +168,19 @@ export const PhoneNumbers = () => {
             defaultOption
           />
         </ScopedAccess>
+        {ENABLE_PHONE_NUMBER_LAZY_LOAD && (
+          <ButtonGroup>
+            <Button
+              small
+              onClick={() => {
+                setPhoneNumbers(null);
+                refetch();
+              }}
+            >
+              Search
+            </Button>
+          </ButtonGroup>
+        )}
       </section>
       <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
         <div className="list">
