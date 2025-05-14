@@ -59,7 +59,7 @@ export const PhoneNumbers = () => {
           (phn) => !accountSid || phn.account_sid === accountSid,
         )
       : [];
-  }, [phoneNumbers]);
+  }, [phoneNumbers, ...[!ENABLE_PHONE_NUMBER_LAZY_LOAD && accountSid]]);
 
   const filteredPhoneNumbers = !ENABLE_PHONE_NUMBER_LAZY_LOAD
     ? useFilteredResults<PhoneNumber>(filter, phoneNumbersFiltered)
