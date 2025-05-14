@@ -42,7 +42,7 @@ export const PhoneNumbers = () => {
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
   const [phoneNumber, setPhoneNumber] = useState<PhoneNumber | null>(null);
-  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[] | null>([]);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[] | null>(null);
   const [selectedPhoneNumbers, setSelectedPhoneNumbers] = useState<
     PhoneNumber[]
   >([]);
@@ -130,6 +130,7 @@ export const PhoneNumbers = () => {
 
   useEffect(() => {
     if (ENABLE_PHONE_NUMBER_LAZY_LOAD) {
+      setPhoneNumbers([]);
       return;
     }
 
@@ -168,6 +169,7 @@ export const PhoneNumbers = () => {
             <Button
               small
               onClick={() => {
+                setPhoneNumbers(null);
                 refetch();
               }}
             >
