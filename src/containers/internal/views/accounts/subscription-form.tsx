@@ -257,7 +257,10 @@ const SubscriptionForm = () => {
     [],
   );
 
-  const initFeesAndCost = (priceData: PriceInfo[]) => {
+  const initFeesAndCost = (
+    priceData: PriceInfo[],
+    serviceData: ServiceData[],
+  ) => {
     serviceData.forEach((service) => {
       const record = priceData.find(
         (item) => item.category === service.category,
@@ -272,7 +275,23 @@ const SubscriptionForm = () => {
           let fees = 0;
           switch (price.billing_scheme) {
             case "per_unit":
-              fees = (price.unit_amount * 1) / 100;
+              fees = ((price.unit_amount || 0) * 1) / 100;
+              break;
+            case "tiered":
+              if (price.tiers && price.tiers.length) {
+                const tier = price.tiers.find(
+                  (item) => !item.up_to || item.up_to >= service.capacity,
+                );
+                if (tier) {
+                  if (typeof tier.flat_amount === "number") {
+                    fees = tier.flat_amount / 100;
+                  } else {
+                    fees = ((tier.unit_amount || 0) * 1) / 100;
+                  }
+                }
+                service.tiers = price.tiers;
+              }
+
               break;
             default:
               break;
@@ -283,6 +302,7 @@ const SubscriptionForm = () => {
           service.product_sid = record.product_sid;
           service.stripe_product_id = record.stripe_product_id;
           service.fees = fees;
+          service.cost = fees * service.capacity;
           service.feesLabel = `${
             CurrencySymbol[service.currency || "usd"]
           }${fees} per ${
@@ -294,7 +314,7 @@ const SubscriptionForm = () => {
       }
     });
 
-    setServiceData([...serviceData]);
+    return [...serviceData];
   };
 
   const getServicePrice = (
@@ -320,7 +340,7 @@ const SubscriptionForm = () => {
           fees = tier.flat_amount / 100;
           cost = fees;
         } else {
-          fees = tier.unit_amount / 100;
+          fees = (tier.unit_amount || 0) / 100;
           cost = fees * capacityNum;
         }
       }
@@ -362,22 +382,23 @@ const SubscriptionForm = () => {
     key: string,
     value: (typeof serviceData)[number][keyof ServiceData],
   ) => {
-    setServiceData(
-      serviceData.map((g, i) =>
-        i === index
-          ? {
-              ...g,
-              [key]: value,
-              ...(key === "capacity" && { cost: Number(value) * g.fees }),
-            }
-          : g,
-      ),
+    let serviceD = serviceData.map((g, i) =>
+      i === index
+        ? {
+            ...g,
+            [key]: value,
+          }
+        : g,
     );
+    if (key === "capacity" && priceInfo) {
+      serviceD = initFeesAndCost(priceInfo, serviceD);
+    }
+    setServiceData([...serviceD]);
   };
 
   useEffect(() => {
     if (priceInfo) {
-      initFeesAndCost(priceInfo);
+      setServiceData(initFeesAndCost(priceInfo, serviceData));
     }
 
     if (userData && priceInfo) {
