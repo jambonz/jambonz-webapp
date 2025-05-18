@@ -665,8 +665,9 @@ export interface Price {
   recurring: Recurring;
   stripe_price_id: null | string;
   tiers_mode: null | string;
+  tiers?: null | Tier[];
   type: null | string;
-  unit_amount: number;
+  unit_amount: null | number;
   unit_amount_decimal: null | string;
 }
 
@@ -685,9 +686,11 @@ export interface StripeCustomerId {
 }
 
 export interface Tier {
-  up_to: number;
-  flat_amount: number;
-  unit_amount: number;
+  up_to: null | number;
+  flat_amount: null | number;
+  unit_amount: null | number;
+  flat_amount_decimal: null | string;
+  unit_amount_decimal: null | string;
 }
 
 export interface ServiceData {
