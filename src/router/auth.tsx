@@ -27,6 +27,7 @@ import { ENABLE_HOSTED_SYSTEM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
 import { toastError } from "src/store";
 import {
+  clearLocalStorage,
   removeLocationBeforeOauth,
   removeOauthState,
 } from "src/store/localStore";
@@ -163,7 +164,7 @@ export const useProvideAuth = (): AuthStateContext => {
       postLogout()
         .then((response) => {
           if (response.status === StatusCodes.NO_CONTENT) {
-            localStorage.clear();
+            clearLocalStorage();
             sessionStorage.clear();
             sessionStorage.setItem(SESS_FLASH_MSG, MSG_LOGGED_OUT);
             window.location.href = ROUTE_LOGIN;
