@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { H1, M, Button, Icon } from "@jambonz/ui-kit";
+import { H1, M, Button, Icon, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, useServiceProviderData, useApiData } from "src/api";
+import {
+  deleteApplication,
+  useServiceProviderData,
+  getApplications,
+} from "src/api";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
@@ -13,6 +17,8 @@ import {
   Spinner,
   AccountFilter,
   SearchFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
@@ -26,7 +32,7 @@ import {
 import type { Application, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
-import { USER_ACCOUNT } from "src/api/constants";
+import { PER_PAGE_SELECTION, USER_ACCOUNT } from "src/api/constants";
 import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const Applications = () => {
@@ -34,14 +40,34 @@ export const Applications = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
-  const [apiUrl, setApiUrl] = useState("");
-  const [applications, refetch] = useApiData<Application[]>(apiUrl);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [filter, setFilter] = useState("");
 
   const filteredApplications = useFilteredResults<Application>(
     filter,
     applications,
   );
+
+  const [applicationsTotal, setApplicationsTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+
+  const refetch = () => {
+    getApplications(accountSid, {
+      page: pageNumber,
+      page_size: Number(perPageFilter),
+      ...(filter && { name: filter }),
+    })
+      .then(({ json }) => {
+        setApplications(json.data);
+        setApplicationsTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
   const handleDelete = () => {
     if (application) {
@@ -77,7 +103,7 @@ export const Applications = () => {
     }
 
     if (accountSid) {
-      setApiUrl(`Accounts/${accountSid}/Applications`);
+      refetch();
     }
   }, [accountSid, user]);
 
@@ -189,6 +215,26 @@ export const Applications = () => {
           </Button>
         </Section>
       )}
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {applicationsTotal} record
+            {applicationsTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(applications) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {application && (
         <DeleteApplication
           application={application}

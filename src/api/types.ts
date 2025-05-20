@@ -557,6 +557,7 @@ export interface Client {
 
 export interface PageQuery {
   page: number;
+  page_size?: number;
   count: number;
   start?: string;
   days?: number;
@@ -570,6 +571,10 @@ export interface PhoneNumberQuery extends PageQuery {
 export interface CallQuery extends PageQuery {
   direction?: string;
   answered?: string;
+}
+
+export interface ApplicationQuery extends PageQuery {
+  name?: string;
 }
 
 export interface GoogleCustomVoicesQuery {

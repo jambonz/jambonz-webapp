@@ -97,6 +97,7 @@ import type {
   SpeechSupportedLanguagesAndVoices,
   AppEnv,
   PhoneNumberQuery,
+  ApplicationQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -819,6 +820,17 @@ export const getGoogleCustomVoices = (
 
 export const getAppEnvSchema = (url: string) => {
   return getFetch<AppEnv>(`${API_APP_ENV}?url=${url}`);
+};
+
+export const getApplications = (
+  sid: string,
+  query: Partial<ApplicationQuery>,
+) => {
+  const qryStr = getQuery<Partial<ApplicationQuery>>(query);
+
+  return getFetch<PagedResponse<Application>>(
+    `${API_ACCOUNTS}/${sid}/Applications?${qryStr}`,
+  );
 };
 
 /** Wrappers for APIs that can have a mock dev server response */
