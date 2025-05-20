@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { H1, M, Button, Icon, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -101,11 +101,13 @@ export const Applications = () => {
     } else {
       setAccountSid(getAccountFilter() || accountSid);
     }
+  }, [accountSid, user]);
 
+  useMemo(() => {
     if (accountSid) {
       refetch();
     }
-  }, [accountSid, user]);
+  }, [accountSid, pageNumber, perPageFilter]);
 
   return (
     <>
