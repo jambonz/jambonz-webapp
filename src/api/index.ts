@@ -98,6 +98,7 @@ import type {
   AppEnv,
   PhoneNumberQuery,
   ApplicationQuery,
+  VoipCarrierQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -830,6 +831,17 @@ export const getApplications = (
 
   return getFetch<PagedResponse<Application>>(
     `${API_ACCOUNTS}/${sid}/Applications?${qryStr}`,
+  );
+};
+
+export const getSPVoipCarriers = (
+  sid: string,
+  query: Partial<VoipCarrierQuery>,
+) => {
+  const qryStr = getQuery<Partial<VoipCarrierQuery>>(query);
+
+  return getFetch<PagedResponse<Carrier>>(
+    `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers?${qryStr}`,
   );
 };
 

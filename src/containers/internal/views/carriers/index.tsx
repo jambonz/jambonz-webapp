@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, H1, Icon, M } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, H1, Icon, M, MS } from "@jambonz/ui-kit";
 import {
   deleteCarrier,
   deleteSipGateway,
   deleteSmppGateway,
   getFetch,
+  getSPVoipCarriers,
   useApiData,
   useServiceProviderData,
 } from "src/api";
@@ -17,6 +18,8 @@ import {
   Section,
   Spinner,
   SearchFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Gateways } from "./gateways";
@@ -31,6 +34,7 @@ import {
   API_SMPP_GATEWAY,
   CARRIER_REG_OK,
   ENABLE_HOSTED_SYSTEM,
+  PER_PAGE_SELECTION,
   USER_ACCOUNT,
 } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
@@ -49,32 +53,36 @@ export const Carriers = () => {
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [apiUrl, setApiUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, refetch] = useApiData<Carrier[]>(apiUrl);
+  const [carriers, setCarriers] = useState<Carrier[]>([]);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
 
-  const carriersFiltered = useMemo(() => {
-    setAccountSid(getAccountFilter());
-    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
-      setAccountSid(user?.account_sid);
-    }
+  const [carriersTotal, setCarriersTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-    return carriers
-      ? carriers.filter((carrier) =>
-          accountSid
-            ? carrier.account_sid === accountSid
-            : carrier.account_sid === null,
-        )
-      : [];
-  }, [accountSid, carrier, carriers]);
+  const refetch = () => {
+    if (!currentServiceProvider) return;
+    getSPVoipCarriers(currentServiceProvider.service_provider_sid, {
+      page: pageNumber,
+      page_size: Number(perPageFilter),
+      ...(filter && { name: filter }),
+      ...(accountSid && { account_sid: accountSid }),
+    })
+      .then(({ json }) => {
+        setCarriers(json.data);
+        setCarriersTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+      })
+      .catch((error) => {
+        toastError(error.msg);
+      });
+  };
 
-  const filteredCarriers = useFilteredResults<Carrier>(
-    filter,
-    carriersFiltered,
-  );
+  const filteredCarriers = useFilteredResults<Carrier>(filter, carriers);
 
   const handleDelete = () => {
     if (carrier) {
@@ -128,12 +136,17 @@ export const Carriers = () => {
 
   useEffect(() => {
     setLocation();
-    if (currentServiceProvider) {
-      setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`,
-      );
+    setAccountSid(getAccountFilter());
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
     }
-  }, [user, currentServiceProvider, accountSid]);
+  }, [user]);
+
+  useMemo(() => {
+    if (currentServiceProvider) {
+      refetch();
+    }
+  }, [currentServiceProvider, pageNumber, perPageFilter, accountSid]);
 
   return (
     <>
@@ -274,6 +287,26 @@ export const Carriers = () => {
           Add carrier
         </Button>
       </Section>
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {carriersTotal} record
+            {carriersTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(carriers) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {carrier && (
         <DeleteCarrier
           carrier={carrier}

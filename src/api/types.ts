@@ -577,6 +577,11 @@ export interface ApplicationQuery extends PageQuery {
   name?: string;
 }
 
+export interface VoipCarrierQuery extends PageQuery {
+  name?: string;
+  account_sid?: string;
+}
+
 export interface GoogleCustomVoicesQuery {
   speech_credential_sid?: string;
   label?: string;
