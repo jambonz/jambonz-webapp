@@ -23,12 +23,7 @@ import {
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Gateways } from "./gateways";
-import {
-  isUserAccountScope,
-  hasLength,
-  hasValue,
-  useFilteredResults,
-} from "src/utils";
+import { isUserAccountScope, hasLength, hasValue } from "src/utils";
 import {
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
@@ -54,7 +49,7 @@ export const Carriers = () => {
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, setCarriers] = useState<Carrier[]>([]);
+  const [carriers, setCarriers] = useState<Carrier[] | null>(null);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
@@ -66,6 +61,7 @@ export const Carriers = () => {
 
   const refetch = () => {
     if (!currentServiceProvider) return;
+    setCarriers(null);
     getSPVoipCarriers(currentServiceProvider.service_provider_sid, {
       page: pageNumber,
       page_size: Number(perPageFilter),
@@ -78,11 +74,10 @@ export const Carriers = () => {
         setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
       })
       .catch((error) => {
+        setCarriers([]);
         toastError(error.msg);
       });
   };
-
-  const filteredCarriers = useFilteredResults<Carrier>(filter, carriers);
 
   const handleDelete = () => {
     if (carrier) {
@@ -146,7 +141,7 @@ export const Carriers = () => {
     if (currentServiceProvider) {
       refetch();
     }
-  }, [currentServiceProvider, pageNumber, perPageFilter, accountSid]);
+  }, [currentServiceProvider, pageNumber, perPageFilter, accountSid, filter]);
 
   return (
     <>
@@ -172,6 +167,7 @@ export const Carriers = () => {
         <SearchFilter
           placeholder="Filter carriers"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
@@ -182,12 +178,12 @@ export const Carriers = () => {
           />
         </ScopedAccess>
       </section>
-      <Section {...(hasLength(filteredCarriers) && { slim: true })}>
+      <Section {...(hasLength(carriers) && { slim: true })}>
         <div className="list">
           {!hasValue(carriers) && hasLength(accounts) ? (
             <Spinner />
-          ) : hasLength(filteredCarriers) ? (
-            filteredCarriers.map((carrier) => (
+          ) : hasLength(carriers) ? (
+            carriers.map((carrier) => (
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">

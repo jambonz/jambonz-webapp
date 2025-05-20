@@ -22,12 +22,7 @@ import {
 } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import {
-  isUserAccountScope,
-  hasLength,
-  hasValue,
-  useFilteredResults,
-} from "src/utils";
+import { isUserAccountScope, hasLength, hasValue } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
@@ -40,13 +35,8 @@ export const Applications = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState<Application[] | null>(null);
   const [filter, setFilter] = useState("");
-
-  const filteredApplications = useFilteredResults<Application>(
-    filter,
-    applications,
-  );
 
   const [applicationsTotal, setApplicationsTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -54,6 +44,7 @@ export const Applications = () => {
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
   const refetch = () => {
+    setApplications(null);
     getApplications(accountSid, {
       page: pageNumber,
       page_size: Number(perPageFilter),
@@ -65,6 +56,7 @@ export const Applications = () => {
         setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
       })
       .catch((error) => {
+        setApplications([]);
         toastError(error.msg);
       });
   };
@@ -107,7 +99,7 @@ export const Applications = () => {
     if (accountSid) {
       refetch();
     }
-  }, [accountSid, pageNumber, perPageFilter]);
+  }, [accountSid, pageNumber, perPageFilter, filter]);
 
   return (
     <>
@@ -128,6 +120,7 @@ export const Applications = () => {
         <SearchFilter
           placeholder="Filter applications"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
@@ -136,12 +129,12 @@ export const Applications = () => {
           />
         </ScopedAccess>
       </section>
-      <Section {...(hasLength(filteredApplications) && { slim: true })}>
+      <Section {...(hasLength(applications) && { slim: true })}>
         <div className="list">
           {!hasValue(applications) && hasLength(accounts) ? (
             <Spinner />
-          ) : hasLength(filteredApplications) ? (
-            filteredApplications
+          ) : hasLength(applications) ? (
+            applications
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((application) => {
                 return (
