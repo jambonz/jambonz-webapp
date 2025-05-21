@@ -152,6 +152,7 @@ export const PhoneNumbers = () => {
         <SearchFilter
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
