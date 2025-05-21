@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, H1, Icon, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -16,22 +16,19 @@ import {
   ApplicationFilter,
   SearchFilter,
   AccountFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import {
-  hasLength,
-  hasValue,
-  formatPhoneNumber,
-  useFilteredResults,
-} from "src/utils";
+import { hasLength, hasValue, formatPhoneNumber } from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
-import { ENABLE_PHONE_NUMBER_LAZY_LOAD, USER_ACCOUNT } from "src/api/constants";
+import { PER_PAGE_SELECTION, USER_ACCOUNT } from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
@@ -51,35 +48,28 @@ export const PhoneNumbers = () => {
   const [applyMassEdit, setApplyMassEdit] = useState(false);
   const [filter, setFilter] = useState("");
   const [accountSid, setAccountSid] = useState("");
-
-  const phoneNumbersFiltered = useMemo(() => {
-    setAccountSid(getAccountFilter());
-    return phoneNumbers
-      ? phoneNumbers.filter(
-          (phn) => !accountSid || phn.account_sid === accountSid,
-        )
-      : [];
-  }, [phoneNumbers, ...[!ENABLE_PHONE_NUMBER_LAZY_LOAD && accountSid]]);
-
-  const filteredPhoneNumbers = !ENABLE_PHONE_NUMBER_LAZY_LOAD
-    ? useFilteredResults<PhoneNumber>(filter, phoneNumbersFiltered)
-    : phoneNumbersFiltered;
+  const [phoneNumbersTotal, setphoneNumbersTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
 
   const refetch = () => {
-    getPhoneNumbers(
-      !ENABLE_PHONE_NUMBER_LAZY_LOAD
-        ? {}
-        : {
-            ...(accountSid && { account_sid: accountSid }),
-            ...(filter && { filter }),
-          },
-    )
+    setPhoneNumbers(null);
+    getPhoneNumbers({
+      page: pageNumber,
+      page_size: Number(perPageFilter),
+      ...(accountSid && { account_sid: accountSid }),
+      ...(filter && { filter }),
+    })
       .then(({ json }) => {
         if (json) {
-          setPhoneNumbers(json);
+          setPhoneNumbers(json.data);
+          setphoneNumbersTotal(json.total);
+          setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
         }
       })
       .catch((error) => {
+        setPhoneNumbers([]);
         toastError(error.msg);
       });
   };
@@ -133,13 +123,15 @@ export const PhoneNumbers = () => {
   }, [user]);
 
   useEffect(() => {
-    if (ENABLE_PHONE_NUMBER_LAZY_LOAD) {
-      setPhoneNumbers([]);
-      return;
+    setAccountSid(getAccountFilter() || accountSid);
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
     }
-
-    refetch();
   }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [accountSid, perPageFilter, pageNumber, filter]);
 
   return (
     <>
@@ -168,25 +160,12 @@ export const PhoneNumbers = () => {
             defaultOption
           />
         </ScopedAccess>
-        {ENABLE_PHONE_NUMBER_LAZY_LOAD && (
-          <ButtonGroup>
-            <Button
-              small
-              onClick={() => {
-                setPhoneNumbers(null);
-                refetch();
-              }}
-            >
-              Search
-            </Button>
-          </ButtonGroup>
-        )}
       </section>
-      <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
+      <Section {...(hasLength(phoneNumbers) && { slim: true })}>
         <div className="list">
           {!hasValue(phoneNumbers) ? (
             <Spinner />
-          ) : hasLength(filteredPhoneNumbers) ? (
+          ) : hasLength(phoneNumbers) ? (
             <>
               <div className="item item--actions">
                 {accountSid ? (
@@ -200,7 +179,7 @@ export const PhoneNumbers = () => {
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectAll(true);
-                              setSelectedPhoneNumbers(filteredPhoneNumbers);
+                              setSelectedPhoneNumbers(phoneNumbers);
                             } else {
                               setSelectAll(false);
                               setSelectedPhoneNumbers([]);
@@ -249,7 +228,7 @@ export const PhoneNumbers = () => {
                   </MS>
                 )}
               </div>
-              {filteredPhoneNumbers.map((phoneNumber) => {
+              {phoneNumbers.map((phoneNumber) => {
                 return (
                   <div className="item" key={phoneNumber.phone_number_sid}>
                     <div className="item__info">
@@ -385,6 +364,26 @@ export const PhoneNumbers = () => {
           </Button>
         )}
       </Section>
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {phoneNumbersTotal} record
+            {phoneNumbersTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(carriers) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {phoneNumber && (
         <DeletePhoneNumber
           phoneNumber={phoneNumber}

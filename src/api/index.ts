@@ -927,7 +927,7 @@ export const getPrice = () => {
 export const getPhoneNumbers = (query: Partial<PhoneNumberQuery>) => {
   const qryStr = getQuery<Partial<PhoneNumberQuery>>(query);
 
-  return getFetch<PhoneNumber[]>(`${API_PHONE_NUMBERS}?${qryStr}`);
+  return getFetch<PagedResponse<PhoneNumber>>(`${API_PHONE_NUMBERS}?${qryStr}`);
 };
 
 export const getSpeechSupportedLanguagesAndVoices = (
