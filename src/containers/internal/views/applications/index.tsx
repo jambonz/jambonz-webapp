@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { H1, M, Button, Icon, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -43,10 +43,13 @@ export const Applications = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = () => {
+  const refetch = (resetPage: boolean) => {
     setApplications(null);
+    if (resetPage) {
+      setPageNumber(1);
+    }
     getApplications(accountSid, {
-      page: pageNumber,
+      page: resetPage ? 1 : pageNumber,
       page_size: Number(perPageFilter),
       ...(filter && { name: filter }),
     })
@@ -72,7 +75,7 @@ export const Applications = () => {
       deleteApplication(application.application_sid)
         .then(() => {
           // getApplications();
-          refetch();
+          refetch(false);
           setApplication(null);
           toastSuccess(
             <>
@@ -95,11 +98,17 @@ export const Applications = () => {
     }
   }, [accountSid, user]);
 
-  useMemo(() => {
+  useEffect(() => {
     if (accountSid) {
-      refetch();
+      refetch(false);
     }
-  }, [accountSid, pageNumber, perPageFilter, filter]);
+  }, [pageNumber, perPageFilter]);
+
+  useEffect(() => {
+    if (accountSid) {
+      refetch(true);
+    }
+  }, [accountSid, filter]);
 
   return (
     <>

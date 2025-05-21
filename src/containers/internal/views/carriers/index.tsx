@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, ButtonGroup, H1, Icon, M, MS } from "@jambonz/ui-kit";
 import {
@@ -59,11 +59,14 @@ export const Carriers = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = () => {
+  const refetch = (resetPage: boolean) => {
     if (!currentServiceProvider) return;
     setCarriers(null);
+    if (resetPage) {
+      setPageNumber(1);
+    }
     getSPVoipCarriers(currentServiceProvider.service_provider_sid, {
-      page: pageNumber,
+      page: resetPage ? 1 : pageNumber,
       page_size: Number(perPageFilter),
       ...(filter && { name: filter }),
       ...(accountSid && { account_sid: accountSid }),
@@ -116,7 +119,7 @@ export const Carriers = () => {
               );
           });
           setCarrier(null);
-          refetch();
+          refetch(false);
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
@@ -137,11 +140,17 @@ export const Carriers = () => {
     }
   }, [user]);
 
-  useMemo(() => {
+  useEffect(() => {
     if (currentServiceProvider) {
-      refetch();
+      refetch(false);
     }
-  }, [currentServiceProvider, pageNumber, perPageFilter, accountSid, filter]);
+  }, [pageNumber, perPageFilter]);
+
+  useEffect(() => {
+    if (currentServiceProvider) {
+      refetch(true);
+    }
+  }, [currentServiceProvider, accountSid, filter]);
 
   return (
     <>

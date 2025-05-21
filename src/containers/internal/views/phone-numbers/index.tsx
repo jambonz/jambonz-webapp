@@ -53,10 +53,13 @@ export const PhoneNumbers = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = () => {
+  const refetch = (resetPage: boolean) => {
     setPhoneNumbers(null);
+    if (resetPage) {
+      setPageNumber(1);
+    }
     getPhoneNumbers({
-      page: pageNumber,
+      page: resetPage ? 1 : pageNumber,
       page_size: Number(perPageFilter),
       ...(accountSid && { account_sid: accountSid }),
       ...(filter && { filter }),
@@ -85,7 +88,7 @@ export const PhoneNumbers = () => {
       }),
     )
       .then(() => {
-        refetch();
+        refetch(false);
         setApplicationSid("");
         setApplyMassEdit(false);
         toastSuccess("Number routing updated successfully");
@@ -101,7 +104,7 @@ export const PhoneNumbers = () => {
     if (phoneNumber) {
       deletePhoneNumber(phoneNumber.phone_number_sid)
         .then(() => {
-          refetch();
+          refetch(false);
           setPhoneNumber(null);
           toastSuccess(
             <>
@@ -130,8 +133,12 @@ export const PhoneNumbers = () => {
   }, []);
 
   useEffect(() => {
-    refetch();
-  }, [accountSid, perPageFilter, pageNumber, filter]);
+    refetch(false);
+  }, [perPageFilter, pageNumber]);
+
+  useEffect(() => {
+    refetch(true);
+  }, [accountSid, filter]);
 
   return (
     <>
