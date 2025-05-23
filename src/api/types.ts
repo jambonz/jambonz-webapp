@@ -313,7 +313,6 @@ export interface BucketCredential {
   service_key?: null | string;
   connection_string?: null | string;
   endpoint?: null | string;
-  s3_compatible_region?: null | string;
 }
 
 export interface Application {

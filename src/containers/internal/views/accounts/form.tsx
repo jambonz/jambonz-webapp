@@ -150,8 +150,6 @@ export const AccountForm = ({
   const [tmpAzureConnectionString, setTmpAzureConnectionString] = useState("");
   const [endpoint, setEndpoint] = useState("");
   const [tmpEndpoint, setTmpEndpoint] = useState("");
-  const [s3CompatibleRegion, setS3CompatibleRegion] = useState("");
-  const [tmpS3CompatibleRegion, setTmpS3CompatibleRegion] = useState("");
   const [enableDebugLog, setEnableDebugLog] = useState(false);
 
   /** This lets us map and render the same UI for each... */
@@ -291,7 +289,7 @@ export const AccountForm = ({
         endpoint: endpoint,
         access_key_id: bucketAccessKeyId,
         secret_access_key: bucketSecretAccessKey,
-        ...(s3CompatibleRegion && { s3_compatible_region: s3CompatibleRegion }),
+        ...(bucketRegion && { region: bucketRegion }),
       }),
     };
 
@@ -440,8 +438,8 @@ export const AccountForm = ({
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
             ...(hasLength(bucketTags) && { tags: bucketTags }),
-            ...(s3CompatibleRegion && {
-              s3_compatible_region: s3CompatibleRegion,
+            ...(bucketRegion && {
+              region: bucketRegion,
             }),
           },
         }),
@@ -569,13 +567,6 @@ export const AccountForm = ({
         setEndpoint(tmpEndpoint);
       } else if (account.data.bucket_credential?.endpoint) {
         setEndpoint(account.data.bucket_credential.endpoint);
-      }
-      if (tmpS3CompatibleRegion) {
-        setS3CompatibleRegion(tmpS3CompatibleRegion);
-      } else if (account.data.bucket_credential?.s3_compatible_region) {
-        setS3CompatibleRegion(
-          account.data.bucket_credential?.s3_compatible_region,
-        );
       }
       if (account.data.record_all_calls) {
         setRecordAllCalls(account.data.record_all_calls ? true : false);
@@ -1115,6 +1106,13 @@ export const AccountForm = ({
                       onChange={(e) => {
                         setBucketVendor(e.target.value);
                         setTmpBucketVendor(e.target.value);
+                        if (
+                          e.target.value === BUCKET_VENDOR_AWS &&
+                          !regions?.aws.find((r) => r.value === bucketRegion)
+                        ) {
+                          setBucketRegion("us-east-1");
+                          setTmpBucketRegion("");
+                        }
                       }}
                     />
                   </div>
@@ -1141,10 +1139,10 @@ export const AccountForm = ({
                         type="text"
                         name="aws_compatible_region"
                         placeholder="us-east-1"
-                        value={s3CompatibleRegion}
+                        value={bucketRegion}
                         onChange={(e) => {
-                          setS3CompatibleRegion(e.target.value);
-                          setTmpS3CompatibleRegion(e.target.value);
+                          setBucketRegion(e.target.value);
+                          setTmpBucketRegion(e.target.value);
                         }}
                       />
                     </>
