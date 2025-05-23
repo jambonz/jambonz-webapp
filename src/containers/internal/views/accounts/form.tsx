@@ -150,6 +150,8 @@ export const AccountForm = ({
   const [tmpAzureConnectionString, setTmpAzureConnectionString] = useState("");
   const [endpoint, setEndpoint] = useState("");
   const [tmpEndpoint, setTmpEndpoint] = useState("");
+  const [s3CompatibleRegion, setS3CompatibleRegion] = useState("");
+  const [tmpS3CompatibleRegion, setTmpS3CompatibleRegion] = useState("");
   const [enableDebugLog, setEnableDebugLog] = useState(false);
 
   /** This lets us map and render the same UI for each... */
@@ -289,6 +291,7 @@ export const AccountForm = ({
         endpoint: endpoint,
         access_key_id: bucketAccessKeyId,
         secret_access_key: bucketSecretAccessKey,
+        ...(s3CompatibleRegion && { s3_compatible_region: s3CompatibleRegion }),
       }),
     };
 
@@ -437,6 +440,9 @@ export const AccountForm = ({
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
             ...(hasLength(bucketTags) && { tags: bucketTags }),
+            ...(s3CompatibleRegion && {
+              s3_compatible_region: s3CompatibleRegion,
+            }),
           },
         }),
         ...(!bucketCredentialChecked && {
@@ -563,6 +569,13 @@ export const AccountForm = ({
         setEndpoint(tmpEndpoint);
       } else if (account.data.bucket_credential?.endpoint) {
         setEndpoint(account.data.bucket_credential.endpoint);
+      }
+      if (tmpS3CompatibleRegion) {
+        setS3CompatibleRegion(tmpS3CompatibleRegion);
+      } else if (account.data.bucket_credential?.s3_compatible_region) {
+        setS3CompatibleRegion(
+          account.data.bucket_credential?.s3_compatible_region,
+        );
       }
       if (account.data.record_all_calls) {
         setRecordAllCalls(account.data.record_all_calls ? true : false);
@@ -1120,6 +1133,18 @@ export const AccountForm = ({
                         onChange={(e) => {
                           setEndpoint(e.target.value);
                           setTmpEndpoint(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="endpoint">Region (Optional)</label>
+                      <input
+                        id="aws_compatible_region"
+                        type="text"
+                        name="aws_compatible_region"
+                        placeholder="us-east-1"
+                        value={s3CompatibleRegion}
+                        onChange={(e) => {
+                          setS3CompatibleRegion(e.target.value);
+                          setTmpS3CompatibleRegion(e.target.value);
                         }}
                       />
                     </>
