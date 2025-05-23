@@ -1,11 +1,12 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, H1, Icon, M } from "@jambonz/ui-kit";
+import { Button, ButtonGroup, H1, Icon, M, MS } from "@jambonz/ui-kit";
 import {
   deleteCarrier,
   deleteSipGateway,
   deleteSmppGateway,
   getFetch,
+  getSPVoipCarriers,
   useApiData,
   useServiceProviderData,
 } from "src/api";
@@ -17,20 +18,18 @@ import {
   Section,
   Spinner,
   SearchFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Gateways } from "./gateways";
-import {
-  isUserAccountScope,
-  hasLength,
-  hasValue,
-  useFilteredResults,
-} from "src/utils";
+import { isUserAccountScope, hasLength, hasValue } from "src/utils";
 import {
   API_SIP_GATEWAY,
   API_SMPP_GATEWAY,
   CARRIER_REG_OK,
   ENABLE_HOSTED_SYSTEM,
+  PER_PAGE_SELECTION,
   USER_ACCOUNT,
 } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
@@ -49,32 +48,39 @@ export const Carriers = () => {
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const currentServiceProvider = useSelectState("currentServiceProvider");
-  const [apiUrl, setApiUrl] = useState("");
   const [carrier, setCarrier] = useState<Carrier | null>(null);
-  const [carriers, refetch] = useApiData<Carrier[]>(apiUrl);
+  const [carriers, setCarriers] = useState<Carrier[] | null>(null);
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [filter, setFilter] = useState("");
 
-  const carriersFiltered = useMemo(() => {
-    setAccountSid(getAccountFilter());
-    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
-      setAccountSid(user?.account_sid);
+  const [carriersTotal, setCarriersTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+
+  const refetch = (resetPage: boolean) => {
+    if (!currentServiceProvider) return;
+    setCarriers(null);
+    if (resetPage) {
+      setPageNumber(1);
     }
-
-    return carriers
-      ? carriers.filter((carrier) =>
-          accountSid
-            ? carrier.account_sid === accountSid
-            : carrier.account_sid === null,
-        )
-      : [];
-  }, [accountSid, carrier, carriers]);
-
-  const filteredCarriers = useFilteredResults<Carrier>(
-    filter,
-    carriersFiltered,
-  );
+    getSPVoipCarriers(currentServiceProvider.service_provider_sid, {
+      page: resetPage ? 1 : pageNumber,
+      page_size: Number(perPageFilter),
+      ...(filter && { name: filter }),
+      ...(accountSid && { account_sid: accountSid }),
+    })
+      .then(({ json }) => {
+        setCarriers(json.data);
+        setCarriersTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+      })
+      .catch((error) => {
+        setCarriers([]);
+        toastError(error.msg);
+      });
+  };
 
   const handleDelete = () => {
     if (carrier) {
@@ -113,7 +119,7 @@ export const Carriers = () => {
               );
           });
           setCarrier(null);
-          refetch();
+          refetch(false);
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
@@ -128,12 +134,23 @@ export const Carriers = () => {
 
   useEffect(() => {
     setLocation();
-    if (currentServiceProvider) {
-      setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`,
-      );
+    setAccountSid(getAccountFilter());
+    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
+      setAccountSid(user?.account_sid);
     }
-  }, [user, currentServiceProvider, accountSid]);
+  }, [user]);
+
+  useEffect(() => {
+    if (currentServiceProvider) {
+      refetch(false);
+    }
+  }, [pageNumber, perPageFilter]);
+
+  useEffect(() => {
+    if (currentServiceProvider) {
+      refetch(true);
+    }
+  }, [currentServiceProvider, accountSid, filter]);
 
   return (
     <>
@@ -159,6 +176,7 @@ export const Carriers = () => {
         <SearchFilter
           placeholder="Filter carriers"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
@@ -169,12 +187,12 @@ export const Carriers = () => {
           />
         </ScopedAccess>
       </section>
-      <Section {...(hasLength(filteredCarriers) && { slim: true })}>
+      <Section {...(hasLength(carriers) && { slim: true })}>
         <div className="list">
           {!hasValue(carriers) && hasLength(accounts) ? (
             <Spinner />
-          ) : hasLength(filteredCarriers) ? (
-            filteredCarriers.map((carrier) => (
+          ) : hasLength(carriers) ? (
+            carriers.map((carrier) => (
               <div className="item" key={carrier.voip_carrier_sid}>
                 <div className="item__info">
                   <div className="item__title">
@@ -274,6 +292,26 @@ export const Carriers = () => {
           Add carrier
         </Button>
       </Section>
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {carriersTotal} record
+            {carriersTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(carriers) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {carrier && (
         <DeleteCarrier
           carrier={carrier}
