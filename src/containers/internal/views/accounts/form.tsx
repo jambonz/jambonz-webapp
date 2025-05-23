@@ -554,6 +554,10 @@ export const AccountForm = ({
         setBucketRegion(tmpBucketRegion);
       } else if (account.data.bucket_credential?.region) {
         setBucketRegion(account.data.bucket_credential?.region);
+      } else if (
+        account.data.bucket_credential?.vendor === BUCKET_VENDOR_S3_COMPATIBLE
+      ) {
+        setBucketRegion("");
       }
 
       if (tmpAzureConnectionString) {
@@ -1111,6 +1115,11 @@ export const AccountForm = ({
                           !regions?.aws.find((r) => r.value === bucketRegion)
                         ) {
                           setBucketRegion("us-east-1");
+                          setTmpBucketRegion("us-east-1");
+                        } else if (
+                          e.target.value === BUCKET_VENDOR_S3_COMPATIBLE
+                        ) {
+                          setBucketRegion("");
                           setTmpBucketRegion("");
                         }
                       }}
@@ -1138,7 +1147,6 @@ export const AccountForm = ({
                         id="aws_compatible_region"
                         type="text"
                         name="aws_compatible_region"
-                        placeholder="us-east-1"
                         value={bucketRegion}
                         onChange={(e) => {
                           setBucketRegion(e.target.value);
