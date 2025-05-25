@@ -1,6 +1,5 @@
 import React, { useReducer, useContext } from "react";
 
-import { TOAST_TIME } from "src/constants";
 import {
   genericAction,
   userAsyncAction,
@@ -11,8 +10,6 @@ import {
 } from "./actions";
 
 import type {
-  IMessage,
-  Toast,
   State,
   Action,
   MiddleWare,
@@ -49,22 +46,12 @@ const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
   }
 };
 
-let toastTimeout: number;
-
 /** Async middlewares */
 /** Proxies dispatch to reducer */
 const middleware: MiddleWare = (dispatch) => {
   /** This generic implementation enforces global dispatch type-safety */
   return <Type extends keyof State>(action: Action<Type>) => {
     switch (action.type) {
-      case "toast":
-        if (toastTimeout) {
-          clearTimeout(toastTimeout);
-        }
-        toastTimeout = setTimeout(() => {
-          dispatch({ type: "toast" });
-        }, TOAST_TIME);
-        return dispatch(action);
       case "user":
         return userAsyncAction().then((payload) => {
           dispatch({ ...action, payload });
@@ -104,28 +91,6 @@ export const StateProvider = ({ children }: { children: React.ReactNode }) => {
 /** Dispatch can be used anywhere -- even outside of the React tree */
 export const useDispatch = (): GlobalDispatch => {
   return globalDispatch;
-};
-
-/** Toast dispatch helpers to make component code less cumbersome */
-const toastDispatch = (payload: Toast) => {
-  globalDispatch({
-    type: "toast",
-    payload,
-  });
-};
-
-export const toastError = (msg: IMessage) => {
-  toastDispatch({
-    type: "error",
-    message: msg,
-  });
-};
-
-export const toastSuccess = (msg: IMessage) => {
-  toastDispatch({
-    type: "success",
-    message: msg,
-  });
 };
 
 /** Wrapper hook for state context */

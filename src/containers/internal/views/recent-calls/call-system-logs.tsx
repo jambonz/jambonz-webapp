@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { getRecentCallLog } from "src/api";
 import { RecentCall } from "src/api/types";
 import { Icons, Spinner } from "src/components";
-import { toastError, toastSuccess } from "src/store";
 import { hasValue } from "src/utils";
 import utc from "dayjs/plugin/utc";
+import { useToast } from "src/components/toast/toast-provider";
 dayjs.extend(utc);
 
 type CallSystemLogsProps = {
@@ -29,6 +29,7 @@ const formatLog = (log: string): string => {
 };
 
 export default function CallSystemLogs({ call }: CallSystemLogsProps) {
+  const { toastError, toastSuccess } = useToast();
   const [logs, setLogs] = useState<string[] | null>();
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);

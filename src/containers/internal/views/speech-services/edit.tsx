@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { H1 } from "@jambonz/ui-kit";
 
 import { useApiData } from "src/api";
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { SpeechServiceForm } from "./form";
 
 import type { SpeechCredential } from "src/api/types";
@@ -11,6 +11,7 @@ import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_SPEECH } from "src/router/routes";
 import { useParams } from "react-router-dom";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const EditSpeechService = () => {
   const params = useParams();
@@ -18,6 +19,7 @@ export const EditSpeechService = () => {
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [url, setUrl] = useState("");
   const [data, refetch, error] = useApiData<SpeechCredential>(url);
+  const { toastError } = useToast();
 
   useScopedRedirect(
     Scope.account,

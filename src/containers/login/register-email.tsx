@@ -7,10 +7,11 @@ import { Passwd } from "src/components/forms";
 import { ROUTE_LOGIN, ROUTE_REGISTER_EMAIL_VERIFY } from "src/router/routes";
 import { generateActivationCode } from "./utils";
 import { setToken } from "src/router/auth";
-import { toastError } from "src/store";
 import { setRootDomain } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const RegisterEmail = () => {
+  const { toastError } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();

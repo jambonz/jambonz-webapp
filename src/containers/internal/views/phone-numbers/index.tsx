@@ -8,7 +8,7 @@ import {
   putPhoneNumber,
   useServiceProviderData,
 } from "src/api";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   Icons,
   Section,
@@ -35,8 +35,10 @@ import { ENABLE_PHONE_NUMBER_LAZY_LOAD, USER_ACCOUNT } from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const PhoneNumbers = () => {
+  const { toastSuccess, toastError } = useToast();
   const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");

@@ -13,16 +13,18 @@ import { Section, Tooltip } from "src/components";
 import { AccountSelect, Message, Passwd } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import ClientsDelete from "./delete";
 import { hasValue } from "src/utils";
 import { IMessage } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type ClientsFormProps = {
   client?: UseApiDataMap<Client>;
 };
 
 export const ClientsForm = ({ client }: ClientsFormProps) => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const navigate = useNavigate();

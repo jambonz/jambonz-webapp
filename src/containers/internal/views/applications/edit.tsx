@@ -3,15 +3,17 @@ import { H1 } from "@jambonz/ui-kit";
 import { useParams } from "react-router-dom";
 
 import { useApiData } from "src/api";
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { ApplicationForm } from "./form";
 
 import type { Application } from "src/api/types";
 import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { Scope } from "src/store/types";
 import { ROUTE_INTERNAL_APPLICATIONS } from "src/router/routes";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const EditApplication = () => {
+  const { toastError } = useToast();
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Application>(

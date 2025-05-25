@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { toastError, useSelectState, useAccessControl } from "src/store";
+import { useSelectState, useAccessControl } from "src/store";
 import { ROUTE_INTERNAL_SETTINGS } from "src/router/routes";
 
 import type { ACL, IMessage } from "src/store/types";
 import type { ServiceProvider } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type PassthroughProps = {
   [key: string]: unknown;
@@ -22,6 +23,7 @@ export const withAccessControl = (
 ) => {
   return function WithAccessControl(Component: React.ComponentType) {
     return function ComponentWithAccessControl(props: PassthroughProps) {
+      const { toastError } = useToast();
       const navigate = useNavigate();
       const hasPermission = useAccessControl(acl);
       const currentServiceProvider = useSelectState("currentServiceProvider");

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button, H1 } from "@jambonz/ui-kit";
 import { useLocation, Navigate, Link } from "react-router-dom";
 
-import { toastError, toastSuccess } from "src/store";
 import { getToken, parseJwt, useAuth } from "src/router/auth";
 import {
   SESS_FLASH_MSG,
@@ -26,8 +25,10 @@ import { v4 as uuid } from "uuid";
 import { setLocationBeforeOauth, setOauthState } from "src/store/localStore";
 import { getGithubOauthUrl, getGoogleOauthUrl } from "./utils";
 import { UserData } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const Login = () => {
+  const { toastSuccess, toastError } = useToast();
   const state = uuid();
   setOauthState(state);
   setLocationBeforeOauth("/sign-in");

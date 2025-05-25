@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { P, Button, ButtonGroup, MS, Icon, H1 } from "@jambonz/ui-kit";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   putAccount,
   postAccount,
@@ -75,6 +75,7 @@ import { EditBoard } from "src/components/editboard";
 import { ModalLoader } from "src/components/modal";
 import { useAuth } from "src/router/auth";
 import { Scope } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -89,6 +90,7 @@ export const AccountForm = ({
   account,
   ttsCache,
 }: AccountFormProps) => {
+  const { toastError, toastSuccess } = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const user = useSelectState("user");
@@ -591,9 +593,7 @@ export const AccountForm = ({
           JSON.parse(account.data.bucket_credential?.service_key),
         );
       }
-      setInitialCheckRecordAllCall(
-        hasValue(bucketVendor) && bucketVendor.length !== 0,
-      );
+      setInitialCheckRecordAllCall(hasValue(account.data.bucket_credential));
     }
   }, [account]);
 

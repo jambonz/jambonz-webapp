@@ -15,7 +15,7 @@ import {
   ApplicationSelect,
 } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_MS_TEAMS_TENANTS,
@@ -28,6 +28,7 @@ import type {
   MSTeamsTenant,
   UseApiDataMap,
 } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type MsTeamsTenantFormProps = {
   msTeamsTenant?: UseApiDataMap<MSTeamsTenant>;
@@ -36,6 +37,7 @@ type MsTeamsTenantFormProps = {
 export const MsTeamsTenantForm = ({
   msTeamsTenant,
 }: MsTeamsTenantFormProps) => {
+  const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");

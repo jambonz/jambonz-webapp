@@ -8,6 +8,7 @@ import {
   BASE_URL,
 } from "src/api/constants";
 import { Spinner } from "src/components";
+import { useToast } from "src/components/toast/toast-provider";
 import { setToken } from "src/router/auth";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -15,7 +16,6 @@ import {
   ROUTE_REGISTER,
   ROUTE_REGISTER_SUB_DOMAIN,
 } from "src/router/routes";
-import { toastError } from "src/store";
 import {
   getLocationBeforeOauth,
   getOauthState,
@@ -25,6 +25,7 @@ import {
 } from "src/store/localStore";
 
 export const OauthCallback = () => {
+  const { toastError } = useToast();
   const queryParams = new URLSearchParams(location.search);
   const code = queryParams.get("code");
   const newState = queryParams.get("state");

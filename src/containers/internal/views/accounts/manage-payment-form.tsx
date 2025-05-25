@@ -10,11 +10,13 @@ import { postSubscriptions, useApiData } from "src/api";
 import { CurrentUserData, Subscription } from "src/api/types";
 import { Section } from "src/components";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { PaymentMethod } from "@stripe/stripe-js";
 import { ModalLoader } from "src/components/modal";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const ManagePaymentForm = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const stripe = useStripe();
   const elements = useElements();

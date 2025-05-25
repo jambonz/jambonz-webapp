@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 import { ApiKeys } from "src/containers/internal/api-keys";
 import { useApiData } from "src/api";
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { AccountForm } from "./form";
 
 import type { Account, Application, Limit, TtsCache } from "src/api/types";
@@ -14,8 +14,10 @@ import {
 } from "src/router/routes";
 import { useScopedRedirect } from "src/utils";
 import { Scope } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const EditAccount = () => {
+  const { toastError } = useToast();
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Account>(

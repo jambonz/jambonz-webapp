@@ -4,8 +4,8 @@ import Card from "./card";
 import { hasLength } from "src/utils";
 import update from "immutability-helper";
 import { deleteLcrRoute } from "src/api";
-import { toastError, toastSuccess } from "src/store";
 import { SelectorOption } from "src/components/forms/selector";
+import { useToast } from "src/components/toast/toast-provider";
 
 type ContainerProps = {
   lcrRoute: [LcrRoute[], React.Dispatch<React.SetStateAction<LcrRoute[]>>];
@@ -16,6 +16,7 @@ export const Container = ({
   lcrRoute: [lcrRoutes, setLcrRoutes],
   carrierSelectorOptions,
 }: ContainerProps) => {
+  const { toastSuccess, toastError } = useToast();
   const moveCard = (dragIndex: number, hoverIndex: number) => {
     setLcrRoutes((prevCards) =>
       update(prevCards, {

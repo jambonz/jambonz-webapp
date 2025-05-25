@@ -3,15 +3,17 @@ import { H1 } from "@jambonz/ui-kit";
 import { useParams } from "react-router-dom";
 
 import { useApiData } from "src/api";
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { CarrierForm } from "./form";
 
 import { Carrier, SipGateway, SmppGateway } from "src/api/types";
 import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { Scope } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const EditCarrier = () => {
+  const { toastError } = useToast();
   const params = useParams();
   const user = useSelectState("user");
   const [data, refetch, error] = useApiData<Carrier>(

@@ -14,7 +14,7 @@ import {
 } from "src/components";
 import { ScopedAccess } from "src/components/scoped-access";
 import { ROUTE_INTERNAL_LEST_COST_ROUTING } from "src/router/routes";
-import { toastSuccess, toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 // import { getAccountFilter, setLocation } from "src/store/localStore";
 import { Scope } from "src/store/types";
 import {
@@ -25,8 +25,10 @@ import {
 } from "src/utils";
 import { USER_ACCOUNT } from "src/api/constants";
 import DeleteLcr from "./delete";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const Lcrs = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   useScopedRedirect(
     Scope.admin,

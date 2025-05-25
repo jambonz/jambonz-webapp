@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 
 import { getPcap } from "src/api";
-import { toastError } from "src/store";
 
 import type { DownloadedBlob, RecentCall } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type PcapButtonProps = {
   call: RecentCall;
 };
 
 export const PcapButton = ({ call }: PcapButtonProps) => {
+  const { toastError } = useToast();
   const [pcap, setPcap] = useState<DownloadedBlob | null>(null);
 
   useEffect(() => {

@@ -8,9 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { MSG_SOMETHING_WRONG } from "src/constants";
 
 import { ROUTE_LOGIN } from "src/router/routes";
-import { toastSuccess } from "src/store";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const ForgotPassword = () => {
+  const { toastSuccess } = useToast();
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();

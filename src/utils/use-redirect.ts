@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { toastError } from "src/store";
+import { useToast } from "src/components/toast/toast-provider";
 
 import type { IMessage } from "src/store/types";
 
@@ -11,6 +10,7 @@ export const useRedirect = <Type>(
   message: IMessage,
 ) => {
   const navigate = useNavigate();
+  const { toastError } = useToast();
 
   useEffect(() => {
     if (collection && !collection.length) {

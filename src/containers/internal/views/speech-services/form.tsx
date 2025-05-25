@@ -12,7 +12,7 @@ import {
   Checkzone,
   Message,
 } from "src/components/forms";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   deleteGoogleCustomVoice,
   getGoogleCustomVoices,
@@ -91,12 +91,14 @@ import {
   GOOGLE_CUSTOM_VOICES_REPORTED_USAGE,
   VERBIO_STT_MODELS,
 } from "src/api/constants";
+import { useToast } from "src/components/toast/toast-provider";
 
 type SpeechServiceFormProps = {
   credential?: UseApiDataMap<SpeechCredential>;
 };
 
 export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
+  const { toastError, toastSuccess } = useToast();
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");

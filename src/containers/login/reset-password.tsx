@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { postChangepassword, postSignIn } from "src/api";
 import { Message, Passwd } from "src/components/forms";
+import { useToast } from "src/components/toast/toast-provider";
 import { setToken } from "src/router/auth";
 import { ROUTE_LOGIN } from "src/router/routes";
-import { toastError, toastSuccess } from "src/store";
 
 export const ResetPassword = () => {
+  const { toastError, toastSuccess } = useToast();
   const params = useParams();
   const resetId = params.id;
   const [newPassword, setNewPassword] = useState("");

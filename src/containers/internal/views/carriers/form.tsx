@@ -41,7 +41,7 @@ import {
 } from "src/components/forms";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   checkSelectOptions,
   getIpValidationType,
@@ -67,6 +67,7 @@ import {
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import { RegisterStatus } from "./register-status";
+import { useToast } from "src/components/toast/toast-provider";
 
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
@@ -79,6 +80,7 @@ export const CarrierForm = ({
   carrierSipGateways,
   carrierSmppGateways,
 }: CarrierFormProps) => {
+  const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");

@@ -7,8 +7,9 @@ import {
   SpeechCredential,
   User,
 } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
-import { toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 
 import { IMessage, Scope, UserData } from "src/store/types";
 
@@ -21,6 +22,7 @@ export const useScopedRedirect = (
 ) => {
   const navigate = useNavigate();
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const { toastError } = useToast();
 
   useEffect(() => {
     if (
@@ -47,5 +49,5 @@ export const useScopedRedirect = (
 
       navigate(redirect);
     }
-  }, [user, currentServiceProvider, data]);
+  }, [user, currentServiceProvider, data, toastError]);
 };

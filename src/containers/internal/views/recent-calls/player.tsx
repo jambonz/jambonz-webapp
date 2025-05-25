@@ -22,13 +22,14 @@ import {
   getSpansByNameRegex,
   getSpansFromJaegerRoot,
 } from "./utils";
-import { toastError, toastSuccess } from "src/store";
+import { useToast } from "src/components/toast/toast-provider";
 
 type PlayerProps = {
   call: RecentCall;
 };
 
 export const Player = ({ call }: PlayerProps) => {
+  const { toastSuccess, toastError } = useToast();
   const { recording_url, call_sid } = call;
   const url =
     recording_url && recording_url.startsWith("http://")

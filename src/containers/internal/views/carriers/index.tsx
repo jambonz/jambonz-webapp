@@ -9,7 +9,7 @@ import {
   useApiData,
   useServiceProviderData,
 } from "src/api";
-import { toastSuccess, toastError, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import {
   AccountFilter,
@@ -44,8 +44,10 @@ import type {
 } from "src/api/types";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const Carriers = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const currentServiceProvider = useSelectState("currentServiceProvider");

@@ -15,7 +15,7 @@ import {
   SearchFilter,
 } from "src/components";
 import { DeleteApplication } from "./delete";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   isUserAccountScope,
   hasLength,
@@ -28,8 +28,10 @@ import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { USER_ACCOUNT } from "src/api/constants";
 import { getAccountFilter, setLocation } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const Applications = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
