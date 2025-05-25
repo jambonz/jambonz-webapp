@@ -7,13 +7,13 @@ import React, {
   useRef,
 } from "react";
 import { Toast } from "./index";
-import type { Toast as ToastProps } from "src/store/types";
+import type { IMessage, Toast as ToastProps } from "src/store/types";
 import { TOAST_TIME } from "src/constants";
 
 // Define the context type
 interface ToastContextType {
-  toastSuccess: (message: React.ReactNode) => void;
-  toastError: (message: React.ReactNode) => void;
+  toastSuccess: (message: IMessage) => void;
+  toastError: (message: IMessage) => void;
 }
 
 // Create the context with a default value
@@ -40,23 +40,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Show a toast with the specified type and message
   const showToast = useCallback(
-    (type: "success" | "error", message: React.ReactNode) => {
+    (type: "success" | "error", message: IMessage) => {
       clearToast();
 
-      // Handle React elements by rendering to string or extracting text content
-      let processedMessage: string;
-
-      if (React.isValidElement(message)) {
-        // For React elements, convert to a simple string representation
-        processedMessage = "Notification"; // Default fallback for React elements
-      } else if (message === null || message === undefined) {
-        processedMessage = ""; // Default empty string for null/undefined
-      } else {
-        // For primitive values and other objects
-        processedMessage = String(message);
-      }
-
-      setToast({ type, message: processedMessage });
+      setToast({ type, message });
 
       // Auto-hide after specified time
       timeoutRef.current = window.setTimeout(() => {
@@ -68,14 +55,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Exposed methods
   const toastSuccess = useCallback(
-    (message: React.ReactNode) => {
+    (message: IMessage) => {
       showToast("success", message);
     },
     [showToast],
   );
 
   const toastError = useCallback(
-    (message: React.ReactNode) => {
+    (message: IMessage) => {
       showToast("error", message);
     },
     [showToast],
