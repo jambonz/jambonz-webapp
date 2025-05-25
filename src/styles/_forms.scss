@@ -151,6 +151,14 @@ fieldset {
       margin-top: ui-vars.$px01;
     }
 
+    div + textarea {
+      margin-top: ui-vars.$px02;
+    }
+
+    textarea {
+      border-radius: ui-vars.$px01;
+    }
+
     * + label {
       margin-top: ui-vars.$px02;
     }
