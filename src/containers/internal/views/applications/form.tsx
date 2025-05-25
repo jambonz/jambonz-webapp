@@ -818,8 +818,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                 const commonProps = {
                                   id: `env_${key}`,
                                   name: `env_${key}`,
-                                  placeholder:
-                                    webhook.webhookEnv![key].description,
                                   required: webhook.webhookEnv![key].required,
                                   value:
                                     envVars && envVars[key] !== undefined
