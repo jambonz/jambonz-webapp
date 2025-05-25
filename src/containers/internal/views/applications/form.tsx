@@ -893,7 +893,6 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                         ...commonProps,
                                         ...inputSpecificProps,
                                         ...textAreaSpecificProps,
-                                        readOnly: true,
                                       })}
                                     </>
                                   );
