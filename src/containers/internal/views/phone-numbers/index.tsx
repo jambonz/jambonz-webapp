@@ -66,14 +66,18 @@ export const PhoneNumbers = () => {
   const fetchPhoneNumbers = (resetPage = false) => {
     setPhoneNumbers(null);
 
-    if (resetPage) {
+    // Calculate the correct page to use
+    const currentPage = resetPage ? 1 : pageNumber;
+
+    // If we're resetting the page, also update the state
+    if (resetPage && pageNumber !== 1) {
       setPageNumber(1);
     }
 
     const accSid = accountSid || getAccountFilter() || "";
 
     getPhoneNumbers({
-      page: pageNumber,
+      page: currentPage,
       page_size: Number(perPageFilter),
       ...(accSid && { account_sid: accSid }),
       ...(filter && { filter }),

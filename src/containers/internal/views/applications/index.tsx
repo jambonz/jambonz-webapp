@@ -110,15 +110,18 @@ export const Applications = () => {
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     } else {
-      setAccountSid(getAccountFilter() || accountSid);
+      setAccountSid(
+        getAccountFilter() || accountSid || accounts?.[0]?.account_sid || "",
+      );
     }
     setLocation();
   }, [user, accounts]);
 
   // This single effect handles all data fetching triggers
   useEffect(() => {
-    // Skip initial render or when no account is selected
-    if (!accountSid) return;
+    const accSid = accountSid || getAccountFilter() || "";
+
+    if (!accSid) return;
 
     // Determine if the change requires a page reset
     const prevValues = prevValuesRef.current;
@@ -131,7 +134,7 @@ export const Applications = () => {
 
     // Update ref with current values for next comparison
     prevValuesRef.current = {
-      accountSid,
+      accountSid: accSid,
       filter,
       pageNumber,
       perPageFilter,
