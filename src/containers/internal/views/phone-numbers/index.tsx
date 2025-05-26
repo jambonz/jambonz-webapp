@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup, H1, Icon, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -54,15 +54,28 @@ export const PhoneNumbers = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = (resetPage: boolean) => {
+  // Add ref to track previous values
+  const prevValuesRef = useRef({
+    serviceProviderId: "",
+    accountSid: "",
+    filter: "",
+    pageNumber: 1,
+    perPageFilter: "25",
+  });
+
+  const fetchPhoneNumbers = (resetPage = false) => {
     setPhoneNumbers(null);
+
     if (resetPage) {
       setPageNumber(1);
     }
+
+    const accSid = accountSid || getAccountFilter() || "";
+
     getPhoneNumbers({
-      page: resetPage ? 1 : pageNumber,
+      page: pageNumber,
       page_size: Number(perPageFilter),
-      ...(accountSid && { account_sid: accountSid }),
+      ...(accSid && { account_sid: accSid }),
       ...(filter && { filter }),
       ...(currentServiceProvider && {
         service_provider_sid: currentServiceProvider.service_provider_sid,
@@ -92,9 +105,11 @@ export const PhoneNumbers = () => {
       }),
     )
       .then(() => {
-        refetch(false);
+        fetchPhoneNumbers(false);
         setApplicationSid("");
         setApplyMassEdit(false);
+        setSelectAll(false);
+        setSelectedPhoneNumbers([]);
         toastSuccess("Number routing updated successfully");
       })
       .catch((error) => {
@@ -108,7 +123,7 @@ export const PhoneNumbers = () => {
     if (phoneNumber) {
       deletePhoneNumber(phoneNumber.phone_number_sid)
         .then(() => {
-          refetch(false);
+          fetchPhoneNumbers(false);
           setPhoneNumber(null);
           toastSuccess(
             <>
@@ -122,27 +137,43 @@ export const PhoneNumbers = () => {
     }
   };
 
+  // Initial account setup
   useEffect(() => {
-    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
+    } else {
+      setAccountSid(getAccountFilter() || accountSid);
     }
+    setLocation();
   }, [user]);
 
+  // Combined effect for all data fetching
   useEffect(() => {
-    setAccountSid(getAccountFilter() || accountSid);
-    if (user?.account_sid && user?.scope === USER_ACCOUNT) {
-      setAccountSid(user?.account_sid);
-    }
-  }, []);
+    const prevValues = prevValuesRef.current;
+    const currentSPId = currentServiceProvider?.service_provider_sid;
 
-  useEffect(() => {
-    refetch(false);
-  }, [perPageFilter, pageNumber]);
+    // Detect changes that require page reset
+    const isFilterOrProviderChange =
+      prevValues.serviceProviderId !== currentSPId ||
+      prevValues.accountSid !== accountSid ||
+      prevValues.filter !== filter;
 
-  useEffect(() => {
-    refetch(true);
-  }, [accountSid, filter, currentServiceProvider]);
+    const isPageSizeChange =
+      prevValues.perPageFilter !== perPageFilter &&
+      prevValues.perPageFilter !== "25"; // Skip initial render
+
+    // Update ref for next comparison
+    prevValuesRef.current = {
+      serviceProviderId: currentSPId || "",
+      accountSid,
+      filter,
+      pageNumber,
+      perPageFilter,
+    };
+
+    // Fetch data with appropriate reset parameter
+    fetchPhoneNumbers(isFilterOrProviderChange || isPageSizeChange);
+  }, [currentServiceProvider, accountSid, filter, pageNumber, perPageFilter]);
 
   return (
     <>
@@ -215,10 +246,8 @@ export const PhoneNumbers = () => {
                         <Button
                           small
                           onClick={() => {
-                            handleMassEdit();
-                            setSelectAll(false);
                             setApplyMassEdit(true);
-                            setSelectedPhoneNumbers([]);
+                            handleMassEdit();
                           }}
                         >
                           Apply

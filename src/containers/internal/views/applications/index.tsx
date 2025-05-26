@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { H1, M, Button, Icon, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -43,13 +43,30 @@ export const Applications = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = (resetPage: boolean) => {
+  // Track previous values to detect changes
+  const prevValuesRef = useRef({
+    accountSid: "",
+    filter: "",
+    pageNumber: 1,
+    perPageFilter: "25",
+  });
+
+  const fetchApplications = (resetPage = false) => {
+    // Don't fetch if no account is selected
+    if (!accountSid) return;
+
     setApplications(null);
-    if (resetPage) {
+
+    // Calculate the correct page to use
+    const currentPage = resetPage ? 1 : pageNumber;
+
+    // If we're resetting the page, also update the state
+    if (resetPage && pageNumber !== 1) {
       setPageNumber(1);
     }
+
     getApplications(accountSid, {
-      page: resetPage ? 1 : pageNumber,
+      page: currentPage,
       page_size: Number(perPageFilter),
       ...(filter && { name: filter }),
     })
@@ -74,8 +91,7 @@ export const Applications = () => {
       }
       deleteApplication(application.application_sid)
         .then(() => {
-          // getApplications();
-          refetch(false);
+          fetchApplications(false);
           setApplication(null);
           toastSuccess(
             <>
@@ -89,26 +105,41 @@ export const Applications = () => {
     }
   };
 
+  // Set initial account
   useEffect(() => {
-    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     } else {
       setAccountSid(getAccountFilter() || accountSid);
     }
-  }, [accountSid, user]);
+    setLocation();
+  }, [user, accounts]);
 
+  // This single effect handles all data fetching triggers
   useEffect(() => {
-    if (accountSid) {
-      refetch(false);
-    }
-  }, [pageNumber, perPageFilter]);
+    // Skip initial render or when no account is selected
+    if (!accountSid) return;
 
-  useEffect(() => {
-    if (accountSid) {
-      refetch(true);
-    }
-  }, [accountSid, filter]);
+    // Determine if the change requires a page reset
+    const prevValues = prevValuesRef.current;
+    const isFilterChange =
+      prevValues.accountSid !== accountSid || prevValues.filter !== filter;
+
+    const isPageSizeChange =
+      prevValues.perPageFilter !== perPageFilter &&
+      prevValues.perPageFilter !== ""; // Skip initial render
+
+    // Update ref with current values for next comparison
+    prevValuesRef.current = {
+      accountSid,
+      filter,
+      pageNumber,
+      perPageFilter,
+    };
+
+    // Fetch data with page reset if needed
+    fetchApplications(isFilterChange || isPageSizeChange);
+  }, [accountSid, filter, pageNumber, perPageFilter]);
 
   return (
     <>

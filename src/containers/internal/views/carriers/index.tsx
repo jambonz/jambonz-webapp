@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button, ButtonGroup, H1, Icon, M, MS } from "@jambonz/ui-kit";
 import {
@@ -59,14 +59,30 @@ export const Carriers = () => {
   const [perPageFilter, setPerPageFilter] = useState("25");
   const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const refetch = (resetPage: boolean) => {
+  // Add a ref to track previous values
+  const prevValuesRef = useRef({
+    serviceProviderId: "",
+    accountSid: "",
+    filter: "",
+    pageNumber: 1,
+    perPageFilter: "25",
+  });
+
+  const fetchCarriers = (resetPage = false) => {
     if (!currentServiceProvider) return;
+
     setCarriers(null);
-    if (resetPage) {
+
+    // Calculate the correct page to use
+    const currentPage = resetPage ? 1 : pageNumber;
+
+    // If we're resetting the page, also update the state
+    if (resetPage && pageNumber !== 1) {
       setPageNumber(1);
     }
+
     getSPVoipCarriers(currentServiceProvider.service_provider_sid, {
-      page: resetPage ? 1 : pageNumber,
+      page: currentPage,
       page_size: Number(perPageFilter),
       ...(filter && { name: filter }),
       ...(accountSid && { account_sid: accountSid }),
@@ -119,7 +135,7 @@ export const Carriers = () => {
               );
           });
           setCarrier(null);
-          refetch(false);
+          fetchCarriers(false);
           toastSuccess(
             <>
               Deleted Carrier <strong>{carrier.name}</strong>
@@ -132,25 +148,45 @@ export const Carriers = () => {
     }
   };
 
+  // Initial account setup
   useEffect(() => {
-    setLocation();
-    setAccountSid(getAccountFilter());
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
+    } else {
+      setAccountSid(getAccountFilter());
     }
-  }, [user]);
+    setLocation();
+  }, [user, accounts]);
 
+  // Combined effect for all data fetching
   useEffect(() => {
-    if (currentServiceProvider) {
-      refetch(false);
-    }
-  }, [pageNumber, perPageFilter]);
+    if (!currentServiceProvider) return;
 
-  useEffect(() => {
-    if (currentServiceProvider) {
-      refetch(true);
-    }
-  }, [currentServiceProvider, accountSid, filter]);
+    const prevValues = prevValuesRef.current;
+    const currentSPId = currentServiceProvider.service_provider_sid;
+
+    // Determine if we should reset pagination
+    const isFilterOrProviderChange =
+      prevValues.serviceProviderId !== currentSPId ||
+      prevValues.accountSid !== accountSid ||
+      prevValues.filter !== filter;
+
+    const isPageSizeChange =
+      prevValues.perPageFilter !== perPageFilter &&
+      prevValues.perPageFilter !== "25"; // Skip initial render
+
+    // Update ref for next comparison
+    prevValuesRef.current = {
+      serviceProviderId: currentSPId,
+      accountSid,
+      filter,
+      pageNumber,
+      perPageFilter,
+    };
+
+    // Fetch data with page reset if filters changed
+    fetchCarriers(isFilterOrProviderChange || isPageSizeChange);
+  }, [currentServiceProvider, accountSid, filter, pageNumber, perPageFilter]);
 
   return (
     <>
