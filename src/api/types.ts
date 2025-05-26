@@ -564,6 +564,7 @@ export interface PageQuery {
 }
 
 export interface PhoneNumberQuery extends PageQuery {
+  service_provider_sid?: string;
   account_sid?: string;
   filter?: string;
 }

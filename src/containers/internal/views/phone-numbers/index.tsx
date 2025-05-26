@@ -35,6 +35,7 @@ import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const PhoneNumbers = () => {
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
@@ -63,6 +64,9 @@ export const PhoneNumbers = () => {
       page_size: Number(perPageFilter),
       ...(accountSid && { account_sid: accountSid }),
       ...(filter && { filter }),
+      ...(currentServiceProvider && {
+        service_provider_sid: currentServiceProvider.service_provider_sid,
+      }),
     })
       .then(({ json }) => {
         if (json) {
@@ -138,7 +142,7 @@ export const PhoneNumbers = () => {
 
   useEffect(() => {
     refetch(true);
-  }, [accountSid, filter]);
+  }, [accountSid, filter, currentServiceProvider]);
 
   return (
     <>
