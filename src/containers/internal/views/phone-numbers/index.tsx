@@ -378,7 +378,7 @@ export const PhoneNumbers = () => {
             Total: {phoneNumbersTotal} record
             {phoneNumbersTotal === 1 ? "" : "s"}
           </MS>
-          {hasLength(carriers) && (
+          {hasLength(phoneNumbers) && (
             <Pagination
               pageNumber={pageNumber}
               setPageNumber={setPageNumber}
