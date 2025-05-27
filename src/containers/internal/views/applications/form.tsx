@@ -922,6 +922,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           serviceProviderSid={
             currentServiceProvider?.service_provider_sid || ""
           }
+          application_speech_synthesis_voice={
+            application?.data?.speech_synthesis_voice
+          }
           accountSid={accountSid}
           credentials={credentials}
           ttsVendor={[synthVendor, setSynthVendor]}
@@ -952,6 +955,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                 currentServiceProvider?.service_provider_sid || ""
               }
               accountSid={accountSid}
+              application_speech_synthesis_voice={
+                application?.data?.fallback_speech_synthesis_voice
+              }
               credentials={credentials}
               ttsVendor={[
                 fallbackSpeechSynthsisVendor,
