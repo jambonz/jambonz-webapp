@@ -575,27 +575,33 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       ).then(({ json }) => {
         if (json.models) {
           setTtsModels(json.models);
-          if (
-            json.models.length > 0 &&
-            !json.models.find((m) => m.value === ttsModelId)
-          ) {
-            setTtsModelId(json.models[0].value);
-          }
         }
         if (json.sttModels) {
           setSttModels(json.sttModels);
-          if (
-            json.sttModels.length > 0 &&
-            !json.sttModels.some((m) => m.value === sttModelId)
-          ) {
-            setSttModelId(json.sttModels[0].value);
-          }
         }
       });
     } else {
       setTtsModels([]);
     }
   }, [vendor]);
+
+  useEffect(() => {
+    const modelId = credential?.data?.model_id || "";
+    if (sttModels.length > 0 && !sttModels.some((m) => m.value === modelId)) {
+      setSttModelId(sttModels[0].value);
+    } else {
+      setSttModelId(modelId);
+    }
+  }, [credential, sttModels]);
+
+  useEffect(() => {
+    const modelId = credential?.data?.model_id || "";
+    if (ttsModels.length > 0 && !ttsModels.some((m) => m.value === modelId)) {
+      setTtsModelId(sttModels[0].value);
+    } else {
+      setTtsModelId(modelId);
+    }
+  }, [credential, ttsModels]);
 
   useEffect(() => {
     setLocation();
