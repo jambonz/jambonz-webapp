@@ -53,7 +53,12 @@ import type {
   AppEnv,
 } from "src/api/types";
 import { MSG_REQUIRED_FIELDS, MSG_WEBHOOK_FIELDS } from "src/constants";
-import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
+import {
+  hasLength,
+  hasValue,
+  isUserAccountScope,
+  useRedirect,
+} from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import SpeechProviderSelection from "./speech-selection";
 import ObscureInput from "src/components/obscure-input";
@@ -595,6 +600,18 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
         getAppEnvSchema(callWebhook.url)
           .then(({ json }) => {
             setAppEnv(json);
+            const defaultEnvVars = Object.keys(json).reduce((acc, key) => {
+              const value = json[key];
+              if (value?.default) {
+                return { ...acc, [key]: value.default };
+              }
+              return acc;
+            }, {});
+
+            setEnvVars((prev) => ({
+              ...defaultEnvVars,
+              ...(prev || {}),
+            }));
           })
           .catch((error) => {
             setMessage(error.msg);
@@ -886,7 +903,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                         }}
                                         placeholder="Choose a file"
                                         required={
-                                          webhook.webhookEnv![key].required
+                                          webhook.webhookEnv![key].required &&
+                                          !hasValue(envVars?.[key])
                                         }
                                       />
                                       {React.createElement("textarea", {
