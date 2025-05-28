@@ -123,7 +123,7 @@ export const checkLocation = () => {
 
   if (currentLocation !== storedLocation) {
     localStorage.removeItem(storeQueryFilter);
-    // Keep filterAccount in different location that user can search for same account
+    // Keep storeAccountFilter in different location that user can search for same account
     // in different location
     // localStorage.removeItem(storeAccountFilter);
     return;
