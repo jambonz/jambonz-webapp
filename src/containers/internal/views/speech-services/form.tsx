@@ -259,6 +259,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       case VENDOR_PLAYHT:
         return "Voice Engine";
       case VENDOR_CARTESIA:
+      case VENDOR_DEEPGRAM:
         return "Model ID";
       default:
         return "Model";
@@ -436,6 +437,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
           deepgram_stt_use_tls: deepgramSttUseTls ? 1 : 0,
+          model_id: sttModelId || null,
         }),
         ...(vendor === VENDOR_SPEECHMATICS && {
           speechmatics_stt_uri: speechmaticsEndpoint || null,
@@ -562,7 +564,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_PLAYHT ||
       vendor === VENDOR_RIMELABS ||
       vendor === VENDOR_CARTESIA ||
-      vendor === VENDOR_OPENAI
+      vendor === VENDOR_OPENAI ||
+      vendor === VENDOR_DEEPGRAM
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -572,27 +575,33 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       ).then(({ json }) => {
         if (json.models) {
           setTtsModels(json.models);
-          if (
-            json.models.length > 0 &&
-            !json.models.find((m) => m.value === ttsModelId)
-          ) {
-            setTtsModelId(json.models[0].value);
-          }
         }
         if (json.sttModels) {
           setSttModels(json.sttModels);
-          if (
-            json.sttModels.length > 0 &&
-            !json.sttModels.some((m) => m.value === sttModelId)
-          ) {
-            setSttModelId(json.sttModels[0].value);
-          }
         }
       });
     } else {
       setTtsModels([]);
     }
   }, [vendor]);
+
+  useEffect(() => {
+    const modelId = credential?.data?.model_id || "";
+    if (sttModels.length > 0 && !sttModels.some((m) => m.value === modelId)) {
+      setSttModelId(sttModels[0].value);
+    } else {
+      setSttModelId(modelId);
+    }
+  }, [credential, sttModels]);
+
+  useEffect(() => {
+    const modelId = credential?.data?.model_id || "";
+    if (ttsModels.length > 0 && !ttsModels.some((m) => m.value === modelId)) {
+      setTtsModelId(sttModels[0].value);
+    } else {
+      setTtsModelId(modelId);
+    }
+  }, [credential, ttsModels]);
 
   useEffect(() => {
     setLocation();
@@ -742,7 +751,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
       }
-      if (credential.data.model_id && vendor === VENDOR_OPENAI) {
+      if (
+        credential.data.model_id &&
+        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM)
+      ) {
         setSttModelId(credential.data.model_id);
       }
       if (credential?.data?.playht_tts_uri) {
@@ -1717,22 +1729,23 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
-        {vendor == VENDOR_OPENAI && sttModels.length > 0 && (
-          <fieldset>
-            <label htmlFor={`${vendor}_stt_model_id`}>
-              {getModelLabelByVendor(vendor)}
-            </label>
-            <Selector
-              id={"stt_model_id"}
-              name={"stt_model_id"}
-              value={sttModelId}
-              options={sttModels}
-              onChange={(e) => {
-                setSttModelId(e.target.value);
-              }}
-            />
-          </fieldset>
-        )}
+        {(vendor == VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM) &&
+          sttModels.length > 0 && (
+            <fieldset>
+              <label htmlFor={`${vendor}_stt_model_id`}>
+                {getModelLabelByVendor(vendor)}
+              </label>
+              <Selector
+                id={"stt_model_id"}
+                name={"stt_model_id"}
+                value={sttModelId}
+                options={sttModels}
+                onChange={(e) => {
+                  setSttModelId(e.target.value);
+                }}
+              />
+            </fieldset>
+          )}
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_CARTESIA ||
