@@ -6,7 +6,11 @@ import { Icons, ModalForm } from "src/components";
 import { naviTop, naviByo } from "./items";
 import { UserMe } from "../user-me";
 import { useSelectState, useDispatch } from "src/store";
-import { getActiveSP, setActiveSP } from "src/store/localStore";
+import {
+  getActiveSP,
+  removeAccountFilter,
+  setActiveSP,
+} from "src/store/localStore";
 import { postServiceProviders } from "src/api";
 
 import type { NaviItem } from "./items";
@@ -163,6 +167,7 @@ export const Navi = ({
                 onChange={(e) => {
                   setSid(e.target.value);
                   setActiveSP(e.target.value);
+                  removeAccountFilter();
                   navigate(ROUTE_LOGIN);
                 }}
                 disabled={user?.scope !== USER_ADMIN}

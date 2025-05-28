@@ -18,6 +18,7 @@ import { hasLength, hasValue, useFilteredResults } from "src/utils";
 import ClientsDelete from "./delete";
 import { USER_ACCOUNT } from "src/api/constants";
 import { useToast } from "src/components/toast/toast-provider";
+import { getAccountFilter } from "src/store/localStore";
 
 export const Clients = () => {
   const { toastError, toastSuccess } = useToast();
@@ -34,6 +35,7 @@ export const Clients = () => {
   const [client, setClient] = useState<Client | null>();
 
   const tmpFilteredClients = useMemo(() => {
+    setAccountSid(getAccountFilter() || accountSid);
     if (user?.account_sid && user?.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
       return clients;

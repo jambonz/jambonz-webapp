@@ -92,10 +92,6 @@ export const DISABLE_ADDITIONAL_SPEECH_VENDORS: boolean =
 export const AWS_REGION: string =
   window.JAMBONZ?.AWS_REGION || import.meta.env.VITE_APP_AWS_REGION;
 
-export const ENABLE_PHONE_NUMBER_LAZY_LOAD: boolean =
-  window.JAMBONZ?.ENABLE_PHONE_NUMBER_LAZY_LOAD === "true" ||
-  JSON.parse(import.meta.env.VITE_APP_ENABLE_PHONE_NUMBER_LAZY_LOAD || "false");
-
 export const DEFAULT_SERVICE_PROVIDER_SID: string =
   window.JAMBONZ?.DEFAULT_SERVICE_PROVIDER_SID ||
   import.meta.env.VITE_APP_DEFAULT_SERVICE_PROVIDER_SID;

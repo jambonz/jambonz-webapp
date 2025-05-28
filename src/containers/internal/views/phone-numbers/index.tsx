@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup, H1, Icon, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
@@ -16,22 +16,19 @@ import {
   ApplicationFilter,
   SearchFilter,
   AccountFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import {
-  hasLength,
-  hasValue,
-  formatPhoneNumber,
-  useFilteredResults,
-} from "src/utils";
+import { hasLength, hasValue, formatPhoneNumber } from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
-import { ENABLE_PHONE_NUMBER_LAZY_LOAD, USER_ACCOUNT } from "src/api/constants";
+import { PER_PAGE_SELECTION, USER_ACCOUNT } from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
@@ -40,6 +37,7 @@ import { useToast } from "src/components/toast/toast-provider";
 export const PhoneNumbers = () => {
   const { toastSuccess, toastError } = useToast();
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [carriers] = useServiceProviderData<Carrier[]>("VoipCarriers");
@@ -53,35 +51,48 @@ export const PhoneNumbers = () => {
   const [applyMassEdit, setApplyMassEdit] = useState(false);
   const [filter, setFilter] = useState("");
   const [accountSid, setAccountSid] = useState("");
+  const [phoneNumbersTotal, setphoneNumbersTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
 
-  const phoneNumbersFiltered = useMemo(() => {
-    setAccountSid(getAccountFilter());
-    return phoneNumbers
-      ? phoneNumbers.filter(
-          (phn) => !accountSid || phn.account_sid === accountSid,
-        )
-      : [];
-  }, [phoneNumbers, ...[!ENABLE_PHONE_NUMBER_LAZY_LOAD && accountSid]]);
+  // Add ref to track previous values
+  const prevValuesRef = useRef({
+    serviceProviderId: "",
+    accountSid: "",
+    filter: "",
+    pageNumber: 1,
+    perPageFilter: "25",
+  });
 
-  const filteredPhoneNumbers = !ENABLE_PHONE_NUMBER_LAZY_LOAD
-    ? useFilteredResults<PhoneNumber>(filter, phoneNumbersFiltered)
-    : phoneNumbersFiltered;
+  const fetchPhoneNumbers = (resetPage = false) => {
+    setPhoneNumbers(null);
 
-  const refetch = () => {
-    getPhoneNumbers(
-      !ENABLE_PHONE_NUMBER_LAZY_LOAD
-        ? {}
-        : {
-            ...(accountSid && { account_sid: accountSid }),
-            ...(filter && { filter }),
-          },
-    )
+    // Calculate the correct page to use
+    const currentPage = resetPage ? 1 : pageNumber;
+
+    // If we're resetting the page, also update the state
+    if (resetPage && pageNumber !== 1) {
+      setPageNumber(1);
+    }
+
+    const accSid = accountSid || getAccountFilter() || "";
+
+    getPhoneNumbers({
+      page: currentPage,
+      page_size: Number(perPageFilter),
+      ...(accSid && { account_sid: accSid }),
+      ...(filter && { filter }),
+    })
       .then(({ json }) => {
         if (json) {
-          setPhoneNumbers(json);
+          setPhoneNumbers(json.data);
+          setphoneNumbersTotal(json.total);
+          setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
         }
       })
       .catch((error) => {
+        setPhoneNumbers([]);
         toastError(error.msg);
       });
   };
@@ -97,9 +108,11 @@ export const PhoneNumbers = () => {
       }),
     )
       .then(() => {
-        refetch();
+        fetchPhoneNumbers(false);
         setApplicationSid("");
         setApplyMassEdit(false);
+        setSelectAll(false);
+        setSelectedPhoneNumbers([]);
         toastSuccess("Number routing updated successfully");
       })
       .catch((error) => {
@@ -113,7 +126,7 @@ export const PhoneNumbers = () => {
     if (phoneNumber) {
       deletePhoneNumber(phoneNumber.phone_number_sid)
         .then(() => {
-          refetch();
+          fetchPhoneNumbers(false);
           setPhoneNumber(null);
           toastSuccess(
             <>
@@ -127,21 +140,43 @@ export const PhoneNumbers = () => {
     }
   };
 
+  // Initial account setup
   useEffect(() => {
-    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
+    } else {
+      setAccountSid(getAccountFilter() || accountSid);
     }
+    setLocation();
   }, [user]);
 
+  // Combined effect for all data fetching
   useEffect(() => {
-    if (ENABLE_PHONE_NUMBER_LAZY_LOAD) {
-      setPhoneNumbers([]);
-      return;
-    }
+    const prevValues = prevValuesRef.current;
+    const currentSPId = currentServiceProvider?.service_provider_sid;
 
-    refetch();
-  }, []);
+    // Detect changes that require page reset
+    const isFilterOrProviderChange =
+      prevValues.serviceProviderId !== currentSPId ||
+      prevValues.accountSid !== accountSid ||
+      prevValues.filter !== filter;
+
+    const isPageSizeChange =
+      prevValues.perPageFilter !== perPageFilter &&
+      prevValues.perPageFilter !== "25"; // Skip initial render
+
+    // Update ref for next comparison
+    prevValuesRef.current = {
+      serviceProviderId: currentSPId || "",
+      accountSid,
+      filter,
+      pageNumber,
+      perPageFilter,
+    };
+
+    // Fetch data with appropriate reset parameter
+    fetchPhoneNumbers(isFilterOrProviderChange || isPageSizeChange);
+  }, [currentServiceProvider, accountSid, filter, pageNumber, perPageFilter]);
 
   return (
     <>
@@ -162,6 +197,7 @@ export const PhoneNumbers = () => {
         <SearchFilter
           placeholder="Filter phone numbers"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
@@ -170,25 +206,12 @@ export const PhoneNumbers = () => {
             defaultOption
           />
         </ScopedAccess>
-        {ENABLE_PHONE_NUMBER_LAZY_LOAD && (
-          <ButtonGroup>
-            <Button
-              small
-              onClick={() => {
-                setPhoneNumbers(null);
-                refetch();
-              }}
-            >
-              Search
-            </Button>
-          </ButtonGroup>
-        )}
       </section>
-      <Section {...(hasLength(filteredPhoneNumbers) && { slim: true })}>
+      <Section {...(hasLength(phoneNumbers) && { slim: true })}>
         <div className="list">
           {!hasValue(phoneNumbers) ? (
             <Spinner />
-          ) : hasLength(filteredPhoneNumbers) ? (
+          ) : hasLength(phoneNumbers) ? (
             <>
               <div className="item item--actions">
                 {accountSid ? (
@@ -202,7 +225,7 @@ export const PhoneNumbers = () => {
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectAll(true);
-                              setSelectedPhoneNumbers(filteredPhoneNumbers);
+                              setSelectedPhoneNumbers(phoneNumbers);
                             } else {
                               setSelectAll(false);
                               setSelectedPhoneNumbers([]);
@@ -226,10 +249,8 @@ export const PhoneNumbers = () => {
                         <Button
                           small
                           onClick={() => {
-                            handleMassEdit();
-                            setSelectAll(false);
                             setApplyMassEdit(true);
-                            setSelectedPhoneNumbers([]);
+                            handleMassEdit();
                           }}
                         >
                           Apply
@@ -251,7 +272,7 @@ export const PhoneNumbers = () => {
                   </MS>
                 )}
               </div>
-              {filteredPhoneNumbers.map((phoneNumber) => {
+              {phoneNumbers.map((phoneNumber) => {
                 return (
                   <div className="item" key={phoneNumber.phone_number_sid}>
                     <div className="item__info">
@@ -387,6 +408,26 @@ export const PhoneNumbers = () => {
           </Button>
         )}
       </Section>
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {phoneNumbersTotal} record
+            {phoneNumbersTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(phoneNumbers) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {phoneNumber && (
         <DeletePhoneNumber
           phoneNumber={phoneNumber}
