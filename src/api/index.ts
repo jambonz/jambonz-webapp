@@ -97,6 +97,8 @@ import type {
   SpeechSupportedLanguagesAndVoices,
   AppEnv,
   PhoneNumberQuery,
+  ApplicationQuery,
+  VoipCarrierQuery,
 } from "./types";
 import { Availability, StatusCodes } from "./types";
 import { JaegerRoot } from "./jaeger-types";
@@ -821,6 +823,28 @@ export const getAppEnvSchema = (url: string) => {
   return getFetch<AppEnv>(`${API_APP_ENV}?url=${url}`);
 };
 
+export const getApplications = (
+  sid: string,
+  query: Partial<ApplicationQuery>,
+) => {
+  const qryStr = getQuery<Partial<ApplicationQuery>>(query);
+
+  return getFetch<PagedResponse<Application>>(
+    `${API_ACCOUNTS}/${sid}/Applications?${qryStr}`,
+  );
+};
+
+export const getSPVoipCarriers = (
+  sid: string,
+  query: Partial<VoipCarrierQuery>,
+) => {
+  const qryStr = getQuery<Partial<VoipCarrierQuery>>(query);
+
+  return getFetch<PagedResponse<Carrier>>(
+    `${API_SERVICE_PROVIDERS}/${sid}/VoipCarriers?${qryStr}`,
+  );
+};
+
 /** Wrappers for APIs that can have a mock dev server response */
 
 export const getMe = () => {
@@ -903,7 +927,7 @@ export const getPrice = () => {
 export const getPhoneNumbers = (query: Partial<PhoneNumberQuery>) => {
   const qryStr = getQuery<Partial<PhoneNumberQuery>>(query);
 
-  return getFetch<PhoneNumber[]>(`${API_PHONE_NUMBERS}?${qryStr}`);
+  return getFetch<PagedResponse<PhoneNumber>>(`${API_PHONE_NUMBERS}?${qryStr}`);
 };
 
 export const getSpeechSupportedLanguagesAndVoices = (

@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { H1, M, Button, Icon } from "@jambonz/ui-kit";
+import React, { useEffect, useState, useRef } from "react";
+import { H1, M, Button, Icon, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link } from "react-router-dom";
 
-import { deleteApplication, useServiceProviderData, useApiData } from "src/api";
+import {
+  deleteApplication,
+  useServiceProviderData,
+  getApplications,
+} from "src/api";
 import {
   ROUTE_INTERNAL_APPLICATIONS,
   ROUTE_INTERNAL_ACCOUNTS,
@@ -13,20 +17,17 @@ import {
   Spinner,
   AccountFilter,
   SearchFilter,
+  Pagination,
+  SelectFilter,
 } from "src/components";
 import { DeleteApplication } from "./delete";
 import { toastError, toastSuccess, useSelectState } from "src/store";
-import {
-  isUserAccountScope,
-  hasLength,
-  hasValue,
-  useFilteredResults,
-} from "src/utils";
+import { isUserAccountScope, hasLength, hasValue } from "src/utils";
 
 import type { Application, Account } from "src/api/types";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
-import { USER_ACCOUNT } from "src/api/constants";
+import { PER_PAGE_SELECTION, USER_ACCOUNT } from "src/api/constants";
 import { getAccountFilter, setLocation } from "src/store/localStore";
 
 export const Applications = () => {
@@ -34,14 +35,51 @@ export const Applications = () => {
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
-  const [apiUrl, setApiUrl] = useState("");
-  const [applications, refetch] = useApiData<Application[]>(apiUrl);
+  const [applications, setApplications] = useState<Application[] | null>(null);
   const [filter, setFilter] = useState("");
 
-  const filteredApplications = useFilteredResults<Application>(
-    filter,
-    applications,
-  );
+  const [applicationsTotal, setApplicationsTotal] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [perPageFilter, setPerPageFilter] = useState("25");
+  const [maxPageNumber, setMaxPageNumber] = useState(1);
+
+  // Track previous values to detect changes
+  const prevValuesRef = useRef({
+    accountSid: "",
+    filter: "",
+    pageNumber: 1,
+    perPageFilter: "25",
+  });
+
+  const fetchApplications = (resetPage = false) => {
+    // Don't fetch if no account is selected
+    if (!accountSid) return;
+
+    setApplications(null);
+
+    // Calculate the correct page to use
+    const currentPage = resetPage ? 1 : pageNumber;
+
+    // If we're resetting the page, also update the state
+    if (resetPage && pageNumber !== 1) {
+      setPageNumber(1);
+    }
+
+    getApplications(accountSid, {
+      page: currentPage,
+      page_size: Number(perPageFilter),
+      ...(filter && { name: filter }),
+    })
+      .then(({ json }) => {
+        setApplications(json.data);
+        setApplicationsTotal(json.total);
+        setMaxPageNumber(Math.ceil(json.total / Number(perPageFilter)));
+      })
+      .catch((error) => {
+        setApplications([]);
+        toastError(error.msg);
+      });
+  };
 
   const handleDelete = () => {
     if (application) {
@@ -53,8 +91,7 @@ export const Applications = () => {
       }
       deleteApplication(application.application_sid)
         .then(() => {
-          // getApplications();
-          refetch();
+          fetchApplications(false);
           setApplication(null);
           toastSuccess(
             <>
@@ -68,18 +105,44 @@ export const Applications = () => {
     }
   };
 
+  // Set initial account
   useEffect(() => {
-    setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     } else {
-      setAccountSid(getAccountFilter() || accountSid);
+      setAccountSid(
+        getAccountFilter() || accountSid || accounts?.[0]?.account_sid || "",
+      );
     }
+    setLocation();
+  }, [user, accounts]);
 
-    if (accountSid) {
-      setApiUrl(`Accounts/${accountSid}/Applications`);
-    }
-  }, [accountSid, user]);
+  // This single effect handles all data fetching triggers
+  useEffect(() => {
+    const accSid = accountSid || getAccountFilter() || "";
+
+    if (!accSid) return;
+
+    // Determine if the change requires a page reset
+    const prevValues = prevValuesRef.current;
+    const isFilterChange =
+      prevValues.accountSid !== accountSid || prevValues.filter !== filter;
+
+    const isPageSizeChange =
+      prevValues.perPageFilter !== perPageFilter &&
+      prevValues.perPageFilter !== ""; // Skip initial render
+
+    // Update ref with current values for next comparison
+    prevValuesRef.current = {
+      accountSid: accSid,
+      filter,
+      pageNumber,
+      perPageFilter,
+    };
+
+    // Fetch data with page reset if needed
+    fetchApplications(isFilterChange || isPageSizeChange);
+  }, [accountSid, filter, pageNumber, perPageFilter]);
 
   return (
     <>
@@ -100,6 +163,7 @@ export const Applications = () => {
         <SearchFilter
           placeholder="Filter applications"
           filter={[filter, setFilter]}
+          delay={1000}
         />
         <ScopedAccess user={user} scope={Scope.service_provider}>
           <AccountFilter
@@ -108,12 +172,12 @@ export const Applications = () => {
           />
         </ScopedAccess>
       </section>
-      <Section {...(hasLength(filteredApplications) && { slim: true })}>
+      <Section {...(hasLength(applications) && { slim: true })}>
         <div className="list">
           {!hasValue(applications) && hasLength(accounts) ? (
             <Spinner />
-          ) : hasLength(filteredApplications) ? (
-            filteredApplications
+          ) : hasLength(applications) ? (
+            applications
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((application) => {
                 return (
@@ -189,6 +253,26 @@ export const Applications = () => {
           </Button>
         </Section>
       )}
+      <footer>
+        <ButtonGroup>
+          <MS>
+            Total: {applicationsTotal} record
+            {applicationsTotal === 1 ? "" : "s"}
+          </MS>
+          {hasLength(applications) && (
+            <Pagination
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+              maxPageNumber={maxPageNumber}
+            />
+          )}
+          <SelectFilter
+            id="page_filter"
+            filter={[perPageFilter, setPerPageFilter]}
+            options={PER_PAGE_SELECTION}
+          />
+        </ButtonGroup>
+      </footer>
       {application && (
         <DeleteApplication
           application={application}
