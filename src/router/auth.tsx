@@ -25,12 +25,12 @@ import {
 import type { UserLogin } from "src/api/types";
 import { ENABLE_HOSTED_SYSTEM, USER_ACCOUNT } from "src/api/constants";
 import type { UserData } from "src/store/types";
-import { toastError } from "src/store";
 import {
   clearLocalStorage,
   removeLocationBeforeOauth,
   removeOauthState,
 } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 interface SignIn {
   (username: string, password: string): Promise<UserLogin>;
@@ -94,6 +94,7 @@ export const parseJwt = (token: string) => {
  * Provider hook that creates auth object and handles state
  */
 export const useProvideAuth = (): AuthStateContext => {
+  const { toastError } = useToast();
   let token = getToken();
   let userData: UserData;
   const navigate = useNavigate();

@@ -5,11 +5,12 @@ import { useParams } from "react-router-dom";
 import { UserForm } from "./form";
 import { useApiData } from "src/api";
 import { User } from "src/api/types";
-import { toastError } from "src/store";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const EditUser = () => {
   const params = useParams();
   const [data, refetch, error] = useApiData<User>(`Users/${params.user_sid}`);
+  const { toastError } = useToast();
 
   /** Handle error toast at top level... */
   useEffect(() => {

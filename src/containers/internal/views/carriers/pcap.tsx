@@ -6,9 +6,9 @@ import {
   getPcap,
   getServiceProviderPcap,
 } from "src/api";
-import { toastError } from "src/store";
 
 import type { DownloadedBlob } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type PcapButtonProps = {
   accountSid: string;
@@ -21,6 +21,7 @@ export const PcapButton = ({
   serviceProviderSid,
   sipCallId,
 }: PcapButtonProps) => {
+  const { toastError } = useToast();
   const [pcap, setPcap] = useState<DownloadedBlob>();
 
   useEffect(() => {

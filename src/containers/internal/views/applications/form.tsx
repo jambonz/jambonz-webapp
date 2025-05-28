@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import { ClipBoard, Section, Tooltip } from "src/components";
 import {
   Selector,
@@ -57,12 +57,14 @@ import { hasLength, isUserAccountScope, useRedirect } from "src/utils";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import SpeechProviderSelection from "./speech-selection";
 import ObscureInput from "src/components/obscure-input";
+import { useToast } from "src/components/toast/toast-provider";
 
 type ApplicationFormProps = {
   application?: UseApiDataMap<Application>;
 };
 
 export const ApplicationForm = ({ application }: ApplicationFormProps) => {
+  const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");

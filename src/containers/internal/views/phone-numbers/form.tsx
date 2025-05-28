@@ -20,7 +20,6 @@ import {
   ROUTE_INTERNAL_CARRIERS,
   ROUTE_INTERNAL_PHONE_NUMBERS,
 } from "src/router/routes";
-import { toastError, toastSuccess } from "src/store";
 import { hasLength, useRedirect } from "src/utils";
 
 import type {
@@ -31,12 +30,14 @@ import type {
   UseApiDataMap,
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 type PhoneNumberFormProps = {
   phoneNumber?: UseApiDataMap<PhoneNumber>;
 };
 
 export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
+  const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [applications] = useServiceProviderData<Application[]>("Applications");

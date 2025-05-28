@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { P, Button, ButtonGroup } from "@jambonz/ui-kit";
 
-import { useDispatch, toastSuccess, toastError } from "src/store";
+import { useDispatch } from "src/store";
 import { hasLength } from "src/utils";
 import {
   putServiceProvider,
@@ -15,6 +15,7 @@ import { Checkzone, LocalLimits } from "src/components/forms";
 import { withSelectState } from "src/utils";
 import type { Limit, ServiceProvider } from "src/api/types";
 import { removeActiveSP } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 export type ServiceProviderSettingsProps = {
   serviceProviders: ServiceProvider[];
@@ -25,6 +26,7 @@ export const ServiceProviderSettings = ({
   serviceProviders,
   currentServiceProvider,
 }: ServiceProviderSettingsProps) => {
+  const { toastSuccess, toastError } = useToast();
   const dispatch = useDispatch();
   const [limits, refetchLimits] = useServiceProviderData<Limit[]>("Limits");
   const [name, setName] = useState("");

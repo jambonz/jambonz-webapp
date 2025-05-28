@@ -10,7 +10,8 @@ import {
 } from "src/api/types";
 import { Selector } from "src/components/forms";
 import { SelectorOption } from "src/components/forms/selector";
-import { toastError, useSelectState } from "src/store";
+import { useToast } from "src/components/toast/toast-provider";
+import { useSelectState } from "src/store";
 import { hasLength } from "src/utils";
 import {
   ELEVENLABS_LANG_EN,
@@ -82,6 +83,7 @@ export const SpeechProviderSelection = ({
   sttLabelOptions,
   sttLabel: [recogLabel, setRecogLabel],
 }: SpeechProviderSelectionProbs) => {
+  const { toastError } = useToast();
   const user = useSelectState("user");
   const [
     synthesisSupportedLanguagesAndVoices,

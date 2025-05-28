@@ -13,7 +13,6 @@ import {
   SystemInformation,
   TtsCache,
 } from "src/api/types";
-import { toastError, toastSuccess } from "src/store";
 import { Selector } from "src/components/forms";
 import { hasValue, isvalidIpv4OrCidr } from "src/utils";
 import {
@@ -22,8 +21,10 @@ import {
   PASSWORD_MIN,
 } from "src/api/constants";
 import { Modal } from "src/components";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const AdminSettings = () => {
+  const { toastSuccess, toastError } = useToast();
   const [passwordSettings, passwordSettingsFetcher] =
     useApiData<PasswordSettings>("PasswordSettings");
   const [systemInformation, systemInformationFetcher] =

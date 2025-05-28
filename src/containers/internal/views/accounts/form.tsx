@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { P, Button, ButtonGroup, MS, Icon, H1 } from "@jambonz/ui-kit";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   putAccount,
   postAccount,
@@ -75,6 +75,7 @@ import { EditBoard } from "src/components/editboard";
 import { ModalLoader } from "src/components/modal";
 import { useAuth } from "src/router/auth";
 import { Scope } from "src/store/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type AccountFormProps = {
   apps?: Application[];
@@ -89,6 +90,7 @@ export const AccountForm = ({
   account,
   ttsCache,
 }: AccountFormProps) => {
+  const { toastError, toastSuccess } = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const user = useSelectState("user");
@@ -289,6 +291,7 @@ export const AccountForm = ({
         endpoint: endpoint,
         access_key_id: bucketAccessKeyId,
         secret_access_key: bucketSecretAccessKey,
+        ...(bucketRegion && { region: bucketRegion }),
       }),
     };
 
@@ -437,6 +440,9 @@ export const AccountForm = ({
             access_key_id: bucketAccessKeyId || null,
             secret_access_key: bucketSecretAccessKey || null,
             ...(hasLength(bucketTags) && { tags: bucketTags }),
+            ...(bucketRegion && {
+              region: bucketRegion,
+            }),
           },
         }),
         ...(!bucketCredentialChecked && {
@@ -550,6 +556,10 @@ export const AccountForm = ({
         setBucketRegion(tmpBucketRegion);
       } else if (account.data.bucket_credential?.region) {
         setBucketRegion(account.data.bucket_credential?.region);
+      } else if (
+        account.data.bucket_credential?.vendor === BUCKET_VENDOR_S3_COMPATIBLE
+      ) {
+        setBucketRegion("");
       }
 
       if (tmpAzureConnectionString) {
@@ -583,9 +593,7 @@ export const AccountForm = ({
           JSON.parse(account.data.bucket_credential?.service_key),
         );
       }
-      setInitialCheckRecordAllCall(
-        hasValue(bucketVendor) && bucketVendor.length !== 0,
-      );
+      setInitialCheckRecordAllCall(hasValue(account.data.bucket_credential));
     }
   }, [account]);
 
@@ -1102,6 +1110,18 @@ export const AccountForm = ({
                       onChange={(e) => {
                         setBucketVendor(e.target.value);
                         setTmpBucketVendor(e.target.value);
+                        if (
+                          e.target.value === BUCKET_VENDOR_AWS &&
+                          !regions?.aws.find((r) => r.value === bucketRegion)
+                        ) {
+                          setBucketRegion("us-east-1");
+                          setTmpBucketRegion("us-east-1");
+                        } else if (
+                          e.target.value === BUCKET_VENDOR_S3_COMPATIBLE
+                        ) {
+                          setBucketRegion("");
+                          setTmpBucketRegion("");
+                        }
                       }}
                     />
                   </div>
@@ -1120,6 +1140,17 @@ export const AccountForm = ({
                         onChange={(e) => {
                           setEndpoint(e.target.value);
                           setTmpEndpoint(e.target.value);
+                        }}
+                      />
+                      <label htmlFor="endpoint">Region (Optional)</label>
+                      <input
+                        id="aws_compatible_region"
+                        type="text"
+                        name="aws_compatible_region"
+                        value={bucketRegion}
+                        onChange={(e) => {
+                          setBucketRegion(e.target.value);
+                          setTmpBucketRegion(e.target.value);
                         }}
                       />
                     </>

@@ -6,7 +6,7 @@ import { useServiceProviderData, deleteAccount } from "src/api";
 import { ROUTE_INTERNAL_ACCOUNTS } from "src/router/routes";
 import { Section, Icons, Spinner, SearchFilter } from "src/components";
 import { DeleteAccount } from "./delete";
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   hasLength,
   hasValue,
@@ -17,8 +17,10 @@ import { USER_ACCOUNT } from "src/api/constants";
 
 import { Scope } from "src/store/types";
 import type { Account } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const Accounts = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const [accounts, refetch] = useServiceProviderData<Account[]>("Accounts");
   const [account, setAccount] = useState<Account | null>(null);

@@ -13,7 +13,6 @@ import {
   withAccessControl,
   useFilteredResults,
 } from "src/utils";
-import { toastError, toastSuccess } from "src/store";
 import {
   Icons,
   Section,
@@ -29,8 +28,10 @@ import { DeleteMsTeamsTenant } from "./delete";
 
 import type { Account, MSTeamsTenant, Application } from "src/api/types";
 import type { ACLGetIMessage } from "src/utils/with-access-control";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const MSTeamsTenants = () => {
+  const { toastSuccess, toastError } = useToast();
   const [msTeamsTenant, setMsTeamsTenant] = useState<MSTeamsTenant | null>(
     null,
   );

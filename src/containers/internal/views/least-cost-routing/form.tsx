@@ -2,12 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Icon, MS, MXS } from "@jambonz/ui-kit";
 import { Icons, Section } from "src/components";
-import {
-  toastError,
-  toastSuccess,
-  useDispatch,
-  useSelectState,
-} from "src/store";
+import { useDispatch, useSelectState } from "src/store";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import { setLocation } from "src/store/localStore";
 import { AccountSelect, Message, Selector } from "src/components/forms";
@@ -35,6 +30,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Container from "./container";
 import { hasValue } from "src/utils";
+import { useToast } from "src/components/toast/toast-provider";
 
 type LcrFormProps = {
   lcrDataMap?: UseApiDataMap<Lcr>;
@@ -56,6 +52,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     ],
   };
 
+  const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

@@ -7,17 +7,20 @@ import { AuthProvider } from "./router/auth";
 import { Router } from "./router";
 
 import "./styles/index.scss";
+import { ToastProvider } from "./components/toast/toast-provider";
 
 const root: Element = document.getElementById("root")!;
 
 createRoot(root).render(
   <React.StrictMode>
-    <StateProvider>
-      <BrowserRouter>
-        <AuthProvider>
-          <Router />
-        </AuthProvider>
-      </BrowserRouter>
-    </StateProvider>
+    <ToastProvider>
+      <StateProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Router />
+          </AuthProvider>
+        </BrowserRouter>
+      </StateProvider>
+    </ToastProvider>
   </React.StrictMode>,
 );

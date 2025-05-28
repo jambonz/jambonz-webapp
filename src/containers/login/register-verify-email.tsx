@@ -2,15 +2,16 @@ import { Button, H1, MS } from "@jambonz/ui-kit";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { putActivationCode } from "src/api";
+import { useToast } from "src/components/toast/toast-provider";
 import { getToken, parseJwt } from "src/router/auth";
 import {
   ROUTE_REGISTER_EMAIL,
   ROUTE_REGISTER_SUB_DOMAIN,
 } from "src/router/routes";
-import { toastError } from "src/store";
 import { UserData } from "src/store/types";
 
 export const EmailVerify = () => {
+  const { toastError } = useToast();
   const [code, setCode] = useState("");
   const userData: UserData = parseJwt(getToken());
   const navigate = useNavigate();

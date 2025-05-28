@@ -2,15 +2,18 @@ import React from "react";
 import { H1 } from "@jambonz/ui-kit";
 
 import { RequireAuth } from "./require-auth";
+import { ToastProvider } from "./toast/toast-provider";
 
 /** Wrapper to pass different auth contexts */
 const RequireAuthTestWrapper = () => {
   return (
-    <RequireAuth>
-      <div className="auth-div">
-        <H1>Protected Route</H1>
-      </div>
-    </RequireAuth>
+    <ToastProvider>
+      <RequireAuth>
+        <div className="auth-div">
+          <H1>Protected Route</H1>
+        </div>
+      </RequireAuth>
+    </ToastProvider>
   );
 };
 

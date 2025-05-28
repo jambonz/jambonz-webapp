@@ -3,11 +3,12 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApiData } from "src/api";
 import { Client } from "src/api/types";
-import { toastError } from "src/store";
 import ClientsForm from "./form";
 import { ROUTE_INTERNAL_CLIENTS } from "src/router/routes";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const ClientsEdit = () => {
+  const { toastError } = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const [data, refetch, error] = useApiData<Client>(

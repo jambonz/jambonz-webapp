@@ -19,10 +19,11 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { PaymentMethod } from "@stripe/stripe-js";
-import { toastError, toastSuccess } from "src/store";
 import { ModalLoader } from "src/components/modal";
+import { useToast } from "src/components/toast/toast-provider";
 
 const SubscriptionForm = () => {
+  const { toastError, toastSuccess } = useToast();
   const [userData] = useApiData<CurrentUserData>("Users/me");
   const [priceInfo] = useApiData<PriceInfo[]>("/Prices");
   const [userStripeInfo] = useApiData<StripeCustomerId>("/StripeCustomerId");

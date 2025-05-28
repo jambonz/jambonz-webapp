@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { P, Button } from "@jambonz/ui-kit";
 
-import { toastSuccess, toastError } from "src/store";
 import { useApiData, postApiKey, deleteApiKey } from "src/api";
 import { Modal, ModalClose, Obscure, ClipBoard, Section } from "src/components";
 import { getHumanDateTime, hasLength } from "src/utils";
 
 import type { ApiKey, TokenResponse } from "src/api/types";
+import { useToast } from "src/components/toast/toast-provider";
 
 type ApiKeyProps = {
   path: string;
@@ -18,6 +18,7 @@ type ApiKeyProps = {
 };
 
 export const ApiKeys = ({ path, post, label }: ApiKeyProps) => {
+  const { toastSuccess, toastError } = useToast();
   const [apiKeys, apiKeysRefetcher] = useApiData<ApiKey[]>(path);
   const [deleteKey, setDeleteKey] = useState<ApiKey | null>(null);
   const [addedKey, setAddedKey] = useState<TokenResponse | null>(null);

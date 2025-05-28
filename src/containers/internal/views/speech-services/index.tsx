@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { USER_ACCOUNT } from "src/api/constants";
 import { AccountFilter, Icons, Section, Spinner } from "src/components";
-import { useSelectState, toastError, toastSuccess } from "src/store";
+import { useSelectState } from "src/store";
 import {
   deleteSpeechService,
   useServiceProviderData,
@@ -26,8 +26,10 @@ import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
 import { VENDOR_CUSTOM } from "src/vendor";
+import { useToast } from "src/components/toast/toast-provider";
 
 export const SpeechServices = () => {
+  const { toastError, toastSuccess } = useToast();
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const [apiUrl, setApiUrl] = useState("");

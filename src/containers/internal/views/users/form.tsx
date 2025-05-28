@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, ButtonGroup, MS } from "@jambonz/ui-kit";
 import { Link, useNavigate } from "react-router-dom";
 
-import { toastError, toastSuccess, useSelectState } from "src/store";
+import { useSelectState } from "src/store";
 import {
   deleteUser,
   postFetch,
@@ -38,12 +38,14 @@ import type {
 } from "src/api/types";
 import type { IMessage } from "src/store/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
+import { useToast } from "src/components/toast/toast-provider";
 
 type UserFormProps = {
   user?: UseApiDataMap<User>;
 };
 
 export const UserForm = ({ user }: UserFormProps) => {
+  const { toastSuccess, toastError } = useToast();
   const { signout } = useAuth();
   const navigate = useNavigate();
   const currentUser = useSelectState("user");
