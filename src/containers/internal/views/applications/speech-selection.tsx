@@ -45,6 +45,7 @@ import {
 type SpeechProviderSelectionProbs = {
   accountSid: string;
   serviceProviderSid: string;
+  application_speech_synthesis_voice: string | null | undefined;
   credentials: SpeechCredential[] | undefined;
   ttsVendor: [
     keyof SynthesisVendors,
@@ -68,6 +69,7 @@ type SpeechProviderSelectionProbs = {
 export const SpeechProviderSelection = ({
   accountSid,
   serviceProviderSid,
+  application_speech_synthesis_voice,
   credentials,
   ttsVendor: [synthVendor, setSynthVendor],
   ttsVendorOptions,
@@ -244,10 +246,6 @@ export const SpeechProviderSelection = ({
         // Extract model
         if (json.models && json.models.length) {
           setSynthesisModelOptions(json.models);
-          if (synthVendor === VENDOR_DEEPGRAM) {
-            setSynthVoice(json.models[0].value);
-            return;
-          }
         }
 
         if (json.tts && json.tts.length) {
@@ -339,6 +337,7 @@ export const SpeechProviderSelection = ({
 
   const updateTtsVoice = (language: string, voice: string) => {
     if (shouldUpdateTtsVoice.current) {
+      console.log("xhoaluu");
       setSynthLang(language);
       setSynthVoice(voice);
       shouldUpdateTtsVoice.current = false;
@@ -389,6 +388,20 @@ export const SpeechProviderSelection = ({
         toastError(error.msg);
       });
   };
+
+  useEffect(() => {
+    if (
+      synthVendor === VENDOR_DEEPGRAM &&
+      synthesisModelOptions.length > 0 &&
+      !synthesisModelOptions.some(
+        (m) => m.value === application_speech_synthesis_voice,
+      )
+    ) {
+      setSynthVoice(synthesisModelOptions[0].value);
+    } else {
+      setSynthVoice(application_speech_synthesis_voice || "");
+    }
+  }, [synthesisModelOptions, application_speech_synthesis_voice]);
   return (
     <>
       <fieldset>
