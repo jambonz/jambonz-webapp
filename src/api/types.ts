@@ -798,6 +798,7 @@ export interface AppEnvProperty {
   required?: boolean;
   default?: string | number | boolean;
   obscure?: boolean;
+  uiHint?: "input" | "textarea" | "filepicker";
 }
 
 export interface AppEnv {
