@@ -599,7 +599,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   useEffect(() => {
     const modelId = credential?.data?.model_id || "";
     if (ttsModels.length > 0 && !ttsModels.some((m) => m.value === modelId)) {
-      setTtsModelId(sttModels[0].value);
+      setTtsModelId(ttsModels[0].value);
     } else {
       setTtsModelId(modelId);
     }
