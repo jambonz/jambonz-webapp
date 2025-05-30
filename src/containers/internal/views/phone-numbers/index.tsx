@@ -83,6 +83,9 @@ export const PhoneNumbers = () => {
       page_size: Number(perPageFilter),
       ...(accSid && { account_sid: accSid }),
       ...(filter && { filter }),
+      ...(currentServiceProvider?.service_provider_sid && {
+        service_provider_sid: currentServiceProvider.service_provider_sid,
+      }),
     })
       .then(({ json }) => {
         if (json) {
