@@ -810,6 +810,7 @@ export interface AppEnvProperty {
   default?: string | number | boolean;
   obscure?: boolean;
   uiHint?: "input" | "textarea" | "filepicker";
+  enum?: string[];
 }
 
 export interface AppEnv {

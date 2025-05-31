@@ -845,7 +845,9 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                         ? String(defaultValue)
                                         : "",
                                   onChange: (
-                                    e: React.ChangeEvent<HTMLInputElement>,
+                                    e: React.ChangeEvent<
+                                      HTMLInputElement | HTMLSelectElement
+                                    >,
                                   ) => {
                                     // Convert to proper type based on schema
                                     let newValue;
@@ -870,6 +872,11 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                   type: isNumber ? "number" : "text",
                                 };
 
+                                const isDropdown =
+                                  webhook.webhookEnv![key].type === "string" &&
+                                  (webhook.webhookEnv![key].enum?.length || 0) >
+                                    0;
+
                                 const textAreaSpecificProps = {
                                   rows: 6,
                                   cols: 61,
@@ -880,6 +887,19 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                   .obscure
                                   ? ObscureInput
                                   : webhook.webhookEnv![key].uiHint || "input";
+                                if (isDropdown) {
+                                  return (
+                                    <Selector
+                                      {...commonProps}
+                                      options={webhook.webhookEnv![
+                                        key
+                                      ].enum!.map((option) => ({
+                                        name: option,
+                                        value: option,
+                                      }))}
+                                    />
+                                  );
+                                }
                                 if (componentType === "filepicker") {
                                   return (
                                     <>
