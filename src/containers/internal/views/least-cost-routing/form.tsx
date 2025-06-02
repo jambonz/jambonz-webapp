@@ -82,7 +82,7 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     setLocation();
     if (currentServiceProvider) {
       setApiUrl(
-        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers`,
+        `ServiceProviders/${currentServiceProvider.service_provider_sid}/VoipCarriers${accountSid ? `?account_sid=${accountSid}` : ""}`,
       );
     }
   }, [user, currentServiceProvider, accountSid]);
@@ -92,16 +92,8 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
       setAccountSid(user?.account_sid);
     }
 
-    const carriersFiltered = carriers
-      ? carriers.filter((carrier) =>
-          accountSid
-            ? carrier.account_sid === accountSid
-            : carrier.account_sid === null,
-        )
-      : [];
-
-    const ret = carriersFiltered
-      ? carriersFiltered.map((c: Carrier, i) => {
+    const ret = carriers
+      ? carriers.map((c: Carrier, i) => {
           if (i === 0) {
             setDefaultCarrier(c.voip_carrier_sid);
           }
@@ -123,11 +115,16 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
     return ret;
   }, [accountSid, carriers]);
 
-  if (lcrDataMap && lcrDataMap.data && lcrDataMap.data !== previouseLcr) {
-    setLcrName(lcrDataMap.data.name || "");
-    setIsActive(lcrDataMap.data.is_active);
-    setPreviousLcr(lcrDataMap.data);
-  }
+  useEffect(() => {
+    if (lcrDataMap && lcrDataMap.data && lcrDataMap.data !== previouseLcr) {
+      setLcrName(lcrDataMap.data.name || "");
+      setIsActive(lcrDataMap.data.is_active);
+      setPreviousLcr(lcrDataMap.data);
+      if (lcrDataMap.data.account_sid) {
+        setAccountSid(lcrDataMap.data.account_sid);
+      }
+    }
+  }, [lcrDataMap?.data, previouseLcr]);
 
   useMemo(() => {
     let default_lcr_route_sid = "";
