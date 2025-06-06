@@ -139,7 +139,12 @@ export const SpeechProviderSelection = ({
     ttsEffectTimer.current = setTimeout(() => {
       configSynthesis();
     }, 200);
-  }, [synthVendor, synthLabel, serviceProviderSid]);
+  }, [
+    synthVendor,
+    synthLabel,
+    serviceProviderSid,
+    application_speech_synthesis_voice,
+  ]);
 
   // Get Recognizer languages and voices
   useEffect(() => {
@@ -246,6 +251,15 @@ export const SpeechProviderSelection = ({
         // Extract model
         if (json.models && json.models.length) {
           setSynthesisModelOptions(json.models);
+          if (
+            synthVendor === VENDOR_DEEPGRAM &&
+            (!application_speech_synthesis_voice ||
+              !json.models.some(
+                (m) => m.value === application_speech_synthesis_voice,
+              ))
+          ) {
+            setSynthVoice(json.models[0].value);
+          }
         }
 
         if (json.tts && json.tts.length) {
@@ -337,7 +351,6 @@ export const SpeechProviderSelection = ({
 
   const updateTtsVoice = (language: string, voice: string) => {
     if (shouldUpdateTtsVoice.current) {
-      console.log("xhoaluu");
       setSynthLang(language);
       setSynthVoice(voice);
       shouldUpdateTtsVoice.current = false;
@@ -389,19 +402,6 @@ export const SpeechProviderSelection = ({
       });
   };
 
-  useEffect(() => {
-    if (
-      synthVendor === VENDOR_DEEPGRAM &&
-      synthesisModelOptions.length > 0 &&
-      !synthesisModelOptions.some(
-        (m) => m.value === application_speech_synthesis_voice,
-      )
-    ) {
-      setSynthVoice(synthesisModelOptions[0].value);
-    } else {
-      setSynthVoice(application_speech_synthesis_voice || "");
-    }
-  }, [synthesisModelOptions, application_speech_synthesis_voice]);
   return (
     <>
       <fieldset>
