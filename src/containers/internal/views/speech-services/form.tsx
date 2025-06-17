@@ -260,7 +260,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     switch (vendor) {
       case VENDOR_PLAYHT:
         return "Voice Engine";
+      case VENDOR_DEEPGRAM:
+        return "Model ID";
       case VENDOR_CARTESIA:
+        return "TTS Model ID";
+      default:
+        return "Model";
+    }
+  };
+
+  const getSTTModelLabelByVendor = (vendor: Lowercase<Vendor>) => {
+    switch (vendor) {
+      case VENDOR_CARTESIA:
+        return " STT Model ID";
       case VENDOR_DEEPGRAM:
         return "Model ID";
       default:
@@ -397,6 +409,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_CARTESIA && {
           model_id: ttsModelId || null,
+          stt_model_id: sttModelId || null,
           options: options || null,
         }),
         ...(vendor === VENDOR_CUSTOM && {
@@ -758,6 +771,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM)
       ) {
         setSttModelId(credential.data.model_id);
+      } else if (credential.data.stt_model_id) {
+        setSttModelId(credential.data.stt_model_id);
       }
       if (credential?.data?.playht_tts_uri) {
         setPlayhtTtsUri(credential.data.playht_tts_uri);
@@ -961,7 +976,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_WHISPER &&
               vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_RIMELABS &&
-              vendor !== VENDOR_CARTESIA &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1712,9 +1726,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         )}
         {(vendor == VENDOR_ELEVENLABS ||
           vendor == VENDOR_WHISPER ||
-          vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_PLAYHT ||
-          vendor == VENDOR_RIMELABS) &&
+          vendor == VENDOR_RIMELABS ||
+          (ttsCheck && vendor === VENDOR_CARTESIA)) &&
           ttsModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_tts_model_id`}>
@@ -1731,11 +1745,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           )}
-        {(vendor == VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM) &&
+        {(vendor == VENDOR_OPENAI ||
+          vendor === VENDOR_DEEPGRAM ||
+          (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_stt_model_id`}>
-                {getModelLabelByVendor(vendor)}
+                {getSTTModelLabelByVendor(vendor)}
               </label>
               <Selector
                 id={"stt_model_id"}

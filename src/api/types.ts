@@ -429,6 +429,7 @@ export interface SpeechCredential {
   label: null | string;
   cobalt_server_uri: null | string;
   model_id: null | string;
+  stt_model_id: null | string;
   voice_engine: null | string;
   engine_version: null | string;
   model: null | string;
