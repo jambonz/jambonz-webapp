@@ -276,6 +276,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         return " STT Model ID";
       case VENDOR_DEEPGRAM:
         return "Model ID";
+      case VENDOR_AMIVOICE:
+        return "Engine ID";
       default:
         return "Model";
     }
