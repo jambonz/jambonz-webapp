@@ -52,6 +52,7 @@ import {
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
   VENDOR_OPENAI,
+  VENDOR_AMIVOICE,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -448,6 +449,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           sttModelId && {
             model_id: sttModelId,
           }),
+        ...(vendor === VENDOR_AMIVOICE &&
+          sttModelId && {
+            model_id: sttModelId,
+          }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
@@ -511,7 +516,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_RIMELABS ||
               vendor === VENDOR_WHISPER ||
               vendor === VENDOR_CARTESIA ||
-              vendor === VENDOR_OPENAI
+              vendor === VENDOR_OPENAI ||
+              vendor === VENDOR_AMIVOICE
                 ? apiKey
                 : null,
           }),
@@ -580,7 +586,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_RIMELABS ||
       vendor === VENDOR_CARTESIA ||
       vendor === VENDOR_OPENAI ||
-      vendor === VENDOR_DEEPGRAM
+      vendor === VENDOR_DEEPGRAM ||
+      vendor === VENDOR_AMIVOICE
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -768,7 +775,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (
         credential.data.model_id &&
-        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM)
+        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM || vendor === VENDOR_AMIVOICE)
       ) {
         setSttModelId(credential.data.model_id);
       } else if (credential.data.stt_model_id) {
@@ -954,6 +961,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor && (
           <fieldset>
             {vendor !== VENDOR_ASSEMBLYAI &&
+              vendor !== VENDOR_AMIVOICE &&
               vendor !== VENDOR_VOXIST &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
@@ -1701,6 +1709,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
+          vendor === VENDOR_AMIVOICE ||
           vendor === VENDOR_VOXIST ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
@@ -1747,6 +1756,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor == VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_AMIVOICE ||
           (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>

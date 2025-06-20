@@ -27,6 +27,7 @@ export const VENDOR_RIMELABS = "rimelabs";
 export const VENDOR_VERBIO = "verbio";
 export const VENDOR_CARTESIA = "cartesia";
 export const VENDOR_OPENAI = "openai";
+export const VENDOR_AMIVOICE = "amivoice";
 
 export const vendors: VendorOptions[] = [
   {
@@ -112,6 +113,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "OpenAI",
     value: VENDOR_OPENAI,
+  },
+  {
+    name: "AMI Voice",
+    value: VENDOR_AMIVOICE,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
