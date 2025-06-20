@@ -597,10 +597,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         "",
         credential ? false : true,
       ).then(({ json }) => {
+        console.log("AMI Voice API Response:", json);
         if (json.models) {
           setTtsModels(json.models);
         }
         if (json.sttModels) {
+          console.log("Setting sttModels:", json.sttModels);
           setSttModels(json.sttModels);
         }
       });
@@ -777,7 +779,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (
         credential.data.model_id &&
-        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM || vendor === VENDOR_AMIVOICE)
+        (vendor === VENDOR_OPENAI ||
+          vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_AMIVOICE)
       ) {
         setSttModelId(credential.data.model_id);
       } else if (credential.data.stt_model_id) {
@@ -1758,13 +1762,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor == VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM ||
-          vendor === VENDOR_AMIVOICE ||
+          (sttCheck && vendor === VENDOR_AMIVOICE) ||
           (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_stt_model_id`}>
                 {getSTTModelLabelByVendor(vendor)}
               </label>
+              {vendor === VENDOR_AMIVOICE && (
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  Debug: sttModels.length = {sttModels.length}, sttCheck ={" "}
+                  {sttCheck.toString()}
+                </div>
+              )}
               <Selector
                 id={"stt_model_id"}
                 name={"stt_model_id"}
