@@ -113,6 +113,7 @@ export interface SynthesisVendors {
   playht: VoiceLanguage[];
   cartesia: VoiceLanguage[];
   rimelabs: VoiceLanguage[];
+  inworld: VoiceLanguage[];
 }
 
 export interface MSRawSpeech {
