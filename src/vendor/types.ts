@@ -17,6 +17,7 @@ export type Vendor =
   | "whisper"
   | "playht"
   | "rimelabs"
+  | "inworld"
   | "verbio"
   | "openai"
   | "Cartesia";
