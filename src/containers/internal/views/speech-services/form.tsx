@@ -52,6 +52,7 @@ import {
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
   VENDOR_OPENAI,
+  VENDOR_INWORLD,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -83,6 +84,7 @@ import {
   DEFAULT_CARTESIA_OPTIONS,
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICE,
+  DEFAULT_INWORLD_OPTIONS,
   DEFAULT_PLAYHT_OPTIONS,
   DEFAULT_RIMELABS_OPTIONS,
   DEFAULT_VERBIO_MODEL,
@@ -233,6 +235,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return DEFAULT_PLAYHT_OPTIONS;
         case VENDOR_RIMELABS:
           return DEFAULT_RIMELABS_OPTIONS;
+        case VENDOR_INWORLD:
+          return DEFAULT_INWORLD_OPTIONS;
         case VENDOR_CARTESIA:
           return DEFAULT_CARTESIA_OPTIONS;
       }
@@ -249,6 +253,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           return "https://docs.play.ht/reference/api-generate-tts-audio-stream";
         case VENDOR_RIMELABS:
           return "https://rimelabs.mintlify.app/api-reference/endpoint/streaming-mp3#variable-parameters";
+        case VENDOR_INWORLD:
+          return "https://docs.inworld.ai/api-reference/ttsAPI/texttospeech/synthesize-speech-stream";
         case VENDOR_CARTESIA:
           return "https://docs.cartesia.ai/api-reference/tts/bytes";
       }
@@ -432,11 +438,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...((vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
+          vendor === VENDOR_INWORLD ||
           vendor === VENDOR_RIMELABS) && {
           model_id: ttsModelId || null,
         }),
         ...((vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
+          vendor === VENDOR_INWORLD ||
           vendor === VENDOR_RIMELABS) && {
           options: options || null,
         }),
@@ -509,6 +517,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_ELEVENLABS ||
               vendor === VENDOR_PLAYHT ||
               vendor === VENDOR_RIMELABS ||
+              vendor === VENDOR_INWORLD ||
               vendor === VENDOR_WHISPER ||
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI
@@ -578,6 +587,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_WHISPER ||
       vendor === VENDOR_PLAYHT ||
       vendor === VENDOR_RIMELABS ||
+      vendor === VENDOR_INWORLD ||
       vendor === VENDOR_CARTESIA ||
       vendor === VENDOR_OPENAI ||
       vendor === VENDOR_DEEPGRAM
@@ -976,6 +986,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_WHISPER &&
               vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_RIMELABS &&
+              vendor !== VENDOR_INWORLD &&
               vendor !== VENDOR_ELEVENLABS && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
@@ -1705,6 +1716,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_RIMELABS ||
+          vendor === VENDOR_INWORLD ||
           vendor === VENDOR_SONIOX ||
           vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_OPENAI ||
@@ -1724,10 +1736,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             />
           </fieldset>
         )}
-        {(vendor == VENDOR_ELEVENLABS ||
-          vendor == VENDOR_WHISPER ||
+        {(vendor === VENDOR_ELEVENLABS ||
+          vendor === VENDOR_WHISPER ||
           vendor === VENDOR_PLAYHT ||
-          vendor == VENDOR_RIMELABS ||
+          vendor === VENDOR_RIMELABS ||
+          vendor === VENDOR_INWORLD ||
           (ttsCheck && vendor === VENDOR_CARTESIA)) &&
           ttsModels.length > 0 && (
             <fieldset>
@@ -1767,7 +1780,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {(vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_CARTESIA ||
-          vendor === VENDOR_RIMELABS) && (
+          vendor === VENDOR_RIMELABS ||
+          vendor === VENDOR_INWORLD) && (
           <fieldset>
             <Checkzone
               hidden

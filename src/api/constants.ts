@@ -3,6 +3,7 @@ import type {
   Currency,
   ElevenLabsOptions,
   GoogleCustomVoice,
+  InworldOptions,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -275,6 +276,14 @@ export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
 export const DEFAULT_RIMELABS_OPTIONS: Partial<RimelabsOptions> = {
   speedAlpha: 1.0,
   reduceLatency: true,
+};
+
+export const DEFAULT_INWORLD_OPTIONS: Partial<InworldOptions> = {
+  audioConfig: {
+    pitch: 0.0,
+    speakingRate: 1.0,
+  },
+  temperature: 0.8,
 };
 
 // PlayHT options

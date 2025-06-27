@@ -781,6 +781,16 @@ export interface RimelabsOptions {
   reduceLatency: boolean;
 }
 
+export interface InworldOptions {
+  audioConfig: {
+    bitRate?: number;
+    sampleRateHertz?: number;
+    pitch?: number;
+    speakingRate?: number;
+  };
+  temperature?: number;
+}
+
 export type CartesiaEmotions =
   | "anger:lowest"
   | "anger:low"
