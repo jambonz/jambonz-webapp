@@ -432,6 +432,7 @@ export interface SpeechCredential {
   stt_model_id: null | string;
   voice_engine: null | string;
   engine_version: null | string;
+  service_version: null | string;
   model: null | string;
   options: null | string;
   deepgram_stt_uri: null | string;
