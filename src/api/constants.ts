@@ -248,7 +248,7 @@ export const DEFAULT_VERBIO_MODEL = "V1";
 // ASSEMBLYAI
 export const ASSEMBLYAI_STT_VERSIONS = [
   { name: "V2", value: "v2" },
-  { name: "V3", value: "V3" },
+  { name: "V3", value: "v3" },
 ];
 
 export const DEFAULT_ASSEMBLYAI_STT_VERSION = "v2";
