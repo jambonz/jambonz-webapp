@@ -363,11 +363,16 @@ export const CarrierForm = ({
           ? putSipGateway(sip_gateway_sid, g)
           : postSipGateway({ ...g, voip_carrier_sid }),
       ),
-    ).then(() => {
-      if (carrierSipGateways) {
-        carrierSipGateways.refetch();
-      }
-    });
+    )
+      .then(() => {
+        if (carrierSipGateways) {
+          carrierSipGateways.refetch();
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating SIP gateways:", error);
+        toastError(error.msg);
+      });
   };
 
   const handleSmppGatewayPutPost = (voip_carrier_sid: string) => {
