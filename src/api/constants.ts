@@ -245,6 +245,14 @@ export const VERBIO_STT_MODELS = [
 
 export const DEFAULT_VERBIO_MODEL = "V1";
 
+// ASSEMBLYAI
+export const ASSEMBLYAI_STT_VERSIONS = [
+  { name: "V2", value: "v2" },
+  { name: "V3", value: "v3" },
+];
+
+export const DEFAULT_ASSEMBLYAI_STT_VERSION = "v2";
+
 export const ADDITIONAL_SPEECH_VENDORS: Lowercase<Vendor>[] = ["speechmatics"];
 
 // Google Custom Voice reported usage options

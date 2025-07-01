@@ -81,6 +81,8 @@ import type {
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   ADDITIONAL_SPEECH_VENDORS,
+  ASSEMBLYAI_STT_VERSIONS,
+  DEFAULT_ASSEMBLYAI_STT_VERSION,
   DEFAULT_CARTESIA_OPTIONS,
   DEFAULT_ELEVENLABS_OPTIONS,
   DEFAULT_GOOGLE_CUSTOM_VOICE,
@@ -131,6 +133,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [ttsModelId, setTtsModelId] = useState("");
   const [sttModelId, setSttModelId] = useState("");
   const [engineVersion, setEngineVersion] = useState(DEFAULT_VERBIO_MODEL);
+  const [serviceVersion, setServiceVersion] = useState(
+    DEFAULT_ASSEMBLYAI_STT_VERSION,
+  );
   const [instanceId, setInstanceId] = useState("");
   const [initialCheckCustomTts, setInitialCheckCustomTts] = useState(false);
   const [initialCheckCustomStt, setInitialCheckCustomStt] = useState(false);
@@ -467,6 +472,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_VERBIO && {
           engine_version: engineVersion,
+        }),
+        ...(vendor === VENDOR_ASSEMBLYAI && {
+          service_version: serviceVersion || null,
         }),
         ...(vendor === VENDOR_PLAYHT && {
           playht_tts_uri: playhtTtsUri || null,
@@ -841,6 +849,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     if (credential?.data?.engine_version) {
       setEngineVersion(credential.data.engine_version);
+    }
+    if (credential?.data?.service_version) {
+      setServiceVersion(credential.data.service_version);
     }
 
     if (credential?.data?.speechmatics_stt_uri) {
@@ -1521,6 +1532,22 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               />
             </fieldset>
           </>
+        )}
+        {vendor === VENDOR_ASSEMBLYAI && (
+          <fieldset>
+            <label htmlFor={`${vendor}_tts_model_id`}>
+              Service version<span>*</span>
+            </label>
+            <Selector
+              id={"assemblyai_service_version"}
+              name={"assemblyai_service_version"}
+              value={serviceVersion}
+              options={ASSEMBLYAI_STT_VERSIONS}
+              onChange={(e) => {
+                setServiceVersion(e.target.value);
+              }}
+            />
+          </fieldset>
         )}
         {vendor === VENDOR_AWS && (
           <fieldset>
