@@ -36,6 +36,7 @@ import {
   VENDOR_RIMELABS,
   VENDOR_OPENAI,
   VENDOR_INWORLD,
+  VENDOR_DEEPGRAM_RIVER,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -368,6 +369,9 @@ export const SpeechProviderSelection = ({
   };
 
   const configRecognizer = () => {
+    if (recogVendor === VENDOR_DEEPGRAM_RIVER) {
+      return;
+    }
     getSpeechSupportedLanguagesAndVoices(
       serviceProviderSid,
       recogVendor,
@@ -428,6 +432,7 @@ export const SpeechProviderSelection = ({
               vendor.value !== VENDOR_SPEECHMATICS &&
               vendor.value !== VENDOR_CUSTOM &&
               vendor.value !== VENDOR_OPENAI &&
+              vendor.value !== VENDOR_DEEPGRAM_RIVER &&
               vendor.value !== VENDOR_COBALT,
           )}
           onChange={(e) => {
@@ -609,6 +614,7 @@ export const SpeechProviderSelection = ({
         )}
         {recogVendor &&
           !recogVendor.toString().startsWith(VENDOR_CUSTOM) &&
+          recogVendor !== VENDOR_DEEPGRAM_RIVER &&
           recogLang && (
             <>
               <label htmlFor="recognizer_lang">Language</label>
