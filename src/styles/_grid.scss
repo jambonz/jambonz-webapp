@@ -21,10 +21,10 @@
   }
 
   &__row {
-    @include ui-mixins.m();
     display: grid;
     padding: ui-vars.$px03;
     align-items: center;
+    @include ui-mixins.m();
 
     @include mixins.small() {
       padding: ui-vars.$px02;

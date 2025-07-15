@@ -15,6 +15,15 @@ export default defineConfig(() => {
         src: path.resolve(__dirname, "src"),
       },
     },
+
+    // Configure Sass to use the modern API
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern-compiler",
+        },
+      },
+    },
   };
 
   return config;

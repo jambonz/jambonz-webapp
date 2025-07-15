@@ -25,7 +25,6 @@
   }
 
   select {
-    @include ui-mixins.m();
     appearance: none;
     padding: ui-vars.$px01 ui-vars.$px02;
     border-radius: ui-vars.$px01;
@@ -33,6 +32,7 @@
     background-color: ui-vars.$white;
     width: 100%;
     max-width: vars.$widthinput;
+    @include ui-mixins.m();
 
     &:focus {
       border-color: ui-vars.$dark;
