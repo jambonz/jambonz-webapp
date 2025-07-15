@@ -28,7 +28,6 @@
 }
 
 @mixin typeahead-input {
-  @include ui-mixins.m();
   appearance: none;
   padding: ui-vars.$px01 ui-vars.$px02;
   border-radius: ui-vars.$px01;
@@ -37,6 +36,7 @@
   max-width: vars.$widthtypeaheadinput;
   transition: border-color 0.2s ease;
   font-family: inherit;
+  @include ui-mixins.m();
 
   &:focus {
     border-color: ui-vars.$dark;
@@ -84,7 +84,6 @@
 }
 
 @mixin typeahead-dropdown {
-  @include ui-mixins.m();
   position: absolute;
   top: 100%;
   left: 0;
@@ -93,6 +92,7 @@
   border: 1px solid ui-vars.$dark;
   max-height: 200px;
   overflow-y: auto;
+  @include ui-mixins.m();
 }
 
 @mixin typeahead-option {
@@ -126,8 +126,8 @@
   width: 100%;
 
   input {
-    @include typeahead-input();
     width: 100%;
+    @include typeahead-input();
   }
 
   span {
@@ -135,8 +135,8 @@
   }
 
   .typeahead-dropdown {
-    @include typeahead-dropdown();
     z-index: 1000;
+    @include typeahead-dropdown();
   }
 
   .typeahead-option {
@@ -149,10 +149,10 @@
   width: auto;
 
   input {
-    @include typeahead-input();
     height: 34px;
     min-width: 370px;
     font-size: var(--mxs-size);
+    @include typeahead-input();
   }
 
   span {
@@ -160,13 +160,13 @@
   }
 
   .typeahead-dropdown {
-    @include typeahead-dropdown();
     width: 100%;
+    @include typeahead-dropdown();
   }
 
   .typeahead-option {
-    @include typeahead-option();
     font-size: var(--mxs-size);
+    @include typeahead-option();
   }
 
   .pointerevents {
