@@ -1,7 +1,7 @@
 {
   "name": "jambonz-webapp",
   "description": "A simple provisioning web app for jambonz",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -41,7 +41,7 @@
     "deploy": "npm i && npm run build && npm run pm2"
   },
   "dependencies": {
-    "@jambonz/ui-kit": "^0.0.21",
+    "@jambonz/ui-kit": "^0.0.22",
     "@stripe/react-stripe-js": "^2.6.2",
     "@stripe/stripe-js": "^3.2.0",
     "dayjs": "^1.11.10",
@@ -71,13 +71,13 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "express": "^4.19.2",
+    "express": "^5.1.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "nanoid": "^5.0.7",
+    "lint-staged": "^16.1.2",
+    "nanoid": "^5.1.5",
     "prettier": "^3.2.5",
-    "sass": "^1.74.1",
-    "serve": "^14.2.1",
+    "sass": "^1.89.2",
+    "serve": "^14.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4",
     "vite": "^5.2.8"

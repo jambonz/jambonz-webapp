@@ -3,6 +3,7 @@ import type {
   Currency,
   ElevenLabsOptions,
   GoogleCustomVoice,
+  InworldOptions,
   LimitField,
   LimitUnitOption,
   PasswordSettings,
@@ -244,6 +245,14 @@ export const VERBIO_STT_MODELS = [
 
 export const DEFAULT_VERBIO_MODEL = "V1";
 
+// ASSEMBLYAI
+export const ASSEMBLYAI_STT_VERSIONS = [
+  { name: "V2", value: "v2" },
+  { name: "V3", value: "v3" },
+];
+
+export const DEFAULT_ASSEMBLYAI_STT_VERSION = "v2";
+
 export const ADDITIONAL_SPEECH_VENDORS: Lowercase<Vendor>[] = ["speechmatics"];
 
 // Google Custom Voice reported usage options
@@ -275,6 +284,14 @@ export const DEFAULT_ELEVENLABS_OPTIONS: Partial<ElevenLabsOptions> = {
 export const DEFAULT_RIMELABS_OPTIONS: Partial<RimelabsOptions> = {
   speedAlpha: 1.0,
   reduceLatency: true,
+};
+
+export const DEFAULT_INWORLD_OPTIONS: Partial<InworldOptions> = {
+  audioConfig: {
+    pitch: 0.0,
+    speakingRate: 1.0,
+  },
+  temperature: 0.8,
 };
 
 // PlayHT options

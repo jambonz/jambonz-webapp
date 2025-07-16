@@ -24,6 +24,7 @@ export const VENDOR_VOXIST = "voxist";
 export const VENDOR_WHISPER = "whisper";
 export const VENDOR_PLAYHT = "playht";
 export const VENDOR_RIMELABS = "rimelabs";
+export const VENDOR_INWORLD = "inworld";
 export const VENDOR_VERBIO = "verbio";
 export const VENDOR_CARTESIA = "cartesia";
 export const VENDOR_OPENAI = "openai";
@@ -101,6 +102,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "RimeLabs",
     value: VENDOR_RIMELABS,
+  },
+  {
+    name: "Inworld",
+    value: VENDOR_INWORLD,
   },
   {
     name: "Verbio",

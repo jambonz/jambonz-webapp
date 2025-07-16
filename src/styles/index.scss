@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "./forms";
 // @use "./cards";
 @use "./lists";
@@ -68,7 +69,7 @@ details {
   &.ok {
     color: ui-vars.$teal;
     border: 2px solid ui-vars.$teal;
-    background-color: mix(ui-vars.$white, ui-vars.$teal, 95%);
+    background-color: color.mix(ui-vars.$white, ui-vars.$teal, 95%);
   }
 
   &.not-tested {
@@ -77,8 +78,8 @@ details {
   }
 
   summary {
-    @include ui-mixins.m();
     cursor: pointer;
+    @include ui-mixins.m();
 
     + * {
       margin-top: ui-vars.$px02;
@@ -160,7 +161,6 @@ details {
 
 /** Used for recent-calls */
 .pre-grid {
-  @include mixins.code();
   display: grid;
   grid-template-columns: auto 1fr;
   grid-row-gap: ui-vars.$px01;
@@ -171,6 +171,7 @@ details {
   background-color: ui-vars.$dark;
   border-radius: ui-vars.$px01;
   margin-top: ui-vars.$px02;
+  @include mixins.code();
 }
 
 .pre-grid-white {
