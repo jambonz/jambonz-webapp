@@ -7,12 +7,12 @@ input[type="text"],
 input[type="email"],
 input[type="number"],
 input[type="password"] {
-  @include ui-mixins.m();
   padding: ui-vars.$px01 ui-vars.$px02;
   border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$grey;
   background-color: ui-vars.$white;
   color: inherit;
+  @include ui-mixins.m();
 
   &:focus {
     border-color: ui-vars.$dark;
@@ -110,11 +110,11 @@ fieldset {
   }
 
   label {
-    @include ui-mixins.m();
-    @include ui-mixins.font-medium();
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    @include ui-mixins.font-medium();
+    @include ui-mixins.m();
 
     span {
       color: ui-vars.$jambonz;
