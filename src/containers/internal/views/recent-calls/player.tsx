@@ -175,7 +175,17 @@ export const Player = ({ call }: PlayerProps) => {
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
-        const endSpeechTime = getSilenceStartTime(start, end, channel);
+        const [sttLatencyMs] = getSpanAttributeByName(
+          s.attributes,
+          "stt.latency_ms",
+        );
+        let endSpeechTime = 0;
+        if (!sttLatencyMs) {
+          endSpeechTime = getSilenceStartTime(start, end, channel);
+        } else {
+          endSpeechTime =
+            end - parseFloat(sttLatencyMs.value.stringValue) / 1000;
+        }
 
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
         let att: WaveSurferSttResult;
