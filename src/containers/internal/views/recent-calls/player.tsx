@@ -161,6 +161,7 @@ export const Player = ({ call }: PlayerProps) => {
 
   const drawSttRegionForSpan = (
     s: JaegerSpan,
+    allSpans: JaegerSpan[],
     startPoint: JaegerSpan,
     channel = 0,
   ) => {
@@ -175,6 +176,19 @@ export const Player = ({ call }: PlayerProps) => {
         const end =
           (s.endTimeUnixNano - startPoint.startTimeUnixNano) / 1_000_000_000;
 
+        const verbHookSpans = getSpansByNameRegex(allSpans, /verb:hook/);
+        const verbHookSpan = verbHookSpans.find(
+          (v) => v.parentSpanId === s.spanId,
+        );
+
+        let verbHookDurantion = 0;
+        let latency = 0;
+        if (verbHookSpan) {
+          verbHookDurantion =
+            (verbHookSpan.endTimeUnixNano - verbHookSpan.startTimeUnixNano) /
+            1_000_000_000;
+        }
+
         const [sttLatencyMs] = getSpanAttributeByName(
           s.attributes,
           "stt.latency_ms",
@@ -182,9 +196,15 @@ export const Player = ({ call }: PlayerProps) => {
         let endSpeechTime = 0;
         if (!sttLatencyMs) {
           endSpeechTime = getSilenceStartTime(start, end, channel);
+          latency = Number(
+            (end - endSpeechTime - verbHookDurantion).toFixed(2),
+          );
         } else {
           endSpeechTime =
-            end - parseFloat(sttLatencyMs.value.stringValue) / 1000;
+            end -
+            Number(sttLatencyMs.value.stringValue) / 1_000 -
+            verbHookDurantion;
+          latency = Number(sttLatencyMs.value.stringValue) / 1_000;
         }
 
         const [sttResult] = getSpanAttributeByName(s.attributes, "stt.result");
@@ -197,7 +217,7 @@ export const Player = ({ call }: PlayerProps) => {
             transcript: data.alternatives[0].transcript,
             confidence: data.alternatives[0].confidence,
             language_code: data.language_code,
-            ...(endSpeechTime > 0 && { latency: end - endSpeechTime }),
+            latency,
           };
 
           const [sttResolve] = getSpanAttributeByName(
@@ -216,7 +236,7 @@ export const Player = ({ call }: PlayerProps) => {
               color: "rgba(255, 255, 0, 0.55)",
               drag: false,
               resize: false,
-              content: `${(end - endSpeechTime).toFixed(2)}s`,
+              content: `${latency}s`,
             });
 
             changeRegionMouseStyle(latencyRegion, channel);
@@ -363,7 +383,7 @@ export const Player = ({ call }: PlayerProps) => {
       if (startPoint) {
         const gatherSpans = getSpansByNameRegex(spans, /:gather{/);
         gatherSpans.forEach((s) => {
-          drawSttRegionForSpan(s, startPoint);
+          drawSttRegionForSpan(s, spans, startPoint);
         });
 
         // Trasscription
@@ -373,6 +393,7 @@ export const Player = ({ call }: PlayerProps) => {
           const channel = Number(cs.name.split(":")[1]);
           drawSttRegionForSpan(
             cs,
+            spans,
             startPoint,
             channel > 0 ? channel - 1 : channel,
           );
