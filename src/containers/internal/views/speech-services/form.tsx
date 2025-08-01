@@ -2039,6 +2039,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={credential ? true : false}
               />
+              <label htmlFor={`${vendor}_deepgram_stt_enpoint`}>
+                Deepgram STT Endpoint<span>*</span>
+              </label>
               <Selector
                 id={"deepgram_stt_enpoint"}
                 name={"deepgram_stt_enpoint"}
@@ -2046,6 +2049,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 options={DEEPGRAM_STT_ENPOINT}
                 onChange={(e) => {
                   setDeepgramSttUri(e.target.value);
+                  setDeepgramSttUseTls(hasValue(e.target.value));
                 }}
               />
             </Checkzone>
