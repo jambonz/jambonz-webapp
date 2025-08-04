@@ -419,7 +419,7 @@ export const CurrencySymbol: Currency = {
 };
 
 export const DEEPGRAM_STT_ENPOINT = [
-  { name: "Default", value: "" },
+  { name: "US (Default)", value: "" },
   { name: "EU-hosted", value: "api.eu.deepgram.com" },
 ];
 
