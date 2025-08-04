@@ -812,9 +812,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setUseCustomVoicesCheck(json.length > 0);
       });
     }
-    if (credential?.data?.deepgram_stt_uri) {
-      setDeepgramSttUri(credential.data.deepgram_stt_uri);
-    }
+    setDeepgramSttUri(credential?.data?.deepgram_stt_uri || "");
     if (credential?.data?.deepgram_tts_uri) {
       setDeepgramTtsUri(credential.data.deepgram_tts_uri);
     }
