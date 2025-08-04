@@ -131,7 +131,7 @@ export const DEFAULT_WEBHOOK: WebHook = {
 };
 
 /** Default SIP/SMPP Gateways  */
-export const DEFAULT_SIP_GATEWAY: SipGateway = {
+export const DEFAULT_SIP_INBOUND_GATEWAY: SipGateway = {
   voip_carrier_sid: "",
   ipv4: "",
   port: 5060,
