@@ -54,6 +54,7 @@ import {
   VENDOR_OPENAI,
   VENDOR_AMIVOICE,
   VENDOR_INWORLD,
+  VENDOR_DEEPGRAM_RIVER,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -83,6 +84,7 @@ import { setAccountFilter, setLocation } from "src/store/localStore";
 import {
   ADDITIONAL_SPEECH_VENDORS,
   ASSEMBLYAI_STT_VERSIONS,
+  DEEPGRAM_STT_ENPOINT,
   DEFAULT_ASSEMBLYAI_STT_VERSION,
   DEFAULT_CARTESIA_OPTIONS,
   DEFAULT_ELEVENLABS_OPTIONS,
@@ -536,7 +538,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_WHISPER ||
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI ||
-              vendor === VENDOR_AMIVOICE
+              vendor === VENDOR_AMIVOICE ||      
+              vendor === VENDOR_DEEPGRAM_RIVER
                 ? apiKey
                 : null,
           }),
@@ -822,9 +825,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setUseCustomVoicesCheck(json.length > 0);
       });
     }
-    if (credential?.data?.deepgram_stt_uri) {
-      setDeepgramSttUri(credential.data.deepgram_stt_uri);
-    }
+    setDeepgramSttUri(credential?.data?.deepgram_stt_uri || "");
     if (credential?.data?.deepgram_tts_uri) {
       setDeepgramTtsUri(credential.data.deepgram_tts_uri);
     }
@@ -833,7 +834,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         credential?.data?.deepgram_stt_use_tls > 0 ? true : false,
       );
     }
-    setInitialDeepgramOnpremCheck(hasValue(credential?.data?.deepgram_stt_uri));
+    setInitialDeepgramOnpremCheck(
+      hasValue(credential?.data?.deepgram_stt_uri) &&
+        !DEEPGRAM_STT_ENPOINT.map((e) => e.value).includes(
+          credential?.data?.deepgram_stt_uri,
+        ),
+    );
 
     if (credential?.data?.user_id) {
       setUserId(credential.data.user_id);
@@ -993,6 +999,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
+              vendor !== VENDOR_DEEPGRAM_RIVER &&
               vendor !== VENDOR_OPENAI &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
@@ -1762,6 +1769,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX ||
           vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_OPENAI ||
+          vendor === VENDOR_DEEPGRAM_RIVER ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
@@ -2050,6 +2058,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 value={credential ? getObscuredSecret(apiKey) : apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={credential ? true : false}
+              />
+              <label htmlFor={`${vendor}_deepgram_stt_enpoint`}>
+                Deepgram STT Endpoint<span>*</span>
+              </label>
+              <Selector
+                id={"deepgram_stt_enpoint"}
+                name={"deepgram_stt_enpoint"}
+                value={deepgramSttUri}
+                options={DEEPGRAM_STT_ENPOINT}
+                onChange={(e) => {
+                  setDeepgramSttUri(e.target.value);
+                  setDeepgramSttUseTls(hasValue(e.target.value));
+                }}
               />
             </Checkzone>
             <Checkzone

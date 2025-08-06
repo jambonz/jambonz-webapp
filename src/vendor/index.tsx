@@ -12,6 +12,7 @@ export const VENDOR_MICROSOFT = "microsoft";
 export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
+export const VENDOR_DEEPGRAM_RIVER = "deepgramriver";
 export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
@@ -42,6 +43,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Deepgram",
     value: VENDOR_DEEPGRAM,
+  },
+  {
+    name: "Deepgram River Preview",
+    value: VENDOR_DEEPGRAM_RIVER,
   },
   {
     name: "IBM",
