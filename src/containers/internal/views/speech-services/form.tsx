@@ -212,6 +212,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [tmpResembleTtsUri, setTmpResembleTtsUri] = useState("");
   const [initialResembleOnpremCheck, setInitialResembleOnpremCheck] =
     useState(false);
+  const [resembleTtsUseTls, setResembleTtsUseTls] = useState(false);
+  const [tmpResembleTtsUseTls, setTmpResembleTtsUseTls] = useState(false);
   const handleFile = (file: File) => {
     const handleError = () => {
       setGoogleServiceKey(null);
@@ -488,6 +490,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         }),
         ...(vendor === VENDOR_RESEMBLE && {
           resemble_tts_uri: resembleTtsUri || null,
+          resemble_tts_use_tls: resembleTtsUseTls ? 1 : 0,
         }),
       };
 
@@ -880,6 +883,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     }
     setInitialPlayhtOnpremCheck(hasValue(credential?.data?.playht_tts_uri));
     setInitialResembleOnpremCheck(hasValue(credential?.data?.resemble_tts_uri));
+    if (credential?.data?.resemble_tts_use_tls) {
+      setResembleTtsUseTls(
+        credential?.data?.resemble_tts_use_tls > 0 ? true : false,
+      );
+      setTmpResembleTtsUseTls(
+        credential?.data?.resemble_tts_use_tls > 0 ? true : false,
+      );
+    }
   }, [credential]);
 
   const updateCustomVoices = (
@@ -1772,9 +1783,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                   if (tmpResembleTtsUri) {
                     setResembleTtsUri(tmpResembleTtsUri);
                   }
+                  if (tmpResembleTtsUseTls) {
+                    setResembleTtsUseTls(tmpResembleTtsUseTls);
+                  }
                 } else {
                   setTmpResembleTtsUri(resembleTtsUri);
                   setResembleTtsUri("");
+                  setTmpResembleTtsUseTls(resembleTtsUseTls);
+                  setResembleTtsUseTls(false);
                 }
               }}
             >
@@ -1786,10 +1802,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
                 required
                 type="text"
                 name="resemble_uri_for_tts"
-                placeholder="http://"
+                placeholder=""
                 value={resembleTtsUri}
                 onChange={(e) => setResembleTtsUri(e.target.value)}
               />
+              <label htmlFor="resemble_stt_use_tls" className="chk">
+                <input
+                  id="resemble_stt_use_tls"
+                  name="resemble_stt_use_tls"
+                  type="checkbox"
+                  onChange={(e) => setResembleTtsUseTls(e.target.checked)}
+                  defaultChecked={resembleTtsUseTls}
+                />
+                <div>Use TLS</div>
+              </label>
             </Checkzone>
           </fieldset>
         )}
