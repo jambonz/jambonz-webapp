@@ -37,6 +37,7 @@ import {
   VENDOR_OPENAI,
   VENDOR_INWORLD,
   VENDOR_DEEPGRAM_RIVER,
+  VENDOR_RESEMBLE,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -587,6 +588,7 @@ export const SpeechProviderSelection = ({
               vendor.value != VENDOR_WELLSAID &&
               vendor.value != VENDOR_ELEVENLABS &&
               vendor.value != VENDOR_WHISPER &&
+              vendor.value !== VENDOR_RESEMBLE &&
               vendor.value !== VENDOR_CUSTOM,
           )}
           onChange={(e) => {

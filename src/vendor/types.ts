@@ -21,7 +21,8 @@ export type Vendor =
   | "inworld"
   | "verbio"
   | "openai"
-  | "Cartesia";
+  | "Cartesia"
+  | "Resemble";
 
 export interface VendorOptions {
   name: Vendor;
