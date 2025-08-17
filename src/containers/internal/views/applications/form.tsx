@@ -592,8 +592,8 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const fetchAppEnvJambonzResources = async (appEnv: AppEnv) => {
     if (appEnv) {
       const promises = Object.entries(appEnv).map(async ([key, value]) => {
-        const { jambonzResource: jambonz_resource } = value;
-        switch (jambonz_resource) {
+        const { jambonzResource } = value;
+        switch (jambonzResource) {
           case "carriers":
             const carriers = await getSPVoipCarriers(
               currentServiceProvider?.service_provider_sid || "",
@@ -608,7 +608,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
             if (carriers.json.total) {
               return {
                 key,
-                jambonz_resource_options: carriers.json.data.map((carrier) => ({
+                jambonzResourceOptions: carriers.json.data.map((carrier) => ({
                   name: carrier.name,
                   value: carrier.name,
                 })),
@@ -618,15 +618,15 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
           default:
             break;
         }
-        return { key, jambonz_resource_options: null };
+        return { key, jambonzResourceOptions: null };
       });
 
       const results = await Promise.all(promises);
 
       // Merge the results back into appEnv
-      results.forEach(({ key, jambonz_resource_options }) => {
-        if (jambonz_resource_options) {
-          appEnv[key].jambonzResourceOptions = jambonz_resource_options;
+      results.forEach(({ key, jambonzResourceOptions }) => {
+        if (jambonzResourceOptions) {
+          appEnv[key].jambonzResourceOptions = jambonzResourceOptions;
         }
       });
     }
