@@ -1,4 +1,10 @@
-import type { Language, Model, Vendor, VoiceLanguage } from "src/vendor/types";
+import type {
+  JambonzResourceOptions,
+  Language,
+  Model,
+  Vendor,
+  VoiceLanguage,
+} from "src/vendor/types";
 
 /** Simple types */
 
@@ -825,6 +831,8 @@ export interface AppEnvProperty {
   obscure?: boolean;
   uiHint?: "input" | "textarea" | "filepicker";
   enum?: string[];
+  jambonz_resource?: "carriers";
+  jambonz_resource_options?: JambonzResourceOptions[];
 }
 
 export interface AppEnv {
