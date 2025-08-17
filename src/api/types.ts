@@ -831,8 +831,8 @@ export interface AppEnvProperty {
   obscure?: boolean;
   uiHint?: "input" | "textarea" | "filepicker";
   enum?: string[];
-  jambonz_resource?: "carriers";
-  jambonz_resource_options?: JambonzResourceOptions[];
+  jambonzResource?: "carriers";
+  jambonzResourceOptions?: JambonzResourceOptions[];
 }
 
 export interface AppEnv {

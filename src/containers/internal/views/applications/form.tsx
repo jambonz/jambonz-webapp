@@ -592,7 +592,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
   const fetchAppEnvJambonzResources = async (appEnv: AppEnv) => {
     if (appEnv) {
       const promises = Object.entries(appEnv).map(async ([key, value]) => {
-        const { jambonz_resource } = value;
+        const { jambonzResource: jambonz_resource } = value;
         switch (jambonz_resource) {
           case "carriers":
             const carriers = await getSPVoipCarriers(
@@ -626,7 +626,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       // Merge the results back into appEnv
       results.forEach(({ key, jambonz_resource_options }) => {
         if (jambonz_resource_options) {
-          appEnv[key].jambonz_resource_options = jambonz_resource_options;
+          appEnv[key].jambonzResourceOptions = jambonz_resource_options;
         }
       });
     }
@@ -931,7 +931,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                       0) > 0) ||
                                   hasLength(
                                     webhook.webhookEnv![key]
-                                      .jambonz_resource_options,
+                                      .jambonzResourceOptions,
                                   );
 
                                 const textAreaSpecificProps = {
@@ -947,7 +947,7 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                 if (isDropdown) {
                                   const options =
                                     webhook.webhookEnv![key]
-                                      .jambonz_resource_options ||
+                                      .jambonzResourceOptions ||
                                     webhook.webhookEnv![key].enum!.map(
                                       (option) => ({
                                         name: option,
