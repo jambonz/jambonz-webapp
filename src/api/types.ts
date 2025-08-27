@@ -440,6 +440,8 @@ export interface SpeechCredential {
   deepgram_stt_use_tls: number;
   speechmatics_stt_uri: null | string;
   playht_tts_uri: null | string;
+  resemble_tts_uri: null | string;
+  resemble_tts_use_tls: number;
 }
 
 export interface Alert {
