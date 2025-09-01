@@ -4,7 +4,7 @@ import { P } from "@jambonz/ui-kit";
 import { Modal, ModalClose } from "src/components";
 import { getFetch, getLcrRoutes, getLcrs } from "src/api";
 import { API_PHONE_NUMBERS } from "src/api/constants";
-import { formatPhoneNumber, hasLength } from "src/utils";
+import { formatPhoneNumber, hasLength, hasValue } from "src/utils";
 
 import type { Carrier, Lcr, PhoneNumber } from "src/api/types";
 
@@ -63,7 +63,8 @@ export const DeleteCarrier = ({
           ),
         );
 
-        setLcrs(fetchedLcrs);
+        // Only set LCRs if they are not empty
+        setLcrs(fetchedLcrs.filter((p) => hasValue(p)));
       }
     });
 
