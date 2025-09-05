@@ -790,6 +790,7 @@ export const CarrierForm = ({
           </details>
         </fieldset>
         <Tabs active={[activeTab, setActiveTab]}>
+          {/** General */}
           <Tab id="general" label="General">
             <fieldset>
               <AccountSelect
@@ -844,40 +845,9 @@ export const CarrierForm = ({
                     />
                   </>
                 )}
-              <label htmlFor="from_domain">SIP from domain</label>
-              <input
-                id="from_domain"
-                name="from_domain"
-                type="text"
-                value={fromDomain}
-                placeholder="Optional: specify host part of SIP From header"
-                onChange={(e) => setFromDomain(e.target.value)}
-              />
-              <label htmlFor="reg_public_ip_in_contact" className="chk">
-                <input
-                  id="reg_public_ip_in_contact"
-                  name="reg_public_ip_in_contact"
-                  type="checkbox"
-                  checked={regPublicIpInContact}
-                  onChange={(e) => setRegPublicIpInContact(e.target.checked)}
-                />
-                <div>Use public IP in contact</div>
-              </label>
-              <label htmlFor="e164" className="chk">
-                <input
-                  id="e164"
-                  name="e164"
-                  type="checkbox"
-                  checked={e164}
-                  onChange={(e) => setE164(e.target.checked)}
-                />
-                <div>E.164 syntax</div>
-              </label>
-              <MXS>
-                <em>Prepend a leading + on origination attempts.</em>
-              </MXS>
             </fieldset>
           </Tab>
+          {/** Inbound */}
           <Tab id="inbound" label="Inbound">
             <fieldset>
               <label htmlFor="allow_ip_addresses">Allowed IP Addresses</label>
@@ -1030,7 +1000,33 @@ export const CarrierForm = ({
               </ButtonGroup>
             </fieldset>
           </Tab>
+          {/** Outbound */}
           <Tab id="outbound" label="Outbound">
+            <fieldset>
+              <label htmlFor="reg_public_ip_in_contact" className="chk">
+                <input
+                  id="reg_public_ip_in_contact"
+                  name="reg_public_ip_in_contact"
+                  type="checkbox"
+                  checked={regPublicIpInContact}
+                  onChange={(e) => setRegPublicIpInContact(e.target.checked)}
+                />
+                <div>Use public IP in contact</div>
+              </label>
+              <label htmlFor="e164" className="chk">
+                <input
+                  id="e164"
+                  name="e164"
+                  type="checkbox"
+                  checked={e164}
+                  onChange={(e) => setE164(e.target.checked)}
+                />
+                <div>E.164 syntax</div>
+              </label>
+              <MXS>
+                <em>Prepend a leading + on origination attempts.</em>
+              </MXS>
+            </fieldset>
             <fieldset>
               <Checkzone
                 hidden
@@ -1388,6 +1384,7 @@ export const CarrierForm = ({
               </ButtonGroup>
             </fieldset>
           </Tab>
+          {/** Registration */}
           <Tab id="registration" label="Registration">
             <fieldset>
               <div className="multi">
@@ -1438,194 +1435,15 @@ export const CarrierForm = ({
                 onChange={(e) => setSipRealm(e.target.value)}
               />
 
-              <label htmlFor="from_username">SIP from domain</label>
+              <label htmlFor="from_domain">SIP from domain</label>
               <input
-                id="from_username"
-                name="from_username"
+                id="from_domain"
+                name="from_domain"
                 type="text"
-                placeholder="Optional: specify user part of SIP From header"
+                value={fromDomain}
+                placeholder="Optional: specify host part of SIP From header"
+                onChange={(e) => setFromDomain(e.target.value)}
               />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="sip_gateways">
-                SIP gateways<span>*</span>
-              </label>
-              <MXS>
-                <em>At least one SIP gateway is required.</em>
-              </MXS>
-              <label htmlFor="sip_gateways">
-                Network address / Port / Netmask
-              </label>
-              {sipMessage && <Message message={sipMessage} />}
-              {hasLength(sipGateways) &&
-                sipGateways.map((g, i) => (
-                  <div
-                    key={`sip_gateway_${i}`}
-                    className="gateway gateway--sip"
-                  >
-                    <div>
-                      <div>
-                        <input
-                          id={`sip_ip_${i}`}
-                          name={`sip_ip_${i}`}
-                          type="text"
-                          placeholder="1.2.3.4 / sip.my.com"
-                          required
-                          value={g.ipv4}
-                          onChange={(e) => {
-                            updateSipGateways(i, "ipv4", e.target.value);
-                          }}
-                          ref={(ref: HTMLInputElement) =>
-                            (refSipIp.current[i] = ref)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <input
-                          id={`sip_port_${i}`}
-                          name={`sip_port_${i}`}
-                          type="number"
-                          min="0"
-                          max={TCP_MAX_PORT}
-                          placeholder={
-                            g.protocol === "tls" || g.protocol === "tls/srtp"
-                              ? ""
-                              : DEFAULT_SIP_INBOUND_GATEWAY.port?.toString()
-                          }
-                          value={g.port === null ? "" : g.port}
-                          onChange={(e) => {
-                            updateSipGateways(
-                              i,
-                              "port",
-                              g.outbound > 0 &&
-                                !isNotBlank(e.target.value) &&
-                                getIpValidationType(g.ipv4) !== IP
-                                ? null
-                                : Number(e.target.value),
-                            );
-                          }}
-                          ref={(ref: HTMLInputElement) =>
-                            (refSipPort.current[i] = ref)
-                          }
-                        />
-                      </div>
-                      {g.outbound ? (
-                        <div>
-                          <Selector
-                            id={`sip_protocol_${i}`}
-                            name={`sip_protocol${i}`}
-                            value={g.protocol}
-                            options={SIP_GATEWAY_PROTOCOL_OPTIONS}
-                            onChange={(e) => {
-                              updateSipGateways(i, "protocol", e.target.value);
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div>
-                          <Selector
-                            id={`sip_netmask_${i}`}
-                            name={`sip_netmask${i}`}
-                            value={g.netmask}
-                            options={NETMASK_OPTIONS}
-                            onChange={(e) => {
-                              updateSipGateways(i, "netmask", e.target.value);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div>
-                        <label
-                          htmlFor={`sip__gw_is_active_${i}`}
-                          className="chk"
-                        >
-                          <input
-                            id={`sip__gw_is_active_${i}`}
-                            name={`sip__gw_is_active_${i}`}
-                            type="checkbox"
-                            checked={g.is_active ? true : false}
-                            onChange={(e) => {
-                              updateSipGateways(
-                                i,
-                                "is_active",
-                                e.target.checked ? 1 : 0,
-                              );
-                            }}
-                          />
-                          <div>Active</div>
-                        </label>
-                      </div>
-
-                      {(g.protocol === "tls" || g.protocol === "tls/srtp") && (
-                        <div>
-                          <label
-                            htmlFor={`use_sips_scheme_${i}`}
-                            className="chk"
-                          >
-                            <input
-                              id={`use_sips_scheme_${i}`}
-                              name={`use_sips_scheme_${i}`}
-                              type="checkbox"
-                              checked={g.use_sips_scheme ? true : false}
-                              onChange={(e) => {
-                                updateSipGateways(
-                                  i,
-                                  "use_sips_scheme",
-                                  e.target.checked,
-                                );
-                              }}
-                            />
-                            <div>Use sips scheme</div>
-                          </label>
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      className="btnty"
-                      title="Delete SIP Gateway"
-                      type="button"
-                      onClick={() => {
-                        setSipMessage("");
-
-                        if (sipGateways.length === 1) {
-                          setSipMessage(
-                            "You must provide at least one SIP Gateway.",
-                          );
-                        } else {
-                          handleSipGatewayDelete(
-                            sipGateways.find((g2, i2) => i2 === i),
-                          );
-
-                          setSipGateways(
-                            sipGateways.filter((g2, i2) => i2 !== i),
-                          );
-                        }
-                      }}
-                    >
-                      <Icon>
-                        <Icons.Trash2 />
-                      </Icon>
-                    </button>
-                  </div>
-                ))}
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  title="Add SIP Gateway"
-                  onClick={() => {
-                    setSipMessage("");
-                    addSipGateway();
-                  }}
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
             </fieldset>
           </Tab>
         </Tabs>
