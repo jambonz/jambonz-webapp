@@ -29,6 +29,7 @@ export const VENDOR_INWORLD = "inworld";
 export const VENDOR_VERBIO = "verbio";
 export const VENDOR_CARTESIA = "cartesia";
 export const VENDOR_OPENAI = "openai";
+export const VENDOR_AMIVOICE = "amivoice";
 export const VENDOR_RESEMBLE = "resemble";
 
 export const vendors: VendorOptions[] = [
@@ -123,6 +124,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "OpenAI",
     value: VENDOR_OPENAI,
+  },
+  {
+    name: "AMI Voice",
+    value: VENDOR_AMIVOICE,
   },
   {
     name: "Resemble",

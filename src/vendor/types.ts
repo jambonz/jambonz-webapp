@@ -14,6 +14,7 @@ export type Vendor =
   | "Custom"
   | "ElevenLabs"
   | "assemblyai"
+  | "amivoice"
   | "voxist"
   | "whisper"
   | "playht"
@@ -104,6 +105,7 @@ export interface RecognizerVendors {
   speechmatics: Language[];
   cobalt: Language[];
   assemblyai: Language[];
+  amivoice: Language[];
   deepgramriver: Language[];
 }
 

@@ -52,6 +52,7 @@ import {
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
   VENDOR_OPENAI,
+  VENDOR_AMIVOICE,
   VENDOR_INWORLD,
   VENDOR_DEEPGRAM_RIVER,
   VENDOR_RESEMBLE,
@@ -295,6 +296,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         return " STT Model ID";
       case VENDOR_DEEPGRAM:
         return "Model ID";
+      case VENDOR_AMIVOICE:
+        return "Engine ID";
       default:
         return "Model";
     }
@@ -470,6 +473,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           sttModelId && {
             model_id: sttModelId,
           }),
+        ...(vendor === VENDOR_AMIVOICE &&
+          sttModelId && {
+            model_id: sttModelId,
+          }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
@@ -542,6 +549,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_WHISPER ||
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI ||
+              vendor === VENDOR_AMIVOICE ||      
               vendor === VENDOR_RESEMBLE ||
               vendor === VENDOR_DEEPGRAM_RIVER
                 ? apiKey
@@ -613,7 +621,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_INWORLD ||
       vendor === VENDOR_CARTESIA ||
       vendor === VENDOR_OPENAI ||
-      vendor === VENDOR_DEEPGRAM
+      vendor === VENDOR_DEEPGRAM ||
+      vendor === VENDOR_AMIVOICE
     ) {
       getSpeechSupportedLanguagesAndVoices(
         currentServiceProvider?.service_provider_sid,
@@ -621,10 +630,12 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         "",
         credential ? false : true,
       ).then(({ json }) => {
+        console.log("AMI Voice API Response:", json);
         if (json.models) {
           setTtsModels(json.models);
         }
         if (json.sttModels) {
+          console.log("Setting sttModels:", json.sttModels);
           setSttModels(json.sttModels);
         }
       });
@@ -801,7 +812,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       }
       if (
         credential.data.model_id &&
-        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM)
+        (vendor === VENDOR_OPENAI ||
+          vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_AMIVOICE)
       ) {
         setSttModelId(credential.data.model_id);
       } else if (credential.data.stt_model_id) {
@@ -1005,6 +1018,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor && (
           <fieldset>
             {vendor !== VENDOR_ASSEMBLYAI &&
+              vendor !== VENDOR_AMIVOICE &&
               vendor !== VENDOR_VOXIST &&
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
@@ -1822,6 +1836,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
+          vendor === VENDOR_AMIVOICE ||
           vendor === VENDOR_VOXIST ||
           vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
@@ -1872,12 +1887,19 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor == VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM ||
+          (sttCheck && vendor === VENDOR_AMIVOICE) ||
           (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>
               <label htmlFor={`${vendor}_stt_model_id`}>
                 {getSTTModelLabelByVendor(vendor)}
               </label>
+              {vendor === VENDOR_AMIVOICE && (
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  Debug: sttModels.length = {sttModels.length}, sttCheck ={" "}
+                  {sttCheck.toString()}
+                </div>
+              )}
               <Selector
                 id={"stt_model_id"}
                 name={"stt_model_id"}
