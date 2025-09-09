@@ -25,6 +25,7 @@ import {
   useServiceProviderData,
   useApiData,
   getAppEnvSchema,
+  getSPVoipCarriers,
 } from "src/api";
 import {
   ROUTE_INTERNAL_ACCOUNTS,
@@ -588,6 +589,51 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
     setFallbackSpeechRecognizerLabel(tmp);
   };
 
+  const fetchAppEnvJambonzResources = async (appEnv: AppEnv) => {
+    if (appEnv) {
+      const promises = Object.entries(appEnv).map(async ([key, value]) => {
+        const { jambonzResource } = value;
+        switch (jambonzResource) {
+          case "carriers":
+            const carriers = await getSPVoipCarriers(
+              currentServiceProvider?.service_provider_sid || "",
+              {
+                page: 1,
+                page_size: 10000,
+                ...(user?.account_sid && {
+                  account_sid: user.account_sid,
+                }),
+              },
+            );
+            if (carriers.json.total) {
+              return {
+                key,
+                jambonzResourceOptions: carriers.json.data.map((carrier) => ({
+                  name: carrier.name,
+                  value: carrier.name,
+                })),
+              };
+            }
+            break;
+          default:
+            break;
+        }
+        return { key, jambonzResourceOptions: null };
+      });
+
+      const results = await Promise.all(promises);
+
+      // Merge the results back into appEnv
+      results.forEach(({ key, jambonzResourceOptions }) => {
+        if (jambonzResourceOptions) {
+          appEnv[key].jambonzResourceOptions = jambonzResourceOptions;
+        }
+      });
+    }
+
+    return appEnv;
+  };
+
   useEffect(() => {
     if (callWebhook && callWebhook.url) {
       // Clear any existing timeout to prevent multiple requests
@@ -599,19 +645,26 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
       appEnvTimeoutRef.current = setTimeout(() => {
         getAppEnvSchema(callWebhook.url)
           .then(({ json }) => {
-            setAppEnv(json);
-            const defaultEnvVars = Object.keys(json).reduce((acc, key) => {
-              const value = json[key];
-              if (value?.default) {
-                return { ...acc, [key]: value.default };
-              }
-              return acc;
-            }, {});
+            // fetch app env jambonz_resource
+            fetchAppEnvJambonzResources(json).then((updatedEnv) => {
+              setAppEnv(updatedEnv);
+              const defaultEnvVars = Object.keys(updatedEnv).reduce(
+                (acc, key) => {
+                  const value = updatedEnv[key];
+                  if (value?.default) {
+                    return { ...acc, [key]: value.default };
+                  }
+                  return acc;
+                },
+                {},
+              );
 
-            setEnvVars((prev) => ({
-              ...defaultEnvVars,
-              ...(prev || {}),
-            }));
+              setEnvVars((prev) => ({
+                ...defaultEnvVars,
+                ...(prev || {}),
+              }));
+            });
+            // Default value
           })
           .catch((error) => {
             setMessage(error.msg);
@@ -873,9 +926,13 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                 };
 
                                 const isDropdown =
-                                  webhook.webhookEnv![key].type === "string" &&
-                                  (webhook.webhookEnv![key].enum?.length || 0) >
-                                    0;
+                                  (webhook.webhookEnv![key].type === "string" &&
+                                    (webhook.webhookEnv![key].enum?.length ||
+                                      0) > 0) ||
+                                  hasLength(
+                                    webhook.webhookEnv![key]
+                                      .jambonzResourceOptions,
+                                  );
 
                                 const textAreaSpecificProps = {
                                   rows: 6,
@@ -888,15 +945,19 @@ export const ApplicationForm = ({ application }: ApplicationFormProps) => {
                                   ? ObscureInput
                                   : webhook.webhookEnv![key].uiHint || "input";
                                 if (isDropdown) {
+                                  const options =
+                                    webhook.webhookEnv![key]
+                                      .jambonzResourceOptions ||
+                                    webhook.webhookEnv![key].enum!.map(
+                                      (option) => ({
+                                        name: option,
+                                        value: option,
+                                      }),
+                                    );
                                   return (
                                     <Selector
                                       {...commonProps}
-                                      options={webhook.webhookEnv![
-                                        key
-                                      ].enum!.map((option) => ({
-                                        name: option,
-                                        value: option,
-                                      }))}
+                                      options={options}
                                     />
                                   );
                                 }

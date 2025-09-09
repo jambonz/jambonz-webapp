@@ -34,6 +34,11 @@ export interface LabelOptions {
   value: string;
 }
 
+export interface JambonzResourceOptions {
+  name: string;
+  value: string;
+}
+
 export interface Region {
   name: string;
   value: string;
