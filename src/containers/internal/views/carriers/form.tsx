@@ -62,6 +62,7 @@ import {
   type Sbc,
   type Application,
   DtmfType,
+  TrunkType,
 } from "src/api/types";
 import { setAccountFilter, setLocation } from "src/store/localStore";
 import { RegisterStatus } from "./register-status";
@@ -101,6 +102,10 @@ export const CarrierForm = ({
   const [applicationSid, setApplicationSid] = useState("");
   const [accountSid, setAccountSid] = useState("");
   const [dtmfType, setDtmfType] = useState<DtmfType>("rfc2833");
+  const [trunkType, setTrunkType] = useState<TrunkType>("static_ip");
+
+  const [inboundAuthUsername, setInboundAuthUsername] = useState("");
+  const [inboundAuthPassword, setInboundAuthPassword] = useState("");
 
   const [sipRegister, setSipRegister] = useState(false);
   const [sipUser, setSipUser] = useState("");
@@ -124,7 +129,12 @@ export const CarrierForm = ({
   const [smppInboundSystemId, setSmppInboundSystemId] = useState("");
   const [smppInboundPass, setSmppInboundPass] = useState("");
 
-  const [sipGateways, setSipGateways] = useState<SipGateway[]>([]);
+  const [sipInboundGateways, setSipInboundGateways] = useState<SipGateway[]>(
+    [],
+  );
+  const [sipOutboundGateways, setSipOutboundGateways] = useState<SipGateway[]>(
+    [],
+  );
   const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([
     {
       ...DEFAULT_SMPP_GATEWAY,
@@ -136,10 +146,8 @@ export const CarrierForm = ({
     },
   ]);
 
-  const [sipMessage, setSipMessage] = useState("");
-  const [
-    sipInboundMessage, //setSipInboundMessage
-  ] = useState("");
+  const [sipInboundMessage, setSipInboundMessage] = useState("");
+  const [sipOutboundMessage, setSipOutboundMessage] = useState("");
 
   const validateOutboundSipGateway = (
     gateway: string,
@@ -300,11 +308,30 @@ export const CarrierForm = ({
       if (obj.dtmf_type) {
         setDtmfType(obj.dtmf_type);
       }
+      if (obj.trunk_type) {
+        setTrunkType(obj.trunk_type);
+      }
+      if (obj.inbound_auth_username) {
+        setInboundAuthUsername(obj.inbound_auth_username);
+      }
+      if (obj.inbound_auth_password) {
+        setInboundAuthPassword(obj.inbound_auth_password);
+      }
     }
   };
 
-  const addSipGateway = () => {
-    setSipGateways((curr) => [...curr, DEFAULT_SIP_INBOUND_GATEWAY]);
+  const addSipInboundGateway = () => {
+    setSipInboundGateways((curr) => [
+      ...curr,
+      { ...DEFAULT_SIP_INBOUND_GATEWAY, inbound: 1, outbound: 0 },
+    ]);
+  };
+
+  const addSipOutboundGateway = () => {
+    setSipOutboundGateways((curr) => [
+      ...curr,
+      { ...DEFAULT_SIP_INBOUND_GATEWAY, inbound: 0, outbound: 1 },
+    ]);
   };
 
   const addSmppGateway = (obj: Partial<SmppGateway>) => {
@@ -317,13 +344,36 @@ export const CarrierForm = ({
     ]);
   };
 
-  const updateSipGateways = (
+  const updateSipInboundGateways = (
     index: number,
     key: string,
-    value: (typeof sipGateways)[number][keyof SipGateway],
+    value: (typeof sipInboundGateways)[number][keyof SipGateway],
   ) => {
-    setSipGateways(
-      sipGateways.map((g, i) =>
+    setSipInboundGateways(
+      sipInboundGateways.map((g, i) =>
+        i === index
+          ? {
+              ...g,
+              [key]: value,
+              // If Change to ipv4 and port is null, change port to 5060
+              ...(key === "ipv4" &&
+                value &&
+                typeof value === "string" &&
+                getIpValidationType(value) === IP &&
+                g.port === null && { port: 5060 }),
+            }
+          : g,
+      ),
+    );
+  };
+
+  const updateSipOutboundGateways = (
+    index: number,
+    key: string,
+    value: (typeof sipOutboundGateways)[number][keyof SipGateway],
+  ) => {
+    setSipOutboundGateways(
+      sipOutboundGateways.map((g, i) =>
         i === index
           ? {
               ...g,
@@ -341,8 +391,9 @@ export const CarrierForm = ({
   };
 
   const handleSipGatewayPutPost = (voip_carrier_sid: string) => {
+    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
     Promise.all(
-      sipGateways.map(({ sip_gateway_sid, ...g }: SipGateway) =>
+      allSipGateways.map(({ sip_gateway_sid, ...g }: SipGateway) =>
         sip_gateway_sid
           ? putSipGateway(sip_gateway_sid, g)
           : postSipGateway({ ...g, voip_carrier_sid }),
@@ -395,12 +446,13 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
-    if (!hasLength(sipGateways)) {
+    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
+    if (!hasLength(allSipGateways)) {
       return "You must provide at least one SIP Gateway.";
     }
 
-    for (let i = 0; i < sipGateways.length; i++) {
-      const gateway = sipGateways[i];
+    for (let i = 0; i < allSipGateways.length; i++) {
+      const gateway = allSipGateways[i];
       const type = getIpValidationType(gateway.ipv4);
 
       /** DH: unclear why we had this restriction, removing for now
@@ -418,7 +470,7 @@ export const CarrierForm = ({
       }
 
       /** Duplicates validation */
-      const dupeSipGateway = sipGateways.find((g) => {
+      const dupeSipGateway = allSipGateways.find((g) => {
         return (
           g !== gateway &&
           gateway.ipv4 &&
@@ -494,8 +546,9 @@ export const CarrierForm = ({
   const handleActiveTab = () => {
     /** When to switch to `sip` tab */
 
-    const emptySipIp = sipGateways.find((g) => g.ipv4.trim() === "");
-    const invalidSipPort = sipGateways.find(
+    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
+    const emptySipIp = allSipGateways.find((g) => g.ipv4.trim() === "");
+    const invalidSipPort = allSipGateways.find(
       (g) => hasValue(g.port) && !isValidPort(g.port),
     );
     const sipGatewayValidation = getSipValidation();
@@ -544,12 +597,24 @@ export const CarrierForm = ({
       return;
     }
 
-    setSipMessage("");
+    setSipInboundMessage("");
+    setSipOutboundMessage("");
 
     const sipGatewayValidation = getSipValidation();
 
     if (sipGatewayValidation) {
-      setSipMessage(sipGatewayValidation);
+      // For validation errors that affect the total, show in both tabs
+      if (
+        sipGatewayValidation === "You must provide at least one SIP Gateway."
+      ) {
+        setSipInboundMessage(sipGatewayValidation);
+        setSipOutboundMessage(sipGatewayValidation);
+      } else {
+        // For other validation errors, we need to determine which tab they belong to
+        // For now, show in both tabs to ensure user sees the error
+        setSipInboundMessage(sipGatewayValidation);
+        setSipOutboundMessage(sipGatewayValidation);
+      }
       return;
     }
 
@@ -584,6 +649,9 @@ export const CarrierForm = ({
         smpp_inbound_system_id: smppInboundSystemId.trim() || null,
         smpp_inbound_password: smppInboundPass.trim() || null,
         dtmf_type: dtmfType,
+        trunk_type: trunkType,
+        inbound_auth_username: inboundAuthUsername.trim() || undefined,
+        inbound_auth_password: inboundAuthPassword.trim() || undefined,
         outbound_sip_proxy: outboundSipProxy.trim().replaceAll(" ", "") || null,
       };
 
@@ -675,7 +743,10 @@ export const CarrierForm = ({
     carrierSipGateways.data !== prevSipGateways
   ) {
     setPrevSipGateways(carrierSipGateways.data); /** Deadly important */
-    setSipGateways(carrierSipGateways.data);
+    const inboundGateways = carrierSipGateways.data.filter((g) => g.inbound);
+    const outboundGateways = carrierSipGateways.data.filter((g) => g.outbound);
+    setSipInboundGateways(inboundGateways);
+    setSipOutboundGateways(outboundGateways);
   }
 
   if (
@@ -846,12 +917,61 @@ export const CarrierForm = ({
                   </>
                 )}
             </fieldset>
+            <fieldset>
+              <legend>Trunk Type</legend>
+              <label htmlFor="trunk_type_static_ip" className="chk">
+                <input
+                  id="trunk_type_static_ip"
+                  name="trunk_type"
+                  type="radio"
+                  checked={trunkType === "static_ip"}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setTrunkType("static_ip");
+                      setInboundAuthUsername("");
+                      setInboundAuthPassword("");
+                    }
+                  }}
+                />
+                <div>Static IP Whitelist</div>
+              </label>
+              <label htmlFor="trunk_type_auth" className="chk">
+                <input
+                  id="trunk_type_auth"
+                  name="trunk_type"
+                  type="radio"
+                  checked={trunkType === "auth"}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setTrunkType("auth");
+                    }
+                  }}
+                />
+                <div>Auth Trunk</div>
+              </label>
+              <label htmlFor="trunk_type_reg" className="chk">
+                <input
+                  id="trunk_type_reg"
+                  name="trunk_type"
+                  type="radio"
+                  checked={trunkType === "reg"}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setTrunkType("reg");
+                      setInboundAuthUsername("");
+                      setInboundAuthPassword("");
+                    }
+                  }}
+                />
+                <div>Registration Trunk</div>
+              </label>
+            </fieldset>
           </Tab>
           {/** Inbound */}
           <Tab id="inbound" label="Inbound">
             <fieldset>
               <label htmlFor="allow_ip_addresses">Allowed IP Addresses</label>
-              {hasLength(sipGateways) ? (
+              {hasLength(sipInboundGateways) ? (
                 <label htmlFor="sip_gateways">Network address / Netmask</label>
               ) : (
                 <MXS>
@@ -859,119 +979,134 @@ export const CarrierForm = ({
                 </MXS>
               )}
               {sipInboundMessage && <Message message={sipInboundMessage} />}
-              {hasLength(sipGateways) &&
-                sipGateways
-                  .filter((g) => g.inbound)
-                  .map((g, i) => (
-                    <div
-                      key={`sip_gateway_${i}`}
-                      className="gateway-inbound gateway-inbound--sip"
-                    >
+              {hasLength(sipInboundGateways) &&
+                sipInboundGateways.map((g, i) => (
+                  <div
+                    key={`sip_gateway_${i}`}
+                    className="gateway-inbound gateway-inbound--sip"
+                  >
+                    <div>
                       <div>
-                        <div>
-                          <input
-                            id={`sip_ip_${i}`}
-                            name={`sip_ip_${i}`}
-                            type="text"
-                            placeholder="1.2.3.4 / sip.my.com"
-                            required
-                            value={g.ipv4}
-                            onChange={(e) => {
-                              updateSipGateways(i, "ipv4", e.target.value);
-                            }}
-                            ref={(ref: HTMLInputElement) =>
-                              (refSipIp.current[i] = ref)
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Selector
-                            id={`sip_netmask_${i}`}
-                            name={`sip_netmask${i}`}
-                            value={g.netmask}
-                            options={NETMASK_OPTIONS}
-                            onChange={(e) => {
-                              updateSipGateways(i, "netmask", e.target.value);
-                            }}
-                          />
-                        </div>
+                        <input
+                          id={`sip_ip_${i}`}
+                          name={`sip_ip_${i}`}
+                          type="text"
+                          placeholder="1.2.3.4 / sip.my.com"
+                          required
+                          value={g.ipv4}
+                          onChange={(e) => {
+                            updateSipInboundGateways(i, "ipv4", e.target.value);
+                          }}
+                          ref={(ref: HTMLInputElement) =>
+                            (refSipIp.current[i] = ref)
+                          }
+                        />
                       </div>
                       <div>
-                        <div>
-                          <label
-                            htmlFor={`sip__gw_is_active_${i}`}
-                            className="chk"
-                          >
-                            <input
-                              id={`sip__gw_is_active_${i}`}
-                              name={`sip__gw_is_active_${i}`}
-                              type="checkbox"
-                              checked={g.is_active ? true : false}
-                              onChange={(e) => {
-                                updateSipGateways(
-                                  i,
-                                  "is_active",
-                                  e.target.checked ? 1 : 0,
-                                );
-                              }}
-                            />
-                            <div>Active</div>
-                          </label>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor={`sip_pad_crypto_${i}`}
-                            className="chk"
-                          >
-                            <input
-                              id={`sip_pad_crypto_${i}`}
-                              name={`sip_pad_crypto_${i}`}
-                              type="checkbox"
-                              checked={g.pad_crypto ? true : false}
-                              onChange={(e) => {
-                                updateSipGateways(
-                                  i,
-                                  "pad_crypto",
-                                  e.target.checked,
-                                );
-                              }}
-                            />
-                            <div>Pad crypto</div>
-                          </label>
-                        </div>
+                        <Selector
+                          id={`sip_netmask_${i}`}
+                          name={`sip_netmask${i}`}
+                          value={g.netmask}
+                          options={NETMASK_OPTIONS}
+                          onChange={(e) => {
+                            updateSipInboundGateways(
+                              i,
+                              "netmask",
+                              e.target.value,
+                            );
+                          }}
+                        />
                       </div>
-
-                      <button
-                        className="btnty"
-                        title="Delete SIP Gateway"
-                        type="button"
-                        onClick={() => {
-                          setSipMessage("");
-
-                          handleSipGatewayDelete(
-                            sipGateways.find((g2, i2) => i2 === i),
-                          );
-
-                          setSipGateways(
-                            sipGateways.filter((g2, i2) => i2 !== i),
-                          );
-                        }}
-                      >
-                        <Icon>
-                          <Icons.Trash2 />
-                        </Icon>
-                      </button>
                     </div>
-                  ))}
+                    <div>
+                      <div>
+                        <label
+                          htmlFor={`sip__gw_is_active_${i}`}
+                          className="chk"
+                        >
+                          <input
+                            id={`sip__gw_is_active_${i}`}
+                            name={`sip__gw_is_active_${i}`}
+                            type="checkbox"
+                            checked={g.is_active ? true : false}
+                            onChange={(e) => {
+                              updateSipInboundGateways(
+                                i,
+                                "is_active",
+                                e.target.checked ? 1 : 0,
+                              );
+                            }}
+                          />
+                          <div>Active</div>
+                        </label>
+                      </div>
+
+                      <div>
+                        <label htmlFor={`sip_pad_crypto_${i}`} className="chk">
+                          <input
+                            id={`sip_pad_crypto_${i}`}
+                            name={`sip_pad_crypto_${i}`}
+                            type="checkbox"
+                            checked={g.pad_crypto ? true : false}
+                            onChange={(e) => {
+                              updateSipInboundGateways(
+                                i,
+                                "pad_crypto",
+                                e.target.checked,
+                              );
+                            }}
+                          />
+                          <div>Pad crypto</div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <button
+                      className="btnty"
+                      title="Delete SIP Gateway"
+                      type="button"
+                      onClick={() => {
+                        setSipInboundMessage("");
+                        setSipOutboundMessage("");
+
+                        const totalAfterDelete =
+                          sipInboundGateways.length -
+                          1 +
+                          sipOutboundGateways.length;
+
+                        if (totalAfterDelete === 0) {
+                          setSipInboundMessage(
+                            "You must provide at least one SIP Gateway.",
+                          );
+                          setSipOutboundMessage(
+                            "You must provide at least one SIP Gateway.",
+                          );
+                        } else {
+                          handleSipGatewayDelete(
+                            sipInboundGateways.find((g2, i2) => i2 === i),
+                          );
+
+                          setSipInboundGateways(
+                            sipInboundGateways.filter((g2, i2) => i2 !== i),
+                          );
+                        }
+                      }}
+                    >
+                      <Icon>
+                        <Icons.Trash2 />
+                      </Icon>
+                    </button>
+                  </div>
+                ))}
               <ButtonGroup left>
                 <button
                   className="btnty"
                   type="button"
                   title="Add SIP Gateway"
                   onClick={() => {
-                    setSipMessage("");
-                    addSipGateway();
+                    setSipInboundMessage("");
+                    setSipOutboundMessage("");
+                    addSipInboundGateway();
                   }}
                 >
                   <Icon subStyle="teal">
@@ -980,25 +1115,35 @@ export const CarrierForm = ({
                 </button>
               </ButtonGroup>
             </fieldset>
-            <fieldset>
-              <label htmlFor="allow_ip_addresses">Credentials</label>
-              <MXS>
-                <em>Click plus icon to add new credential.</em>
-              </MXS>
+            {trunkType === "auth" && (
+              <fieldset>
+                <label htmlFor="inbound_auth_username">Credentials</label>
+                <MXS>
+                  <em>Enter authentication credentials for inbound calls.</em>
+                </MXS>
 
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  title="Add SIP Credential"
-                  onClick={() => {}}
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
-            </fieldset>
+                <label htmlFor="inbound_auth_username">Username</label>
+                <input
+                  id="inbound_auth_username"
+                  name="inbound_auth_username"
+                  type="text"
+                  placeholder="Authentication username"
+                  required={true}
+                  value={inboundAuthUsername}
+                  onChange={(e) => setInboundAuthUsername(e.target.value)}
+                />
+
+                <label htmlFor="inbound_auth_password">Password</label>
+                <Passwd
+                  id="inbound_auth_password"
+                  name="inbound_auth_password"
+                  placeholder="Authentication password"
+                  required={true}
+                  value={inboundAuthPassword}
+                  onChange={(e) => setInboundAuthPassword(e.target.value)}
+                />
+              </fieldset>
+            )}
           </Tab>
           {/** Outbound */}
           <Tab id="outbound" label="Outbound">
@@ -1171,9 +1316,9 @@ export const CarrierForm = ({
               <label htmlFor="sip_gateways">
                 Network address / Port / Netmask
               </label>
-              {sipMessage && <Message message={sipMessage} />}
-              {hasLength(sipGateways) &&
-                sipGateways.map((g, i) => (
+              {sipOutboundMessage && <Message message={sipOutboundMessage} />}
+              {hasLength(sipOutboundGateways) &&
+                sipOutboundGateways.map((g, i) => (
                   <div
                     key={`sip_gateway_${i}`}
                     className="gateway gateway--sip"
@@ -1188,7 +1333,11 @@ export const CarrierForm = ({
                           required
                           value={g.ipv4}
                           onChange={(e) => {
-                            updateSipGateways(i, "ipv4", e.target.value);
+                            updateSipOutboundGateways(
+                              i,
+                              "ipv4",
+                              e.target.value,
+                            );
                           }}
                           ref={(ref: HTMLInputElement) =>
                             (refSipIp.current[i] = ref)
@@ -1209,7 +1358,7 @@ export const CarrierForm = ({
                           }
                           value={g.port === null ? "" : g.port}
                           onChange={(e) => {
-                            updateSipGateways(
+                            updateSipOutboundGateways(
                               i,
                               "port",
                               g.outbound > 0 &&
@@ -1232,7 +1381,11 @@ export const CarrierForm = ({
                             value={g.protocol}
                             options={SIP_GATEWAY_PROTOCOL_OPTIONS}
                             onChange={(e) => {
-                              updateSipGateways(i, "protocol", e.target.value);
+                              updateSipOutboundGateways(
+                                i,
+                                "protocol",
+                                e.target.value,
+                              );
                             }}
                           />
                         </div>
@@ -1244,7 +1397,11 @@ export const CarrierForm = ({
                             value={g.netmask}
                             options={NETMASK_OPTIONS}
                             onChange={(e) => {
-                              updateSipGateways(i, "netmask", e.target.value);
+                              updateSipOutboundGateways(
+                                i,
+                                "netmask",
+                                e.target.value,
+                              );
                             }}
                           />
                         </div>
@@ -1262,7 +1419,7 @@ export const CarrierForm = ({
                             type="checkbox"
                             checked={g.is_active ? true : false}
                             onChange={(e) => {
-                              updateSipGateways(
+                              updateSipOutboundGateways(
                                 i,
                                 "is_active",
                                 e.target.checked ? 1 : 0,
@@ -1281,7 +1438,7 @@ export const CarrierForm = ({
                             type="checkbox"
                             checked={g.pad_crypto ? true : false}
                             onChange={(e) => {
-                              updateSipGateways(
+                              updateSipOutboundGateways(
                                 i,
                                 "pad_crypto",
                                 e.target.checked,
@@ -1303,7 +1460,7 @@ export const CarrierForm = ({
                               type="checkbox"
                               checked={g.send_options_ping ? true : false}
                               onChange={(e) => {
-                                updateSipGateways(
+                                updateSipOutboundGateways(
                                   i,
                                   "send_options_ping",
                                   e.target.checked,
@@ -1326,7 +1483,7 @@ export const CarrierForm = ({
                               type="checkbox"
                               checked={g.use_sips_scheme ? true : false}
                               onChange={(e) => {
-                                updateSipGateways(
+                                updateSipOutboundGateways(
                                   i,
                                   "use_sips_scheme",
                                   e.target.checked,
@@ -1344,19 +1501,27 @@ export const CarrierForm = ({
                       title="Delete SIP Gateway"
                       type="button"
                       onClick={() => {
-                        setSipMessage("");
+                        setSipInboundMessage("");
+                        setSipOutboundMessage("");
 
-                        if (sipGateways.length === 1) {
-                          setSipMessage(
+                        const totalAfterDelete =
+                          sipInboundGateways.length +
+                          (sipOutboundGateways.length - 1);
+
+                        if (totalAfterDelete === 0) {
+                          setSipInboundMessage(
+                            "You must provide at least one SIP Gateway.",
+                          );
+                          setSipOutboundMessage(
                             "You must provide at least one SIP Gateway.",
                           );
                         } else {
                           handleSipGatewayDelete(
-                            sipGateways.find((g2, i2) => i2 === i),
+                            sipOutboundGateways.find((g2, i2) => i2 === i),
                           );
 
-                          setSipGateways(
-                            sipGateways.filter((g2, i2) => i2 !== i),
+                          setSipOutboundGateways(
+                            sipOutboundGateways.filter((g2, i2) => i2 !== i),
                           );
                         }
                       }}
@@ -1373,8 +1538,9 @@ export const CarrierForm = ({
                   type="button"
                   title="Add SIP Gateway"
                   onClick={() => {
-                    setSipMessage("");
-                    addSipGateway();
+                    setSipInboundMessage("");
+                    setSipOutboundMessage("");
+                    addSipOutboundGateway();
                   }}
                 >
                   <Icon subStyle="teal">

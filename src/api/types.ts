@@ -461,6 +461,8 @@ export interface CarrierRegisterStatus {
 
 export type DtmfType = "rfc2833" | "tones" | "info";
 
+export type TrunkType = "static_ip" | "auth" | "reg";
+
 export interface Carrier {
   voip_carrier_sid: string;
   name: string;
@@ -489,6 +491,7 @@ export interface Carrier {
   register_status: CarrierRegisterStatus;
   dtmf_type: DtmfType;
   outbound_sip_proxy: string | null;
+  trunk_type: TrunkType;
 }
 
 export interface PredefinedCarrier extends Carrier {
