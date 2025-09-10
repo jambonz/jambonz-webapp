@@ -111,7 +111,6 @@ export const CarrierForm = ({
   const [sipUser, setSipUser] = useState("");
   const [sipPass, setSipPass] = useState("");
   const [sipRealm, setSipRealm] = useState("");
-  const [initialRegister, setInitialRegister] = useState(false);
   const [fromUser, setFromUser] = useState("");
   const [fromDomain, setFromDomain] = useState("");
   const [regPublicIpInContact, setRegPublicIpInContact] = useState(false);
@@ -257,20 +256,6 @@ export const CarrierForm = ({
       }
       if (obj.register_public_ip_in_contact) {
         setRegPublicIpInContact(obj.register_public_ip_in_contact);
-      }
-
-      if (
-        obj.requires_register ||
-        obj.register_username ||
-        obj.register_password ||
-        obj.register_sip_realm ||
-        obj.register_from_user ||
-        obj.register_from_domain ||
-        obj.register_public_ip_in_contact
-      ) {
-        setInitialRegister(true);
-      } else {
-        setInitialRegister(false);
       }
 
       if (obj.tech_prefix) {
@@ -969,152 +954,163 @@ export const CarrierForm = ({
           </Tab>
           {/** Inbound */}
           <Tab id="inbound" label="Inbound">
-            <fieldset>
-              <label htmlFor="allow_ip_addresses">Allowed IP Addresses</label>
-              {hasLength(sipInboundGateways) ? (
-                <label htmlFor="sip_gateways">Network address / Netmask</label>
-              ) : (
-                <MXS>
-                  <em>Click plus icon to add SIP Gateway.</em>
-                </MXS>
-              )}
-              {sipInboundMessage && <Message message={sipInboundMessage} />}
-              {hasLength(sipInboundGateways) &&
-                sipInboundGateways.map((g, i) => (
-                  <div
-                    key={`sip_gateway_${i}`}
-                    className="gateway-inbound gateway-inbound--sip"
-                  >
-                    <div>
-                      <div>
-                        <input
-                          id={`sip_ip_${i}`}
-                          name={`sip_ip_${i}`}
-                          type="text"
-                          placeholder="1.2.3.4 / sip.my.com"
-                          required
-                          value={g.ipv4}
-                          onChange={(e) => {
-                            updateSipInboundGateways(i, "ipv4", e.target.value);
-                          }}
-                          ref={(ref: HTMLInputElement) =>
-                            (refSipIp.current[i] = ref)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Selector
-                          id={`sip_netmask_${i}`}
-                          name={`sip_netmask${i}`}
-                          value={g.netmask}
-                          options={NETMASK_OPTIONS}
-                          onChange={(e) => {
-                            updateSipInboundGateways(
-                              i,
-                              "netmask",
-                              e.target.value,
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div>
-                        <label
-                          htmlFor={`sip__gw_is_active_${i}`}
-                          className="chk"
-                        >
-                          <input
-                            id={`sip__gw_is_active_${i}`}
-                            name={`sip__gw_is_active_${i}`}
-                            type="checkbox"
-                            checked={g.is_active ? true : false}
-                            onChange={(e) => {
-                              updateSipInboundGateways(
-                                i,
-                                "is_active",
-                                e.target.checked ? 1 : 0,
-                              );
-                            }}
-                          />
-                          <div>Active</div>
-                        </label>
-                      </div>
-
-                      <div>
-                        <label htmlFor={`sip_pad_crypto_${i}`} className="chk">
-                          <input
-                            id={`sip_pad_crypto_${i}`}
-                            name={`sip_pad_crypto_${i}`}
-                            type="checkbox"
-                            checked={g.pad_crypto ? true : false}
-                            onChange={(e) => {
-                              updateSipInboundGateways(
-                                i,
-                                "pad_crypto",
-                                e.target.checked,
-                              );
-                            }}
-                          />
-                          <div>Pad crypto</div>
-                        </label>
-                      </div>
-                    </div>
-
-                    <button
-                      className="btnty"
-                      title="Delete SIP Gateway"
-                      type="button"
-                      onClick={() => {
-                        setSipInboundMessage("");
-                        setSipOutboundMessage("");
-
-                        const totalAfterDelete =
-                          sipInboundGateways.length -
-                          1 +
-                          sipOutboundGateways.length;
-
-                        if (totalAfterDelete === 0) {
-                          setSipInboundMessage(
-                            "You must provide at least one SIP Gateway.",
-                          );
-                          setSipOutboundMessage(
-                            "You must provide at least one SIP Gateway.",
-                          );
-                        } else {
-                          handleSipGatewayDelete(
-                            sipInboundGateways.find((g2, i2) => i2 === i),
-                          );
-
-                          setSipInboundGateways(
-                            sipInboundGateways.filter((g2, i2) => i2 !== i),
-                          );
-                        }
-                      }}
+            {trunkType === "static_ip" && (
+              <fieldset>
+                <label htmlFor="allow_ip_addresses">Allowed IP Addresses</label>
+                {hasLength(sipInboundGateways) ? (
+                  <label htmlFor="sip_gateways">
+                    Network address / Netmask
+                  </label>
+                ) : (
+                  <MXS>
+                    <em>Click plus icon to add SIP Gateway.</em>
+                  </MXS>
+                )}
+                {sipInboundMessage && <Message message={sipInboundMessage} />}
+                {hasLength(sipInboundGateways) &&
+                  sipInboundGateways.map((g, i) => (
+                    <div
+                      key={`sip_gateway_${i}`}
+                      className="gateway-inbound gateway-inbound--sip"
                     >
-                      <Icon>
-                        <Icons.Trash2 />
-                      </Icon>
-                    </button>
-                  </div>
-                ))}
-              <ButtonGroup left>
-                <button
-                  className="btnty"
-                  type="button"
-                  title="Add SIP Gateway"
-                  onClick={() => {
-                    setSipInboundMessage("");
-                    setSipOutboundMessage("");
-                    addSipInboundGateway();
-                  }}
-                >
-                  <Icon subStyle="teal">
-                    <Icons.Plus />
-                  </Icon>
-                </button>
-              </ButtonGroup>
-            </fieldset>
+                      <div>
+                        <div>
+                          <input
+                            id={`sip_ip_${i}`}
+                            name={`sip_ip_${i}`}
+                            type="text"
+                            placeholder="1.2.3.4 / sip.my.com"
+                            required
+                            value={g.ipv4}
+                            onChange={(e) => {
+                              updateSipInboundGateways(
+                                i,
+                                "ipv4",
+                                e.target.value,
+                              );
+                            }}
+                            ref={(ref: HTMLInputElement) =>
+                              (refSipIp.current[i] = ref)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Selector
+                            id={`sip_netmask_${i}`}
+                            name={`sip_netmask${i}`}
+                            value={g.netmask}
+                            options={NETMASK_OPTIONS}
+                            onChange={(e) => {
+                              updateSipInboundGateways(
+                                i,
+                                "netmask",
+                                e.target.value,
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div>
+                          <label
+                            htmlFor={`sip__gw_is_active_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`sip__gw_is_active_${i}`}
+                              name={`sip__gw_is_active_${i}`}
+                              type="checkbox"
+                              checked={g.is_active ? true : false}
+                              onChange={(e) => {
+                                updateSipInboundGateways(
+                                  i,
+                                  "is_active",
+                                  e.target.checked ? 1 : 0,
+                                );
+                              }}
+                            />
+                            <div>Active</div>
+                          </label>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`sip_pad_crypto_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`sip_pad_crypto_${i}`}
+                              name={`sip_pad_crypto_${i}`}
+                              type="checkbox"
+                              checked={g.pad_crypto ? true : false}
+                              onChange={(e) => {
+                                updateSipInboundGateways(
+                                  i,
+                                  "pad_crypto",
+                                  e.target.checked,
+                                );
+                              }}
+                            />
+                            <div>Pad crypto</div>
+                          </label>
+                        </div>
+                      </div>
+
+                      <button
+                        className="btnty"
+                        title="Delete SIP Gateway"
+                        type="button"
+                        onClick={() => {
+                          setSipInboundMessage("");
+                          setSipOutboundMessage("");
+
+                          const totalAfterDelete =
+                            sipInboundGateways.length -
+                            1 +
+                            sipOutboundGateways.length;
+
+                          if (totalAfterDelete === 0) {
+                            setSipInboundMessage(
+                              "You must provide at least one SIP Gateway.",
+                            );
+                            setSipOutboundMessage(
+                              "You must provide at least one SIP Gateway.",
+                            );
+                          } else {
+                            handleSipGatewayDelete(
+                              sipInboundGateways.find((g2, i2) => i2 === i),
+                            );
+
+                            setSipInboundGateways(
+                              sipInboundGateways.filter((g2, i2) => i2 !== i),
+                            );
+                          }
+                        }}
+                      >
+                        <Icon>
+                          <Icons.Trash2 />
+                        </Icon>
+                      </button>
+                    </div>
+                  ))}
+                <ButtonGroup left>
+                  <button
+                    className="btnty"
+                    type="button"
+                    title="Add SIP Gateway"
+                    onClick={() => {
+                      setSipInboundMessage("");
+                      setSipOutboundMessage("");
+                      addSipInboundGateway();
+                    }}
+                  >
+                    <Icon subStyle="teal">
+                      <Icons.Plus />
+                    </Icon>
+                  </button>
+                </ButtonGroup>
+              </fieldset>
+            )}
             {trunkType === "auth" && (
               <fieldset>
                 <label htmlFor="inbound_auth_username">Credentials</label>
@@ -1144,6 +1140,13 @@ export const CarrierForm = ({
                 />
               </fieldset>
             )}
+            {trunkType === "reg" && (
+              <fieldset>
+                <MXS>
+                  <em>Registration Trunk does not require Inbound settings.</em>
+                </MXS>
+              </fieldset>
+            )}
           </Tab>
           {/** Outbound */}
           <Tab id="outbound" label="Outbound">
@@ -1171,57 +1174,6 @@ export const CarrierForm = ({
               <MXS>
                 <em>Prepend a leading + on origination attempts.</em>
               </MXS>
-            </fieldset>
-            <fieldset>
-              <Checkzone
-                hidden
-                name="sip_credentials"
-                label="Outbound authentication"
-                initialCheck={initialRegister}
-                handleChecked={(e) => {
-                  if (!e.target.checked) {
-                    setSipUser("");
-                    setSipPass("");
-                    setSipRealm("");
-                    setSipRegister(false);
-                    setFromUser("");
-                    setFromDomain("");
-                    setRegPublicIpInContact(false);
-                  }
-                }}
-              >
-                <MS>
-                  Does your carrier require authentication on outbound calls?
-                </MS>
-                <label htmlFor="sip_username">
-                  Auth username {sipPass || sipRegister ? <span>*</span> : ""}
-                </label>
-                <input
-                  id="sip_username"
-                  name="sip_username"
-                  type="text"
-                  value={sipUser}
-                  placeholder="SIP username for authenticating outbound calls"
-                  required={sipRegister || sipPass.length > 0}
-                  onChange={(e) => {
-                    setSipUser(e.target.value);
-                  }}
-                />
-                <label htmlFor="sip_password">
-                  Password
-                  {sipUser || sipRegister ? <span>*</span> : ""}
-                </label>
-                <Passwd
-                  id="sip_password"
-                  name="sip_password"
-                  value={sipPass}
-                  placeholder="SIP password for authenticating outbound calls"
-                  required={sipRegister || sipUser.length > 0}
-                  onChange={(e) => {
-                    setSipPass(e.target.value);
-                  }}
-                />
-              </Checkzone>
             </fieldset>
             <fieldset>
               <Checkzone
