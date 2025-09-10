@@ -903,7 +903,7 @@ export const CarrierForm = ({
                 )}
             </fieldset>
             <fieldset>
-              <legend>Trunk Type</legend>
+              <label htmlFor="trunk_type">Trunk Type</label>
               <label htmlFor="trunk_type_static_ip" className="chk">
                 <input
                   id="trunk_type_static_ip"
