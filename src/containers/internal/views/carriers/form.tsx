@@ -85,9 +85,11 @@ export const CarrierForm = ({
   const user = useSelectState("user");
   const currentServiceProvider = useSelectState("currentServiceProvider");
 
-  const refSipIp = useRef<HTMLInputElement[]>([]);
+  const refSipInboundIp = useRef<HTMLInputElement[]>([]);
+  const refSipOutboundIp = useRef<HTMLInputElement[]>([]);
   const refSipPort = useRef<HTMLInputElement[]>([]);
   const refSmppIp = useRef<HTMLInputElement[]>([]);
+  const refInboundAuthUsername = useRef<HTMLInputElement>(null);
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -432,48 +434,147 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
-    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
-    if (!hasLength(allSipGateways)) {
-      return "You must provide at least one SIP Gateway.";
+    console.log("=== getSipValidation called ===");
+    console.log("Current trunk type:", trunkType);
+
+    // Check if there are any gateways at all
+    if (sipInboundGateways.length === 0 && sipOutboundGateways.length === 0) {
+      // For Static IP Whitelist, prioritize inbound tab since it requires inbound gateways
+      if (trunkType === "static_ip") {
+        setActiveTab("inbound");
+        return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+      } else {
+        setActiveTab("outbound");
+        return "You must provide at least one SIP Gateway.";
+      }
     }
 
     // Validate Static IP Whitelist trunk type requires at least 1 inbound gateway
-    if (trunkType === "static_ip") {
-      if (sipInboundGateways.length < 1) {
-        return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+    if (trunkType === "static_ip" && sipInboundGateways.length < 1) {
+      setActiveTab("inbound");
+      return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+    }
+
+    // Validate Auth Trunk credentials
+    if (trunkType === "auth") {
+      console.log("Auth validation:", {
+        trunkType,
+        inboundAuthUsername,
+        inboundAuthPassword,
+        usernameEmpty:
+          !inboundAuthUsername || inboundAuthUsername.trim() === "",
+        passwordEmpty:
+          !inboundAuthPassword || inboundAuthPassword.trim() === "",
+      });
+      if (
+        !inboundAuthUsername ||
+        !inboundAuthPassword ||
+        inboundAuthUsername.trim() === "" ||
+        inboundAuthPassword.trim() === ""
+      ) {
+        setActiveTab("inbound");
+        // Delay focus to allow tab switch to complete
+        setTimeout(() => {
+          if (refInboundAuthUsername.current) {
+            refInboundAuthUsername.current.focus();
+          }
+        }, 100);
+        return "Auth Trunk requires both username and password credentials.";
       }
     }
 
-    for (let i = 0; i < allSipGateways.length; i++) {
-      const gateway = allSipGateways[i];
+    // Validate inbound gateways
+    for (let i = 0; i < sipInboundGateways.length; i++) {
+      const gateway = sipInboundGateways[i];
       const type = getIpValidationType(gateway.ipv4);
 
-      /** DH: unclear why we had this restriction, removing for now
-      if (type === FQDN_TOP_LEVEL) {
-        refSipIp.current[i].focus();
-        return "When using an FQDN, you must use a subdomain (e.g. sip.example.com).";
-      } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
-      */
       if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
-        refSipIp.current[i].focus();
+        if (refSipInboundIp.current[i]) {
+          refSipInboundIp.current[i].focus();
+        }
+        setActiveTab("inbound");
         return "A fully qualified domain name may only be used for outbound calls.";
       } else if (type === INVALID) {
-        refSipIp.current[i].focus();
+        if (refSipInboundIp.current[i]) {
+          refSipInboundIp.current[i].focus();
+        }
+        setActiveTab("inbound");
         return "Please provide a valid IP address or fully qualified domain name.";
       }
 
-      /** Duplicates validation */
-      const dupeSipGateway = allSipGateways.find((g) => {
+      // Check for duplicates within inbound gateways
+      const dupeInboundGateway = sipInboundGateways.find((g, idx) => {
         return (
-          g !== gateway &&
+          idx !== i &&
           gateway.ipv4 &&
           g.ipv4 === gateway.ipv4 &&
           g.port === gateway.port
         );
       });
 
-      if (dupeSipGateway) {
-        refSipIp.current[i].focus();
+      if (dupeInboundGateway) {
+        if (refSipInboundIp.current[i]) {
+          refSipInboundIp.current[i].focus();
+        }
+        setActiveTab("inbound");
+        return "Each SIP gateway must have a unique IP address.";
+      }
+    }
+
+    // Validate outbound gateways
+    for (let i = 0; i < sipOutboundGateways.length; i++) {
+      const gateway = sipOutboundGateways[i];
+      const type = getIpValidationType(gateway.ipv4);
+
+      if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
+        if (refSipOutboundIp.current[i]) {
+          refSipOutboundIp.current[i].focus();
+        }
+        setActiveTab("outbound");
+        return "A fully qualified domain name may only be used for outbound calls.";
+      } else if (type === INVALID) {
+        if (refSipOutboundIp.current[i]) {
+          refSipOutboundIp.current[i].focus();
+        }
+        setActiveTab("outbound");
+        return "Please provide a valid IP address or fully qualified domain name.";
+      }
+
+      // Check for duplicates within outbound gateways
+      const dupeOutboundGateway = sipOutboundGateways.find((g, idx) => {
+        return (
+          idx !== i &&
+          gateway.ipv4 &&
+          g.ipv4 === gateway.ipv4 &&
+          g.port === gateway.port
+        );
+      });
+
+      if (dupeOutboundGateway) {
+        if (refSipOutboundIp.current[i]) {
+          refSipOutboundIp.current[i].focus();
+        }
+        setActiveTab("outbound");
+        return "Each SIP gateway must have a unique IP address.";
+      }
+    }
+
+    // Check for duplicates between inbound and outbound gateways
+    for (let i = 0; i < sipInboundGateways.length; i++) {
+      const inboundGateway = sipInboundGateways[i];
+      const dupeInOutbound = sipOutboundGateways.find((g) => {
+        return (
+          inboundGateway.ipv4 &&
+          g.ipv4 === inboundGateway.ipv4 &&
+          g.port === inboundGateway.port
+        );
+      });
+
+      if (dupeInOutbound) {
+        if (refSipInboundIp.current[i]) {
+          refSipInboundIp.current[i].focus();
+        }
+        setActiveTab("inbound");
         return "Each SIP gateway must have a unique IP address.";
       }
     }
@@ -594,17 +695,30 @@ export const CarrierForm = ({
     setSipOutboundMessage("");
 
     const sipGatewayValidation = getSipValidation();
+    console.log("Validation result:", sipGatewayValidation);
 
     if (sipGatewayValidation) {
-      // For validation errors that affect the total, show in both tabs
+      // For static_ip validation errors, show only in inbound tab
       if (
+        sipGatewayValidation ===
+        "Static IP Whitelist trunk type requires at least one inbound gateway."
+      ) {
+        setSipInboundMessage(sipGatewayValidation);
+      } else if (
+        sipGatewayValidation ===
+        "Auth Trunk requires both username and password credentials."
+      ) {
+        // Show auth credentials validation error only in inbound tab
+        setSipInboundMessage(sipGatewayValidation);
+      } else if (
         sipGatewayValidation === "You must provide at least one SIP Gateway."
       ) {
+        // Show in both tabs when no gateways at all
         setSipInboundMessage(sipGatewayValidation);
         setSipOutboundMessage(sipGatewayValidation);
       } else {
-        // For other validation errors, we need to determine which tab they belong to
-        // For now, show in both tabs to ensure user sees the error
+        // For other validation errors, the validation function already set the correct tab
+        // Show in both tabs to ensure user sees the error
         setSipInboundMessage(sipGatewayValidation);
         setSipOutboundMessage(sipGatewayValidation);
       }
@@ -769,6 +883,7 @@ export const CarrierForm = ({
           !carrier?.data && carrier?.refetch ? "form--blur" : ""
         }`}
         onSubmit={handleSubmit}
+        noValidate
       >
         <fieldset>
           <MS>{MSG_REQUIRED_FIELDS}</MS>
@@ -927,6 +1042,11 @@ export const CarrierForm = ({
                     setInboundAuthPassword("");
                   }
 
+                  // Set sipRegister to true when trunk type is Registration
+                  if (newTrunkType === "reg") {
+                    setSipRegister(true);
+                  }
+
                   // Ensure at least one inbound gateway for Static IP Whitelist
                   if (newTrunkType === "static_ip") {
                     if (sipInboundGateways.length === 0) {
@@ -994,7 +1114,7 @@ export const CarrierForm = ({
                               );
                             }}
                             ref={(ref: HTMLInputElement) =>
-                              (refSipIp.current[i] = ref)
+                              (refSipInboundIp.current[i] = ref)
                             }
                           />
                         </div>
@@ -1139,9 +1259,10 @@ export const CarrierForm = ({
                   name="inbound_auth_username"
                   type="text"
                   placeholder="Authentication username"
-                  required={true}
+                  required={trunkType === "auth"}
                   value={inboundAuthUsername}
                   onChange={(e) => setInboundAuthUsername(e.target.value)}
+                  ref={refInboundAuthUsername}
                 />
 
                 <label htmlFor="inbound_auth_password">Password</label>
@@ -1149,7 +1270,7 @@ export const CarrierForm = ({
                   id="inbound_auth_password"
                   name="inbound_auth_password"
                   placeholder="Authentication password"
-                  required={true}
+                  required={trunkType === "auth"}
                   value={inboundAuthPassword}
                   onChange={(e) => setInboundAuthPassword(e.target.value)}
                 />
@@ -1307,7 +1428,7 @@ export const CarrierForm = ({
                             );
                           }}
                           ref={(ref: HTMLInputElement) =>
-                            (refSipIp.current[i] = ref)
+                            (refSipOutboundIp.current[i] = ref)
                           }
                         />
                       </div>
