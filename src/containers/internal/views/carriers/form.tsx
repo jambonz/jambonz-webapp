@@ -27,6 +27,7 @@ import {
   SIP_GATEWAY_PROTOCOL_OPTIONS,
   TCP_MAX_PORT,
   TECH_PREFIX_MINLENGTH,
+  TRUNK_TYPE_SELECTION,
   USER_ACCOUNT,
 } from "src/api/constants";
 import { Icons, Section, Tooltip } from "src/components";
@@ -904,52 +905,22 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <label htmlFor="trunk_type">Trunk Type</label>
-              <label htmlFor="trunk_type_static_ip" className="chk">
-                <input
-                  id="trunk_type_static_ip"
-                  name="trunk_type"
-                  type="radio"
-                  checked={trunkType === "static_ip"}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setTrunkType("static_ip");
-                      setInboundAuthUsername("");
-                      setInboundAuthPassword("");
-                    }
-                  }}
-                />
-                <div>Static IP Whitelist</div>
-              </label>
-              <label htmlFor="trunk_type_auth" className="chk">
-                <input
-                  id="trunk_type_auth"
-                  name="trunk_type"
-                  type="radio"
-                  checked={trunkType === "auth"}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setTrunkType("auth");
-                    }
-                  }}
-                />
-                <div>Auth Trunk</div>
-              </label>
-              <label htmlFor="trunk_type_reg" className="chk">
-                <input
-                  id="trunk_type_reg"
-                  name="trunk_type"
-                  type="radio"
-                  checked={trunkType === "reg"}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setTrunkType("reg");
-                      setInboundAuthUsername("");
-                      setInboundAuthPassword("");
-                    }
-                  }}
-                />
-                <div>Registration Trunk</div>
-              </label>
+              <Selector
+                id="trunk_type"
+                name="trunk_type"
+                value={trunkType}
+                options={TRUNK_TYPE_SELECTION}
+                onChange={(e) => {
+                  const newTrunkType = e.target.value as TrunkType;
+                  setTrunkType(newTrunkType);
+
+                  // Clear auth credentials when switching away from auth trunk
+                  if (newTrunkType !== "auth") {
+                    setInboundAuthUsername("");
+                    setInboundAuthPassword("");
+                  }
+                }}
+              />
             </fieldset>
           </Tab>
           {/** Inbound */}
