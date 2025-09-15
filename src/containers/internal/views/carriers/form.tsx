@@ -90,6 +90,9 @@ export const CarrierForm = ({
   const refSipPort = useRef<HTMLInputElement[]>([]);
   const refSmppIp = useRef<HTMLInputElement[]>([]);
   const refInboundAuthUsername = useRef<HTMLInputElement>(null);
+  const refSipUsername = useRef<HTMLInputElement>(null);
+  const refSipPassword = useRef<HTMLInputElement>(null);
+  const refSipRealm = useRef<HTMLInputElement>(null);
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [applications] = useServiceProviderData<Application[]>("Applications");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -150,6 +153,7 @@ export const CarrierForm = ({
 
   const [sipInboundMessage, setSipInboundMessage] = useState("");
   const [sipOutboundMessage, setSipOutboundMessage] = useState("");
+  const [registrationMessage, setRegistrationMessage] = useState("");
 
   const validateOutboundSipGateway = (
     gateway: string,
@@ -434,9 +438,6 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
-    console.log("=== getSipValidation called ===");
-    console.log("Current trunk type:", trunkType);
-
     // Check if there are any gateways at all
     if (sipInboundGateways.length === 0 && sipOutboundGateways.length === 0) {
       // For Static IP Whitelist, prioritize inbound tab since it requires inbound gateways
@@ -457,15 +458,6 @@ export const CarrierForm = ({
 
     // Validate Auth Trunk credentials
     if (trunkType === "auth") {
-      console.log("Auth validation:", {
-        trunkType,
-        inboundAuthUsername,
-        inboundAuthPassword,
-        usernameEmpty:
-          !inboundAuthUsername || inboundAuthUsername.trim() === "",
-        passwordEmpty:
-          !inboundAuthPassword || inboundAuthPassword.trim() === "",
-      });
       if (
         !inboundAuthUsername ||
         !inboundAuthPassword ||
@@ -480,6 +472,37 @@ export const CarrierForm = ({
           }
         }, 100);
         return "Auth Trunk requires both username and password credentials.";
+      }
+    }
+
+    // Validate Registration Trunk credentials
+    if (trunkType === "reg") {
+      if (!sipUser || sipUser.trim() === "") {
+        setActiveTab("registration");
+        setTimeout(() => {
+          if (refSipUsername.current) {
+            refSipUsername.current.focus();
+          }
+        }, 100);
+        return "Registration Trunk requires authentication username.";
+      }
+      if (!sipPass || sipPass.trim() === "") {
+        setActiveTab("registration");
+        setTimeout(() => {
+          if (refSipPassword.current) {
+            refSipPassword.current.focus();
+          }
+        }, 100);
+        return "Registration Trunk requires authentication password.";
+      }
+      if (!sipRealm || sipRealm.trim() === "") {
+        setActiveTab("registration");
+        setTimeout(() => {
+          if (refSipRealm.current) {
+            refSipRealm.current.focus();
+          }
+        }, 100);
+        return "Registration Trunk requires SIP realm.";
       }
     }
 
@@ -691,11 +714,25 @@ export const CarrierForm = ({
       return;
     }
 
+    // Validate carrier name since HTML5 validation is disabled
+    if (!carrierName || carrierName.trim() === "") {
+      toastError("Carrier name is required");
+      setActiveTab("general");
+      // Focus on carrier name input
+      const carrierNameInput = document.getElementById(
+        "carrier_name",
+      ) as HTMLInputElement;
+      if (carrierNameInput) {
+        carrierNameInput.focus();
+      }
+      return;
+    }
+
     setSipInboundMessage("");
     setSipOutboundMessage("");
+    setRegistrationMessage("");
 
     const sipGatewayValidation = getSipValidation();
-    console.log("Validation result:", sipGatewayValidation);
 
     if (sipGatewayValidation) {
       // For static_ip validation errors, show only in inbound tab
@@ -710,6 +747,15 @@ export const CarrierForm = ({
       ) {
         // Show auth credentials validation error only in inbound tab
         setSipInboundMessage(sipGatewayValidation);
+      } else if (
+        sipGatewayValidation ===
+          "Registration Trunk requires authentication username." ||
+        sipGatewayValidation ===
+          "Registration Trunk requires authentication password." ||
+        sipGatewayValidation === "Registration Trunk requires SIP realm."
+      ) {
+        // Show registration validation errors in registration tab
+        setRegistrationMessage(sipGatewayValidation);
       } else if (
         sipGatewayValidation === "You must provide at least one SIP Gateway."
       ) {
@@ -1641,10 +1687,16 @@ export const CarrierForm = ({
           {/** Registration */}
           <Tab id="registration" label="Registration">
             <fieldset>
+              {registrationMessage && <Message message={registrationMessage} />}
               <div className="multi">
                 <div className="inp">
                   <label htmlFor="sip_username">
-                    Auth username {sipPass || sipRegister ? <span>*</span> : ""}
+                    Auth username{" "}
+                    {sipPass || sipRegister || trunkType === "reg" ? (
+                      <span>*</span>
+                    ) : (
+                      ""
+                    )}
                   </label>
                   <input
                     id="sip_username"
@@ -1652,32 +1704,43 @@ export const CarrierForm = ({
                     type="text"
                     value={sipUser}
                     placeholder="SIP username"
-                    required={sipRegister || sipPass.length > 0}
+                    required={
+                      sipRegister || sipPass.length > 0 || trunkType === "reg"
+                    }
                     onChange={(e) => {
                       setSipUser(e.target.value);
                     }}
+                    ref={refSipUsername}
                   />
                 </div>
 
                 <div className="sel sel--preset">
                   <label htmlFor="sip_password">
                     Password
-                    {sipUser || sipRegister ? <span>*</span> : ""}
+                    {sipUser || sipRegister || trunkType === "reg" ? (
+                      <span>*</span>
+                    ) : (
+                      ""
+                    )}
                   </label>
                   <Passwd
                     id="sip_password"
                     name="sip_password"
                     value={sipPass}
                     placeholder="SIP password"
-                    required={sipRegister || sipUser.length > 0}
+                    required={
+                      sipRegister || sipUser.length > 0 || trunkType === "reg"
+                    }
                     onChange={(e) => {
                       setSipPass(e.target.value);
                     }}
+                    ref={refSipPassword}
                   />
                 </div>
               </div>
               <label htmlFor="sip_realm">
-                SIP realm{sipRegister ? <span>*</span> : ""}
+                SIP realm
+                {sipRegister || trunkType === "reg" ? <span>*</span> : ""}
               </label>
               <input
                 id="sip_realm"
@@ -1685,8 +1748,9 @@ export const CarrierForm = ({
                 type="text"
                 value={sipRealm}
                 placeholder="SIP realm for registration"
-                required={sipRegister}
+                required={sipRegister || trunkType === "reg"}
                 onChange={(e) => setSipRealm(e.target.value)}
+                ref={refSipRealm}
               />
 
               <label htmlFor="from_domain">SIP from domain</label>
