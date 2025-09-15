@@ -437,6 +437,13 @@ export const CarrierForm = ({
       return "You must provide at least one SIP Gateway.";
     }
 
+    // Validate Static IP Whitelist trunk type requires at least 1 inbound gateway
+    if (trunkType === "static_ip") {
+      if (sipInboundGateways.length < 1) {
+        return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+      }
+    }
+
     for (let i = 0; i < allSipGateways.length; i++) {
       const gateway = allSipGateways[i];
       const type = getIpValidationType(gateway.ipv4);
@@ -919,6 +926,21 @@ export const CarrierForm = ({
                     setInboundAuthUsername("");
                     setInboundAuthPassword("");
                   }
+
+                  // Ensure at least one inbound gateway for Static IP Whitelist
+                  if (newTrunkType === "static_ip") {
+                    if (sipInboundGateways.length === 0) {
+                      // Add one inbound gateway if none exist
+                      setSipInboundGateways([
+                        {
+                          ...DEFAULT_SIP_INBOUND_GATEWAY,
+                          inbound: 1,
+                          outbound: 0,
+                        },
+                      ]);
+                    }
+                    // Keep all existing gateways if multiple exist
+                  }
                 }}
               />
             </fieldset>
@@ -928,6 +950,17 @@ export const CarrierForm = ({
             {trunkType === "static_ip" && (
               <fieldset>
                 <label htmlFor="allow_ip_addresses">Allowed IP Addresses</label>
+                <MXS>
+                  <em>
+                    Static IP Whitelist requires at least one inbound gateway.
+                    {sipInboundGateways.length === 0 &&
+                      " Click the plus icon to add one."}
+                    {sipInboundGateways.length === 1 &&
+                      " You can add more gateways or keep this one."}
+                    {sipInboundGateways.length > 1 &&
+                      " You can delete gateways but must keep at least one."}
+                  </em>
+                </MXS>
                 {hasLength(sipInboundGateways) ? (
                   <label htmlFor="sip_gateways">
                     Network address / Netmask
@@ -1034,6 +1067,17 @@ export const CarrierForm = ({
                         onClick={() => {
                           setSipInboundMessage("");
                           setSipOutboundMessage("");
+
+                          // Special validation for static_ip trunk type
+                          if (
+                            trunkType === "static_ip" &&
+                            sipInboundGateways.length <= 1
+                          ) {
+                            setSipInboundMessage(
+                              "Static IP Whitelist trunk type requires at least one inbound gateway.",
+                            );
+                            return;
+                          }
 
                           const totalAfterDelete =
                             sipInboundGateways.length -
