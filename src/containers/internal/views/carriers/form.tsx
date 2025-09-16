@@ -1053,25 +1053,7 @@ export const CarrierForm = ({
                     setInboundAuthPassword("");
                   }
 
-                  // Set sipRegister to true when trunk type is Registration
-                  if (newTrunkType === "reg") {
-                    setSipRegister(true);
-                  }
-
-                  // Ensure at least one inbound gateway for Static IP Whitelist
-                  if (newTrunkType === "static_ip") {
-                    if (sipInboundGateways.length === 0) {
-                      // Add one inbound gateway if none exist
-                      setSipInboundGateways([
-                        {
-                          ...DEFAULT_SIP_INBOUND_GATEWAY,
-                          inbound: 1,
-                          outbound: 0,
-                        },
-                      ]);
-                    }
-                    // Keep all existing gateways if multiple exist
-                  }
+                  setSipRegister(newTrunkType === "reg");
                 }}
               />
             </fieldset>
