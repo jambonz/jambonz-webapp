@@ -440,10 +440,12 @@ export const CarrierForm = ({
       if (trunkType === "static_ip") {
         setActiveTab("inbound");
         return "Static IP Whitelist trunk type requires at least one inbound gateway.";
-      } else {
+      } else if (trunkType === "reg") {
+        // Registration trunk needs at least one outbound gateway for routing
         setActiveTab("outbound");
         return "You must provide at least one SIP Gateway.";
       }
+      // Auth trunk doesn't require any gateways - skip validation
     }
 
     // Validate Static IP Whitelist trunk type requires at least 1 inbound gateway
@@ -1389,10 +1391,14 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <label htmlFor="sip_gateways">
-                SIP gateways<span>*</span>
+                SIP gateways{trunkType !== "auth" ? <span>*</span> : ""}
               </label>
               <MXS>
-                <em>At least one SIP gateway is required.</em>
+                <em>
+                  {trunkType === "auth"
+                    ? "SIP gateways are optional for Auth Trunk. Authentication is handled via credentials."
+                    : "At least one SIP gateway is required."}
+                </em>
               </MXS>
               <label htmlFor="sip_gateways">
                 Network address / Port / Netmask
@@ -1589,7 +1595,8 @@ export const CarrierForm = ({
                           sipInboundGateways.length +
                           (sipOutboundGateways.length - 1);
 
-                        if (totalAfterDelete === 0) {
+                        // For auth trunk, allow zero gateways since authentication handles the connection
+                        if (totalAfterDelete === 0 && trunkType !== "auth") {
                           setSipInboundMessage(
                             "You must provide at least one SIP Gateway.",
                           );
