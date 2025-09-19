@@ -130,7 +130,7 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_RESEMBLE,
   },
   {
-    name: "SoundHound Houndify",
+    name: "SoundHound",
     value: VENDOR_HOUNDIFY,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
