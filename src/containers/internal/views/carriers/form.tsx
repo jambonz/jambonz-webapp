@@ -126,6 +126,7 @@ export const CarrierForm = ({
   const [initialSipProxy, setInitialSipProxy] = useState(false);
   const [outboundSipProxy, setOutboundSipProxy] = useState("");
   const [initialRegister, setInitialRegister] = useState(false);
+  const [initialSipRegister, setInitialSipRegister] = useState(false);
 
   const [smppSystemId, setSmppSystemId] = useState("");
   const [smppPass, setSmppPass] = useState("");
@@ -136,6 +137,9 @@ export const CarrierForm = ({
     [],
   );
   const [sipOutboundGateways, setSipOutboundGateways] = useState<SipGateway[]>(
+    [],
+  );
+  const [tmpInboundGateways, setTmpInboundGateways] = useState<SipGateway[]>(
     [],
   );
   const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([
@@ -292,6 +296,12 @@ export const CarrierForm = ({
         setInitialRegister(false);
       }
 
+      if (obj.requires_register) {
+        setInitialSipRegister(true);
+      } else {
+        setInitialSipRegister(false);
+      }
+
       if (obj.smpp_system_id) {
         setSmppSystemId(obj.smpp_system_id);
       }
@@ -390,9 +400,14 @@ export const CarrierForm = ({
   };
 
   const handleSipGatewayPutPost = (voip_carrier_sid: string) => {
-    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
+    // For auth and reg trunk types, only save outbound gateways
+    const gatewaysToSave =
+      trunkType === "auth" || trunkType === "reg"
+        ? sipOutboundGateways
+        : [...sipInboundGateways, ...sipOutboundGateways];
+
     Promise.all(
-      allSipGateways.map(({ sip_gateway_sid, ...g }: SipGateway) =>
+      gatewaysToSave.map(({ sip_gateway_sid, ...g }: SipGateway) =>
         sip_gateway_sid
           ? putSipGateway(sip_gateway_sid, g)
           : postSipGateway({ ...g, voip_carrier_sid }),
@@ -451,10 +466,10 @@ export const CarrierForm = ({
       if (trunkType === "static_ip") {
         setActiveTab("inbound");
         return "Static IP Whitelist trunk type requires at least one inbound gateway.";
-      } else if (trunkType === "reg") {
-        // Registration trunk needs at least one outbound gateway for routing
+      } else if (trunkType === "reg" || trunkType === "auth") {
+        // Auth and Registration trunk needs at least one outbound gateway for routing
         setActiveTab("outbound");
-        return "You must provide at least one SIP Gateway.";
+        return "You must provide at least one outbound SIP Gateway.";
       }
       // Auth trunk doesn't require any gateways - skip validation
     }
@@ -463,6 +478,15 @@ export const CarrierForm = ({
     if (trunkType === "static_ip" && sipInboundGateways.length < 1) {
       setActiveTab("inbound");
       return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+    }
+
+    // Validate Auth and Registration Trunk require at least 1 outbound gateway
+    if (
+      (trunkType === "auth" || trunkType === "reg") &&
+      sipOutboundGateways.length < 1
+    ) {
+      setActiveTab("outbound");
+      return "Auth and Registration trunk types require at least one outbound gateway.";
     }
 
     // Validate Auth Trunk credentials
@@ -641,9 +665,13 @@ export const CarrierForm = ({
   const handleActiveTab = () => {
     /** When to switch to `sip` tab */
 
-    const allSipGateways = [...sipInboundGateways, ...sipOutboundGateways];
-    const emptySipIp = allSipGateways.find((g) => g.ipv4.trim() === "");
-    const invalidSipPort = allSipGateways.find(
+    // For auth and reg trunk types, only check outbound gateways for validation
+    const gatewaysToCheck =
+      trunkType === "auth" || trunkType === "reg"
+        ? sipOutboundGateways
+        : [...sipInboundGateways, ...sipOutboundGateways];
+    const emptySipIp = gatewaysToCheck.find((g) => g.ipv4.trim() === "");
+    const invalidSipPort = gatewaysToCheck.find(
       (g) => hasValue(g.port) && !isValidPort(g.port),
     );
     const sipGatewayValidation = getSipValidation();
@@ -711,10 +739,12 @@ export const CarrierForm = ({
         // Show auth credentials validation error only in inbound tab
         setSipInboundMessage(sipGatewayValidation);
       } else if (
-        sipGatewayValidation === "You must provide at least one SIP Gateway."
+        sipGatewayValidation ===
+          "You must provide at least one outbound SIP Gateway." ||
+        sipGatewayValidation ===
+          "Auth and Registration trunk types require at least one outbound gateway."
       ) {
-        // Show in both tabs when no gateways at all
-        setSipInboundMessage(sipGatewayValidation);
+        // Show in outbound tab when outbound gateways are required
         setSipOutboundMessage(sipGatewayValidation);
       } else {
         // For other validation errors, the validation function already set the correct tab
@@ -852,8 +882,18 @@ export const CarrierForm = ({
     setPrevSipGateways(carrierSipGateways.data); /** Deadly important */
     const inboundGateways = carrierSipGateways.data.filter((g) => g.inbound);
     const outboundGateways = carrierSipGateways.data.filter((g) => g.outbound);
-    setSipInboundGateways(inboundGateways);
-    setSipOutboundGateways(outboundGateways);
+
+    // For auth and reg trunk types, don't load inbound gateways but store them in temp state
+    if (trunkType === "auth" || trunkType === "reg") {
+      if (inboundGateways.length > 0) {
+        setTmpInboundGateways(inboundGateways);
+      }
+      setSipInboundGateways([]);
+      setSipOutboundGateways(outboundGateways);
+    } else {
+      setSipInboundGateways(inboundGateways);
+      setSipOutboundGateways(outboundGateways);
+    }
   }
 
   if (
@@ -1027,6 +1067,7 @@ export const CarrierForm = ({
                 options={TRUNK_TYPE_SELECTION}
                 onChange={(e) => {
                   const newTrunkType = e.target.value as TrunkType;
+                  const prevTrunkType = trunkType;
                   setTrunkType(newTrunkType);
 
                   // Clear auth credentials when switching away from auth trunk
@@ -1038,10 +1079,43 @@ export const CarrierForm = ({
                   // Auto-check authentication and register for Registration Trunk
                   if (newTrunkType === "reg") {
                     setInitialRegister(true);
+                    setInitialSipRegister(true);
                     setSipRegister(true);
                   } else {
                     setInitialRegister(false);
+                    setInitialSipRegister(false);
                     setSipRegister(false);
+                  }
+
+                  // Handle inbound gateway management for auth and reg trunk types
+                  if (
+                    (newTrunkType === "auth" || newTrunkType === "reg") &&
+                    prevTrunkType === "static_ip"
+                  ) {
+                    // Store current inbound gateways and clear them
+                    setTmpInboundGateways(sipInboundGateways);
+                    setSipInboundGateways([]);
+                  } else if (
+                    newTrunkType === "static_ip" &&
+                    (prevTrunkType === "auth" || prevTrunkType === "reg")
+                  ) {
+                    // Restore inbound gateways from temp storage
+                    setSipInboundGateways(tmpInboundGateways);
+                    setTmpInboundGateways([]);
+                  }
+
+                  // Ensure minimum 1 outbound gateway for auth and reg types
+                  if (
+                    (newTrunkType === "auth" || newTrunkType === "reg") &&
+                    sipOutboundGateways.length === 0
+                  ) {
+                    setSipOutboundGateways([
+                      {
+                        ...DEFAULT_SIP_INBOUND_GATEWAY,
+                        inbound: 0,
+                        outbound: 1,
+                      },
+                    ]);
                   }
                 }}
               />
@@ -1266,6 +1340,12 @@ export const CarrierForm = ({
                 <MXS>
                   <em>Enter authentication credentials for inbound calls.</em>
                 </MXS>
+                <MXS>
+                  <em>
+                    Note: Auth Trunk does not use inbound SIP gateways for
+                    routing.
+                  </em>
+                </MXS>
 
                 <label htmlFor="inbound_auth_username">Username</label>
                 <input
@@ -1380,7 +1460,7 @@ export const CarrierForm = ({
                 hidden
                 name="sip_register"
                 label="Require SIP Register"
-                initialCheck={sipRegister}
+                initialCheck={initialSipRegister}
                 handleChecked={(e) => {
                   setSipRegister(e.target.checked);
                   if (!e.target.checked) {
@@ -1522,13 +1602,15 @@ export const CarrierForm = ({
             </fieldset>
             <fieldset>
               <label htmlFor="sip_gateways">
-                SIP gateways{trunkType !== "auth" ? <span>*</span> : ""}
+                SIP gateways<span>*</span>
               </label>
               <MXS>
                 <em>
                   {trunkType === "auth"
-                    ? "SIP gateways are optional for Auth Trunk. Authentication is handled via credentials."
-                    : "At least one SIP gateway is required."}
+                    ? "Auth Trunk requires at least one outbound SIP gateway for routing calls."
+                    : trunkType === "reg"
+                      ? "Registration Trunk requires at least one outbound SIP gateway for routing calls."
+                      : "At least one SIP gateway is required."}
                 </em>
               </MXS>
               <label htmlFor="sip_gateways">
