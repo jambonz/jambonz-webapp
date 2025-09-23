@@ -1379,7 +1379,7 @@ export const CarrierForm = ({
             )}
           </Tab>
           {/** Outbound */}
-          <Tab id="outbound" label="Outbound">
+          <Tab id="outbound" label="Outbound & Registration">
             <fieldset>
               <label htmlFor="e164" className="chk">
                 <input
@@ -1399,7 +1399,7 @@ export const CarrierForm = ({
               <Checkzone
                 hidden
                 name="sip_credentials"
-                label="Outbound authentication"
+                label="Authentication"
                 initialCheck={initialRegister}
                 handleChecked={(e) => {
                   if (!e.target.checked) {
@@ -1409,9 +1409,7 @@ export const CarrierForm = ({
                   }
                 }}
               >
-                <MS>
-                  Does your carrier require authentication on outbound calls?
-                </MS>
+                <MS>Does your carrier require authentication?</MS>
                 <label htmlFor="sip_username">
                   Auth username{" "}
                   {sipPass || sipRegister || trunkType === "reg" ? (
@@ -1471,9 +1469,7 @@ export const CarrierForm = ({
                   }
                 }}
               >
-                <MS>
-                  Carrier requires SIP Register before sending outbound calls.
-                </MS>
+                <MS>Carrier requires SIP Register.</MS>
                 <label htmlFor="sip_realm">
                   SIP realm
                   {sipRegister || trunkType === "reg" ? <span>*</span> : ""}
