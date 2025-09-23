@@ -1006,6 +1006,26 @@ export const CarrierForm = ({
                 }
               />
 
+              <label htmlFor="trunk_type">Trunk Type</label>
+              <Selector
+                id="trunk_type"
+                name="trunk_type"
+                value={trunkType}
+                options={TRUNK_TYPE_SELECTION}
+                onChange={(e) => {
+                  const newTrunkType = e.target.value as TrunkType;
+                  setTrunkType(newTrunkType);
+
+                  // Clear auth credentials when switching away from auth trunk
+                  if (newTrunkType !== "auth") {
+                    setInboundAuthUsername("");
+                    setInboundAuthPassword("");
+                  }
+
+                  setSipRegister(newTrunkType === "reg");
+                }}
+              />
+
               <label htmlFor="dtmf_type">
                 <Tooltip
                   text={
@@ -1037,27 +1057,6 @@ export const CarrierForm = ({
                     />
                   </>
                 )}
-            </fieldset>
-            <fieldset>
-              <label htmlFor="trunk_type">Trunk Type</label>
-              <Selector
-                id="trunk_type"
-                name="trunk_type"
-                value={trunkType}
-                options={TRUNK_TYPE_SELECTION}
-                onChange={(e) => {
-                  const newTrunkType = e.target.value as TrunkType;
-                  setTrunkType(newTrunkType);
-
-                  // Clear auth credentials when switching away from auth trunk
-                  if (newTrunkType !== "auth") {
-                    setInboundAuthUsername("");
-                    setInboundAuthPassword("");
-                  }
-
-                  setSipRegister(newTrunkType === "reg");
-                }}
-              />
             </fieldset>
           </Tab>
           {/** Inbound */}
@@ -1641,54 +1640,47 @@ export const CarrierForm = ({
           {/** Registration */}
           <Tab id="registration" label="Registration">
             <fieldset>
-              <div className="multi">
-                <div className="inp">
-                  <label htmlFor="sip_username">
-                    Auth username{" "}
-                    {sipPass || sipRegister || trunkType === "reg" ? (
-                      <span>*</span>
-                    ) : (
-                      ""
-                    )}
-                  </label>
-                  <input
-                    id="sip_username"
-                    name="sip_username"
-                    type="text"
-                    value={sipUser}
-                    placeholder="SIP username"
-                    required={
-                      sipRegister || sipPass.length > 0 || trunkType === "reg"
-                    }
-                    onChange={(e) => {
-                      setSipUser(e.target.value);
-                    }}
-                  />
-                </div>
-
-                <div className="sel sel--preset">
-                  <label htmlFor="sip_password">
-                    Password
-                    {sipUser || sipRegister || trunkType === "reg" ? (
-                      <span>*</span>
-                    ) : (
-                      ""
-                    )}
-                  </label>
-                  <Passwd
-                    id="sip_password"
-                    name="sip_password"
-                    value={sipPass}
-                    placeholder="SIP password"
-                    required={
-                      sipRegister || sipUser.length > 0 || trunkType === "reg"
-                    }
-                    onChange={(e) => {
-                      setSipPass(e.target.value);
-                    }}
-                  />
-                </div>
-              </div>
+              <label htmlFor="sip_username">
+                Auth username{" "}
+                {sipPass || sipRegister || trunkType === "reg" ? (
+                  <span>*</span>
+                ) : (
+                  ""
+                )}
+              </label>
+              <input
+                id="sip_username"
+                name="sip_username"
+                type="text"
+                value={sipUser}
+                placeholder="SIP username"
+                required={
+                  sipRegister || sipPass.length > 0 || trunkType === "reg"
+                }
+                onChange={(e) => {
+                  setSipUser(e.target.value);
+                }}
+              />
+              <label htmlFor="sip_password">
+                Password
+                {sipUser || sipRegister || trunkType === "reg" ? (
+                  <span>*</span>
+                ) : (
+                  ""
+                )}
+              </label>
+              <Passwd
+                id="sip_password"
+                name="sip_password"
+                value={sipPass}
+                placeholder="SIP password"
+                required={
+                  sipRegister || sipUser.length > 0 || trunkType === "reg"
+                }
+                onChange={(e) => {
+                  setSipPass(e.target.value);
+                }}
+              />
               <label htmlFor="sip_realm">
                 SIP realm
                 {sipRegister || trunkType === "reg" ? <span>*</span> : ""}

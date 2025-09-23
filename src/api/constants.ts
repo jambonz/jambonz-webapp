@@ -349,7 +349,7 @@ export const DTMF_TYPE_SELECTION: SelectorOptions[] = [
 ];
 
 export const TRUNK_TYPE_SELECTION: SelectorOptions[] = [
-  { name: "Static IP Whitelist", value: "static_ip" },
+  { name: "IP Trunk", value: "static_ip" },
   { name: "Auth Trunk", value: "auth" },
   { name: "Registration Trunk", value: "reg" },
 ];
