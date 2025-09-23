@@ -125,6 +125,7 @@ export const CarrierForm = ({
 
   const [initialSipProxy, setInitialSipProxy] = useState(false);
   const [outboundSipProxy, setOutboundSipProxy] = useState("");
+  const [initialRegister, setInitialRegister] = useState(false);
 
   const [smppSystemId, setSmppSystemId] = useState("");
   const [smppPass, setSmppPass] = useState("");
@@ -279,6 +280,16 @@ export const CarrierForm = ({
         setInitialSipProxy(true);
       } else {
         setInitialSipProxy(false);
+      }
+
+      if (
+        obj.requires_register ||
+        obj.register_username ||
+        obj.register_password
+      ) {
+        setInitialRegister(true);
+      } else {
+        setInitialRegister(false);
       }
 
       if (obj.smpp_system_id) {
@@ -877,9 +888,11 @@ export const CarrierForm = ({
     } else if (
       fieldName?.includes("sip_username") ||
       fieldName?.includes("sip_password") ||
-      fieldName?.includes("sip_realm")
+      fieldName?.includes("sip_realm") ||
+      fieldName?.includes("from_user") ||
+      fieldName?.includes("from_domain")
     ) {
-      setActiveTab("registration");
+      setActiveTab("outbound"); // Changed from "registration" to "outbound"
     } else if (fieldName?.includes("sip_")) {
       setActiveTab("sip");
     } else if (fieldName?.includes("smpp_")) {
@@ -1022,7 +1035,14 @@ export const CarrierForm = ({
                     setInboundAuthPassword("");
                   }
 
-                  setSipRegister(newTrunkType === "reg");
+                  // Auto-check authentication and register for Registration Trunk
+                  if (newTrunkType === "reg") {
+                    setInitialRegister(true);
+                    setSipRegister(true);
+                  } else {
+                    setInitialRegister(false);
+                    setSipRegister(false);
+                  }
                 }}
               />
 
@@ -1281,16 +1301,6 @@ export const CarrierForm = ({
           {/** Outbound */}
           <Tab id="outbound" label="Outbound">
             <fieldset>
-              <label htmlFor="reg_public_ip_in_contact" className="chk">
-                <input
-                  id="reg_public_ip_in_contact"
-                  name="reg_public_ip_in_contact"
-                  type="checkbox"
-                  checked={regPublicIpInContact}
-                  onChange={(e) => setRegPublicIpInContact(e.target.checked)}
-                />
-                <div>Use public IP in contact</div>
-              </label>
               <label htmlFor="e164" className="chk">
                 <input
                   id="e164"
@@ -1304,6 +1314,128 @@ export const CarrierForm = ({
               <MXS>
                 <em>Prepend a leading + on origination attempts.</em>
               </MXS>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="sip_credentials"
+                label="Outbound authentication"
+                initialCheck={initialRegister}
+                handleChecked={(e) => {
+                  if (!e.target.checked) {
+                    setSipUser("");
+                    setSipPass("");
+                    setSipRegister(false);
+                  }
+                }}
+              >
+                <MS>
+                  Does your carrier require authentication on outbound calls?
+                </MS>
+                <label htmlFor="sip_username">
+                  Auth username{" "}
+                  {sipPass || sipRegister || trunkType === "reg" ? (
+                    <span>*</span>
+                  ) : (
+                    ""
+                  )}
+                </label>
+                <input
+                  id="sip_username"
+                  name="sip_username"
+                  type="text"
+                  value={sipUser}
+                  placeholder="SIP username for authenticating outbound calls"
+                  required={
+                    sipRegister || sipPass.length > 0 || trunkType === "reg"
+                  }
+                  onChange={(e) => {
+                    setSipUser(e.target.value);
+                  }}
+                />
+                <label htmlFor="sip_password">
+                  Password
+                  {sipUser || sipRegister || trunkType === "reg" ? (
+                    <span>*</span>
+                  ) : (
+                    ""
+                  )}
+                </label>
+                <Passwd
+                  id="sip_password"
+                  name="sip_password"
+                  value={sipPass}
+                  placeholder="SIP password for authenticating outbound calls"
+                  required={
+                    sipRegister || sipUser.length > 0 || trunkType === "reg"
+                  }
+                  onChange={(e) => {
+                    setSipPass(e.target.value);
+                  }}
+                />
+              </Checkzone>
+            </fieldset>
+            <fieldset>
+              <Checkzone
+                hidden
+                name="sip_register"
+                label="Require SIP Register"
+                initialCheck={sipRegister}
+                handleChecked={(e) => {
+                  setSipRegister(e.target.checked);
+                  if (!e.target.checked) {
+                    setSipRealm("");
+                    setFromUser("");
+                    setFromDomain("");
+                    setRegPublicIpInContact(false);
+                  }
+                }}
+              >
+                <MS>
+                  Carrier requires SIP Register before sending outbound calls.
+                </MS>
+                <label htmlFor="sip_realm">
+                  SIP realm
+                  {sipRegister || trunkType === "reg" ? <span>*</span> : ""}
+                </label>
+                <input
+                  id="sip_realm"
+                  name="sip_realm"
+                  type="text"
+                  value={sipRealm}
+                  placeholder="SIP realm for registration"
+                  required={sipRegister || trunkType === "reg"}
+                  onChange={(e) => setSipRealm(e.target.value)}
+                />
+                <label htmlFor="from_user">Username</label>
+                <input
+                  id="from_user"
+                  name="from_user"
+                  type="text"
+                  value={fromUser}
+                  placeholder="Optional: specify user part of SIP From header"
+                  onChange={(e) => setFromUser(e.target.value)}
+                />
+                <label htmlFor="from_domain">SIP from domain</label>
+                <input
+                  id="from_domain"
+                  name="from_domain"
+                  type="text"
+                  value={fromDomain}
+                  placeholder="Optional: specify host part of SIP From header"
+                  onChange={(e) => setFromDomain(e.target.value)}
+                />
+                <label htmlFor="reg_public_ip_in_contact_2" className="chk">
+                  <input
+                    id="reg_public_ip_in_contact_2"
+                    name="reg_public_ip_in_contact_2"
+                    type="checkbox"
+                    checked={regPublicIpInContact}
+                    onChange={(e) => setRegPublicIpInContact(e.target.checked)}
+                  />
+                  <div>Use public IP in contact</div>
+                </label>
+              </Checkzone>
             </fieldset>
             <fieldset>
               <Checkzone
@@ -1637,75 +1769,7 @@ export const CarrierForm = ({
               </ButtonGroup>
             </fieldset>
           </Tab>
-          {/** Registration */}
-          <Tab id="registration" label="Registration">
-            <fieldset>
-              <label htmlFor="sip_username">
-                Auth username{" "}
-                {sipPass || sipRegister || trunkType === "reg" ? (
-                  <span>*</span>
-                ) : (
-                  ""
-                )}
-              </label>
-              <input
-                id="sip_username"
-                name="sip_username"
-                type="text"
-                value={sipUser}
-                placeholder="SIP username"
-                required={
-                  sipRegister || sipPass.length > 0 || trunkType === "reg"
-                }
-                onChange={(e) => {
-                  setSipUser(e.target.value);
-                }}
-              />
-              <label htmlFor="sip_password">
-                Password
-                {sipUser || sipRegister || trunkType === "reg" ? (
-                  <span>*</span>
-                ) : (
-                  ""
-                )}
-              </label>
-              <Passwd
-                id="sip_password"
-                name="sip_password"
-                value={sipPass}
-                placeholder="SIP password"
-                required={
-                  sipRegister || sipUser.length > 0 || trunkType === "reg"
-                }
-                onChange={(e) => {
-                  setSipPass(e.target.value);
-                }}
-              />
-              <label htmlFor="sip_realm">
-                SIP realm
-                {sipRegister || trunkType === "reg" ? <span>*</span> : ""}
-              </label>
-              <input
-                id="sip_realm"
-                name="sip_realm"
-                type="text"
-                value={sipRealm}
-                placeholder="SIP realm for registration"
-                required={sipRegister || trunkType === "reg"}
-                onChange={(e) => setSipRealm(e.target.value)}
-              />
-
-              <label htmlFor="from_domain">SIP from domain</label>
-              <input
-                id="from_domain"
-                name="from_domain"
-                type="text"
-                value={fromDomain}
-                placeholder="Optional: specify host part of SIP From header"
-                onChange={(e) => setFromDomain(e.target.value)}
-              />
-            </fieldset>
-          </Tab>
+          {/** Registration tab removed - content merged into Outbound tab */}
         </Tabs>
         <fieldset>
           <ButtonGroup left>
