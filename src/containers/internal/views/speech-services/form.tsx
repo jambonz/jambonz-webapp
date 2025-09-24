@@ -452,6 +452,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_HOUNDIFY && {
           client_id: clientId || null,
           client_key: clientKey || null,
+          user_id: userId || null,
         }),
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
@@ -1446,6 +1447,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               placeholder="Client Key"
               value={clientKey ? getObscuredSecret(clientKey) : clientKey}
               onChange={(e) => setClientKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_user_id">User ID</label>
+            <input
+              id="houndify_user_id"
+              type="text"
+              name="houndify_user_id"
+              placeholder="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
               disabled={credential ? true : false}
             />
           </fieldset>
