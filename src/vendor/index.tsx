@@ -45,7 +45,7 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_DEEPGRAM,
   },
   {
-    name: "Deepgram River Preview",
+    name: "Deepgram Flux Preview",
     value: VENDOR_DEEPGRAM_FLUX,
   },
   {
