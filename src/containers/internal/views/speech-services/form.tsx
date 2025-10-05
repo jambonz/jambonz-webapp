@@ -53,7 +53,7 @@ import {
   VENDOR_VOXIST,
   VENDOR_OPENAI,
   VENDOR_INWORLD,
-  VENDOR_DEEPGRAM_RIVER,
+  VENDOR_DEEPGRAM_FLUX,
   VENDOR_RESEMBLE,
   VENDOR_HOUNDIFY,
 } from "src/vendor";
@@ -550,7 +550,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI ||
               vendor === VENDOR_RESEMBLE ||
-              vendor === VENDOR_DEEPGRAM_RIVER
+              vendor === VENDOR_DEEPGRAM_FLUX
                 ? apiKey
                 : null,
           }),
@@ -1019,7 +1019,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
-              vendor !== VENDOR_DEEPGRAM_RIVER &&
+              vendor !== VENDOR_DEEPGRAM_FLUX &&
               vendor !== VENDOR_HOUNDIFY &&
               vendor !== VENDOR_OPENAI &&
               vendor != VENDOR_CUSTOM && (
@@ -1882,7 +1882,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_SONIOX ||
           vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_OPENAI ||
-          vendor === VENDOR_DEEPGRAM_RIVER ||
+          vendor === VENDOR_DEEPGRAM_FLUX ||
           vendor === VENDOR_RESEMBLE ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>
