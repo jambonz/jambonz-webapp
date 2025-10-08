@@ -108,6 +108,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const { toastError, toastSuccess } = useToast();
   const navigate = useNavigate();
   const user = useSelectState("user");
+
+  // ElevenLabs API URI options
+  const ELEVENLABS_API_URI_OPTIONS = [
+    { name: "US", value: "api.elevenlabs.io" },
+    { name: "EU", value: "api.eu.residency.elevenlabs.io" },
+    { name: "IN", value: "api.in.residency.elevenlabs.io" },
+  ];
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -121,6 +128,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   );
   const [region, setRegion] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [apiUri, setApiUri] = useState("api.elevenlabs.io");
   const [userId, setUserId] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
@@ -456,6 +464,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_RIMELABS) && {
           model_id: ttsModelId || null,
         }),
+        ...(vendor === VENDOR_ELEVENLABS && {
+          api_uri: apiUri || null,
+        }),
         ...((vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
           vendor === VENDOR_INWORLD ||
@@ -695,6 +706,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.api_key) {
         setApiKey(credential.data.api_key);
+      }
+
+      if (credential.data.api_uri) {
+        setApiUri(credential.data.api_uri);
       }
 
       if (credential.data.region) {
@@ -954,6 +969,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setVendor(e.target.value as Lowercase<Vendor>);
               setRegion("");
               setApiKey("");
+              setApiUri(
+                e.target.value === VENDOR_ELEVENLABS ? "api.elevenlabs.io" : "",
+              );
               setGoogleServiceKey(null);
             }}
             disabled={credential ? true : false}
@@ -1820,10 +1838,37 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
 
+        {vendor === VENDOR_ELEVENLABS && (
+          <fieldset>
+            <label htmlFor="elevenlabs_api_uri">
+              API URI<span>*</span>
+            </label>
+            <Selector
+              id="elevenlabs_api_uri"
+              name="elevenlabs_api_uri"
+              value={apiUri}
+              options={ELEVENLABS_API_URI_OPTIONS}
+              onChange={(e) => setApiUri(e.target.value)}
+              required
+            />
+            <label htmlFor={`${vendor}_apikey`}>
+              API key<span>*</span>
+            </label>
+            <Passwd
+              id={`${vendor}_apikey`}
+              required
+              name={`${vendor}_apikey`}
+              placeholder="API key"
+              value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
+
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
           vendor === VENDOR_VOXIST ||
-          vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_INWORLD ||
