@@ -1841,7 +1841,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         {vendor === VENDOR_ELEVENLABS && (
           <fieldset>
             <label htmlFor="elevenlabs_api_uri">
-              API URI<span>*</span>
+              Data residency<span>*</span>
             </label>
             <Selector
               id="elevenlabs_api_uri"
