@@ -22,7 +22,8 @@ export type Vendor =
   | "verbio"
   | "openai"
   | "Cartesia"
-  | "Resemble";
+  | "Resemble"
+  | "Houndify";
 
 export interface VendorOptions {
   name: Vendor;

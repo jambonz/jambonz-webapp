@@ -55,6 +55,7 @@ import {
   VENDOR_INWORLD,
   VENDOR_DEEPGRAM_FLUX,
   VENDOR_RESEMBLE,
+  VENDOR_HOUNDIFY,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -134,6 +135,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [clientId, setClientId] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [clientKey, setClientKey] = useState("");
   const [clientSecret, setClientSecret] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
@@ -455,6 +457,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           nuance_tts_uri: onPremNuanceTtsUrl || null,
           nuance_stt_uri: onPremNuanceSttUrl || null,
         }),
+        ...(vendor === VENDOR_HOUNDIFY && {
+          client_id: clientId || null,
+          client_key: clientKey || null,
+          user_id: userId || null,
+        }),
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
         }),
@@ -722,6 +729,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.client_id) {
         setClientId(credential.data.client_id);
+      }
+      if (credential.data.client_key) {
+        setClientKey(credential.data.client_key);
       }
 
       if (credential.data.secret) {
@@ -1028,6 +1038,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
               vendor !== VENDOR_DEEPGRAM_FLUX &&
+              vendor !== VENDOR_HOUNDIFY &&
               vendor !== VENDOR_OPENAI &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
@@ -1426,6 +1437,47 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               </fieldset>
             )}
           </>
+        )}
+        {vendor === VENDOR_HOUNDIFY && (
+          <fieldset>
+            <label htmlFor="houndify_client_id">
+              Client ID
+              {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && <span>*</span>}
+            </label>
+            <input
+              id="houndify_client_id"
+              required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+              type="text"
+              name="houndify_client_id"
+              placeholder="Client ID"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_secret">
+              Client Key
+              {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && <span>*</span>}
+            </label>
+            <Passwd
+              id="houndify_secret"
+              required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+              name="houndify_secret"
+              placeholder="Client Key"
+              value={clientKey ? getObscuredSecret(clientKey) : clientKey}
+              onChange={(e) => setClientKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_user_id">User ID</label>
+            <input
+              id="houndify_user_id"
+              type="text"
+              name="houndify_user_id"
+              placeholder="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
         )}
         {vendor === VENDOR_NUANCE && (
           <>

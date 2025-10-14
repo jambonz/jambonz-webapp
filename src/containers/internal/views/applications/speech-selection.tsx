@@ -38,6 +38,7 @@ import {
   VENDOR_INWORLD,
   VENDOR_DEEPGRAM_FLUX,
   VENDOR_RESEMBLE,
+  VENDOR_HOUNDIFY,
 } from "src/vendor";
 import {
   LabelOptions,
@@ -434,6 +435,7 @@ export const SpeechProviderSelection = ({
               vendor.value !== VENDOR_CUSTOM &&
               vendor.value !== VENDOR_OPENAI &&
               vendor.value !== VENDOR_DEEPGRAM_FLUX &&
+              vendor.value !== VENDOR_HOUNDIFY &&
               vendor.value !== VENDOR_COBALT,
           )}
           onChange={(e) => {

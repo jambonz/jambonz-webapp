@@ -419,6 +419,7 @@ export interface SpeechCredential {
   custom_stt_endpoint: null | string;
   client_id: null | string;
   client_secret: null | string;
+  client_key: null | string;
   secret: null | string;
   nuance_tts_uri: null | string;
   nuance_stt_uri: null | string;
