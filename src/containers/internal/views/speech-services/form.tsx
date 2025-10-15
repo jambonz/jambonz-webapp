@@ -56,6 +56,7 @@ import {
   VENDOR_DEEPGRAM_FLUX,
   VENDOR_RESEMBLE,
   VENDOR_HOUNDIFY,
+  VENDOR_GLADIA,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -510,6 +511,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           resemble_tts_uri: resembleTtsUri || null,
           resemble_tts_use_tls: resembleTtsUseTls ? 1 : 0,
         }),
+        ...(vendor === VENDOR_GLADIA && {
+          api_key: apiKey || null,
+          region: region || null,
+        }),
       };
 
       if (credential && credential.data) {
@@ -561,7 +566,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI ||
               vendor === VENDOR_RESEMBLE ||
-              vendor === VENDOR_DEEPGRAM_FLUX
+              vendor === VENDOR_DEEPGRAM_FLUX ||
+              vendor === VENDOR_GLADIA
                 ? apiKey
                 : null,
           }),
@@ -1040,6 +1046,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_DEEPGRAM_FLUX &&
               vendor !== VENDOR_HOUNDIFY &&
               vendor !== VENDOR_OPENAI &&
+              vendor !== VENDOR_GLADIA &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
                   <input
@@ -1929,7 +1936,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM_FLUX ||
           vendor === VENDOR_RESEMBLE ||
-          vendor === VENDOR_SPEECHMATICS) && (
+          vendor === VENDOR_SPEECHMATICS ||
+          vendor === VENDOR_GLADIA) && (
           <fieldset>
             <label htmlFor={`${vendor}_apikey`}>
               API key<span>*</span>
