@@ -53,8 +53,9 @@ import {
   VENDOR_VOXIST,
   VENDOR_OPENAI,
   VENDOR_INWORLD,
-  VENDOR_DEEPGRAM_RIVER,
+  VENDOR_DEEPGRAM_FLUX,
   VENDOR_RESEMBLE,
+  VENDOR_HOUNDIFY,
 } from "src/vendor";
 import { MSG_REQUIRED_FIELDS } from "src/constants";
 import {
@@ -108,6 +109,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const { toastError, toastSuccess } = useToast();
   const navigate = useNavigate();
   const user = useSelectState("user");
+
+  // ElevenLabs API URI options
+  const ELEVENLABS_API_URI_OPTIONS = [
+    { name: "US", value: "api.elevenlabs.io" },
+    { name: "EU", value: "api.eu.residency.elevenlabs.io" },
+    { name: "IN", value: "api.in.residency.elevenlabs.io" },
+  ];
   const currentServiceProvider = useSelectState("currentServiceProvider");
   const regions = useRegionVendors();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
@@ -121,11 +129,13 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   );
   const [region, setRegion] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [apiUri, setApiUri] = useState("api.elevenlabs.io");
   const [userId, setUserId] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
   const [clientId, setClientId] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [clientKey, setClientKey] = useState("");
   const [clientSecret, setClientSecret] = useState("");
   const [googleServiceKey, setGoogleServiceKey] =
     useState<GoogleServiceKey | null>(null);
@@ -447,6 +457,11 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           nuance_tts_uri: onPremNuanceTtsUrl || null,
           nuance_stt_uri: onPremNuanceSttUrl || null,
         }),
+        ...(vendor === VENDOR_HOUNDIFY && {
+          client_id: clientId || null,
+          client_key: clientKey || null,
+          user_id: userId || null,
+        }),
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
         }),
@@ -455,6 +470,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           vendor === VENDOR_INWORLD ||
           vendor === VENDOR_RIMELABS) && {
           model_id: ttsModelId || null,
+        }),
+        ...(vendor === VENDOR_ELEVENLABS && {
+          api_uri: apiUri || null,
         }),
         ...((vendor === VENDOR_ELEVENLABS ||
           vendor === VENDOR_PLAYHT ||
@@ -543,7 +561,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor === VENDOR_CARTESIA ||
               vendor === VENDOR_OPENAI ||
               vendor === VENDOR_RESEMBLE ||
-              vendor === VENDOR_DEEPGRAM_RIVER
+              vendor === VENDOR_DEEPGRAM_FLUX
                 ? apiKey
                 : null,
           }),
@@ -697,6 +715,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         setApiKey(credential.data.api_key);
       }
 
+      if (credential.data.api_uri) {
+        setApiUri(credential.data.api_uri);
+      }
+
       if (credential.data.region) {
         setRegion(credential.data.region);
       }
@@ -707,6 +729,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
       if (credential.data.client_id) {
         setClientId(credential.data.client_id);
+      }
+      if (credential.data.client_key) {
+        setClientKey(credential.data.client_key);
       }
 
       if (credential.data.secret) {
@@ -954,6 +979,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               setVendor(e.target.value as Lowercase<Vendor>);
               setRegion("");
               setApiKey("");
+              setApiUri(
+                e.target.value === VENDOR_ELEVENLABS ? "api.elevenlabs.io" : "",
+              );
               setGoogleServiceKey(null);
             }}
             disabled={credential ? true : false}
@@ -1009,7 +1037,8 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_COBALT &&
               vendor !== VENDOR_SONIOX &&
               vendor !== VENDOR_SPEECHMATICS &&
-              vendor !== VENDOR_DEEPGRAM_RIVER &&
+              vendor !== VENDOR_DEEPGRAM_FLUX &&
+              vendor !== VENDOR_HOUNDIFY &&
               vendor !== VENDOR_OPENAI &&
               vendor != VENDOR_CUSTOM && (
                 <label htmlFor="use_for_tts" className="chk">
@@ -1408,6 +1437,47 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               </fieldset>
             )}
           </>
+        )}
+        {vendor === VENDOR_HOUNDIFY && (
+          <fieldset>
+            <label htmlFor="houndify_client_id">
+              Client ID
+              {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && <span>*</span>}
+            </label>
+            <input
+              id="houndify_client_id"
+              required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+              type="text"
+              name="houndify_client_id"
+              placeholder="Client ID"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_secret">
+              Client Key
+              {!onPremNuanceSttCheck && !onPremNuanceTtsCheck && <span>*</span>}
+            </label>
+            <Passwd
+              id="houndify_secret"
+              required={!onPremNuanceSttCheck && !onPremNuanceTtsCheck}
+              name="houndify_secret"
+              placeholder="Client Key"
+              value={clientKey ? getObscuredSecret(clientKey) : clientKey}
+              onChange={(e) => setClientKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_user_id">User ID</label>
+            <input
+              id="houndify_user_id"
+              type="text"
+              name="houndify_user_id"
+              placeholder="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
         )}
         {vendor === VENDOR_NUANCE && (
           <>
@@ -1820,17 +1890,44 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           </fieldset>
         )}
 
+        {vendor === VENDOR_ELEVENLABS && (
+          <fieldset>
+            <label htmlFor="elevenlabs_api_uri">
+              Data residency<span>*</span>
+            </label>
+            <Selector
+              id="elevenlabs_api_uri"
+              name="elevenlabs_api_uri"
+              value={apiUri}
+              options={ELEVENLABS_API_URI_OPTIONS}
+              onChange={(e) => setApiUri(e.target.value)}
+              required
+            />
+            <label htmlFor={`${vendor}_apikey`}>
+              API key<span>*</span>
+            </label>
+            <Passwd
+              id={`${vendor}_apikey`}
+              required
+              name={`${vendor}_apikey`}
+              placeholder="API key"
+              value={apiKey ? getObscuredSecret(apiKey) : apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              disabled={credential ? true : false}
+            />
+          </fieldset>
+        )}
+
         {(vendor === VENDOR_WELLSAID ||
           vendor === VENDOR_ASSEMBLYAI ||
           vendor === VENDOR_VOXIST ||
-          vendor == VENDOR_ELEVENLABS ||
           vendor === VENDOR_WHISPER ||
           vendor === VENDOR_RIMELABS ||
           vendor === VENDOR_INWORLD ||
           vendor === VENDOR_SONIOX ||
           vendor === VENDOR_CARTESIA ||
           vendor === VENDOR_OPENAI ||
-          vendor === VENDOR_DEEPGRAM_RIVER ||
+          vendor === VENDOR_DEEPGRAM_FLUX ||
           vendor === VENDOR_RESEMBLE ||
           vendor === VENDOR_SPEECHMATICS) && (
           <fieldset>

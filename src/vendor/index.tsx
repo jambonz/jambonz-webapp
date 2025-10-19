@@ -12,7 +12,7 @@ export const VENDOR_MICROSOFT = "microsoft";
 export const VENDOR_WELLSAID = "wellsaid";
 export const VENDOR_NUANCE = "nuance";
 export const VENDOR_DEEPGRAM = "deepgram";
-export const VENDOR_DEEPGRAM_RIVER = "deepgramriver";
+export const VENDOR_DEEPGRAM_FLUX = "deepgramflux";
 export const VENDOR_IBM = "ibm";
 export const VENDOR_NVIDIA = "nvidia";
 export const VENDOR_SONIOX = "soniox";
@@ -30,6 +30,7 @@ export const VENDOR_VERBIO = "verbio";
 export const VENDOR_CARTESIA = "cartesia";
 export const VENDOR_OPENAI = "openai";
 export const VENDOR_RESEMBLE = "resemble";
+export const VENDOR_HOUNDIFY = "houndify";
 
 export const vendors: VendorOptions[] = [
   {
@@ -45,8 +46,8 @@ export const vendors: VendorOptions[] = [
     value: VENDOR_DEEPGRAM,
   },
   {
-    name: "Deepgram River Preview",
-    value: VENDOR_DEEPGRAM_RIVER,
+    name: "Deepgram Flux",
+    value: VENDOR_DEEPGRAM_FLUX,
   },
   {
     name: "IBM",
@@ -127,6 +128,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Resemble",
     value: VENDOR_RESEMBLE,
+  },
+  {
+    name: "SoundHound",
+    value: VENDOR_HOUNDIFY,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 

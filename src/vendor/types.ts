@@ -5,7 +5,7 @@ export type Vendor =
   | "WellSaid"
   | "Nuance"
   | "Deepgram"
-  | "DeepgramRiver"
+  | "DeepgramFlux"
   | "IBM"
   | "Nvidia"
   | "Soniox"
@@ -22,7 +22,8 @@ export type Vendor =
   | "verbio"
   | "openai"
   | "Cartesia"
-  | "Resemble";
+  | "Resemble"
+  | "Houndify";
 
 export interface VendorOptions {
   name: Vendor;
@@ -104,7 +105,7 @@ export interface RecognizerVendors {
   speechmatics: Language[];
   cobalt: Language[];
   assemblyai: Language[];
-  deepgramriver: Language[];
+  deepgramflux: Language[];
 }
 
 export interface SynthesisVendors {
