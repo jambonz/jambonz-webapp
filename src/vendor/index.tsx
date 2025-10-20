@@ -31,6 +31,7 @@ export const VENDOR_CARTESIA = "cartesia";
 export const VENDOR_OPENAI = "openai";
 export const VENDOR_RESEMBLE = "resemble";
 export const VENDOR_HOUNDIFY = "houndify";
+export const VENDOR_GLADIA = "gladia";
 
 export const vendors: VendorOptions[] = [
   {
@@ -133,6 +134,10 @@ export const vendors: VendorOptions[] = [
     name: "SoundHound",
     value: VENDOR_HOUNDIFY,
   },
+  {
+    name: "Gladia",
+    value: VENDOR_GLADIA,
+  },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
 export const AWS_CREDENTIAL_ACCESS_KEY = "access_key";
@@ -165,12 +170,14 @@ export const useRegionVendors = () => {
       import("./regions/ms-azure-regions"),
       import("./regions/ibm-regions"),
       import("./regions/speechmatics-regions"),
+      import("./regions/gladia-regions"),
     ]).then(
       ([
         { default: awsRegions },
         { default: msRegions },
         { default: ibmRegions },
         { default: speechmaticsRegions },
+        { default: gladiaRegions },
       ]) => {
         if (!ignore) {
           setRegions({
@@ -178,6 +185,7 @@ export const useRegionVendors = () => {
             microsoft: msRegions,
             ibm: ibmRegions,
             speechmatics: speechmaticsRegions,
+            gladia: gladiaRegions,
           });
         }
       },
