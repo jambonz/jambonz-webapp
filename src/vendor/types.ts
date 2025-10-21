@@ -23,7 +23,8 @@ export type Vendor =
   | "openai"
   | "Cartesia"
   | "Resemble"
-  | "Houndify";
+  | "Houndify"
+  | "gladia";
 
 export interface VendorOptions {
   name: Vendor;
@@ -85,6 +86,7 @@ export interface RegionVendors {
   microsoft: Region[];
   ibm: Region[];
   speechmatics: Region[];
+  gladia: Region[];
 }
 
 export interface TtsModels {
