@@ -218,7 +218,8 @@ fieldset {
   }
 }
 
-.gateway {
+.gateway,
+.gateway-inbound {
   padding: ui-vars.$px02;
   border-radius: ui-vars.$px01;
   border: 2px solid ui-vars.$grey;
@@ -279,6 +280,18 @@ fieldset {
         transform: none;
         position: relative;
         margin-top: ui-vars.$px02;
+      }
+    }
+  }
+}
+
+.gateway-inbound {
+  > div {
+    &:nth-child(1) {
+      grid-template-columns: [col] calc(70% - #{ui-vars.$px02 * 2}) [col] 30%;
+
+      @include mixins.small() {
+        grid-template-columns: [col] 100%;
       }
     }
   }

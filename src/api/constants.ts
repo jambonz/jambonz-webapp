@@ -131,7 +131,7 @@ export const DEFAULT_WEBHOOK: WebHook = {
 };
 
 /** Default SIP/SMPP Gateways  */
-export const DEFAULT_SIP_GATEWAY: SipGateway = {
+export const DEFAULT_SIP_INBOUND_GATEWAY: SipGateway = {
   voip_carrier_sid: "",
   ipv4: "",
   port: 5060,
@@ -346,6 +346,12 @@ export const USER_SCOPE_SELECTION: SelectorOptions[] = [
 export const DTMF_TYPE_SELECTION: SelectorOptions[] = [
   { name: "RFC 2833", value: "rfc2833" },
   { name: "Tones", value: "tones" },
+];
+
+export const TRUNK_TYPE_SELECTION: SelectorOptions[] = [
+  { name: "IP Trunk", value: "static_ip" },
+  { name: "Auth Trunk", value: "auth" },
+  { name: "Registration Trunk", value: "reg" },
 ];
 
 /** Available webhook methods */
