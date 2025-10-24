@@ -142,6 +142,9 @@ export const CarrierForm = ({
   const [tmpInboundGateways, setTmpInboundGateways] = useState<SipGateway[]>(
     [],
   );
+  const [tmpOutboundGateways, setTmpOutboundGateways] = useState<SipGateway[]>(
+    [],
+  );
   const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([
     {
       ...DEFAULT_SMPP_GATEWAY,
@@ -460,33 +463,24 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
-    // Check if there are any gateways at all
     if (sipInboundGateways.length === 0 && sipOutboundGateways.length === 0) {
-      // For Static IP Whitelist, prioritize inbound tab since it requires inbound gateways
       if (trunkType === "static_ip") {
         setActiveTab("inbound");
         return "Static IP Whitelist trunk type requires at least one inbound gateway.";
-      } else if (trunkType === "reg" || trunkType === "auth") {
-        // Auth and Registration trunk needs at least one outbound gateway for routing
+      } else if (trunkType === "reg") {
         setActiveTab("outbound");
-        return "You must provide at least one outbound SIP Gateway.";
+        return "Registration trunk type requires at least one outbound gateway.";
       }
-      // Auth trunk doesn't require any gateways - skip validation
     }
 
-    // Validate Static IP Whitelist trunk type requires at least 1 inbound gateway
     if (trunkType === "static_ip" && sipInboundGateways.length < 1) {
       setActiveTab("inbound");
       return "Static IP Whitelist trunk type requires at least one inbound gateway.";
     }
 
-    // Validate Auth and Registration Trunk require at least 1 outbound gateway
-    if (
-      (trunkType === "auth" || trunkType === "reg") &&
-      sipOutboundGateways.length < 1
-    ) {
+    if (trunkType === "reg" && sipOutboundGateways.length < 1) {
       setActiveTab("outbound");
-      return "Auth and Registration trunk types require at least one outbound gateway.";
+      return "Registration trunk type requires at least one outbound gateway.";
     }
 
     // Validate Auth Trunk credentials
@@ -663,13 +657,12 @@ export const CarrierForm = ({
   };
 
   const handleActiveTab = () => {
-    /** When to switch to `sip` tab */
-
-    // For auth and reg trunk types, only check outbound gateways for validation
     const gatewaysToCheck =
-      trunkType === "auth" || trunkType === "reg"
-        ? sipOutboundGateways
-        : [...sipInboundGateways, ...sipOutboundGateways];
+      trunkType === "auth"
+        ? []
+        : trunkType === "reg"
+          ? sipOutboundGateways
+          : [...sipInboundGateways, ...sipOutboundGateways];
     const emptySipIp = gatewaysToCheck.find((g) => g.ipv4.trim() === "");
     const invalidSipPort = gatewaysToCheck.find(
       (g) => hasValue(g.port) && !isValidPort(g.port),
@@ -726,7 +719,6 @@ export const CarrierForm = ({
     const sipGatewayValidation = getSipValidation();
 
     if (sipGatewayValidation) {
-      // For static_ip validation errors, show only in inbound tab
       if (
         sipGatewayValidation ===
         "Static IP Whitelist trunk type requires at least one inbound gateway."
@@ -736,19 +728,13 @@ export const CarrierForm = ({
         sipGatewayValidation ===
         "Auth Trunk requires both username and password credentials."
       ) {
-        // Show auth credentials validation error only in inbound tab
         setSipInboundMessage(sipGatewayValidation);
       } else if (
         sipGatewayValidation ===
-          "You must provide at least one outbound SIP Gateway." ||
-        sipGatewayValidation ===
-          "Auth and Registration trunk types require at least one outbound gateway."
+        "Registration trunk type requires at least one outbound gateway."
       ) {
-        // Show in outbound tab when outbound gateways are required
         setSipOutboundMessage(sipGatewayValidation);
       } else {
-        // For other validation errors, the validation function already set the correct tab
-        // Show in both tabs to ensure user sees the error
         setSipInboundMessage(sipGatewayValidation);
         setSipOutboundMessage(sipGatewayValidation);
       }
@@ -1070,13 +1056,11 @@ export const CarrierForm = ({
                   const prevTrunkType = trunkType;
                   setTrunkType(newTrunkType);
 
-                  // Clear auth credentials when switching away from auth trunk
                   if (newTrunkType !== "auth") {
                     setInboundAuthUsername("");
                     setInboundAuthPassword("");
                   }
 
-                  // Auto-check authentication and register for Registration Trunk
                   if (newTrunkType === "reg") {
                     setInitialRegister(true);
                     setInitialSipRegister(true);
@@ -1087,26 +1071,47 @@ export const CarrierForm = ({
                     setSipRegister(false);
                   }
 
-                  // Handle inbound gateway management for auth and reg trunk types
                   if (
                     (newTrunkType === "auth" || newTrunkType === "reg") &&
                     prevTrunkType === "static_ip"
                   ) {
-                    // Store current inbound gateways and clear them
                     setTmpInboundGateways(sipInboundGateways);
                     setSipInboundGateways([]);
                   } else if (
                     newTrunkType === "static_ip" &&
                     (prevTrunkType === "auth" || prevTrunkType === "reg")
                   ) {
-                    // Restore inbound gateways from temp storage
                     setSipInboundGateways(tmpInboundGateways);
                     setTmpInboundGateways([]);
                   }
 
-                  // Ensure minimum 1 outbound gateway for auth and reg types
-                  if (
-                    (newTrunkType === "auth" || newTrunkType === "reg") &&
+                  if (newTrunkType === "auth" && prevTrunkType === "reg") {
+                    setTmpOutboundGateways(sipOutboundGateways);
+                    setSipOutboundGateways([]);
+                  } else if (
+                    newTrunkType === "auth" &&
+                    prevTrunkType === "static_ip"
+                  ) {
+                    setTmpOutboundGateways(sipOutboundGateways);
+                    setSipOutboundGateways([]);
+                  } else if (
+                    newTrunkType === "reg" &&
+                    prevTrunkType === "auth"
+                  ) {
+                    if (tmpOutboundGateways.length > 0) {
+                      setSipOutboundGateways(tmpOutboundGateways);
+                      setTmpOutboundGateways([]);
+                    } else if (sipOutboundGateways.length === 0) {
+                      setSipOutboundGateways([
+                        {
+                          ...DEFAULT_SIP_INBOUND_GATEWAY,
+                          inbound: 0,
+                          outbound: 1,
+                        },
+                      ]);
+                    }
+                  } else if (
+                    newTrunkType === "reg" &&
                     sipOutboundGateways.length === 0
                   ) {
                     setSipOutboundGateways([
