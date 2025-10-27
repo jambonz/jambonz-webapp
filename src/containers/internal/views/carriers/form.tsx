@@ -921,6 +921,17 @@ export const CarrierForm = ({
     if (activeTab !== targetTab) {
       e.preventDefault(); // Stop the "not focusable" error
       setActiveTab(targetTab);
+
+      setTimeout(() => {
+        const field =
+          document.getElementById(fieldName) ||
+          document.querySelector(`[name="${fieldName}"]`);
+        if (field && field instanceof HTMLInputElement) {
+          field.focus();
+          field.scrollIntoView({ behavior: "smooth", block: "center" });
+          field.reportValidity();
+        }
+      }, 100);
     }
   };
 
