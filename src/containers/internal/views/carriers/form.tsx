@@ -906,26 +906,22 @@ export const CarrierForm = ({
     const invalidField = e.target as unknown as HTMLInputElement;
     const fieldName = invalidField.name || invalidField.id;
 
-    // Map field names to tabs
-    if (fieldName === "carrier_name") {
-      setActiveTab("general");
-    } else if (fieldName?.includes("inbound_auth_")) {
-      setActiveTab("inbound");
-    } else if (
-      fieldName?.includes("sip_username") ||
-      fieldName?.includes("sip_password") ||
-      fieldName?.includes("sip_realm") ||
-      fieldName?.includes("from_user") ||
-      fieldName?.includes("from_domain")
-    ) {
-      setActiveTab("outbound"); // Changed from "registration" to "outbound"
-    } else if (fieldName?.includes("sip_")) {
-      setActiveTab("sip");
+    // Simple mapping: which tab should this field be on?
+    let targetTab = "general";
+
+    if (fieldName?.includes("inbound_auth_")) {
+      targetTab = "inbound";
+    } else if (fieldName?.includes("sip_") || fieldName?.includes("from_")) {
+      targetTab = "outbound";
     } else if (fieldName?.includes("smpp_")) {
-      setActiveTab("smpp");
+      targetTab = "smpp";
     }
 
-    // Allow the default browser validation message to show
+    // If we're not on the right tab, switch to it
+    if (activeTab !== targetTab) {
+      e.preventDefault(); // Stop the "not focusable" error
+      setActiveTab(targetTab);
+    }
   };
 
   return (
@@ -1401,122 +1397,202 @@ export const CarrierForm = ({
               </MXS>
             </fieldset>
             <fieldset>
-              <Checkzone
-                hidden
-                name="sip_credentials"
-                label="Authentication"
-                initialCheck={initialRegister}
-                handleChecked={(e) => {
-                  if (!e.target.checked) {
-                    setSipUser("");
-                    setSipPass("");
-                    setSipRegister(false);
-                  }
-                }}
-              >
-                <MS>Does your carrier require authentication?</MS>
-                <label htmlFor="sip_username">
-                  Auth username{" "}
-                  {sipPass || sipRegister || trunkType === "reg" ? (
-                    <span>*</span>
-                  ) : (
-                    ""
-                  )}
-                </label>
-                <input
-                  id="sip_username"
-                  name="sip_username"
-                  type="text"
-                  value={sipUser}
-                  placeholder="SIP username for authenticating outbound calls"
-                  required={
-                    sipRegister || sipPass.length > 0 || trunkType === "reg"
-                  }
-                  onChange={(e) => {
-                    setSipUser(e.target.value);
+              {trunkType === "reg" ? (
+                // For registration trunk, show fields directly without checkzone
+                <div>
+                  <div className="label">Authentication</div>
+                  <MS>
+                    Registration trunk requires authentication credentials.
+                  </MS>
+                  <label htmlFor="sip_username">
+                    Auth username <span>*</span>
+                  </label>
+                  <input
+                    id="sip_username"
+                    name="sip_username"
+                    type="text"
+                    value={sipUser}
+                    placeholder="SIP username for authenticating outbound calls"
+                    required
+                    onChange={(e) => {
+                      setSipUser(e.target.value);
+                    }}
+                  />
+                  <label htmlFor="sip_password">
+                    Password <span>*</span>
+                  </label>
+                  <Passwd
+                    id="sip_password"
+                    name="sip_password"
+                    value={sipPass}
+                    placeholder="SIP password for authenticating outbound calls"
+                    required
+                    onChange={(e) => {
+                      setSipPass(e.target.value);
+                    }}
+                  />
+                </div>
+              ) : (
+                <Checkzone
+                  key={`sip_credentials_${trunkType}`}
+                  hidden
+                  name="sip_credentials"
+                  label="Authentication"
+                  initialCheck={initialRegister}
+                  handleChecked={(e) => {
+                    if (!e.target.checked) {
+                      setSipUser("");
+                      setSipPass("");
+                      setSipRegister(false);
+                    }
                   }}
-                />
-                <label htmlFor="sip_password">
-                  Password
-                  {sipUser || sipRegister || trunkType === "reg" ? (
-                    <span>*</span>
-                  ) : (
-                    ""
-                  )}
-                </label>
-                <Passwd
-                  id="sip_password"
-                  name="sip_password"
-                  value={sipPass}
-                  placeholder="SIP password for authenticating outbound calls"
-                  required={
-                    sipRegister || sipUser.length > 0 || trunkType === "reg"
-                  }
-                  onChange={(e) => {
-                    setSipPass(e.target.value);
-                  }}
-                />
-              </Checkzone>
+                >
+                  <MS>Does your carrier require authentication?</MS>
+                  <label htmlFor="sip_username">
+                    Auth username {sipPass || sipRegister ? <span>*</span> : ""}
+                  </label>
+                  <input
+                    id="sip_username"
+                    name="sip_username"
+                    type="text"
+                    value={sipUser}
+                    placeholder="SIP username for authenticating outbound calls"
+                    required={sipRegister || sipPass.length > 0}
+                    onChange={(e) => {
+                      setSipUser(e.target.value);
+                    }}
+                  />
+                  <label htmlFor="sip_password">
+                    Password
+                    {sipUser || sipRegister ? <span>*</span> : ""}
+                  </label>
+                  <Passwd
+                    id="sip_password"
+                    name="sip_password"
+                    value={sipPass}
+                    placeholder="SIP password for authenticating outbound calls"
+                    required={sipRegister || sipUser.length > 0}
+                    onChange={(e) => {
+                      setSipPass(e.target.value);
+                    }}
+                  />
+                </Checkzone>
+              )}
             </fieldset>
             <fieldset>
-              <Checkzone
-                hidden
-                name="sip_register"
-                label="Require SIP Register"
-                initialCheck={initialSipRegister}
-                handleChecked={(e) => {
-                  setSipRegister(e.target.checked);
-                  if (!e.target.checked) {
-                    setSipRealm("");
-                    setFromUser("");
-                    setFromDomain("");
-                    setRegPublicIpInContact(false);
-                  }
-                }}
-              >
-                <MS>Carrier requires SIP Register.</MS>
-                <label htmlFor="sip_realm">
-                  SIP realm
-                  {sipRegister || trunkType === "reg" ? <span>*</span> : ""}
-                </label>
-                <input
-                  id="sip_realm"
-                  name="sip_realm"
-                  type="text"
-                  value={sipRealm}
-                  placeholder="SIP realm for registration"
-                  required={sipRegister || trunkType === "reg"}
-                  onChange={(e) => setSipRealm(e.target.value)}
-                />
-                <label htmlFor="from_user">Username</label>
-                <input
-                  id="from_user"
-                  name="from_user"
-                  type="text"
-                  value={fromUser}
-                  placeholder="Optional: specify user part of SIP From header"
-                  onChange={(e) => setFromUser(e.target.value)}
-                />
-                <label htmlFor="from_domain">SIP from domain</label>
-                <input
-                  id="from_domain"
-                  name="from_domain"
-                  type="text"
-                  value={fromDomain}
-                  placeholder="Optional: specify host part of SIP From header"
-                  onChange={(e) => setFromDomain(e.target.value)}
-                />
-                <label htmlFor="reg_public_ip_in_contact_2" className="chk">
+              {trunkType === "reg" ? (
+                // For registration trunk, show fields directly without checkzone
+                <div>
+                  <div className="label">SIP Registration</div>
+                  <MS>
+                    Registration trunk requires SIP registration settings.
+                  </MS>
+                  <label htmlFor="sip_realm">
+                    SIP realm <span>*</span>
+                  </label>
                   <input
-                    id="reg_public_ip_in_contact_2"
-                    name="reg_public_ip_in_contact_2"
-                    type="checkbox"
-                    checked={regPublicIpInContact}
-                    onChange={(e) => setRegPublicIpInContact(e.target.checked)}
+                    id="sip_realm"
+                    name="sip_realm"
+                    type="text"
+                    value={sipRealm}
+                    placeholder="SIP realm for registration"
+                    required
+                    onChange={(e) => setSipRealm(e.target.value)}
                   />
-                  <div>Use public IP in contact</div>
-                </label>
-              </Checkzone>
+                  <label htmlFor="from_user">Username</label>
+                  <input
+                    id="from_user"
+                    name="from_user"
+                    type="text"
+                    value={fromUser}
+                    placeholder="Optional: specify user part of SIP From header"
+                    onChange={(e) => setFromUser(e.target.value)}
+                  />
+                  <label htmlFor="from_domain">SIP from domain</label>
+                  <input
+                    id="from_domain"
+                    name="from_domain"
+                    type="text"
+                    value={fromDomain}
+                    placeholder="Optional: specify host part of SIP From header"
+                    onChange={(e) => setFromDomain(e.target.value)}
+                  />
+                  <label htmlFor="reg_public_ip_in_contact_3" className="chk">
+                    <input
+                      id="reg_public_ip_in_contact_3"
+                      name="reg_public_ip_in_contact_3"
+                      type="checkbox"
+                      checked={regPublicIpInContact}
+                      onChange={(e) =>
+                        setRegPublicIpInContact(e.target.checked)
+                      }
+                    />
+                    <div>Use public IP in contact</div>
+                  </label>
+                </div>
+              ) : (
+                <Checkzone
+                  key={`sip_register_${trunkType}`}
+                  hidden
+                  name="sip_register"
+                  label="Require SIP Register"
+                  initialCheck={initialSipRegister}
+                  handleChecked={(e) => {
+                    setSipRegister(e.target.checked);
+                    if (!e.target.checked) {
+                      setSipRealm("");
+                      setFromUser("");
+                      setFromDomain("");
+                      setRegPublicIpInContact(false);
+                    }
+                  }}
+                >
+                  <MS>Carrier requires SIP Register.</MS>
+                  <label htmlFor="sip_realm">
+                    SIP realm
+                    {sipRegister ? <span>*</span> : ""}
+                  </label>
+                  <input
+                    id="sip_realm"
+                    name="sip_realm"
+                    type="text"
+                    value={sipRealm}
+                    placeholder="SIP realm for registration"
+                    required={sipRegister}
+                    onChange={(e) => setSipRealm(e.target.value)}
+                  />
+                  <label htmlFor="from_user">Username</label>
+                  <input
+                    id="from_user"
+                    name="from_user"
+                    type="text"
+                    value={fromUser}
+                    placeholder="Optional: specify user part of SIP From header"
+                    onChange={(e) => setFromUser(e.target.value)}
+                  />
+                  <label htmlFor="from_domain">SIP from domain</label>
+                  <input
+                    id="from_domain"
+                    name="from_domain"
+                    type="text"
+                    value={fromDomain}
+                    placeholder="Optional: specify host part of SIP From header"
+                    onChange={(e) => setFromDomain(e.target.value)}
+                  />
+                  <label htmlFor="reg_public_ip_in_contact_2" className="chk">
+                    <input
+                      id="reg_public_ip_in_contact_2"
+                      name="reg_public_ip_in_contact_2"
+                      type="checkbox"
+                      checked={regPublicIpInContact}
+                      onChange={(e) =>
+                        setRegPublicIpInContact(e.target.checked)
+                      }
+                    />
+                    <div>Use public IP in contact</div>
+                  </label>
+                </Checkzone>
+              )}
             </fieldset>
             <fieldset>
               <Checkzone
