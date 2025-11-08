@@ -577,26 +577,6 @@ export const CarrierForm = ({
         return "Each SIP gateway must have a unique IP address.";
       }
     }
-
-    // Check for duplicates between inbound and outbound gateways
-    for (let i = 0; i < sipInboundGateways.length; i++) {
-      const inboundGateway = sipInboundGateways[i];
-      const dupeInOutbound = sipOutboundGateways.find((g) => {
-        return (
-          inboundGateway.ipv4 &&
-          g.ipv4 === inboundGateway.ipv4 &&
-          g.port === inboundGateway.port
-        );
-      });
-
-      if (dupeInOutbound) {
-        if (refSipInboundIp.current[i]) {
-          refSipInboundIp.current[i].focus();
-        }
-        setActiveTab("inbound");
-        return "Each SIP gateway must have a unique IP address.";
-      }
-    }
   };
 
   const getSmppValidation = () => {
