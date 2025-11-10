@@ -463,24 +463,18 @@ export const CarrierForm = ({
   };
 
   const getSipValidation = () => {
-    if (sipInboundGateways.length === 0 && sipOutboundGateways.length === 0) {
-      if (trunkType === "static_ip") {
-        setActiveTab("inbound");
-        return "Static IP Whitelist trunk type requires at least one inbound gateway.";
-      } else if (trunkType === "reg") {
-        setActiveTab("outbound");
-        return "Registration trunk type requires at least one outbound gateway.";
-      }
-    }
-
-    if (trunkType === "static_ip" && sipInboundGateways.length < 1) {
-      setActiveTab("inbound");
-      return "Static IP Whitelist trunk type requires at least one inbound gateway.";
+    if (
+      trunkType === "static_ip" &&
+      sipInboundGateways.length === 0 &&
+      sipOutboundGateways.length === 0
+    ) {
+      setActiveTab("general");
+      return "IP Trunk type requires at least one inbound or outbound gateway.";
     }
 
     if (trunkType === "reg" && sipOutboundGateways.length < 1) {
       setActiveTab("outbound");
-      return "Registration trunk type requires at least one outbound gateway.";
+      return "Registration Trunk type requires at least one outbound gateway.";
     }
 
     // Validate Auth Trunk credentials
@@ -701,9 +695,11 @@ export const CarrierForm = ({
     if (sipGatewayValidation) {
       if (
         sipGatewayValidation ===
-        "Static IP Whitelist trunk type requires at least one inbound gateway."
+        "IP Trunk type requires at least one inbound or outbound gateway."
       ) {
         setSipInboundMessage(sipGatewayValidation);
+        setSipOutboundMessage(sipGatewayValidation);
+        toastError(sipGatewayValidation);
       } else if (
         sipGatewayValidation ===
         "Auth Trunk requires both username and password credentials."
@@ -711,7 +707,7 @@ export const CarrierForm = ({
         setSipInboundMessage(sipGatewayValidation);
       } else if (
         sipGatewayValidation ===
-        "Registration trunk type requires at least one outbound gateway."
+        "Registration Trunk type requires at least one outbound gateway."
       ) {
         setSipOutboundMessage(sipGatewayValidation);
       } else {
