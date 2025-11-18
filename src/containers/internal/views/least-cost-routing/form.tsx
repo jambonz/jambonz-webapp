@@ -67,6 +67,9 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   const [accountSid, setAccountSid] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [lcrRoutes, setLcrRoutes] = useState<LcrRoute[]>([LCR_ROUTE_TEMPLATE]);
+  const [previousLcrRoutes, setPreviousLcrRoutes] = useState<LcrRoute[]>([
+    LCR_ROUTE_TEMPLATE,
+  ]);
   const [previouseLcr, setPreviousLcr] = useState<Lcr | null>();
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [lcrForDelete, setLcrForDelete] = useState<Lcr | null>();
@@ -124,35 +127,38 @@ export const LcrForm = ({ lcrDataMap, lcrRouteDataMap }: LcrFormProps) => {
   }, [lcrDataMap?.data, previouseLcr]);
 
   useMemo(() => {
-    // Only process when both lcrDataMap and lcrRouteDataMap are available
-    if (lcrRouteDataMap && lcrRouteDataMap.data && lcrDataMap?.data) {
-      const defaultCarrierSetEntrySid =
-        lcrDataMap.data.default_carrier_set_entry_sid;
-
-      // Find and store default route information
-      lcrRouteDataMap.data.forEach((route) => {
-        route.lcr_carrier_set_entries?.forEach((entry) => {
-          if (entry.lcr_carrier_set_entry_sid === defaultCarrierSetEntrySid) {
+    let default_lcr_route_sid = "";
+    if (
+      lcrRouteDataMap &&
+      lcrRouteDataMap.data &&
+      lcrRouteDataMap.data !== previousLcrRoutes
+    ) {
+      setPreviousLcrRoutes(lcrRouteDataMap.data);
+      // Find default carrier
+      lcrRouteDataMap.data.forEach((lr) => {
+        lr.lcr_carrier_set_entries?.forEach((entry) => {
+          if (
+            entry.lcr_carrier_set_entry_sid ===
+            lcrDataMap?.data?.default_carrier_set_entry_sid
+          ) {
             setDefaultLcrCarrier(entry.voip_carrier_sid || defaultCarrier);
             setDefaultLcrCarrierSetEntrySid(
               entry.lcr_carrier_set_entry_sid || null,
             );
-            setDefaultLcrRoute(route);
+            default_lcr_route_sid = entry.lcr_route_sid || "";
+            setDefaultLcrRoute(lr);
           }
         });
       });
-
-      // Filter out routes that contain the default carrier set entry
-      const filteredRoutes = lcrRouteDataMap.data.filter((route) => {
-        return !route.lcr_carrier_set_entries?.some(
-          (entry) =>
-            entry.lcr_carrier_set_entry_sid === defaultCarrierSetEntrySid,
-        );
-      });
-
-      setLcrRoutes(filteredRoutes);
     }
-  }, [lcrRouteDataMap?.data, lcrDataMap?.data]);
+
+    if (lcrRouteDataMap && lcrRouteDataMap.data)
+      setLcrRoutes(
+        lcrRouteDataMap.data.filter(
+          (route) => route.lcr_route_sid !== default_lcr_route_sid,
+        ),
+      );
+  }, [lcrRouteDataMap?.data]);
 
   const addLcrRoutes = () => {
     const newLcrRoute = LCR_ROUTE_TEMPLATE;
