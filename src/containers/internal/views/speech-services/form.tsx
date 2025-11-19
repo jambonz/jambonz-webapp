@@ -294,6 +294,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       case VENDOR_DEEPGRAM:
         return "Model ID";
       case VENDOR_CARTESIA:
+      case VENDOR_ELEVENLABS:
         return "TTS Model ID";
       default:
         return "Model";
@@ -303,6 +304,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const getSTTModelLabelByVendor = (vendor: Lowercase<Vendor>) => {
     switch (vendor) {
       case VENDOR_CARTESIA:
+      case VENDOR_ELEVENLABS:
         return " STT Model ID";
       case VENDOR_DEEPGRAM:
         return "Model ID";
@@ -466,11 +468,14 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
         }),
-        ...((vendor === VENDOR_ELEVENLABS ||
-          vendor === VENDOR_WHISPER ||
+        ...((vendor === VENDOR_WHISPER ||
           vendor === VENDOR_INWORLD ||
           vendor === VENDOR_RIMELABS) && {
           model_id: ttsModelId || null,
+        }),
+        ...(vendor === VENDOR_ELEVENLABS && {
+          model_id: ttsModelId || null,
+          stt_model_id: sttModelId || null,
         }),
         ...(vendor === VENDOR_ELEVENLABS && {
           api_uri: apiUri || null,
@@ -1065,8 +1070,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               vendor !== VENDOR_PLAYHT &&
               vendor !== VENDOR_RIMELABS &&
               vendor !== VENDOR_INWORLD &&
-              vendor !== VENDOR_RESEMBLE &&
-              vendor !== VENDOR_ELEVENLABS && (
+              vendor !== VENDOR_RESEMBLE && (
                 <label htmlFor="use_for_stt" className="chk">
                   <input
                     id="use_for_stt"
@@ -1977,6 +1981,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor == VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_ELEVENLABS ||
           (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>
