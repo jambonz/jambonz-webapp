@@ -1498,7 +1498,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               placeholder="Audio Endpoint (optional)"
               value={houndifyServerUri}
               onChange={(e) => setHoundifyServerUri(e.target.value)}
-              disabled={credential ? true : false}
             />
           </fieldset>
         )}
