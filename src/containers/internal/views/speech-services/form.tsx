@@ -225,6 +225,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
     useState(false);
   const [resembleTtsUseTls, setResembleTtsUseTls] = useState(false);
   const [tmpResembleTtsUseTls, setTmpResembleTtsUseTls] = useState(false);
+  const [houndifyServerUri, setHoundifyServerUri] = useState("");
   const handleFile = (file: File) => {
     const handleError = () => {
       setGoogleServiceKey(null);
@@ -462,6 +463,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           client_id: clientId || null,
           client_key: clientKey || null,
           user_id: userId || null,
+          houndify_server_uri: houndifyServerUri || null,
         }),
         ...(vendor === VENDOR_COBALT && {
           cobalt_server_uri: cobaltServerUri || null,
@@ -876,6 +878,10 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
 
     if (credential?.data?.user_id) {
       setUserId(credential.data.user_id);
+    }
+
+    if (credential?.data?.houndify_server_uri) {
+      setHoundifyServerUri(credential.data.houndify_server_uri);
     }
 
     if (credential?.data?.voice_engine) {
@@ -1483,6 +1489,15 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               disabled={credential ? true : false}
+            />
+            <label htmlFor="houndify_server_uri">Audio Endpoint</label>
+            <input
+              id="houndify_server_uri"
+              type="text"
+              name="houndify_server_uri"
+              placeholder="Audio Endpoint (optional)"
+              value={houndifyServerUri}
+              onChange={(e) => setHoundifyServerUri(e.target.value)}
             />
           </fieldset>
         )}
