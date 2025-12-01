@@ -450,6 +450,7 @@ export interface SpeechCredential {
   resemble_tts_uri: null | string;
   resemble_tts_use_tls: number;
   api_uri: null | string;
+  houndify_server_uri: null | string;
 }
 
 export interface Alert {
