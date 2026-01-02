@@ -35,6 +35,7 @@ interface JambonzWindowObject {
   DISABLE_ADDITIONAL_SPEECH_VENDORS: string;
   AWS_REGION: string;
   ENABLE_PHONE_NUMBER_LAZY_LOAD: string;
+  ADMIN_CARRIER: string;
 }
 
 declare global {
@@ -110,6 +111,8 @@ export const STRIPE_PUBLISHABLE_KEY: string =
   window.JAMBONZ?.STRIPE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY;
 
+export const ADMIN_CARRIER: string =
+  window.JAMBONZ?.ADMIN_CARRIER || import.meta.env.VITE_ADMIN_CARRIER || "0";
 /** TCP Max Port */
 export const TCP_MAX_PORT = 65535;
 
