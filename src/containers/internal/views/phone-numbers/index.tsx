@@ -378,14 +378,19 @@ export const PhoneNumbers = () => {
                       >
                         <Icons.Edit3 />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete phone number"
-                        onClick={() => setPhoneNumber(phoneNumber)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                      {((ADMIN_CARRIER === "1" &&
+                        (user?.scope === USER_ADMIN ||
+                          user?.scope === USER_SP)) ||
+                        ADMIN_CARRIER === "0") && (
+                        <button
+                          type="button"
+                          title="Delete phone number"
+                          onClick={() => setPhoneNumber(phoneNumber)}
+                          className="btnty"
+                        >
+                          <Icons.Trash />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
