@@ -331,11 +331,15 @@ export const Carriers = () => {
           )}
         </div>
       </Section>
-      <Section clean>
-        <Button small as={Link} to={`${ROUTE_INTERNAL_CARRIERS}/add`}>
-          Add carrier
-        </Button>
-      </Section>
+      {((ADMIN_CARRIER === "1" &&
+        (user?.scope === USER_ADMIN || user?.scope === USER_SP)) ||
+        ADMIN_CARRIER === "0") && (
+        <Section clean>
+          <Button small as={Link} to={`${ROUTE_INTERNAL_CARRIERS}/add`}>
+            Add carrier
+          </Button>
+        </Section>
+      )}
       <footer>
         <ButtonGroup>
           <MS>
