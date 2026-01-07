@@ -28,7 +28,13 @@ import { hasLength, hasValue, formatPhoneNumber } from "src/utils";
 import { DeletePhoneNumber } from "./delete";
 
 import type { Account, PhoneNumber, Carrier, Application } from "src/api/types";
-import { PER_PAGE_SELECTION, USER_ACCOUNT } from "src/api/constants";
+import {
+  PER_PAGE_SELECTION,
+  USER_ACCOUNT,
+  USER_ADMIN,
+  ADMIN_CARRIER,
+  USER_SP,
+} from "src/api/constants";
 import { ScopedAccess } from "src/components/scoped-access";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
@@ -185,16 +191,20 @@ export const PhoneNumbers = () => {
     <>
       <section className="mast">
         <H1 className="h2">Phone numbers</H1>
-        {hasLength(accounts) && hasLength(carriers) && (
-          <Link
-            to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}
-            title="Add a phone number"
-          >
-            <Icon>
-              <Icons.Plus />
-            </Icon>
-          </Link>
-        )}
+        {hasLength(accounts) &&
+          hasLength(carriers) &&
+          ((ADMIN_CARRIER === "1" &&
+            (user?.scope === USER_ADMIN || user?.scope === USER_SP)) ||
+            ADMIN_CARRIER === "0") && (
+            <Link
+              to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}
+              title="Add a phone number"
+            >
+              <Icon>
+                <Icons.Plus />
+              </Icon>
+            </Link>
+          )}
       </section>
       <section className="filters filters--multi">
         <SearchFilter
@@ -368,14 +378,19 @@ export const PhoneNumbers = () => {
                       >
                         <Icons.Edit3 />
                       </Link>
-                      <button
-                        type="button"
-                        title="Delete phone number"
-                        onClick={() => setPhoneNumber(phoneNumber)}
-                        className="btnty"
-                      >
-                        <Icons.Trash />
-                      </button>
+                      {((ADMIN_CARRIER === "1" &&
+                        (user?.scope === USER_ADMIN ||
+                          user?.scope === USER_SP)) ||
+                        ADMIN_CARRIER === "0") && (
+                        <button
+                          type="button"
+                          title="Delete phone number"
+                          onClick={() => setPhoneNumber(phoneNumber)}
+                          className="btnty"
+                        >
+                          <Icons.Trash />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -404,13 +419,17 @@ export const PhoneNumbers = () => {
           )}
         </div>
       </Section>
-      <Section clean>
-        {hasLength(accounts) && hasLength(carriers) && (
-          <Button small as={Link} to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}>
-            Add phone number
-          </Button>
-        )}
-      </Section>
+      {((ADMIN_CARRIER === "1" &&
+        (user?.scope === USER_ADMIN || user?.scope === USER_SP)) ||
+        ADMIN_CARRIER === "0") && (
+        <Section clean>
+          {hasLength(accounts) && hasLength(carriers) && (
+            <Button small as={Link} to={`${ROUTE_INTERNAL_PHONE_NUMBERS}/add`}>
+              Add phone number
+            </Button>
+          )}
+        </Section>
+      )}
       <footer>
         <ButtonGroup>
           <MS>

@@ -31,6 +31,9 @@ import {
   ENABLE_HOSTED_SYSTEM,
   PER_PAGE_SELECTION,
   USER_ACCOUNT,
+  ADMIN_CARRIER,
+  USER_ADMIN,
+  USER_SP,
 } from "src/api/constants";
 import { DeleteCarrier } from "./delete";
 
@@ -202,13 +205,16 @@ export const Carriers = () => {
             </M>
           )}
         </div>
-
-        <Link to={`${ROUTE_INTERNAL_CARRIERS}/add`} title="Add a Carrier">
-          {" "}
-          <Icon>
-            <Icons.Plus />
-          </Icon>
-        </Link>
+        {((ADMIN_CARRIER === "1" &&
+          (user?.scope === USER_ADMIN || user?.scope === USER_SP)) ||
+          ADMIN_CARRIER === "0") && (
+          <Link to={`${ROUTE_INTERNAL_CARRIERS}/add`} title="Add a Carrier">
+            {" "}
+            <Icon>
+              <Icons.Plus />
+            </Icon>
+          </Link>
+        )}
       </section>
       <section className="filters filters--multi">
         <SearchFilter
@@ -325,11 +331,15 @@ export const Carriers = () => {
           )}
         </div>
       </Section>
-      <Section clean>
-        <Button small as={Link} to={`${ROUTE_INTERNAL_CARRIERS}/add`}>
-          Add carrier
-        </Button>
-      </Section>
+      {((ADMIN_CARRIER === "1" &&
+        (user?.scope === USER_ADMIN || user?.scope === USER_SP)) ||
+        ADMIN_CARRIER === "0") && (
+        <Section clean>
+          <Button small as={Link} to={`${ROUTE_INTERNAL_CARRIERS}/add`}>
+            Add carrier
+          </Button>
+        </Section>
+      )}
       <footer>
         <ButtonGroup>
           <MS>
