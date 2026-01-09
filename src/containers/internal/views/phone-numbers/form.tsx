@@ -147,8 +147,8 @@ export const PhoneNumberForm = ({ phoneNumber }: PhoneNumberFormProps) => {
         voipCarriers?.filter(
           (carrier) =>
             !accountSid ||
-            (carrier.is_active &&
-              (!carrier.account_sid || carrier.account_sid === accountSid)),
+            !carrier.account_sid ||
+            carrier.account_sid === accountSid,
         ),
       );
     }
