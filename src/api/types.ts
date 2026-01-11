@@ -451,6 +451,7 @@ export interface SpeechCredential {
   resemble_tts_use_tls: number;
   api_uri: null | string;
   houndify_server_uri: null | string;
+  use_gemini_tts: number;
 }
 
 export interface Alert {

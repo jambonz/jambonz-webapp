@@ -432,6 +432,13 @@ export const DEEPGRAM_STT_ENPOINT = [
   { name: "EU-hosted", value: "api.eu.deepgram.com" },
 ];
 
+// ElevenLabs API URI options
+export const ELEVENLABS_API_URI_OPTIONS = [
+  { name: "US", value: "api.elevenlabs.io" },
+  { name: "EU", value: "api.eu.residency.elevenlabs.io" },
+  { name: "IN", value: "api.in.residency.elevenlabs.io" },
+];
+
 /** User scope values values */
 export const USER_ADMIN = "admin";
 export const USER_SP = "service_provider";
