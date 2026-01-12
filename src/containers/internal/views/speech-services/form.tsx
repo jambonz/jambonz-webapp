@@ -220,8 +220,6 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [resembleTtsUseTls, setResembleTtsUseTls] = useState(false);
   const [tmpResembleTtsUseTls, setTmpResembleTtsUseTls] = useState(false);
   const [houndifyServerUri, setHoundifyServerUri] = useState("");
-  const [initialUseGoogleTts, setInitialUseGoogleTts] = useState(false);
-  const [useGoogleGeminiTts, setUseGoogleGeminiTts] = useState(false);
   const handleFile = (file: File) => {
     const handleError = () => {
       setGoogleServiceKey(null);
@@ -415,8 +413,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           aws_region: region || null,
         }),
         ...(vendor === VENDOR_GOOGLE && {
-          use_gemini_tts: useGoogleGeminiTts ? 1 : 0,
-          model_id: useGoogleGeminiTts ? ttsModelId || null : null,
+          model_id: ttsModelId || null,
         }),
         ...(vendor === VENDOR_MICROSOFT && {
           region: region || null,
@@ -852,13 +849,9 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       setOptionsInitialChecked(true);
     }
     if (credential?.data?.vendor === VENDOR_GOOGLE) {
-      // Load use_google_tts setting
-      if (credential.data.use_gemini_tts) {
-        setInitialUseGoogleTts(true);
-        setUseGoogleGeminiTts(true);
-        if (credential.data.model_id) {
-          setTtsModelId(credential.data.model_id);
-        }
+      // Load model_id for Gemini TTS
+      if (credential.data.model_id) {
+        setTtsModelId(credential.data.model_id);
       }
       // let try to check if there is custom voices
       getGoogleCustomVoices({
@@ -1246,29 +1239,20 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             {ttsCheck && vendor === VENDOR_GOOGLE && (
               <>
                 <fieldset>
-                  <Checkzone
-                    hidden
-                    name="use_google_tts"
-                    label="Use Gemini TTS"
-                    initialCheck={initialUseGoogleTts}
-                    handleChecked={(e) => {
-                      const isChecked = e.target.checked;
-                      setUseGoogleGeminiTts(isChecked);
-                      setTtsModelId(
-                        isChecked ? ttsModelId || "gemini-2.5-flash-tts" : "",
-                      );
-                    }}
-                  >
-                    <label htmlFor="google_tts_model_id">Model ID</label>
-                    <input
-                      id="google_tts_model_id"
-                      name="google_tts_model_id"
-                      type="text"
-                      placeholder="Model ID (optional)"
-                      value={ttsModelId}
-                      onChange={(e) => setTtsModelId(e.target.value)}
-                    />
-                  </Checkzone>
+                  <label htmlFor="google_tts_model_id">
+                    Model ID
+                    <Tooltip text="Provide a model ID to enable Gemini TTS (e.g., gemini-2.5-flash-tts). Leave empty to use standard Google TTS.">
+                      {" "}
+                    </Tooltip>
+                  </label>
+                  <input
+                    id="google_tts_model_id"
+                    name="google_tts_model_id"
+                    type="text"
+                    placeholder="e.g., gemini-2.5-flash-tts"
+                    value={ttsModelId}
+                    onChange={(e) => setTtsModelId(e.target.value)}
+                  />
                 </fieldset>
                 <fieldset>
                   <label htmlFor="use_custom_voice" className="chk">
