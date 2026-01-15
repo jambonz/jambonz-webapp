@@ -1254,6 +1254,48 @@ export const CarrierForm = ({
                             <div>Pad crypto</div>
                           </label>
                         </div>
+                        <div>
+                          <label
+                            htmlFor={`sip_inbound_remove_ice_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`sip_inbound_remove_ice_${i}`}
+                              name={`sip_inbound_remove_ice_${i}`}
+                              type="checkbox"
+                              checked={g.remove_ice ? true : false}
+                              onChange={(e) => {
+                                updateSipInboundGateways(
+                                  i,
+                                  "remove_ice",
+                                  e.target.checked,
+                                );
+                              }}
+                            />
+                            <div>Remove ICE</div>
+                          </label>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor={`sip_inbound_dtls_off_${i}`}
+                            className="chk"
+                          >
+                            <input
+                              id={`sip_inbound_dtls_off_${i}`}
+                              name={`sip_inbound_dtls_off_${i}`}
+                              type="checkbox"
+                              checked={g.dtls_off ? true : false}
+                              onChange={(e) => {
+                                updateSipInboundGateways(
+                                  i,
+                                  "dtls_off",
+                                  e.target.checked,
+                                );
+                              }}
+                            />
+                            <div>DTLS off</div>
+                          </label>
+                        </div>
                       </div>
 
                       <button
@@ -1820,6 +1862,48 @@ export const CarrierForm = ({
                           </label>
                         </div>
                       )}
+                      <div>
+                        <label
+                          htmlFor={`sip_outbound_remove_ice_${i}`}
+                          className="chk"
+                        >
+                          <input
+                            id={`sip_outbound_remove_ice_${i}`}
+                            name={`sip_outbound_remove_ice_${i}`}
+                            type="checkbox"
+                            checked={g.remove_ice ? true : false}
+                            onChange={(e) => {
+                              updateSipOutboundGateways(
+                                i,
+                                "remove_ice",
+                                e.target.checked,
+                              );
+                            }}
+                          />
+                          <div>Remove ICE</div>
+                        </label>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor={`sip_outbound_dtls_off_${i}`}
+                          className="chk"
+                        >
+                          <input
+                            id={`sip_outbound_dtls_off_${i}`}
+                            name={`sip_outbound_dtls_off_${i}`}
+                            type="checkbox"
+                            checked={g.dtls_off ? true : false}
+                            onChange={(e) => {
+                              updateSipOutboundGateways(
+                                i,
+                                "dtls_off",
+                                e.target.checked,
+                              );
+                            }}
+                          />
+                          <div>DTLS off</div>
+                        </label>
+                      </div>
                     </div>
 
                     <button
