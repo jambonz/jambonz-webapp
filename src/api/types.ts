@@ -524,6 +524,8 @@ export interface SipGateway extends Gateway {
   pad_crypto?: boolean;
   send_options_ping?: boolean;
   use_sips_scheme?: boolean;
+  remove_ice?: boolean;
+  dtls_off?: boolean;
 }
 
 export interface SmppGateway extends Gateway {

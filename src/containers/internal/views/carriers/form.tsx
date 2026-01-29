@@ -1798,27 +1798,71 @@ export const CarrierForm = ({
                         </div>
                       )}
                       {(g.protocol === "tls" || g.protocol === "tls/srtp") && (
-                        <div>
-                          <label
-                            htmlFor={`use_sips_scheme_${i}`}
-                            className="chk"
-                          >
-                            <input
-                              id={`use_sips_scheme_${i}`}
-                              name={`use_sips_scheme_${i}`}
-                              type="checkbox"
-                              checked={g.use_sips_scheme ? true : false}
-                              onChange={(e) => {
-                                updateSipOutboundGateways(
-                                  i,
-                                  "use_sips_scheme",
-                                  e.target.checked,
-                                );
-                              }}
-                            />
-                            <div>Use sips scheme</div>
-                          </label>
-                        </div>
+                        <>
+                          <div>
+                            <label
+                              htmlFor={`use_sips_scheme_${i}`}
+                              className="chk"
+                            >
+                              <input
+                                id={`use_sips_scheme_${i}`}
+                                name={`use_sips_scheme_${i}`}
+                                type="checkbox"
+                                checked={g.use_sips_scheme ? true : false}
+                                onChange={(e) => {
+                                  updateSipOutboundGateways(
+                                    i,
+                                    "use_sips_scheme",
+                                    e.target.checked,
+                                  );
+                                }}
+                              />
+                              <div>Use sips scheme</div>
+                            </label>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor={`sip_outbound_remove_ice_${i}`}
+                              className="chk"
+                            >
+                              <input
+                                id={`sip_outbound_remove_ice_${i}`}
+                                name={`sip_outbound_remove_ice_${i}`}
+                                type="checkbox"
+                                checked={g.remove_ice ? true : false}
+                                onChange={(e) => {
+                                  updateSipOutboundGateways(
+                                    i,
+                                    "remove_ice",
+                                    e.target.checked,
+                                  );
+                                }}
+                              />
+                              <div>Remove ICE</div>
+                            </label>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor={`sip_outbound_dtls_off_${i}`}
+                              className="chk"
+                            >
+                              <input
+                                id={`sip_outbound_dtls_off_${i}`}
+                                name={`sip_outbound_dtls_off_${i}`}
+                                type="checkbox"
+                                checked={g.dtls_off ? true : false}
+                                onChange={(e) => {
+                                  updateSipOutboundGateways(
+                                    i,
+                                    "dtls_off",
+                                    e.target.checked,
+                                  );
+                                }}
+                              />
+                              <div>DTLS off</div>
+                            </label>
+                          </div>
+                        </>
                       )}
                     </div>
 
