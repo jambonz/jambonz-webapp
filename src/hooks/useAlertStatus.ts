@@ -5,7 +5,7 @@ import { useSelectState, useDispatch } from "src/store";
 import { getAlertsLastViewed } from "src/store/localStore";
 import { Scope } from "src/store/types";
 
-const POLL_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const POLL_INTERVAL = 60 * 1000; // 60 seconds
 
 export const useAlertStatus = () => {
   const user = useSelectState("user");
@@ -35,7 +35,7 @@ export const useAlertStatus = () => {
       const lastViewed = getAlertsLastViewed();
       const query = {
         page: 1,
-        count: 1,
+        count: 50,
         ...(lastViewed ? { start: lastViewed } : { days: 1 }),
       };
 
