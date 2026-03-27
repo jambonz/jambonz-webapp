@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ButtonGroup, H1, M, MS } from "@jambonz/ui-kit";
 import dayjs from "dayjs";
 
-import { getAlerts, useServiceProviderData } from "src/api";
+import {
+  getAlerts,
+  getServiceProviderAlerts,
+  useServiceProviderData,
+} from "src/api";
 import {
   DATE_SELECTION,
   PER_PAGE_SELECTION,
@@ -34,6 +38,7 @@ export const Alerts = () => {
   const { toastError } = useToast();
   const dispatch = useDispatch();
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
@@ -59,7 +64,18 @@ export const Alerts = () => {
           : { days: Number(dateFilter) }),
     };
 
-    getAlerts(accountSid, payload)
+    const fetchAlerts = accountSid
+      ? getAlerts(accountSid, payload)
+      : currentServiceProvider?.service_provider_sid
+        ? getServiceProviderAlerts(
+            currentServiceProvider.service_provider_sid,
+            payload,
+          )
+        : null;
+
+    if (!fetchAlerts) return;
+
+    fetchAlerts
       .then(({ json }) => {
         setAlerts(json.data);
         setAlertsTotal(json.total);
@@ -91,10 +107,10 @@ export const Alerts = () => {
       setAccountSid(user?.account_sid);
     }
 
-    if (accountSid) {
+    if (accountSid || currentServiceProvider?.service_provider_sid) {
       handleFilterChange();
     }
-  }, [user, accountSid, pageNumber, dateFilter]);
+  }, [user, accountSid, pageNumber, dateFilter, currentServiceProvider]);
 
   /** Reset page number when filters change */
   useEffect(() => {
@@ -111,6 +127,7 @@ export const Alerts = () => {
           <AccountFilter
             account={[accountSid, setAccountSid]}
             accounts={accounts}
+            defaultOption
           />
         </ScopedAccess>
         <SelectFilter
