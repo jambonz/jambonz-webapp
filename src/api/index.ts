@@ -920,6 +920,19 @@ export const getAlerts = (sid: string, query: Partial<PageQuery>) => {
   );
 };
 
+export const getServiceProviderAlerts = (
+  sid: string,
+  query: Partial<PageQuery>,
+) => {
+  const qryStr = getQuery<Partial<PageQuery>>(query);
+
+  return getFetch<PagedResponse<Alert>>(
+    import.meta.env.DEV
+      ? `${DEV_BASE_URL}/ServiceProviders/${sid}/Alerts?${qryStr}`
+      : `${API_SERVICE_PROVIDERS}/${sid}/Alerts?${qryStr}`,
+  );
+};
+
 export const getPrice = () => {
   return getFetch<PriceInfo[]>(API_PRICE);
 };
