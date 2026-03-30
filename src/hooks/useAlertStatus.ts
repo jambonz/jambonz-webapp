@@ -28,8 +28,7 @@ export const useAlertStatus = () => {
     const query = {
       page: 1,
       count: 10,
-      days: 30,
-      ...(lastViewed ? { start: lastViewed } : {}),
+      ...(lastViewed ? { start: lastViewed } : { days: 30 }),
     };
 
     // Account-scoped users: check their own account
