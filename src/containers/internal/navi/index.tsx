@@ -55,7 +55,7 @@ const Item = ({ item, user, lcr, handleMenu, badge }: ItemProps) => {
         <item.icon />
         <span>{item.label}</span>
         {badge !== undefined && badge > 0 && (
-          <span className="navi__badge">{badge >= 50 ? "50+" : badge}</span>
+          <span className="navi__badge">{badge >= 10 ? "9+" : badge}</span>
         )}
       </Link>
     </li>
