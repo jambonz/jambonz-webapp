@@ -12,6 +12,7 @@ import {
   setActiveSP,
 } from "src/store/localStore";
 import { postServiceProviders } from "src/api";
+import { useAlertStatus } from "src/hooks/useAlertStatus";
 
 import type { NaviItem } from "./items";
 
@@ -37,9 +38,10 @@ type ItemProps = CommonProps & {
   item: NaviItem;
   user?: UserData;
   lcr?: Lcr;
+  badge?: number;
 };
 
-const Item = ({ item, user, lcr, handleMenu }: ItemProps) => {
+const Item = ({ item, user, lcr, handleMenu, badge }: ItemProps) => {
   const location = useLocation();
   const active = location.pathname.includes(item.route(user));
 
@@ -52,6 +54,9 @@ const Item = ({ item, user, lcr, handleMenu }: ItemProps) => {
       >
         <item.icon />
         <span>{item.label}</span>
+        {badge !== undefined && badge > 0 && (
+          <span className="navi__badge">{badge >= 10 ? "9+" : badge}</span>
+        )}
       </Link>
     </li>
   );
@@ -71,9 +76,12 @@ export const Navi = ({
   const accessControl = useSelectState("accessControl");
   const serviceProviders = useSelectState("serviceProviders");
   const currentServiceProvider = useSelectState("currentServiceProvider");
+  const unreadAlerts = useSelectState("unreadAlerts");
   const [sid, setSid] = useState("");
   const [modal, setModal] = useState(false);
   const [name, setName] = useState("");
+
+  useAlertStatus();
 
   const naviByoFiltered = useMemo(() => {
     return naviByo.filter(
@@ -213,6 +221,7 @@ export const Navi = ({
                   user={user}
                   item={item}
                   handleMenu={handleMenu}
+                  badge={item.label === "Alerts" ? unreadAlerts : undefined}
                 />
               );
             })}

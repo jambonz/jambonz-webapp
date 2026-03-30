@@ -101,6 +101,20 @@ export const removeRootDomain = () => {
 };
 
 /**
+ * Methods to get/set the alerts last viewed timestamp from local storage
+ */
+
+const storeAlertsLastViewed = "alertsLastViewed";
+
+export const getAlertsLastViewed = () => {
+  return localStorage.getItem(storeAlertsLastViewed) || "";
+};
+
+export const setAlertsLastViewed = (timestamp: string) => {
+  localStorage.setItem(storeAlertsLastViewed, timestamp);
+};
+
+/**
  * Methods to get/set the location from local storage
  */
 

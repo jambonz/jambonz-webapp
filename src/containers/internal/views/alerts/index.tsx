@@ -2,13 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ButtonGroup, H1, M, MS } from "@jambonz/ui-kit";
 import dayjs from "dayjs";
 
-import { getAlerts, useServiceProviderData } from "src/api";
+import {
+  getAlerts,
+  getServiceProviderAlerts,
+  useServiceProviderData,
+} from "src/api";
 import {
   DATE_SELECTION,
   PER_PAGE_SELECTION,
   USER_ACCOUNT,
 } from "src/api/constants";
-import { useSelectState } from "src/store";
+import { useSelectState, useDispatch } from "src/store";
 import { hasLength, hasValue } from "src/utils";
 import {
   AccountFilter,
@@ -25,13 +29,16 @@ import {
   getAccountFilter,
   getQueryFilter,
   setLocation,
+  setAlertsLastViewed,
 } from "src/store/localStore";
 import AlertDetailItem from "./alert-detail-item";
 import { useToast } from "src/components/toast/toast-provider";
 
 export const Alerts = () => {
   const { toastError } = useToast();
+  const dispatch = useDispatch();
   const user = useSelectState("user");
+  const currentServiceProvider = useSelectState("currentServiceProvider");
   const [accounts] = useServiceProviderData<Account[]>("Accounts");
   const [accountSid, setAccountSid] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
@@ -57,7 +64,18 @@ export const Alerts = () => {
           : { days: Number(dateFilter) }),
     };
 
-    getAlerts(accountSid, payload)
+    const fetchAlerts = accountSid
+      ? getAlerts(accountSid, payload)
+      : currentServiceProvider?.service_provider_sid
+        ? getServiceProviderAlerts(
+            currentServiceProvider.service_provider_sid,
+            payload,
+          )
+        : null;
+
+    if (!fetchAlerts) return;
+
+    fetchAlerts
       .then(({ json }) => {
         setAlerts(json.data);
         setAlertsTotal(json.total);
@@ -79,15 +97,20 @@ export const Alerts = () => {
   }, [accountSid]);
 
   useEffect(() => {
+    setAlertsLastViewed(new Date().toISOString());
+    dispatch({ type: "unreadAlerts", payload: 0 });
+  }, []);
+
+  useEffect(() => {
     setLocation();
     if (user?.account_sid && user.scope === USER_ACCOUNT) {
       setAccountSid(user?.account_sid);
     }
 
-    if (accountSid) {
+    if (accountSid || currentServiceProvider?.service_provider_sid) {
       handleFilterChange();
     }
-  }, [user, accountSid, pageNumber, dateFilter]);
+  }, [user, accountSid, pageNumber, dateFilter, currentServiceProvider]);
 
   /** Reset page number when filters change */
   useEffect(() => {
@@ -104,6 +127,7 @@ export const Alerts = () => {
           <AccountFilter
             account={[accountSid, setAccountSid]}
             accounts={accounts}
+            defaultOption
           />
         </ScopedAccess>
         <SelectFilter

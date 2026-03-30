@@ -29,6 +29,7 @@ export const initialState: State = {
     hasMSTeamsFqdn: false,
   },
   serviceProviders: [],
+  unreadAlerts: 0,
 };
 
 const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
@@ -36,6 +37,7 @@ const reducer: React.Reducer<State, Action<keyof State>> = (state, action) => {
     case "user":
     case "lcr":
     case "toast":
+    case "unreadAlerts":
       return genericAction(state, action);
     case "serviceProviders":
       return serviceProvidersAction(state, action);

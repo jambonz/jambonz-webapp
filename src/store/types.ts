@@ -44,6 +44,8 @@ export interface State {
   lcr?: Lcr;
   /** current selected service provider */
   currentServiceProvider?: ServiceProvider;
+  /** count of unread alerts */
+  unreadAlerts: number;
 }
 
 /** Generic interface enforces type-safety with global dispatch */
