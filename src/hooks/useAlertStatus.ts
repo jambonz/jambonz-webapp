@@ -5,7 +5,12 @@ import { useSelectState, useDispatch } from "src/store";
 import { getAlertsLastViewed } from "src/store/localStore";
 import { Scope } from "src/store/types";
 
-const POLL_INTERVAL = 60 * 1000; // 60 seconds
+const DEFAULT_POLL_INTERVAL = 60; // seconds
+const envPollInterval = import.meta.env.VITE_APP_ALERT_POLL_INTERVAL;
+const POLL_INTERVAL =
+  envPollInterval !== undefined
+    ? Number(envPollInterval) * 1000
+    : DEFAULT_POLL_INTERVAL * 1000;
 
 export const useAlertStatus = () => {
   const user = useSelectState("user");
@@ -67,6 +72,8 @@ export const useAlertStatus = () => {
   }, [checkAlerts]);
 
   useEffect(() => {
+    if (!POLL_INTERVAL) return;
+
     const interval = setInterval(() => checkAlertsRef.current(), POLL_INTERVAL);
     return () => clearInterval(interval);
   }, []);
