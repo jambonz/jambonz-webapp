@@ -1,28 +1,12 @@
 {
   "name": "jambonz-webapp",
   "description": "A simple provisioning web app for jambonz",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">= 20.0.0"
   },
-  "contributors": [
-    {
-      "name": "Brandon Lee Kitajchuk",
-      "email": "bk@kitajchuk.com",
-      "url": "https://www.kitajchuk.com"
-    },
-    {
-      "name": "Lê Hàn Minh Khang",
-      "email": "mkhangle20@gmail.com"
-    },
-    {
-      "name": "Dave Horton",
-      "email": "daveh@drachtio.org",
-      "url": "https://drachtio.org"
-    }
-  ],
   "scripts": {
     "prepare": "husky install",
     "postinstall": "rm -rf public/fonts && cp -R node_modules/@jambonz/ui-kit/public/fonts public/fonts",
