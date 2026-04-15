@@ -145,7 +145,7 @@ export const checkLocation = () => {
 };
 
 export const clearLocalStorage = () => {
-  const toKeep = [storeActiveSP, storeAccountFilter];
+  const toKeep = [storeActiveSP, storeAccountFilter, storeAlertsLastViewed];
   Object.keys(localStorage).forEach((key) => {
     if (!toKeep.includes(key)) {
       localStorage.removeItem(key);
