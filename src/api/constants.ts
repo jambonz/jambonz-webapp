@@ -11,7 +11,6 @@ import type {
   RimelabsOptions,
   SelectorOptions,
   SipGateway,
-  SmppGateway,
   WebHook,
   WebhookOption,
 } from "./types";
@@ -133,7 +132,7 @@ export const DEFAULT_WEBHOOK: WebHook = {
   password: "",
 };
 
-/** Default SIP/SMPP Gateways  */
+/** Default SIP Gateways  */
 export const DEFAULT_SIP_INBOUND_GATEWAY: SipGateway = {
   voip_carrier_sid: "",
   ipv4: "",
@@ -144,16 +143,6 @@ export const DEFAULT_SIP_INBOUND_GATEWAY: SipGateway = {
   outbound: 0,
 };
 
-export const DEFAULT_SMPP_GATEWAY: SmppGateway = {
-  voip_carrier_sid: "",
-  ipv4: "",
-  port: 2775,
-  is_primary: false,
-  use_tls: false,
-  netmask: 32,
-  inbound: 1,
-  outbound: 1,
-};
 /** Netmask Bits */
 export const NETMASK_BITS = Array(32)
   .fill(0)
@@ -468,7 +457,6 @@ export const API_PHONE_NUMBERS = `${API_BASE_URL}/PhoneNumbers`;
 export const API_MS_TEAMS_TENANTS = `${API_BASE_URL}/MicrosoftTeamsTenants`;
 export const API_SERVICE_PROVIDERS = `${API_BASE_URL}/ServiceProviders`;
 export const API_CARRIERS = `${API_BASE_URL}/VoipCarriers`;
-export const API_SMPP_GATEWAY = `${API_BASE_URL}/SmppGateways`;
 export const API_SIP_GATEWAY = `${API_BASE_URL}/SipGateways`;
 export const API_PASSWORD_SETTINGS = `${API_BASE_URL}/PasswordSettings`;
 export const API_FORGOT_PASSWORD = `${API_BASE_URL}/forgot-password`;

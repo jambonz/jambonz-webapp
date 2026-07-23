@@ -14,7 +14,6 @@ import {
   API_MS_TEAMS_TENANTS,
   API_PHONE_NUMBERS,
   API_CARRIERS,
-  API_SMPP_GATEWAY,
   API_SIP_GATEWAY,
   API_PASSWORD_SETTINGS,
   API_FORGOT_PASSWORD,
@@ -67,7 +66,6 @@ import type {
   MSTeamsTenant,
   PhoneNumber,
   Carrier,
-  SmppGateway,
   SipGateway,
   TotalResponse,
   CallQuery,
@@ -394,13 +392,6 @@ export const postSipGateway = (payload: Partial<SipGateway>) => {
   return postFetch<SidResponse, Partial<SipGateway>>(API_SIP_GATEWAY, payload);
 };
 
-export const postSmppGateway = (payload: Partial<SmppGateway>) => {
-  return postFetch<SidResponse, Partial<SmppGateway>>(
-    API_SMPP_GATEWAY,
-    payload,
-  );
-};
-
 export const postServiceProviderLimit = (
   sid: string,
   payload: Partial<Limit>,
@@ -601,13 +592,6 @@ export const putSipGateway = (sid: string, payload: Partial<SipGateway>) => {
   );
 };
 
-export const putSmppGateway = (sid: string, payload: Partial<SmppGateway>) => {
-  return putFetch<EmptyResponse, Partial<SmppGateway>>(
-    `${API_SMPP_GATEWAY}/${sid}`,
-    payload,
-  );
-};
-
 export const putLcr = (sid: string, payload: Partial<Lcr>) => {
   return putFetch<EmptyResponse, Partial<Lcr>>(`${API_LCRS}/${sid}`, payload);
 };
@@ -711,10 +695,6 @@ export const deleteCarrier = (sid: string) => {
 
 export const deleteSipGateway = (sid: string) => {
   return deleteFetch<EmptyResponse>(`${API_SIP_GATEWAY}/${sid}`);
-};
-
-export const deleteSmppGateway = (sid: string) => {
-  return deleteFetch<EmptyResponse>(`${API_SMPP_GATEWAY}/${sid}`);
 };
 
 export const deleteServiceProviderLimit = (
