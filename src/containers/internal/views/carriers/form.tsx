@@ -6,10 +6,8 @@ import {
   deleteSipGateway,
   postCarrier,
   postSipGateway,
-  postSmppGateway,
   putCarrier,
   putSipGateway,
-  putSmppGateway,
   useApiData,
   useServiceProviderData,
   postPredefinedCarrierTemplate,
@@ -17,10 +15,8 @@ import {
 } from "src/api";
 import {
   DEFAULT_SIP_INBOUND_GATEWAY,
-  DEFAULT_SMPP_GATEWAY,
   DTMF_TYPE_SELECTION,
   FQDN,
-  FQDN_TOP_LEVEL,
   INVALID,
   IP,
   NETMASK_OPTIONS,
@@ -58,7 +54,6 @@ import {
   type UseApiDataMap,
   type Carrier,
   type SipGateway,
-  type SmppGateway,
   type PredefinedCarrier,
   type Sbc,
   type Application,
@@ -72,13 +67,11 @@ import { useToast } from "src/components/toast/toast-provider";
 type CarrierFormProps = {
   carrier?: UseApiDataMap<Carrier>;
   carrierSipGateways?: UseApiDataMap<SipGateway[]>;
-  carrierSmppGateways?: UseApiDataMap<SmppGateway[]>;
 };
 
 export const CarrierForm = ({
   carrier,
   carrierSipGateways,
-  carrierSmppGateways,
 }: CarrierFormProps) => {
   const { toastSuccess, toastError } = useToast();
   const navigate = useNavigate();
@@ -88,7 +81,6 @@ export const CarrierForm = ({
   const refSipInboundIp = useRef<HTMLInputElement[]>([]);
   const refSipOutboundIp = useRef<HTMLInputElement[]>([]);
   const refSipPort = useRef<HTMLInputElement[]>([]);
-  const refSmppIp = useRef<HTMLInputElement[]>([]);
   const refInboundAuthUsername = useRef<HTMLInputElement>(null);
   const [sbcs] = useApiData<Sbc[]>("Sbcs");
   const [applications] = useServiceProviderData<Application[]>("Applications");
@@ -128,11 +120,6 @@ export const CarrierForm = ({
   const [initialRegister, setInitialRegister] = useState(false);
   const [initialSipRegister, setInitialSipRegister] = useState(false);
 
-  const [smppSystemId, setSmppSystemId] = useState("");
-  const [smppPass, setSmppPass] = useState("");
-  const [smppInboundSystemId, setSmppInboundSystemId] = useState("");
-  const [smppInboundPass, setSmppInboundPass] = useState("");
-
   const [sipInboundGateways, setSipInboundGateways] = useState<SipGateway[]>(
     [],
   );
@@ -145,16 +132,6 @@ export const CarrierForm = ({
   const [tmpOutboundGateways, setTmpOutboundGateways] = useState<SipGateway[]>(
     [],
   );
-  const [smppGateways, setSmppGateways] = useState<SmppGateway[]>([
-    {
-      ...DEFAULT_SMPP_GATEWAY,
-      inbound: 0,
-    },
-    {
-      ...DEFAULT_SMPP_GATEWAY,
-      outbound: 0,
-    },
-  ]);
 
   const [sipInboundMessage, setSipInboundMessage] = useState("");
   const [sipOutboundMessage, setSipOutboundMessage] = useState("");
@@ -305,18 +282,6 @@ export const CarrierForm = ({
         setInitialSipRegister(false);
       }
 
-      if (obj.smpp_system_id) {
-        setSmppSystemId(obj.smpp_system_id);
-      }
-      if (obj.smpp_password) {
-        setSmppPass(obj.smpp_password);
-      }
-      if (obj.smpp_inbound_system_id) {
-        setSmppInboundSystemId(obj.smpp_inbound_system_id);
-      }
-      if (obj.smpp_inbound_password) {
-        setSmppInboundPass(obj.smpp_inbound_password);
-      }
       if (obj.dtmf_type) {
         setDtmfType(obj.dtmf_type);
       }
@@ -343,16 +308,6 @@ export const CarrierForm = ({
     setSipOutboundGateways((curr) => [
       ...curr,
       { ...DEFAULT_SIP_INBOUND_GATEWAY, inbound: 0, outbound: 1 },
-    ]);
-  };
-
-  const addSmppGateway = (obj: Partial<SmppGateway>) => {
-    setSmppGateways((curr) => [
-      ...curr,
-      {
-        ...DEFAULT_SMPP_GATEWAY /** { inbound: 1, outbound: 1 } */,
-        ...obj /** pass the values: e.g. { outbound: 1, inbound: 0 } */,
-      },
     ]);
   };
 
@@ -427,39 +382,12 @@ export const CarrierForm = ({
       });
   };
 
-  const handleSmppGatewayPutPost = (voip_carrier_sid: string) => {
-    Promise.all(
-      smppGateways
-        /** Ensure the empty UI fields don't actually save in the background... */
-        .filter((g) => g.ipv4.trim() !== "" && isValidPort(g.port))
-        .map(({ smpp_gateway_sid, ...g }: SmppGateway) => {
-          smpp_gateway_sid
-            ? putSmppGateway(smpp_gateway_sid, g)
-            : postSmppGateway({ ...g, voip_carrier_sid });
-        }),
-    ).then(() => {
-      if (carrierSmppGateways) {
-        carrierSmppGateways.refetch();
-      }
-    });
-  };
-
   const handleSipGatewayDelete = (g?: SipGateway) => {
     if (g && g.sip_gateway_sid) {
       deleteSipGateway(g.sip_gateway_sid).then(() =>
         toastSuccess("SIP gateway successfully deleted"),
       );
     }
-  };
-
-  const hasEmptySmppGateways = (type: keyof SmppGateway) => {
-    const filtered = smppGateways.filter((g) => g[type]);
-    return (
-      hasLength(filtered) &&
-      filtered.reduce((acc, g) => {
-        return acc + g.ipv4.trim();
-      }, "") === ""
-    );
   };
 
   const getSipValidation = () => {
@@ -573,63 +501,6 @@ export const CarrierForm = ({
     }
   };
 
-  const getSmppValidation = () => {
-    for (let i = 0; i < smppGateways.length; i++) {
-      const gateway = smppGateways[i];
-      const gatewayType = gateway.inbound ? "inbound" : "outbound";
-      const type = getIpValidationType(gateway.ipv4);
-
-      if (type === FQDN_TOP_LEVEL) {
-        refSmppIp.current[i].focus();
-        return {
-          msg: "When using an FQDN, you must use a subdomain (e.g. sip.example.com).",
-          type: gatewayType,
-        };
-      } else if (type === FQDN && (!gateway.outbound || gateway.inbound)) {
-        refSmppIp.current[i].focus();
-        return {
-          msg: "A fully qualified domain name may only be used for outbound calls.",
-          type: gatewayType,
-        };
-      } else if (type === INVALID && gateway.ipv4.trim() !== "") {
-        refSmppIp.current[i].focus();
-        return {
-          msg: `Please provide a valid ${gatewayType} IP address or fully qualified domain name.`,
-          type: gatewayType,
-        };
-      }
-
-      /** Duplicates validation */
-      const dupeSmppGateway = smppGateways.find((g) => {
-        return (
-          g !== gateway &&
-          gateway.ipv4 &&
-          g[gatewayType] === gateway[gatewayType] &&
-          g.ipv4 === gateway.ipv4 &&
-          g.port === gateway.port
-        );
-      });
-
-      if (dupeSmppGateway) {
-        refSmppIp.current[i].focus();
-        return {
-          msg: `Each ${gatewayType} SMPP gateway must have a unique IP address.`,
-          type: gatewayType,
-        };
-      }
-    }
-  };
-
-  const shouldValidateSmpp = () => {
-    return (
-      smppSystemId ||
-      smppPass ||
-      smppInboundPass ||
-      !hasEmptySmppGateways("outbound") ||
-      !hasEmptySmppGateways("inbound")
-    );
-  };
-
   const handleActiveTab = () => {
     const gatewaysToCheck =
       trunkType === "auth"
@@ -657,25 +528,6 @@ export const CarrierForm = ({
     ) {
       setActiveTab("sip");
       return; /** Important so browser contstraints work properly */
-    }
-
-    /** When to switch to the `smpp` tab */
-
-    const invalidSmppPort = smppGateways
-      .filter((g) => g.outbound)
-      .find((g) => !isValidPort(g.port));
-    const smppGatewayValidation = shouldValidateSmpp() && getSmppValidation();
-
-    /** Outbound user/pass filled out but no gateways */
-    /** Inbound gateways but no inbound pass */
-    /** Invalid SMPP port number */
-    if (
-      invalidSmppPort ||
-      smppGatewayValidation ||
-      (smppSystemId && smppPass && hasEmptySmppGateways("outbound")) ||
-      (!smppInboundPass && !hasEmptySmppGateways("inbound"))
-    ) {
-      setActiveTab("smpp");
     }
   };
 
@@ -743,10 +595,6 @@ export const CarrierForm = ({
         tech_prefix: prefix.trim() || null,
         diversion: diversion.trim() || null,
         is_active: isActive,
-        smpp_system_id: smppSystemId.trim() || null,
-        smpp_password: smppPass.trim() || null,
-        smpp_inbound_system_id: smppInboundSystemId.trim() || null,
-        smpp_inbound_password: smppInboundPass.trim() || null,
         dtmf_type: dtmfType,
         trunk_type: trunkType,
         inbound_auth_username: inboundAuthUsername.trim() || undefined,
@@ -763,7 +611,6 @@ export const CarrierForm = ({
           .then(() => {
             if (carrier.data?.voip_carrier_sid) {
               handleSipGatewayPutPost(carrier.data.voip_carrier_sid);
-              handleSmppGatewayPutPost(carrier.data.voip_carrier_sid);
             }
 
             toastSuccess("Carrier updated successfully");
@@ -782,7 +629,6 @@ export const CarrierForm = ({
         })
           .then(({ json }) => {
             handleSipGatewayPutPost(json.sid);
-            handleSmppGatewayPutPost(json.sid);
 
             toastSuccess("Carrier created successfully");
             navigate(ROUTE_INTERNAL_CARRIERS);
@@ -834,7 +680,6 @@ export const CarrierForm = ({
   /** This fixes a re-rendering glitch when we used useEffect that was annoying but not breaking */
   /** https://beta.reactjs.org/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes */
   const [prevSipGateways, setPrevSipGateways] = useState<SipGateway[]>();
-  const [prevSmppGateways, setPrevSmppGateways] = useState<SmppGateway[]>();
 
   if (
     carrierSipGateways &&
@@ -858,26 +703,6 @@ export const CarrierForm = ({
     }
   }
 
-  if (
-    carrierSmppGateways &&
-    hasLength(carrierSmppGateways.data) &&
-    carrierSmppGateways.data !== prevSmppGateways
-  ) {
-    const inbound = carrierSmppGateways.data.filter((g) => g.inbound);
-    const outbound = carrierSmppGateways.data.filter((g) => g.outbound);
-
-    setPrevSmppGateways(carrierSmppGateways.data); /** Deadly important */
-    setSmppGateways(carrierSmppGateways.data);
-
-    if (inbound.length <= 0) {
-      addSmppGateway({ inbound: 1, outbound: 0 });
-    }
-
-    if (outbound.length <= 0) {
-      addSmppGateway({ outbound: 1, inbound: 0 });
-    }
-  }
-
   const handleInvalidField = (e: React.InvalidEvent<HTMLFormElement>) => {
     const invalidField = e.target as unknown as HTMLInputElement;
     const fieldName = invalidField.name || invalidField.id;
@@ -889,8 +714,6 @@ export const CarrierForm = ({
       targetTab = "inbound";
     } else if (fieldName?.includes("sip_") || fieldName?.includes("from_")) {
       targetTab = "outbound";
-    } else if (fieldName?.includes("smpp_")) {
-      targetTab = "smpp";
     }
 
     // If we're not on the right tab, switch to it

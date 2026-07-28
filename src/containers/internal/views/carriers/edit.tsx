@@ -6,7 +6,7 @@ import { useApiData } from "src/api";
 import { useSelectState } from "src/store";
 import { CarrierForm } from "./form";
 
-import { Carrier, SipGateway, SmppGateway } from "src/api/types";
+import { Carrier, SipGateway } from "src/api/types";
 import { useScopedRedirect } from "src/utils/use-scoped-redirect";
 import { ROUTE_INTERNAL_CARRIERS } from "src/router/routes";
 import { Scope } from "src/store/types";
@@ -21,9 +21,6 @@ export const EditCarrier = () => {
   );
   const [sipGateways, sipGatewaysRefetch] = useApiData<SipGateway[]>(
     `SipGateways?voip_carrier_sid=${params.voip_carrier_sid}`,
-  );
-  const [smppGateways, smppGatewaysRefetch] = useApiData<SmppGateway[]>(
-    `SmppGateways?voip_carrier_sid=${params.voip_carrier_sid}`,
   );
 
   useScopedRedirect(
@@ -48,10 +45,6 @@ export const EditCarrier = () => {
         carrierSipGateways={{
           data: sipGateways,
           refetch: sipGatewaysRefetch,
-        }}
-        carrierSmppGateways={{
-          data: smppGateways,
-          refetch: smppGatewaysRefetch,
         }}
       />
     </>

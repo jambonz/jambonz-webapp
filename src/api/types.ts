@@ -52,7 +52,7 @@ export enum StatusCodes {
   NOT_FOUND = 404,
   UNPROCESSABLE_ENTITY = 422,
   INTERNAL_SERVER_ERROR = 500,
-  /** SMPP temporarily unavailable */
+  /** temporarily unavailable */
   TEMPORARILY_UNAVAILABLE = 480,
 }
 
@@ -243,15 +243,6 @@ export interface Sbc {
   ipv4: string;
   port: number | string;
   sbc_address_sid: string;
-  service_provider_sid: null | string;
-}
-
-export interface Smpp {
-  ipv4: string;
-  port: number | string;
-  use_tls: boolean;
-  is_primary: boolean;
-  smpp_address_sid: string;
   service_provider_sid: null | string;
 }
 
@@ -492,11 +483,6 @@ export interface Carrier {
   diversion: null | string;
   inbound_auth_username: string;
   inbound_auth_password: string;
-  smpp_system_id: null | string;
-  smpp_password: null | string;
-  smpp_inbound_system_id: null | string;
-  smpp_inbound_password: null | string;
-  smpp_enquire_link_interval: number;
   register_status: CarrierRegisterStatus;
   dtmf_type: DtmfType;
   outbound_sip_proxy: string | null;
@@ -526,13 +512,6 @@ export interface SipGateway extends Gateway {
   use_sips_scheme?: boolean;
   remove_ice?: boolean;
   dtls_off?: boolean;
-}
-
-export interface SmppGateway extends Gateway {
-  smpp_gateway_sid?: null | string;
-  is_primary: boolean;
-  use_tls: boolean;
-  port: number;
 }
 
 export interface Lcr {

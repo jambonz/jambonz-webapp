@@ -4,7 +4,6 @@ import { Button, ButtonGroup, H1, Icon, M, MS } from "@jambonz/ui-kit";
 import {
   deleteCarrier,
   deleteSipGateway,
-  deleteSmppGateway,
   getFetch,
   getSPVoipCarriers,
   useApiData,
@@ -26,7 +25,6 @@ import { Gateways } from "./gateways";
 import { isUserAccountScope, hasLength, hasValue } from "src/utils";
 import {
   API_SIP_GATEWAY,
-  API_SMPP_GATEWAY,
   CARRIER_REG_OK,
   ENABLE_HOSTED_SYSTEM,
   PER_PAGE_SELECTION,
@@ -42,7 +40,6 @@ import type {
   Carrier,
   CurrentUserData,
   SipGateway,
-  SmppGateway,
 } from "src/api/types";
 import { Scope } from "src/store/types";
 import { getAccountFilter, setLocation } from "src/store/localStore";
@@ -112,29 +109,15 @@ export const Carriers = () => {
 
       deleteCarrier(carrier.voip_carrier_sid)
         .then(() => {
-          Promise.all([
-            getFetch<SipGateway[]>(
-              `${API_SIP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`,
-            ),
-            getFetch<SmppGateway[]>(
-              `${API_SMPP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`,
-            ),
-          ]).then(([sipGatewaysRes, smppGatewaysRes]) => {
+          getFetch<SipGateway[]>(
+            `${API_SIP_GATEWAY}?voip_carrier_sid=${carrier.voip_carrier_sid}`,
+          ).then((sipGatewaysRes) => {
             hasLength(sipGatewaysRes.json) &&
               sipGatewaysRes.json.forEach(
                 (g) =>
                   g &&
                   g.sip_gateway_sid &&
                   deleteSipGateway(g.sip_gateway_sid).catch((error) =>
-                    toastError(error.msg),
-                  ),
-              );
-            hasLength(smppGatewaysRes.json) &&
-              smppGatewaysRes.json.forEach(
-                (g) =>
-                  g &&
-                  g.smpp_gateway_sid &&
-                  deleteSmppGateway(g.smpp_gateway_sid).catch((error) =>
                     toastError(error.msg),
                   ),
               );
