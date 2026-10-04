@@ -1,7 +1,7 @@
 {
   "name": "jambonz-webapp",
   "description": "A simple provisioning web app for jambonz",
-  "version": "0.9.10",
+  "version": "0.9.11",
   "license": "MIT",
   "type": "module",
   "engines": {
