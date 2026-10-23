@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:24.22.1-alpine AS builder
 RUN apk update && apk add --no-cache python3 make g++
 COPY . /opt/app
 WORKDIR /opt/app/
@@ -6,7 +6,7 @@ RUN npm install
 RUN npm run build
 RUN npm prune
 
-FROM node:20-alpine AS webapp
+FROM node:24.22.1-alpine AS webapp
 RUN apk add curl
 WORKDIR /opt/app
 COPY . /opt/app
