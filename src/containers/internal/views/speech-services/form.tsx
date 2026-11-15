@@ -48,6 +48,7 @@ import {
   AWS_CREDENTIAL_ACCESS_KEY,
   AWS_INSTANCE_PROFILE,
   VENDOR_VERBIO,
+  VENDOR_VIADIALOG,
   VENDOR_SPEECHMATICS,
   VENDOR_CARTESIA,
   VENDOR_VOXIST,
@@ -125,6 +126,18 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
   const [region, setRegion] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [apiUri, setApiUri] = useState("api.elevenlabs.io");
+  const [vdUsername, setVdUsername] = useState("");
+  const [vdPassword, setVdPassword] = useState("");
+  const [vdSlug, setVdSlug] = useState("");
+  const [vdAuthUri, setVdAuthUri] = useState("");
+  const [vdSttUri, setVdSttUri] = useState("");
+  const [vdTtsUri, setVdTtsUri] = useState("");
+  // the server refuses a new endpoint without the password, so ask for it here too
+  const vdUrlsChanged =
+    !!credential &&
+    (vdAuthUri !== (credential.data?.auth_uri || "") ||
+      vdSttUri !== (credential.data?.stt_uri || "") ||
+      vdTtsUri !== (credential.data?.tts_uri || ""));
   const [userId, setUserId] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
   const [secretAccessKey, setSecretAccessKey] = useState("");
@@ -488,6 +501,16 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           sttModelId && {
             model_id: sttModelId,
           }),
+        ...(vendor === VENDOR_VIADIALOG && {
+          username: vdUsername,
+          slug: vdSlug,
+          // the stored password is kept unless a new one is typed
+          ...(vdPassword && { password: vdPassword }),
+          auth_uri: vdAuthUri || null,
+          stt_uri: vdSttUri || null,
+          tts_uri: vdTtsUri || null,
+          ...(sttModelId && { model_id: sttModelId }),
+        }),
         ...(vendor === VENDOR_DEEPGRAM && {
           deepgram_stt_uri: deepgramSttUri || null,
           deepgram_tts_uri: deepgramTtsUri || null,
@@ -636,6 +659,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       vendor === VENDOR_INWORLD ||
       vendor === VENDOR_CARTESIA ||
       vendor === VENDOR_OPENAI ||
+      vendor === VENDOR_VIADIALOG ||
       vendor === VENDOR_DEEPGRAM
     ) {
       getSpeechSupportedLanguagesAndVoices(
@@ -826,12 +850,21 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
       if (credential.data.cobalt_server_uri) {
         setCobaltServerUri(credential.data.cobalt_server_uri);
       }
+      if (credential.data.vendor === VENDOR_VIADIALOG) {
+        setVdUsername(credential.data.username || "");
+        setVdSlug(credential.data.slug || "");
+        setVdAuthUri(credential.data.auth_uri || "");
+        setVdSttUri(credential.data.stt_uri || "");
+        setVdTtsUri(credential.data.tts_uri || "");
+      }
       if (credential.data.model_id) {
         setTtsModelId(credential.data.model_id);
       }
       if (
         credential.data.model_id &&
-        (vendor === VENDOR_OPENAI || vendor === VENDOR_DEEPGRAM)
+        (vendor === VENDOR_OPENAI ||
+          vendor === VENDOR_DEEPGRAM ||
+          vendor === VENDOR_VIADIALOG)
       ) {
         setSttModelId(credential.data.model_id);
       } else if (credential.data.stt_model_id) {
@@ -1685,6 +1718,92 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
             </fieldset>
           </>
         )}
+        {vendor === VENDOR_VIADIALOG && (
+          <fieldset>
+            <label htmlFor="viadialog_username">
+              Username<span>*</span>
+            </label>
+            <input
+              id="viadialog_username"
+              required
+              type="text"
+              name="viadialog_username"
+              placeholder="Username"
+              value={vdUsername}
+              onChange={(e) => setVdUsername(e.target.value)}
+            />
+            <label htmlFor="viadialog_password">
+              Password{(!credential || vdUrlsChanged) && <span>*</span>}
+            </label>
+            <Passwd
+              id="viadialog_password"
+              required={!credential || vdUrlsChanged}
+              name="viadialog_password"
+              placeholder={
+                credential && !vdUrlsChanged
+                  ? "Leave empty to keep the current password"
+                  : "Password"
+              }
+              value={vdPassword}
+              onChange={(e) => setVdPassword(e.target.value)}
+            />
+            <label htmlFor="viadialog_slug">
+              Slug<span>*</span>
+            </label>
+            <input
+              id="viadialog_slug"
+              required
+              type="text"
+              name="viadialog_slug"
+              placeholder="Account slug"
+              value={vdSlug}
+              onChange={(e) => setVdSlug(e.target.value)}
+            />
+            <MXS>
+              jambonz logs in with these and renews the access token before it
+              expires.
+            </MXS>
+            <label htmlFor="viadialog_auth_uri">Login URL</label>
+            <input
+              id="viadialog_auth_uri"
+              type="text"
+              name="viadialog_auth_uri"
+              pattern="^https?://[^\/\s?#,\{\}]+(\/[^\s?#,\{\}]*)?$"
+              placeholder="https://viaflow-dashboard.viadialog.com/gw/auth/login"
+              value={vdAuthUri}
+              onChange={(e) => setVdAuthUri(e.target.value.trim())}
+            />
+            {sttCheck && (
+              <>
+                <label htmlFor="viadialog_stt_uri">STT URL</label>
+                <input
+                  id="viadialog_stt_uri"
+                  type="text"
+                  name="viadialog_stt_uri"
+                  pattern="^wss?://[^\/\s?#,\{\}]+(\/[^\s?#,\{\}]*)?$"
+                  placeholder="wss://viaflow-dashboard.viadialog.com/rgw/viastt/openai-standard/v1"
+                  value={vdSttUri}
+                  onChange={(e) => setVdSttUri(e.target.value.trim())}
+                />
+              </>
+            )}
+            {ttsCheck && (
+              <>
+                <label htmlFor="viadialog_tts_uri">TTS URL</label>
+                <input
+                  id="viadialog_tts_uri"
+                  type="text"
+                  name="viadialog_tts_uri"
+                  pattern="^wss?://[^\/\s?#,\{\}]+(\/[^\s?#,\{\}]*)?$"
+                  placeholder="wss://viaflow-dashboard.viadialog.com/rgw/viatone/elevenlabs-standard"
+                  value={vdTtsUri}
+                  onChange={(e) => setVdTtsUri(e.target.value.trim())}
+                />
+              </>
+            )}
+            <MXS>Leave the URLs empty to use the Viadialog defaults.</MXS>
+          </fieldset>
+        )}
         {vendor === VENDOR_ASSEMBLYAI && (
           <fieldset>
             <label htmlFor={`${vendor}_tts_model_id`}>
@@ -2020,6 +2139,7 @@ export const SpeechServiceForm = ({ credential }: SpeechServiceFormProps) => {
           )}
         {(vendor == VENDOR_OPENAI ||
           vendor === VENDOR_DEEPGRAM ||
+          (sttCheck && vendor === VENDOR_VIADIALOG) ||
           (sttCheck && vendor === VENDOR_CARTESIA)) &&
           sttModels.length > 0 && (
             <fieldset>
