@@ -442,6 +442,13 @@ export interface SpeechCredential {
   resemble_tts_use_tls: number;
   api_uri: null | string;
   houndify_server_uri: null | string;
+  username?: null | string;
+  password?: null | string;
+  slug?: null | string;
+  auth_uri?: null | string;
+  stt_uri?: null | string;
+  tts_uri?: null | string;
+  tts_model_id?: null | string;
 }
 
 export interface Alert {

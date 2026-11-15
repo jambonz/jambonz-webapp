@@ -24,7 +24,8 @@ export type Vendor =
   | "Cartesia"
   | "Resemble"
   | "Houndify"
-  | "gladia";
+  | "gladia"
+  | "viadialog";
 
 export interface VendorOptions {
   name: Vendor;

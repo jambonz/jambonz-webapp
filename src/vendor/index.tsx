@@ -32,6 +32,7 @@ export const VENDOR_OPENAI = "openai";
 export const VENDOR_RESEMBLE = "resemble";
 export const VENDOR_HOUNDIFY = "houndify";
 export const VENDOR_GLADIA = "gladia";
+export const VENDOR_VIADIALOG = "viadialog";
 
 export const vendors: VendorOptions[] = [
   {
@@ -137,6 +138,10 @@ export const vendors: VendorOptions[] = [
   {
     name: "Gladia",
     value: VENDOR_GLADIA,
+  },
+  {
+    name: "Viadialog",
+    value: VENDOR_VIADIALOG,
   },
 ].sort((a, b) => a.name.localeCompare(b.name)) as VendorOptions[];
 
